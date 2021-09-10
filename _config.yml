@@ -1,5 +1,5 @@
 title: Filthy Hacker
-description: "A Jekyll Blog Theme For Hackers"
+description: "A Blog For Filthy Hackers"
 author:
   name: "m4teo"
   email: "mandinoparedes@hotmail.com"
@@ -28,5 +28,5 @@ plugins:
   - jekyll-sitemap
 
 # Custom variables
-owner : "MateoNitro550"
+owner : "m4teo"
 year : "2021"
