@@ -11,7 +11,7 @@ Dependiendo de la gravedad, esta vulnerabilidad puede llevar al atacante a:
 * XSS (Cross-Site Scripting)
 * DoS (Denial Of Service)
 
-Un ejemplo muy básico sería el siguiente script de PHP:
+Un ejemplo muy básico sería el siguiente script en PHP:
 
 ```php
 <?php
@@ -30,7 +30,7 @@ Es importante aclarar que esta no es solo una vulnerabilidad de PHP, también es
 
 ### [](#header-3)Directory Path Traversal
 
-Es posible que en el código se nos limite a acceder a archivos que se ubican únicamente en la ruta establecida, en este caso '/var/www/html/'.
+Es posible que en el código, se nos limite a tener acceso a archivos que se ubican únicamente en una ruta determinada, en este caso '/var/www/html/'.
 
 ```php
 <?php
@@ -47,7 +47,7 @@ https://localhost/lfi.php?filename=../../../etc/passwd
 
 ### [](#header-3)Null Byte
 
-De igual manera, es posible que en el código se nos limite a acceder a archivos con únicamente de la extensión establecida, en este caso 'PHP'.
+De igual manera, es posible que en el código se nos limite a tener acceso a archivos de una determinada extensión, en este caso 'PHP'.
 
 ```php
 <?php
@@ -56,7 +56,9 @@ De igual manera, es posible que en el código se nos limite a acceder a archivos
 ?>
 ```
 
-De modo que cuando intentemos leer el archivo '/etc/passwd', o cualquier otro archivo, lo que estariamos leyendo en realidad sería el archivo '/etc/passwd.php', el cual no existe. Sin embargo, si añadimos el nullbyte (`%00`) al final de nuestra cadena de ataque, el '.php' no será tenido en cuenta. 
+De modo que cuando intentemos leer el archivo '/etc/passwd', o cualquier otro archivo, lo que estariamos leyendo en realidad sería el archivo '/etc/passwd.php', el cual no existe. 
+
+Sin embargo, si añadimos el nullbyte (`%00`) al final de nuestra cadena de ataque, el '.php' no será tenido en cuenta. 
 
 ```
 https://localhost/lfi.php?filename=/etc/passwd%00
@@ -64,7 +66,7 @@ https://localhost/lfi.php?filename=/etc/passwd%00
 
 ### [](#header-3)Wrappers
 
-PHP cuenta con una serie de "wrappers", los cuales a menudo pueden ser abusados, por mencionar algunos tenemos:
+PHP cuenta con una serie de 'wrappers', los cuales a menudo pueden ser abusados; por mencionar algunos tenemos:
 
 #### [](#header-4)expect://
 
@@ -78,7 +80,7 @@ https://localhost/lfi.php?filename=expect://whoami
 
 Nos permite codificar archivos del sistema a través de diferentes métodos como podría ser Base64 o ROT13. 
 
-Este wrapper es bastante útil si necesitamos leer un archivo en PHP, ya que recordemos, este es un lenguaje interpretado, por lo que si intentamos leer un archivo PHP, no veríamos nada.
+Este 'wrapper' es bastante útil si necesitamos leer un archivo en PHP, ya que recordemos, este es un lenguaje interpretado, por lo que si intentáramos leer un archivo PHP, no veríamos nada.
 
 ```
 https://localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=test.php
