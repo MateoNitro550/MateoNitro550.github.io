@@ -56,7 +56,7 @@ De igual manera, es posible que en el código se nos limite a acceder a archivos
 ?>
 ```
 
-De modo que cuando intentemos leer el archivo '/etc/passwd', o cualquier otro archivo, lo que estariamos leyendo en realidad sería el archivo '/etc/passwd.php', el cual no existe. Sin embargo, si añadimos el nullbyte `(%00)` al final de nuestra cadena de ataque, el '.php' no será tenido en cuenta. 
+De modo que cuando intentemos leer el archivo '/etc/passwd', o cualquier otro archivo, lo que estariamos leyendo en realidad sería el archivo '/etc/passwd.php', el cual no existe. Sin embargo, si añadimos el nullbyte (`%00`) al final de nuestra cadena de ataque, el '.php' no será tenido en cuenta. 
 
 ```
 https://localhost/lfi.php?filename=/etc/passwd%00
@@ -77,6 +77,7 @@ https://localhost/lfi.php?filename=expect://whoami
 #### [](#header-4)filter://
 
 Nos permite codificar archivos del sistema a través de diferentes métodos como podría ser Base64 o ROT13. 
+
 Es bastante útil si necesitamos leer un archivo en PHP, ya que recordemos, este es un lenguaje interpretado, por lo que si intentamos leer un archivo PHP, no veríamos nada.
 
 ```
