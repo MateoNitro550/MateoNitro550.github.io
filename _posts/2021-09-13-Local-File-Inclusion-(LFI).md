@@ -78,7 +78,7 @@ https://localhost/lfi.php?filename=expect://whoami
 
 Nos permite codificar archivos del sistema a través de diferentes métodos como podría ser Base64 o ROT13. 
 
-Es bastante útil si necesitamos leer un archivo en PHP, ya que recordemos, este es un lenguaje interpretado, por lo que si intentamos leer un archivo PHP, no veríamos nada.
+Este wrapper es bastante útil si necesitamos leer un archivo en PHP, ya que recordemos, este es un lenguaje interpretado, por lo que si intentamos leer un archivo PHP, no veríamos nada.
 
 ```
 https://localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=test.php
