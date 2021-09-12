@@ -47,7 +47,7 @@ Sin embargo, podemos "escaparnos" de la ruta preestablecida si añadimos `../` e
 localhost/lfi.php?filename=../../../etc/passwd
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/2.  png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/2.png)
 
 ### [](#header-3)Null Byte
 
@@ -60,7 +60,7 @@ De igual manera, es posible que en el código se nos limite a acceder a archivos
 ?>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/3.    png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/3.png)
 
 De modo que cuando intentemos leer el archivo `/etc/passwd`, o cualquier otro archivo del sistema, lo que estariamos leyendo en realidad sería el archivo `/etc/passwd.php`, el cual no existe. 
 
@@ -76,13 +76,13 @@ _PHP_ cuenta con una serie de _wrappers_, los cuales a menudo pueden ser abusado
 
 #### [](#header-4)expect://
 
-Nos permite una ejecución remota de comandos (RCE).
+Nos permite una ejecución remota de comandos (RCE); cabe aclarar que para poder utilizar este _wrapper_ no está activado por defecto, por lo que no siempre será posible utilizarlo
 
 ```
 localhost/lfi.php?filename=expect://whoami
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/4.      png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/4.png)
 
 #### [](#header-4)filter://
 
@@ -90,12 +90,12 @@ Nos permite codificar archivos del sistema a través de diferentes métodos como
 
 Este _wrapper_ resulta bastante útil si necesitamos leer un archivo en _PHP_, ya que recordemos, este es un lenguaje interpretado, por lo que si intentáramos leer un archivo _PHP_ del servidor vulnerable, lo que veríamos sería simplemente el output del script.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/5.        png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/5.png)
 
 ```
 localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=test.php
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/6.          png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/6.png)
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/7.            png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/7.png)
