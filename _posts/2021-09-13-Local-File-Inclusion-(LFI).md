@@ -93,7 +93,7 @@ Este _wrapper_ resulta bastante útil si necesitamos leer un archivo en _PHP_, y
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/5.png)
 
 ```
-localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=test.php
+localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=filterWrapper.php
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/6.png)
