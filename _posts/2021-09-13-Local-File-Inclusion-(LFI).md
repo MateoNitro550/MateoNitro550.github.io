@@ -23,8 +23,10 @@ Un ejemplo muy básico sería el siguiente script en _PHP_.
 Script, del que podemos abusar para leer cualquier archivo del sistema, en este caso el `/etc/passwd`.
 
 ```
-https://localhost/lfi.php?filename=/etc/passwd
+localhost/lfi.php?filename=/etc/passwd
 ```
+
+![](https://guides.github.com/activities/hello-world/branching.png)
 
 Es importante aclarar que esta no es solo una vulnerabilidad de _PHP_, también está presente en otros lenguajes como lo es _JSP_ o _ASP_.
 
@@ -42,7 +44,7 @@ Es posible que en el código, se nos limite a acceder a archivos que se ubican �
 Sin embargo, podemos "escaparnos" de la ruta preestablecida si añadimos `../` en nuestra cadena de ataque, pudiendo así listar contenido más allá de `/var/www/html/`.
 
 ```
-https://localhost/lfi.php?filename=../../../etc/passwd
+localhost/lfi.php?filename=../../../etc/passwd
 ```
 
 ### [](#header-3)Null Byte
@@ -61,7 +63,7 @@ De modo que cuando intentemos leer el archivo `/etc/passwd`, o cualquier otro ar
 Sin embargo, si añadimos el nullbyte `%00` al final de nuestra cadena de ataque, el `.php` no será tenido en cuenta, pudiendo así leer con normalidad el `/etc/passwd`, o cualquier otro archivo del sistema.
 
 ```
-https://localhost/lfi.php?filename=/etc/passwd%00
+localhost/lfi.php?filename=/etc/passwd%00
 ```
 
 ### [](#header-3)Wrappers
@@ -73,7 +75,7 @@ _PHP_ cuenta con una serie de _wrappers_, los cuales a menudo pueden ser abusado
 Nos permite una ejecución remota de comandos (RCE).
 
 ```
-https://localhost/lfi.php?filename=expect://whoami
+localhost/lfi.php?filename=expect://whoami
 ```
 
 #### [](#header-4)filter://
@@ -83,5 +85,5 @@ Nos permite codificar archivos del sistema a través de diferentes métodos como
 Este _wrapper_ resulta bastante útil si necesitamos leer un archivo en _PHP_, ya que recordemos, este es un lenguaje interpretado, por lo que si intentáramos leer un archivo _PHP_ del servidor vulnerable, lo que veríamos sería simplemente el output del script.
 
 ```
-https://localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=test.php
+localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=test.php
 ```
