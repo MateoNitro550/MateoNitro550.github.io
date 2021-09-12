@@ -26,7 +26,7 @@ Script, del que podemos abusar para leer cualquier archivo del sistema, en este 
 localhost/lfi.php?filename=/etc/passwd
 ```
 
-![](https://guides.github.com/activities/hello-world/branching.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/1.png)
 
 Es importante aclarar que esta no es solo una vulnerabilidad de _PHP_, también está presente en otros lenguajes como lo es _JSP_ o _ASP_.
 
