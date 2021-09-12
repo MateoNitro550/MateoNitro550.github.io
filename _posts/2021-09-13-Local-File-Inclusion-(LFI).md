@@ -60,8 +60,6 @@ De igual manera, es posible que en el código se nos limite a acceder a archivos
 ?>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/3.png)
-
 De modo que cuando intentemos leer el archivo `/etc/passwd`, o cualquier otro archivo del sistema, lo que estariamos leyendo en realidad sería el archivo `/etc/passwd.php`, el cual no existe. 
 
 Sin embargo, si añadimos el nullbyte `%00` al final de nuestra cadena de ataque, el `.php` no será tenido en cuenta, pudiendo así leer con normalidad el `/etc/passwd`, o cualquier otro archivo del sistema.
@@ -69,6 +67,8 @@ Sin embargo, si añadimos el nullbyte `%00` al final de nuestra cadena de ataque
 ```
 localhost/lfi.php?filename=/etc/passwd%00
 ```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/3.png)
 
 ### [](#header-3)Wrappers
 
