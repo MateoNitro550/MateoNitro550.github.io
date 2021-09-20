@@ -125,6 +125,24 @@ Para poder conseguir la siguiente `flag` (la del usuario con máximos privilegio
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/14.png)
 
-Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con `_Android_`; esto tiene sentido ya que algunos dispositivos _Android_ tienen este pureto abierto para realizar procesos relacionados con el `_Android Debug Bridge_` o `_ADB_` por sus siglas en inglés. 
+Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con `Android`; esto tiene sentido ya que algunos dispositivos _Android_ tienen este pureto abierto para realizar procesos relacionados con el `Android Debug Bridge` o `ADB` por sus siglas en inglés. 
 
-Por lo que, lo que vamos a realizar es un _remote port forwarding_ para poder 
+Por lo que, lo que vamos a realizar es un _remote port forwarding_.
+
+```
+ssh -L 5555:localhost:5555 kristi@10.10.10.247 -p 2222
+``` 
+
+Para posteriormente, con el servicio `ADB` conseguir una shell de máximos privilegios con la que poder migrar al usario root y conseguir la última `flag`. 
+
+En caso de no contar con el servicio `ADB` instalado, bastará con realizar lo siguiente:
+
+``` 
+sudo apt install adb
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/15.png)
+
+Una vez hemos migrado al usuario `root`, simplemente tendremos que buscar la respectiva `flag`.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/16.png)
