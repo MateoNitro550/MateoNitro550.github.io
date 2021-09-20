@@ -103,3 +103,19 @@ Si recordamos, otro servicio que detectamos con _Nmap_, fue el servicio _SSH_ en
 Por lo que procederemos a autenticarnos con las credenciales encontradas:
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/11.png)
+
+Una vez dentro de la máquina, procederemos a buscar la primera `flag`. Por lo que buscaremos el archivo `user.txt` dentro de todo el sistema.
+
+```  
+echo **/*user.txt*
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/12.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/13.png)
+
+Podemos ver que en efecto esta es la `flag` del usuario con bajos privilegios.
+
+Lo más común sería utilizar `find . -name user.txt` (y en este caso, redirigir todo el `stderr` o `Standard Error` hacia el `/dev/null`), sin embargo no conseguimos ningún resultado, por lo que resulta conveniente conocer otros métodos para realizar el mismo proceso.
+
+### [](#header-3)Escalada De Privilegios
