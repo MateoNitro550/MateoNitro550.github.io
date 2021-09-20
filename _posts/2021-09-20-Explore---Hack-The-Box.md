@@ -56,7 +56,7 @@ Una vez hemos detectado los puertos que se encuentran abiertos en el activo, pod
 nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247 -oN targeted
 ```
 
-A continuación se explican los parámetros utilizados en el escaneo versiones y servicios con _Nmap_:
+A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
 
 * sC - Scripts básicos de enumeración
 * sV - Versión y servicios que corren bajo los puertos encontrados
@@ -125,7 +125,7 @@ Para poder conseguir la siguiente `flag` (la del usuario con máximos privilegio
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/14.png)
 
-Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con `Android`; esto tiene sentido ya que algunos dispositivos _Android_ tienen este pureto abierto para realizar procesos relacionados con el `Android Debug Bridge` o `ADB` por sus siglas en inglés. 
+Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con `Android`; esto tiene sentido ya que algunos dispositivos _Android_ tienen este puerto abierto para realizar procesos relacionados con el `Android Debug Bridge` o `ADB` por sus siglas en inglés. 
 
 Por lo que, lo que vamos a realizar es un _remote port forwarding_.
 
