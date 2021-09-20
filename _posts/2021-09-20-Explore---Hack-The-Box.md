@@ -13,7 +13,7 @@ Primeramente vamos a lanzar una _traza ICMP_ para saber si la máquina está act
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/2.png)
 
-Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del _TTL_, en este caso el valor del _TTL_ de la máquina es `63`, por lo que podemos intuir que estamos ante una máquina _Linux_. Recordemos que algunos de los valores referenciales son los siguientes:
+Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del _TTL_; en este caso el valor del _TTL_ de la máquina es `63`, por lo que podemos intuir que estamos ante una máquina _Linux_. Recordemos que algunos de los valores referenciales son los siguientes:
 
 | Sistema Operativo (OS) | TTL |
 |:-----------------------|:----|
@@ -25,7 +25,7 @@ Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `63` y no `64` como
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/3.png)
 
-Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo, para ello podemos realizar lo siguiente:
+Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
 ```
 nmap -p- --open -T5 -v -n 10.10.10.247 -oG allPorts
@@ -60,6 +60,7 @@ A continuación se explican los parámetros utilizados en el escaneo versiones y
 
 * sC - Scripts básicos de enumeración
 * sV - Versión y servicios que corren bajo los puertos encontrados
+* p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
 * oN - Exportar el escaneo en formato _Nmap_
 
 Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que nos encontramos frente a un teléfono móvil, y nuestra primera gran pista para la siguiente fase es el puerto `42135`.
@@ -68,11 +69,11 @@ Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que
 
 ### [](#header-3)Fase De Explotación
 
-Para explotar el servicio `ES File Explorer`, empezaremos buscando algun _exploit_ que se encuentre en _Exploit Database_.
+Para explotar el servicio `ES File Explorer`, empezaremos buscando algun _exploit_ que se encuentre en _Exploit Database_, para ello utilizaremos _SearchSploit_ para poder seguir trabajando desde nuestra terminal.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/5.png)
 
-En este caso _SearchSploit_ no mostró nada interesante, sin embargo, si revisamos manualmente en la página de _Exploit Database_, podemos encontrar un script que nos permite leer archivos alojados en el servicio de `ES File Explorer` de versión 4.1.9.7.4, por esta razón es importante no quedarnos conformes únicamente con el primer resultado.
+En este caso _SearchSploit_ no mostró nada interesante, sin embargo, si revisamos manualmente en la página de _Exploit Database_, podemos encontrar un script que nos permite leer archivos alojados en el servicio de `ES File Explorer` de versión `4.1.9.7.4`, por esta razón es importante no quedarnos conformes únicamente con el primer resultado.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/6.png)
 
@@ -86,7 +87,7 @@ git clone https://github.com/fs0c131y/ESFileExplorerOpenPortVuln
 
 Una vez lo tengamos descargado, podemos empezar a revisar que información se alojaba en el servicio `ES File Explorer`.
 
-Después de un rato estando listando el contenido almacenado en el teléfono móvil, encontramos entre las fotografías, una llamada `creds`, lo cual nos hace pensar a que se refiere a credenciales con las que posteriormente autenticarnos.
+Después de estar listando el contenido almacenado en el teléfono móvil, encontramos entre las fotografías, una llamada `creds`, lo cual nos hace pensar a que se refiere a credenciales con las que posteriormente autenticarnos.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/7.png)
 
@@ -116,6 +117,14 @@ echo **/*user.txt*
 
 Podemos ver que en efecto esta es la `flag` del usuario con bajos privilegios.
 
-Lo más común sería utilizar `find . -name user.txt` (y en este caso, redirigir todo el `stderr` o `Standard Error` hacia el `/dev/null`), sin embargo no conseguimos ningún resultado, por lo que resulta conveniente conocer otros métodos para realizar el mismo proceso.
+Lo más común sería utilizar `find . -name user.txt` (y en este caso, redirigir todo el `stderr` o `Standard Error` hacia el `/dev/null`), sin embargo no conseguimos ningún resultado en esta máquina, por lo que resulta conveniente conocer otros métodos para realizar el mismo proceso.
 
 ### [](#header-3)Escalada De Privilegios
+
+Para poder conseguir la siguiente `flag` (la del usuario con máximos privilegios), tenemos que percatarnos que la máquina tiene más puertos abiertos que los registrados con _Nmap_, a estos se los conoce como _puertos internos_.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/14.png)
+
+Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con `_Android_`; esto tiene sentido ya que algunos dispositivos _Android_ tienen este pureto abierto para realizar procesos relacionados con el `_Android Debug Bridge_` o `_ADB_` por sus siglas en inglés. 
+
+Por lo que, lo que vamos a realizar es un _remote port forwarding_ para poder 
