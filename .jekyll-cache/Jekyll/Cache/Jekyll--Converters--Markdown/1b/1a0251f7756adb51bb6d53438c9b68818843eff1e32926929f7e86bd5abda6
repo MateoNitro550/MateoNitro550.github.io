@@ -1,0 +1,118 @@
+I"� <p>En esta ocasión vamos a estar resolviendo la máquina <em>Explore</em> de <em>Hack The Box</em>. Es una máquina <em>Android</em> de nivel de dificultad fácil en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/1.png" alt="" /></p>
+
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
+
+<p>Primeramente vamos a lanzar una <em>traza ICMP</em> para saber si la máquina está activa.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/2.png" alt="" /></p>
+
+<p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>, en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">63</code>, por lo que podemos intuir que estamos ante una máquina <em>Linux</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Sistema Operativo (OS)</th>
+      <th style="text-align: left">TTL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Linux</td>
+      <td style="text-align: left">64</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Windows</td>
+      <td style="text-align: left">128</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Solaris</td>
+      <td style="text-align: left">254</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Si nos damos cuenta, en esta ocasión, el valor del <em>TTL</em> es <code class="language-plaintext highlighter-rouge">63</code> y no <code class="language-plaintext highlighter-rouge">64</code> como indica la tabla anterior, esto se debe a que en el entorno de máquinas de <em>Hack The Box</em>, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el <em>TTL</em> disminuye en una unidad.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/3.png" alt="" /></p>
+
+<p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo, para ello podemos realizar lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap -p- --open -T5 -v -n 10.10.10.247 -oG allPorts
+</code></pre></div></div>
+
+<p>Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.247 -oG allPorts
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de puertos con <em>Nmap</em>:</p>
+
+<ul>
+  <li>p - Escanea todo el rango de puertos (65535 en total)</li>
+  <li>open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)</li>
+  <li>T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos <code class="language-plaintext highlighter-rouge">White Hat</code></li>
+  <li>v - <em>Verbose</em>, reporta lo encontrado por consola</li>
+  <li>n - No aplicar <em>resolución DNS</em></li>
+  <li>sS - Escaneo <em>TCP SYN</em></li>
+  <li>min-rate - Emitir paquetes no más lentos que -valor- por segundo</li>
+  <li>vvv - Triple <em>verbose</em>, para obtener mayor información por consola</li>
+  <li>Pn - No aplicar <em>host discovery</em></li>
+  <li>oG - Exportar el escaneo en formato “<em>grepeable</em>”</li>
+</ul>
+
+<p>Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247 -oN targeted
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo versiones y servicios con <em>Nmap</em>:</p>
+
+<ul>
+  <li>sC - Scripts básicos de enumeración</li>
+  <li>sV - Versión y servicios que corren bajo los puertos encontrados</li>
+  <li>oN - Exportar el escaneo en formato <em>Nmap</em></li>
+</ul>
+
+<p>Basándonos en la información que nos reporta <em>Nmap</em>, podemos darnos cuenta que nos encontramos frente a un teléfono móvil, y nuestra primera gran pista para la siguiente fase es el puerto <code class="language-plaintext highlighter-rouge">42135</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/4.png" alt="" /></p>
+
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+
+<p>Para explotar el servicio <code class="language-plaintext highlighter-rouge">ES File Explorer</code>, empezaremos buscando algun <em>exploit</em> que se encuentre en <em>Exploit Database</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/5.png" alt="" /></p>
+
+<p>En este caso <em>SearchSploit</em> no mostró nada interesante, sin embargo, si revisamos manualmente en la página de <em>Exploit Database</em>, podemos encontrar un script que nos permite leer archivos alojados en el servicio de <code class="language-plaintext highlighter-rouge">ES File Explorer</code> de versión 4.1.9.7.4, por esta razón es importante no quedarnos conformes únicamente con el primer resultado.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/6.png" alt="" /></p>
+
+<p>Sin embargo, tampoco será este el script con el que trabajaremos; en esta ocasión estaremos utilizando un proyecto de <em>GitHub</em> del usuario <em>fs0c131y</em>, este se llama <a href="https://github.com/fs0c131y/ESFileExplorerOpenPortVuln">ESFileExplorerOpenPortVuln</a>.</p>
+
+<p>Para empezar a trabajar con este repositorio bastará con clonarlo en nuestra máquina.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/fs0c131y/ESFileExplorerOpenPortVuln
+</code></pre></div></div>
+
+<p>Una vez lo tengamos descargado, podemos empezar a revisar que información se alojaba en el servicio <code class="language-plaintext highlighter-rouge">ES File Explorer</code>.</p>
+
+<p>Después de un rato estando listando el contenido almacenado en el teléfono móvil, encontramos entre las fotografías, una llamada <code class="language-plaintext highlighter-rouge">creds</code>, lo cual nos hace pensar a que se refiere a credenciales con las que posteriormente autenticarnos.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/7.png" alt="" /></p>
+
+<p>Por lo que procedemos a descargar esta imagen.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/8.png" alt="" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/9.png" alt="" /></p>
+
+<p>Si recordamos, otro servicio que detectamos con <em>Nmap</em>, fue el servicio <em>SSH</em> en el puerto 2222.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/10.png" alt="" /></p>
+
+<p>Por lo que procederemos a autenticarnos con las credenciales encontradas:</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/11.png" alt="" /></p>
+:ET

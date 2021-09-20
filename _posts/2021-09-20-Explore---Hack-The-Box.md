@@ -96,4 +96,10 @@ Por lo que procedemos a descargar esta imagen.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/9.png)
 
+Si recordamos, otro servicio que detectamos con _Nmap_, fue el servicio _SSH_ en el puerto 2222.
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/10.png)
+
+Por lo que procederemos a autenticarnos con las credenciales encontradas:
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/11.png)
