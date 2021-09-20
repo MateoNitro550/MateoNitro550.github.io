@@ -1,5 +1,5 @@
 ---
-title: Local File Inclusion (LFI
+title: Local File Inclusion (LFI)
 published: true
 ---
 
