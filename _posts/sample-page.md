@@ -1,5 +1,5 @@
 ---
-title: Sample Page
+title: Sample Pag
 published: false
 ---
 
