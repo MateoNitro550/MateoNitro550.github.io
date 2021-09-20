@@ -72,7 +72,7 @@ Para explotar el servicio `ES File Explorer`, empezaremos buscando algun _exploi
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/5.png)
 
-En este caso _SearchSploit_ no mostró nada interesante, sin embargo, si revisamos manualmente en la página de _Exploit Database_, podemos encontrar un script que nos permite leer archivosalojados en `ES File Explorer` versión 4.1.9.7.4, por esta razón es importante no quedarnos conformes únicamente con el primer resultado.
+En este caso _SearchSploit_ no mostró nada interesante, sin embargo, si revisamos manualmente en la página de _Exploit Database_, podemos encontrar un script que nos permite leer archivos alojados en `ES File Explorer` versión 4.1.9.7.4, por esta razón es importante no quedarnos conformes únicamente con el primer resultado.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/6.png)
 
