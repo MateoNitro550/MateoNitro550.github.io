@@ -1,0 +1,24 @@
+I"�<p>En esta ocasión vamos a estar resolviendo la máquina <em>Explore</em> de <em>Hack The Box</em>. Es una máquina <em>Android</em> de nivel de dificultad fácil en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/1.png" alt="" /></p>
+
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase de Reconocimiento</h3>
+
+<p>Primeramente vamos a lanzar una <em>traza ICMP</em> para saber si la máquina está activa.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/2.png" alt="" /></p>
+
+<p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar frente a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>, en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">63</code>, por lo que podemos intuir que nos estamos enfrentado ante una máquina <em>Linux</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
+
+<hr />
+
+<p>| Sistema Operativo (OS) | TTL |
+|:———————–|:—-|
+| Linux                  | 64  |
+| Windows                | 128 |
+| Solaris                | 254 |</p>
+
+<p>Si nos damos cuenta, en esta ocasión, el valor del <em>TTL</em> es <code class="language-plaintext highlighter-rouge">63</code> y no <code class="language-plaintext highlighter-rouge">64</code> como nos indica la tabla anterior, esto se debe a que en el entorno de máquinas de <em>Hack The Box</em>, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario por lo que el <em>TTL</em> disminuye en una unidad.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/3.png" alt="" /></p>
+:ET
