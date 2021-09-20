@@ -13,7 +13,7 @@ Primeramente vamos a lanzar una _traza ICMP_ para saber si la máquina está act
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/2.png)
 
-Una vez comprobamos que la máquina está activa, pues nos devuelve una respuesta); podemos también determinar en base al valor del _TTL_, frente a que tipo de máquina nos estamos enfrentando, en este caso el valor del _TTL_ es `63`, por lo que podemos intuir que nos estamos enfrentado ante una máquina _Linux_. Recordemos que algunos de los valores referenciales son los siguientes:
+Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar en base al valor del _TTL_, frente a que tipo de máquina nos estamos enfrentando, en este caso el valor del _TTL_ es `63`, por lo que podemos intuir que nos estamos enfrentado ante una máquina _Linux_. Recordemos que algunos de los valores referenciales son los siguientes:
 
 | Sistema Operativo (OS) | TTL |
 |:-----------------------|:----|
