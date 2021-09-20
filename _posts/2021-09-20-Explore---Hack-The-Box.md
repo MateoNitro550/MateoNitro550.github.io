@@ -84,7 +84,16 @@ Para empezar a trabajar con este repositorio bastará con clonarlo en nuestra m�
 git clone https://github.com/fs0c131y/ESFileExplorerOpenPortVuln
 ```
 
-Una vez lo tengamos descargado, podemos empezar a revisar que alojaba el servicio `ES File Explorer`.
+Una vez lo tengamos descargado, podemos empezar a revisar que información se alojaba en el servicio `ES File Explorer`.
 
+Después de un rato estando listando el contenido almacenado en el teléfono móvil, encontramos entre las fotografías, una llamada `creds`, lo cual me hace pensar a que se refiere a credenciales.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/7.png)
+
+Por lo que procedemos a descargar esta imagen.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/8.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/9.png)
 
 
