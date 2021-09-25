@@ -102,4 +102,6 @@ Sin embargo, cuando intentamos subir nuestra _reverse shell_, nos aparecerá un 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/asse  ts/2021-09-27-Vulnversity---Try-Hack-Me/5.png)
 
-Por lo que tendremos que buscar una extensión que no nos de problema alguno, 
+Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizaramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar _Burpsuite_ para poder realizar una ataque de tipo _Sniper_.
+
+
