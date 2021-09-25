@@ -94,4 +94,8 @@ Como podemos observar, existen cinco direcciones a las cuales podemos acceder, s
 
 ### [](#header-3)Fase De Explotación
 
-...
+Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una _reverse shell_. Podemos descargar una [aquí](https://pentestmonkey.net/tools/web-shells/php-reverse-shell). Una vez la hayamos descargado, tenemos que modificar un valor, el de la _dirección IP_, y si queremos, el valor del _puerto_ también.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/4.png)
+
+
