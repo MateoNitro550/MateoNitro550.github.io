@@ -27,13 +27,13 @@ Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `63` y no `64` como
 
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
-```bash
+```
 nmap -p- --open -T5 -v -n 10.10.10.247 -oG allPorts
 ```
 
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
 
-```bash 
+``` 
 sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.247 -oG allPorts
 ```
 
@@ -52,7 +52,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 
 Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.
 
-```bash  
+```  
 nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247 -oN targeted
 ```
 
@@ -107,7 +107,7 @@ Por lo que procederemos a autenticarnos con las credenciales encontradas:
 
 Una vez dentro de la máquina, procederemos a buscar la primera `flag`. Por lo que buscaremos el archivo `user.txt` dentro de todo el sistema.
 
-```bash
+```
 echo **/*user.txt*
 ```
 
@@ -129,7 +129,7 @@ Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios pro
 
 Por lo que, lo que vamos a realizar es un _remote port forwarding_.
 
-```bash
+```
 ssh -L 5555:localhost:5555 kristi@10.10.10.247 -p 2222
 ``` 
 
