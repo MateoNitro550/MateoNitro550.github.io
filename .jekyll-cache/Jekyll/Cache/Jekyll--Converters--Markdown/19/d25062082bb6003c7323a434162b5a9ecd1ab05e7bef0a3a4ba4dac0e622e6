@@ -1,4 +1,4 @@
-I"�0<p>En esta ocasión vamos a estar resolviendo la máquina <em>Explore</em> de <em>Hack The Box</em>. Es una máquina <em>Android</em> de nivel de dificultad fácil en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
+I"�0<p>En esta ocasión vamos a estar resolviendo la máquina <em>Explore</em> de <em>Hack The Box</em>. Es una máquina <em>Android</em> de nivel de dificultad fácil en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/1.png" alt="" /></p>
 
@@ -67,7 +67,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247 -oN targeted
 </code></pre></div></div>
 
-<p>A continuación se explican los parámetros utilizados en el escaneo versiones y servicios con <em>Nmap</em>:</p>
+<p>A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con <em>Nmap</em>:</p>
 
 <ul>
   <li>sC - Scripts básicos de enumeración</li>
@@ -136,7 +136,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/14.png" alt="" /></p>
 
-<p>Si nos percatamos, la máquina utiliza el puerto <code class="language-plaintext highlighter-rouge">5555</code> para realizar varios procesos relacionados con <code class="language-plaintext highlighter-rouge">Android</code>; esto tiene sentido ya que algunos dispositivos <em>Android</em> tienen este pureto abierto para realizar procesos relacionados con el <code class="language-plaintext highlighter-rouge">Android Debug Bridge</code> o <code class="language-plaintext highlighter-rouge">ADB</code> por sus siglas en inglés.</p>
+<p>Si nos percatamos, la máquina utiliza el puerto <code class="language-plaintext highlighter-rouge">5555</code> para realizar varios procesos relacionados con <code class="language-plaintext highlighter-rouge">Android</code>; esto tiene sentido ya que algunos dispositivos <em>Android</em> tienen este puerto abierto para realizar procesos relacionados con el <code class="language-plaintext highlighter-rouge">Android Debug Bridge</code> o <code class="language-plaintext highlighter-rouge">ADB</code> por sus siglas en inglés.</p>
 
 <p>Por lo que, lo que vamos a realizar es un <em>remote port forwarding</em>.</p>
 
