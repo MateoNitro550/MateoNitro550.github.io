@@ -21,7 +21,7 @@ man nmap
 nmap --help
 ```
 
-Entre las preguntas que nos realiza la plataforma, en esta primera fase se encuentra:
+Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra:
 
 * ¿Cuántos puertos abiertos existen?
 * ¿Qué sistema operativo tiene la máquina ante la que nos estamos enfrentando?
@@ -77,10 +77,14 @@ Para responder a estas dos preguntas bastará con haber leído el `manual` de _N
 
 Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el _fuzzing_; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web.
 
-_Try Hack Me_ nos recomienda utilizar _GoBuster_, sin embargo, prefiero personalmente el uso de _Wfuzz_, en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente:
+_Try Hack Me_ nos recomienda utilizar _GoBuster_, sin embargo, prefiero personalmente el uso de _Wfuzz_; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente:
   
 ```
 sudo apt install wfuzz
 ```
+
+Para pasar a la fase de explotación, lo que nos solicita la plataforma es encontrar una ruta potencial de la página web, que nos permita una subida de archivos, para lo cual debemos de _fuzzear_ la página web, para ello realizaremos lo siguiente:
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/2.png)
 
 
