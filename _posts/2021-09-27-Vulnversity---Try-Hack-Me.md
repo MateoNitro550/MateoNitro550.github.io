@@ -68,7 +68,7 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 * p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
 * oN - Exportar el escaneo en formato _Nmap_
 
-Con estdos dos escaneos bastará para responder a las preguntas planteadas con anterioridad, sin embargo nos quedan dos preguntas más, las cuales son:
+Con estos dos escaneos bastará para responder a las preguntas planteadas con anterioridad, sin embargo nos quedan dos preguntas más, las cuales son:
 
 * ¿Cuántos puertos se escanearán si utilizamos el parámetro -p-400?
 * Utilizando el parámetro -n, ¿qué no se está resolviendo?
