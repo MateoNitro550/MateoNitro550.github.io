@@ -100,7 +100,7 @@ Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo pr
 
 Sin embargo, cuando intentamos subir nuestra _reverse shell_, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/asse  ts/2021-09-27-Vulnversity---Try-Hack-Me/5.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/5.png)
 
 Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizaramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar _Burpsuite_ para poder realizar una ataque de tipo _Sniper_.
 
