@@ -1,4 +1,4 @@
-I"<p>El día de hoy vamos a resolver la máquina <em>Vulnversity</em> de <em>Try Hack Me</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.</p>
+I"I(<p>El día de hoy vamos a resolver la máquina <em>Vulnversity</em> de <em>Try Hack Me</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/1.png" alt="" /></p>
 
@@ -83,5 +83,52 @@
 <p>Para pasar a la fase de explotación, lo que nos solicita la plataforma es encontrar una ruta potencial de la página web, que nos permita una subida de archivos, para lo cual debemos de <em>fuzzear</em> la página web, para ello realizaremos lo siguiente:</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/2.png" alt="" /></p>
+
+<p>Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección <code class="language-plaintext highlighter-rouge">internal</code>, ya que en <em>images</em>, <em>css</em>, <em>js</em> y <em>fonts</em> parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección <code class="language-plaintext highlighter-rouge">internal</code>, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una <em>reverse shell</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/3.png" alt="" /></p>
+
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+
+<p>Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una <em>reverse shell</em>; podemos descargar una <a href="https://pentestmonkey.net/tools/web-shells/php-reverse-shell">aquí</a>. Una vez la hayamos descargado, tenemos que modificar un valor, el de la <em>dirección IP</em>, y si queremos, el valor del <em>puerto</em> también.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/4.png" alt="" /></p>
+
+<p>Sin embargo, cuando intentamos subir nuestra <em>reverse shell</em>, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/5.png" alt="" /></p>
+
+<p>Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizaramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar <em>Burpsuite</em> para poder realizar una ataque de tipo <em>Sniper</em>.</p>
+
+<p>Para ello vamos a empezar por crear un pequeño diccionario con las extensiones más comunes de <em>PHP</em>:</p>
+
+<ul>
+  <li>.php</li>
+  <li>.phtml</li>
+  <li>.php3</li>
+  <li>.php4</li>
+  <li>.php5</li>
+  <li>.php7</li>
+  <li>.phps</li>
+  <li>.php-s</li>
+  <li>.pht</li>
+  <li>.phar</li>
+</ul>
+
+<p>Posterior a eso, vamos a volver a subir nuestra <em>reverse shell</em>, pero ahora tramitando todas las peticiones a través de <em>Burpsuite</em>; posterior a ello presionaremos <code class="language-plaintext highlighter-rouge">Ctrl + I</code> para enviar esta petición al <em>Intruder</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/6.png" alt="" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/7.png" alt="" /></p>
+
+<p>Ahora, en el apartado <em>Positions</em>, en el tipo de ataque elegiremos el tipo de ataque <em>Sniper</em>, después seleccionaremos la opción <code class="language-plaintext highlighter-rouge">Clear </code>, para posteriormente seleccionar con nuestro cursor la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción <code class="language-plaintext highlighter-rouge">Add </code>. Se vería algo así:</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/8.png" alt="" /></p>
+
+<p>En el apartado <em>Payloads</em>, en la opción <em>Sample List</em> cargaremos el diccionario que hemos creado/</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/9.png" alt="" /></p>
+
+<p>Finalmente, presionaremos el botón de iniciar ataque.</p>
 
 :ET
