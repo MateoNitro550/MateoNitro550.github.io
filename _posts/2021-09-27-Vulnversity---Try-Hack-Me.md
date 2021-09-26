@@ -104,7 +104,15 @@ Sin embargo, cuando intentamos subir nuestra _reverse shell_, nos aparecerá un 
 
 Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizaramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar _Burpsuite_ para poder realizar una ataque de tipo _Sniper_.
 
-Para ello vamos a empezar por crear un pequeño diccionario con las extensiones más comunes de _PHP_:
+Para ello, vamos a empezar por volver a subir nuestra _reverse shell_, pero ahora tramitando todas las peticiones a través de _Burpsuite_.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/6.png)
+
+Posterior a ello presionaremos `Ctrl + I` para enviar esta petición al _Intruder_.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/7.png)
+
+crear un pequeño diccionario con las extensiones más comunes de _PHP_:
 
 * .php
 * .phtml
@@ -117,11 +125,8 @@ Para ello vamos a empezar por crear un pequeño diccionario con las extensiones 
 * .pht
 * .phar
 
-Posterior a eso, vamos a volver a subir nuestra _reverse shell_, pero ahora tramitando todas las peticiones a través de _Burpsuite_; posterior a ello presionaremos `Ctrl + I` para enviar esta petición al _Intruder_.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/6.png)
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/7.png)
 
 Ahora, en el apartado _Positions_, en el tipo de ataque elegiremos el tipo de ataque _Sniper_, después seleccionaremos la opción `Clear `, para posteriormente seleccionar con nuestro cursor la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción `Add `. Se vería algo así:
 
