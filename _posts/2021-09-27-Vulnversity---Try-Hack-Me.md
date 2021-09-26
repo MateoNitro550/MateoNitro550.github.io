@@ -112,7 +112,11 @@ Posterior a ello presionaremos `Ctrl + I` para enviar esta petición al _Intrude
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/7.png)
 
-crear un pequeño diccionario con las extensiones más comunes de _PHP_:
+Ahora, en el apartado _Positions_, en el tipo de ataque elegiremos la opción de _Sniper_, después seleccionaremos la opción `Clear §`, para posteriormente con nuestro cursor seleccionar la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción `Add §`; esto se vería algo así:
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/8.png)
+
+Posteriormente, procederemos a crear un pequeño diccionario con las extensiones más comunes de _PHP_:
 
 * .php
 * .phtml
@@ -125,18 +129,12 @@ crear un pequeño diccionario con las extensiones más comunes de _PHP_:
 * .pht
 * .phar
 
-
-
-
-Ahora, en el apartado _Positions_, en el tipo de ataque elegiremos el tipo de ataque _Sniper_, después seleccionaremos la opción `Clear `, para posteriormente seleccionar con nuestro cursor la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción `Add `. Se vería algo así:
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/8.png)
-
-En el apartado _Payloads_, en la opción _Sample List_ cargaremos el diccionario que hemos creado/
+Una vez, hemos creado nuestro diccionario, en el apartado _Payloads_, en la opción _Sample List_ cargaremos este diccionario; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos. 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/9.png)
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/10.png)
+
 Finalmente, presionaremos el botón de iniciar ataque.
 
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/10.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/11.png)
