@@ -1,15 +1,15 @@
 ---
-title: Vulnversity - Try Hack Me
+title: Vulnversity - TryHackMe
 published: true
 ---
 
-El día de hoy vamos a resolver la máquina _Vulnversity_ de _Try Hack Me_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.
+El día de hoy vamos a resolver la máquina _Vulnversity_ de _TryHackMe_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/1.png)
 
 ### [](#header-3)Fase De Reconocimiento
 
-Primeramente vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Es importante aclarar que así como menciona la plataforma de _Try Hack Me_, existen diversos [cheatsheets](https://www.stationx.net/nmap-cheat-sheet/) que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posiblidades que nos ofrece la herramienta.
+Primeramente vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Es importante aclarar que así como menciona la plataforma de _TryHackMe_, existen diversos [cheatsheets](https://www.stationx.net/nmap-cheat-sheet/) que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posiblidades que nos ofrece la herramienta.
 
 No obstante, recordemos que varias herramientas por defecto tienen incluidas un `manual` o con un comando `--help`.
 
@@ -77,7 +77,7 @@ Para responder a estas dos preguntas bastará con haber leído el `manual` de _N
 
 Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el _fuzzing_; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web.
 
-_Try Hack Me_ nos recomienda utilizar _GoBuster_, sin embargo, prefiero personalmente el uso de _Wfuzz_; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente:
+_TryHackMe_ nos recomienda utilizar _GoBuster_, sin embargo, prefiero personalmente el uso de _Wfuzz_; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente:
   
 ```
 sudo apt install wfuzz
@@ -143,7 +143,7 @@ Con esta información, ya sabemos que tipo de archivo es válido para subir en l
 
 Una vez el archivo está subido, podemos ponernos en escucha por el puerto que hayamos establecido en nuestra _reverse shell_ a través de _Netcat_. A partir de aquí podemos hacer dos cosas:
 
-Podemos navegar a la dirección en la que está subido nuestro archivo (tal como lo indica la plataforma de _Try Hack Me_), es decir, entrar a:
+Podemos navegar a la dirección en la que está subido nuestro archivo (tal como lo indica la plataforma de _TryHackMe_), es decir, entrar a:
 
 ```
 http://<dirección IP>:3333/internal/uploads/nombreDeLaReverseShell.phtml
@@ -210,7 +210,7 @@ find . -name user.txt 2> /dev/null
 
 ### [](#header-3)Escalada De Privilegios
 
-Para realizar esta última fase, la misma plataforma de _Try Hack Me_ nos sugiere que nos aprovechemos de algún binario con permisos mal asignados, concretamente permisos `SUID`. Para listar todos aquellos binarios con permisos `SUID` asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:
+Para realizar esta última fase, la misma plataforma de _TryHackMe_ nos sugiere que nos aprovechemos de algún binario con permisos mal asignados, concretamente permisos `SUID`. Para listar todos aquellos binarios con permisos `SUID` asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:
 
 ```
 find / -perm -4000 -type f -exec ls -la {} 2>/dev/null \;
