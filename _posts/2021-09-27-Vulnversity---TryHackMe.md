@@ -11,7 +11,7 @@ El día de hoy vamos a resolver la máquina _Vulnversity_ de _TryHackMe_. Esta e
 
 Primeramente vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Es importante aclarar que así como menciona la plataforma de _TryHackMe_, existen diversos [cheatsheets](https://www.stationx.net/nmap-cheat-sheet/) que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posiblidades que nos ofrece la herramienta.
 
-No obstante, recordemos que varias herramientas por defecto tienen incluidas un `manual` o con un comando `--help`.
+No obstante, recordemos que varias herramientas por defecto tienen incluidas un `manual` o vienen con un comando `--help`.
 
 ```
 man nmap
@@ -85,16 +85,28 @@ sudo apt install wfuzz
 
 Para pasar a la fase de explotación, lo que nos solicita la plataforma es encontrar una ruta potencial de la página web, que nos permita una subida de archivos, para lo cual debemos de _fuzzear_ la página web, para ello realizaremos lo siguiente:
 
+```
+wfuzz -c -L -t 400 --hc 404 --hh 33014 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://dirección IP:3333/FUZZ 2> /dev/null
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/2.png)
 
-Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección `internal`, ya que en _images_, _css_, _js_ y _fonts_ parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección `internal`, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una _reverse shell_.
+A continuación se explican los parámetros utilizados en el _fuzzeo_ del servidor web:
 
+* c - 
+* L - 
+* t - 
+* hc - 
+* hh - 
+* w - 
+
+Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección `internal`, ya que en _images_, _css_, _js_ y _fonts_ parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección `internal`, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una _reverse shell_.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/3.png)
 
 ### [](#header-3)Fase De Explotación
 
-Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una _reverse shell_; podemos descargar una [aquí](https://pentestmonkey.net/tools/web-shells/php-reverse-shell). Una vez la hayamos descargado, tenemos que modificar un valor, el de la _dirección IP_, y si queremos, el valor del _puerto_ también.
+Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una _reverse shell_; podemos descargar una [aquí](https://pentestmonkey.net/tools/web-shells/php-reverse-shell). Una vez la hayamos descargado, tenemos que modificar el valor de `ip` (colocamos la nuestra), y si queremos, podemos también modificar el valor del _puerto_, aunque esto es completamente opcional.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/4.png)
 
@@ -102,9 +114,9 @@ Sin embargo, cuando intentamos subir nuestra _reverse shell_, nos aparecerá un 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/5.png)
 
-Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizaramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar _Burpsuite_ para poder realizar una ataque de tipo _Sniper_.
+Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizaramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar _Burp Suite_ para poder realizar una ataque de tipo _Sniper_.
 
-Para ello, vamos a empezar por volver a subir nuestra _reverse shell_, pero ahora tramitando todas las peticiones a través de _Burpsuite_.
+Para ello, vamos a empezar por volver a subir nuestra _reverse shell_, pero ahora tramitando todas las peticiones a través de _Burp Suite_.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/6.png)
 
@@ -112,7 +124,7 @@ Posterior a ello presionaremos `Ctrl + I` para enviar esta petición al _Intrude
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/7.png)
 
-Ahora, en el apartado _Positions_, en el tipo de ataque elegiremos la opción de _Sniper_, después seleccionaremos la opción `Clear §`, para posteriormente con nuestro cursor seleccionar la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción `Add §`; esto se vería algo así:
+Ahora, en el apartado _Positions_, en el tipo de ataque elegiremos la opción de _Sniper_, después seleccionaremos la opción `Clear §`, para posteriormente con nuestro cursor `resaltaremos` la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción `Add §`; esto se vería algo así:
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/8.png)
 
