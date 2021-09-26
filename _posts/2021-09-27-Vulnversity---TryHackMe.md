@@ -9,7 +9,7 @@ El día de hoy vamos a resolver la máquina _Vulnversity_ de _TryHackMe_. Esta e
 
 ### [](#header-3)Fase De Reconocimiento
 
-Primeramente vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Es importante aclarar que así como menciona la plataforma de _TryHackMe_, existen diversos [cheatsheets](https://www.stationx.net/nmap-cheat-sheet/) que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posiblidades que nos ofrece la herramienta.
+Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Es importante aclarar que así como menciona la plataforma de _TryHackMe_, existen diversos [cheatsheets](https://www.stationx.net/nmap-cheat-sheet/) que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posiblidades que nos ofrece la herramienta.
 
 No obstante, recordemos que varias herramientas por defecto tienen incluidas un `manual` o vienen con un comando `--help`.
 
@@ -50,7 +50,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 * v - _Verbose_, reporta lo encontrado por consola
 * n - No aplicar _resolución DNS_
 * sS - Escaneo _TCP SYN_
-* min-rate - Emitir paquetes no más lentos que -valor- por segundo
+* min-rate - Emitir paquetes no más lentos que _valor_ por segundo
 * vvv - Triple _verbose_, para obtener mayor información por consola
 * Pn - No aplicar _host discovery_
 * oG - Exportar el escaneo en formato "_grepeable_"
@@ -73,11 +73,11 @@ Con estos dos escaneos bastará para responder a las preguntas planteadas con an
 * ¿Cuántos puertos se escanearán si utilizamos el parámetro -p-400?
 * Utilizando el parámetro -n, ¿qué no se está resolviendo?
 
-Para responder a estas dos preguntas bastará con haber leído el `manual` de _Nmap_, o bien, haber utilizado su parámetro `--help`. En este caso, si colocamos un número después de `-p-`, se escaneará tantos puertos hayamos indicado; y en el caso del parámetro `-n`, no se aplicará resolución DNS.
+Para responder a estas dos preguntas bastará con haber leído el `manual` de _Nmap_, haber utilizado su parámetro `--help`, o bien, haber prestado atención a los parámetros utilizados durante el escaneo. En este caso, si colocamos un número después de `-p-`, se escaneará tantos puertos hayamos indicado; y en el caso del parámetro `-n`, no se aplicará resolución DNS.
 
-Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el _fuzzing_; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web.
+Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el `fuzzing`; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web.
 
-_TryHackMe_ nos recomienda utilizar _GoBuster_, sin embargo, prefiero personalmente el uso de _Wfuzz_; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente:
+_TryHackMe_ nos recomienda utilizar `GoBuster`, sin embargo, personalmente prefiero el uso de `Wfuzz`; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente:
   
 ```
 sudo apt install wfuzz
@@ -89,8 +89,6 @@ Para pasar a la fase de explotación, lo que nos solicita la plataforma es encon
 wfuzz -c -L -t 400 --hc 404 --hh 33014 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://dirección IP:3333/FUZZ 2> /dev/null
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/2.png)
-
 A continuación se explican los parámetros utilizados en el _fuzzeo_ del servidor web:
 
 * c - 
@@ -100,31 +98,33 @@ A continuación se explican los parámetros utilizados en el _fuzzeo_ del servid
 * hh - 
 * w - 
 
-Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección `internal`, ya que en _images_, _css_, _js_ y _fonts_ parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección `internal`, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una _reverse shell_.
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/2.png)
+
+Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección `internal`, ya que en _images_, _css_, _js_ y _fonts_ parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección `internal`, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una `reverse shell`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/3.png)
 
 ### [](#header-3)Fase De Explotación
 
-Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una _reverse shell_; podemos descargar una [aquí](https://pentestmonkey.net/tools/web-shells/php-reverse-shell). Una vez la hayamos descargado, tenemos que modificar el valor de `ip` (colocamos la nuestra), y si queremos, podemos también modificar el valor del _puerto_, aunque esto es completamente opcional.
+Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una `reverse shell`; podemos descargar una [aquí](https://pentestmonkey.net/tools/web-shells/php-reverse-shell). Una vez la hayamos descargado, tenemos que modificar el valor de la `ip` (colocamos la nuestra), y si queremos, podemos también modificar el valor del _puerto_, aunque esto es completamente opcional.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/4.png)
 
-Sin embargo, cuando intentamos subir nuestra _reverse shell_, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida.
+Sin embargo, cuando intentamos subir nuestra `reverse shell`, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/5.png)
 
-Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizaramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar _Burp Suite_ para poder realizar una ataque de tipo _Sniper_.
+Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizaramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar `Burp Suite` para poder realizar una ataque de tipo `Sniper`.
 
-Para ello, vamos a empezar por volver a subir nuestra _reverse shell_, pero ahora tramitando todas las peticiones a través de _Burp Suite_.
+Para ello, vamos a empezar por volver a subir nuestra `reverse shell`, pero ahora tramitando todas las peticiones a través de `Burp Suite`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/6.png)
 
-Posterior a ello presionaremos `Ctrl + I` para enviar esta petición al _Intruder_.
+Posterior a ello presionaremos `Ctrl + I` para enviar esta petición al `Intruder`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/7.png)
 
-Ahora, en el apartado _Positions_, en el tipo de ataque elegiremos la opción de _Sniper_, después seleccionaremos la opción `Clear §`, para posteriormente con nuestro cursor `resaltaremos` la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción `Add §`; esto se vería algo así:
+Ahora, en el apartado _Positions_, en el tipo de ataque elegiremos la opción de `Sniper`, después seleccionaremos la opción `Clear §`, para posteriormente con nuestro cursor `resaltar` la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción `Add §`; esto se vería algo así:
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/8.png)
 
@@ -141,26 +141,26 @@ Posteriormente, procederemos a crear un pequeño diccionario con las extensiones
 * .pht
 * .phar
 
-Una vez, hemos creado nuestro diccionario, en el apartado _Payloads_, en la opción _Sample List_ cargaremos este diccionario; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos. 
+Una vez, hemos creado nuestro diccionario, en el apartado _Payloads_, en la opción _Sample List_ cargaremos el diccionario que hemos creado; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos. 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/9.png)
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/10.png)
 
-Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos todas las opciones que ha probado. Podríamos revisar una a una, pero si nos percatamos, aunque todas tengan el mismo código de estado, la longitud no es la misma para una de las extensiones, esta es `.phtml`; si quisieramos estar completamente seguros, podríamos revisar el _render_ de la respuesta, el cual nos devuelve un `success`.
+Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado `200`, la _longitud_ de estas no es la misma para para todas las extensiones, la única extensión cuya _longitud_ varía es `.phtml`; si quisieramos estar completamente seguros, podríamos revisar el `render` de la respuesta, el cual nos devuelve un `success`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/11.png)
 
 Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta `internal`, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez.
 
-Una vez el archivo está subido, podemos ponernos en escucha por el puerto que hayamos establecido en nuestra _reverse shell_ a través de _Netcat_. A partir de aquí podemos hacer dos cosas:
+Una vez el archivo está subido, podemos ponernos en escucha por el puerto que hayamos establecido en nuestra `reverse shell` a través de `Netcat`. A partir de aquí podemos hacer dos cosas:
 
 Podemos navegar a la dirección en la que está subido nuestro archivo (tal como lo indica la plataforma de _TryHackMe_), es decir, entrar a:
 
 ```
 http://<dirección IP>:3333/internal/uploads/nombreDeLaReverseShell.phtml
 ```
-O por otra parte, y sin dejar la consola, utilizar el comando _curl_:
+O por otra parte, y sin dejar la consola, utilizar el comando `curl`:
 
 ```
 curl http://<dirección IP>:3333/internal/uploads/nombreDeLaReverseShell.phtml
@@ -170,11 +170,13 @@ Ambas opciones, nos conseguirán una _consola_ dentro de la máquina víctima.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/12.png)
 
-Es importante que la _consola_ que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisieramos limpiar la consola utilizando `Ctrl + L`, no pasará nada, así mismo si quisieramos desplazarnos utilizando las flechas del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la `TTY`, para lo cual haremos lo siguiente:
+Es importante aclarar que la _consola_ que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisieramos limpiar la _consola_ utilizando `Ctrl + L`, no pasará nada, así mismo si quisieramos desplazarnos utilizando las `flechas` del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la `TTY`, para lo cual haremos lo siguiente:
 
 ```
 script /dev/null -c bash
+
 Ctrl + Z
+
 stty raw -echo; fg
 reset
 xterm
@@ -185,7 +187,7 @@ export SHELL=bash
 stty rows <valor> columns <valor>
 ```
 
-Los valores que colocaremos en el último comando, dependerán del tamaño de nuestra pantalla, por lo cual en una nueva terminal de nuestra máquina escribiremos lo siguiente:
+Los valores que colocaremos en `<valor>` en el último comando, dependerán del tamaño de nuestra pantalla, por lo cual en una nueva terminal de nuestra máquina escribiremos lo siguiente:
 
 ```
 stty -a
@@ -193,22 +195,20 @@ stty -a
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/13.png)
 
-Los valores que nos aparezcan serán los que colocaremos en el último comando del tratamiento de la `TTY`.
-
-Continuando con las preguntas de la plataforma, nos pregunta ahora por el usuario que maneja el servidor web, así como su respectiva `flag`. Para realizar esto podríamos dirigirnos al directorio `/home`, y listar los directorios que existen.
+Continuando con las preguntas de la plataforma, se nos pide averigurar por el usuario que maneja el servidor web, así como su respectiva `flag`. Para realizar esto podríamos dirigirnos al directorio `/home`, y listar los directorios que existen.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/14.png)
 
 Aunque también podriamos filtrar del archivo `/etc/passwd`, a través de expresiones regulares, todos aquellos usuario que tengan una _shell_, sea esta una:
 
 * bash
-* zsh
-* sh
 * csh
 * ksh
+* sh
 * tcsh
+* zsh
 
-Esto sería bastante fácil, ya que todas, o casi todas las _shells_ terminan en `sh`, de modo que:
+Esto sería bastante fácil, ya que todas, o casi todas las _shells_ terminan en `sh`, de modo que con ambas formas podemos determinar que usuarios existen a nivel de sistema.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/15.png)
 
@@ -222,7 +222,9 @@ find . -name user.txt 2> /dev/null
 
 ### [](#header-3)Escalada De Privilegios
 
-Para realizar esta última fase, la misma plataforma de _TryHackMe_ nos sugiere que nos aprovechemos de algún binario con permisos mal asignados, concretamente permisos `SUID`. Para listar todos aquellos binarios con permisos `SUID` asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:
+Para realizar esta última fase, la misma plataforma de _TryHackMe_ nos sugiere aprovecharnos de algún binario con permisos mal asignados, concretamente permisos `SUID`. 
+
+Para listar todos aquellos binarios con permisos `SUID` asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:
 
 ```
 find / -perm -4000 -type f -exec ls -la {} 2>/dev/null \;
@@ -234,13 +236,15 @@ find / -uid 0 -perm -4000 -type f 2>/dev/null
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/17.png)
 
-Para aprovecharnos de algún binario, la mejor forma es recurrir a [GTFOBins](https://gtfobins.github.io/), esta página nos explica como aprovecharnos de binarios con _capabilities_ mal asignadas, binarios que se pueden ejectuar como _root_, y en este caso binarios con permisos _SUID_ mal asignados.
+La mejor forma para abusar de algún binario, es recurrir a [GTFOBins](https://gtfobins.github.io/), esta página nos enseña como explotar binarios con _capabilities_ mal asignadas, binarios que se pueden ejectuar como _root_, y en este caso, binarios con permisos `SUID` mal asignados.
 
-En este caso, el binario más extraño que nos encontramos es `/bin/systemctl`, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscar en `GTFOBins`.
+El binario más extraño que nos encontramos es `/bin/systemctl`, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscarlo en [GTFOBins](https://gtfobins.github.io/).
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/18.png)
 
-Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos, para conseguir la última `flag` haremos lo siguiente:
+Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos
+
+Para conseguir la última `flag` haremos lo siguiente:
 
 ```
 TF=$(mktemp).service
@@ -253,9 +257,15 @@ WantedBy=multi-user.target' > $TF
 /bin/systemctl enable --now $TF
 ```
 
-Lo único que modificamos de la información que nos provee `GTFOBins`, fue el código a ejecutar, en este caso, asignar un permiso `SUID` a la `/bin/bash`, para a través del parámetro `-p`, ejecutar el binario `/bin/bash` manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario _Root_. Otro aspecto que se modificó fue utilizar el binario `/bin/systemctl` desde su ruta absoluta, mas no de su ruta relativa.
+Si nos percatamos, lo único que modificamos de la información que nos provee `GTFOBins`, fue el código a ejecutar, en este caso, estamos asignando un permiso `SUID` a la `/bin/bash`, para posteriormente, a través del parámetro `-p`, ejecutar el binario `/bin/bash` manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario _root_. Otro aspecto que se modificó, fue utilizar el binario `/bin/systemctl` desde su ruta absoluta, mas no de su ruta relativa.
 
-Una vez siendo _Root_, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así:
+Una vez hemos abusado del binario `/bin/systemctl`, haremos lo siguiente:
+
+```
+/bin/bash -p
+```
+
+Una vez siendo _root_, podemos pasar a buscar su respectiva `flag`, esto lo podemos hacer así:
 
 ```
 find . -name root.txt
