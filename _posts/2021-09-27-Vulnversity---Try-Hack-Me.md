@@ -135,6 +135,10 @@ Una vez, hemos creado nuestro diccionario, en el apartado _Payloads_, en la opci
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/10.png)
 
-Finalmente, presionaremos el botón de iniciar ataque.
+Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos todas las opciones que ha probado. Podríamos revisar una a una, pero si nos percatamos, aunque todas tengan el mismo código de estado, la longitud no es la misma para una de las extensiones, esta es `.phtml`; si quisieramos estar completamente seguros, podríamos revisar el _render_ de la respuesta, el cual nos devuelve un `success`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/11.png)
+
+Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta `internal`, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez.
+
+
