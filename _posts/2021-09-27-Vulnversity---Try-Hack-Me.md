@@ -134,4 +134,4 @@ En el apartado _Payloads_, en la opción _Sample List_ cargaremos el diccionario
 Finalmente, presionaremos el botón de iniciar ataque.
 
 
-
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/10.png)
