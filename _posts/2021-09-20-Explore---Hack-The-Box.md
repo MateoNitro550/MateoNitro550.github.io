@@ -11,6 +11,10 @@ En esta ocasión vamos a estar resolviendo la máquina _Explore_ de _Hack The Bo
 
 Primeramente vamos a lanzar una _traza ICMP_ para saber si la máquina está activa.
 
+```
+ping -c 1 10.10.10.247
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/2.png)
 
 Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del _TTL_; en este caso el valor del _TTL_ de la máquina es `63`, por lo que podemos intuir que estamos ante una máquina _Linux_. Recordemos que algunos de los valores referenciales son los siguientes:
@@ -22,6 +26,10 @@ Una vez comprobamos que la máquina está activa (pues nos devuelve una respuest
 | Solaris                | 254 | 
 
 Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `63` y no `64` como indica la tabla anterior, esto se debe a que en el entorno de máquinas de _Hack The Box_, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el _TTL_ disminuye en una unidad.
+
+```
+ping -c 1 10.10.10.247 -R                               
+``` 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/3.png)
 
@@ -71,6 +79,10 @@ Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que
 
 Para explotar el servicio `ES File Explorer`, empezaremos buscando algun _exploit_ que se encuentre en _Exploit Database_, para ello utilizaremos _SearchSploit_ para poder seguir trabajando desde nuestra terminal.
 
+```
+searchsploit ES File Explorer                               
+``` 
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/5.png)
 
 En este caso _SearchSploit_ no mostró nada interesante, sin embargo, si revisamos manualmente en la página de _Exploit Database_, podemos encontrar un script que nos permite leer archivos alojados en el servicio de `ES File Explorer` de versión `4.1.9.7.4`, por esta razón es importante no quedarnos conformes únicamente con el primer resultado.
@@ -89,9 +101,17 @@ Una vez lo tengamos descargado, podemos empezar a revisar que información se al
 
 Después de estar listando el contenido almacenado en el teléfono móvil, encontramos entre las fotografías, una llamada `creds`, lo cual nos hace pensar a que se refiere a credenciales con las que posteriormente autenticarnos.
 
+```
+python3 poc.py --cmd listPics --ip 10.10.10.247                               
+``` 
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/7.png)
 
 Por lo que procedemos a descargar esta imagen.
+
+```  
+python3 poc.py --get-file /storage/emulated/0/DCIM/creds.jpg --ip 10.10.10.247 
+``` 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/8.png)
 
@@ -102,6 +122,10 @@ Si recordamos, otro servicio que detectamos con _Nmap_, fue el servicio _SSH_ en
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/10.png)
 
 Por lo que procederemos a autenticarnos con las credenciales encontradas:
+
+```  
+ssh kristi@10.10.10.247 -p 2222
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/11.png)
 
@@ -123,22 +147,31 @@ Lo más común sería utilizar `find . -name user.txt` (y en este caso, redirigi
 
 Para poder conseguir la siguiente `flag` (la del usuario con máximos privilegios), tenemos que percatarnos que la máquina tiene más puertos abiertos que los registrados con _Nmap_, a estos se los conoce como _puertos internos_.
 
+```  
+netstat -nlpt
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/14.png)
 
 Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con `Android`; esto tiene sentido ya que algunos dispositivos _Android_ tienen este puerto abierto para realizar procesos relacionados con el `Android Debug Bridge` o `ADB` por sus siglas en inglés. 
 
-Por lo que, lo que vamos a realizar es un _remote port forwarding_.
-
-```
-ssh -L 5555:localhost:5555 kristi@10.10.10.247 -p 2222
-``` 
-
-Para posteriormente, con el servicio `ADB` conseguir una shell de máximos privilegios con la que poder migrar al usario root y conseguir la última `flag`. 
+Por lo que, lo que vamos a realizar es un _remote port forwarding_, para posteriormente, con el servicio `ADB` conseguir una shell de máximos privilegios con la que poder migrar al usario root y conseguir la última `flag`. 
 
 En caso de no contar con el servicio `ADB` instalado, bastará con realizar lo siguiente:
 
 ```
 sudo apt install adb
+```
+
+```
+ssh -L 5555:localhost:5555 kristi@10.10.10.247 -p 2222
+``` 
+
+```
+adb start-server
+adb connect localhost:5555
+adb devices
+adb -s localhost:5555 shell
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/15.png)
