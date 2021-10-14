@@ -178,4 +178,8 @@ adb -s localhost:5555 shell
 
 Una vez hemos migrado al usuario `root`, simplemente tendremos que buscar la respectiva `flag`.
 
+```
+echo **/*root.txt*
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore---Hack-The-Box/16.png)
