@@ -163,6 +163,8 @@ En caso de no contar con el servicio `ADB` instalado, bastará con realizar lo s
 sudo apt install adb
 ```
 
+Una vez instalado el servicio `ADB`, podemos pasar a conseguir una shell con máximos privilegios dentro del dispositivo.
+
 ```
 ssh -L 5555:localhost:5555 kristi@10.10.10.247 -p 2222
 ``` 

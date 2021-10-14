@@ -210,6 +210,10 @@ Aunque también podriamos filtrar del archivo `/etc/passwd`, a través de expres
 
 Esto sería bastante fácil, ya que todas, o casi todas las _shells_ terminan en `sh`, de modo que con ambas formas podemos determinar que usuarios existen a nivel de sistema.
 
+```
+cat /etc/passwd | grep "sh$"
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/15.png)
 
 Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la `flag` del usuario con bajos privilegios, para ello podemos hacer lo siguiente:
