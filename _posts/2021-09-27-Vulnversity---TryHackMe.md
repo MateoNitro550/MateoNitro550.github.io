@@ -100,7 +100,7 @@ A continuación se explican los parámetros utilizados en el _fuzzeo_ del servid
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/2.png)
 
-En caso de no utilizar el parámetro `hh`, vemos que obtenemos una mayor cantidad de respuestas
+En caso de no utilizar el parámetro `-hh`, vemos que obtenemos una mayor cantidad de respuestas, sin embargo no son relevantes, por este motivo es que se las escondió.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity---Try-Hack-Me/3.png)
 
