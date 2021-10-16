@@ -53,9 +53,9 @@ Entre las preguntas que nos realiza la plataforma en esta primera fase, se encue
 * ¿Cuántos puertos están abiertos con un número de puerto inferior a 1000?
 * ¿A qué es vulnerable esta máquina?
 
-Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con _Nmap_. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que es vulnerable la máquina específicamente; a modo de pista, la plataforma nos da un ejemplo de respuesta: _ms08-067_, lo cual nos hace pensar a que la respuesta tiene que ver con algún parche de Windows.
+Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con _Nmap_. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que ataque es vulnerable la máquina; a modo de pista, la plataforma nos da un ejemplo de respuesta: _ms08-067_.
 
-Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con _Nmap_, es el `Samba`.
+Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con _Nmap_, es el puerto `445`, o servicio `Samba`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/2.png)
 
@@ -64,6 +64,20 @@ De modo que procederemos a utilizar los scripts específicos con los que cuenta 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/3.png)
 
 Para poder utilizarlos podemos hacer lo siguiente:
+
+```  
+nmap --script="smb-vuln*" -p 445 10.10.229.101 -oN smbScan
+```
+
+A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del servicio `Samba` con _Nmap_:
+  
+  * --script - Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos script que comiencen por _smb-vuln_
+  * p - Especificamos a que puertos queremos aplicar este escaneo
+  * oN - Exportar el escaneo en formato _Nmap_
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/4.png)
+
+Como podemos darnos cuenta, esta máquina es vulnerable a MS17-010, o también conocido como `EternalBlue`.
 
 ### [](#header-3)Fase De Explotación
 
