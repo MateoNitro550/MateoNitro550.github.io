@@ -53,7 +53,17 @@ Entre las preguntas que nos realiza la plataforma en esta primera fase, se encue
 * ¿Cuántos puertos están abiertos con un número de puerto inferior a 1000?
 * ¿A qué es vulnerable esta máquina?
 
-Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con _Nmap_. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responde a la segunda pregunta, tendremos que introducir a
+Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con _Nmap_. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que es vulnerable la máquina específicamente; a modo de pista, la plataforma nos da un ejemplo de respuesta: _ms08-067_, lo cual nos hace pensar a que la respuesta tiene que ver con algún parche de Windows.
+
+Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con _Nmap_, es el `Samba`.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/2.png)
+
+De modo que procederemos a utilizar los scripts específicos con los que cuenta _Nmap_, para detectar vulnerabilidades en un servicio `Samba`.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/3.png)
+
+Para poder utilizarlos podemos hacer lo siguiente:
 
 ### [](#header-3)Fase De Explotación
 
