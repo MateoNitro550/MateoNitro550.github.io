@@ -143,7 +143,7 @@ Y al igual que antes, tendremos que configurar cierto parámetro para poder cons
 show options                                  
 ```  
   
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/8.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/9.png)
 
 ```        
 sessions
@@ -154,7 +154,7 @@ run
 La opción `sessions` nos permite listar todas las sesiones que tengamos activas; esto es útil si tenemos más de una sesión activa, y necesitamos indicar una en particular.
 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/9.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/10.png)
 
 Una vez hemos conseguido un `meterpreter`, podemos volver a nuestra sesión.
 
@@ -166,11 +166,11 @@ sessions 1
 
 _TryHackMe_ nos indica que a través del comando 'migrate <ID del proceso>', podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos 'NT AUTHORITY\SYSTEM', de modo que no tiene sentido migrar al usuario que ya somos.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/10.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/11.png)
 
 Antes de pasar a conseguir las 'flags' de la máquina, la plataforma nos sigue enseñando comandos útiles de `Metasploit`, en este caso el comando 'hashdump', con el cual podemos listar todos los usarios del sistema, así como sus contraseñas _hasheadas_. 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/11.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/12.png)
 
 En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea _Guest_, o _Administrator_; finalmente, se nos pide _crackear_ la contraseña de este usuario, para ello utilizaremos la herramienta `John the Ripper`, en conjunto del diccionario [rockyou](https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt).
 
@@ -192,7 +192,7 @@ Una vez creado el archivo de texto, podemos pasar a _crackear_ la contraseña:
 sudo john --format=NT --wordlist=dirección/del/diccionario/rockyou nombreArchivoTexto.txt
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/12.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/13.png)
 
 
 Una vez hemos _crackeado_ la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas 'flags'. En este caso existe un total de 3 'flags', las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema _Windows_, por lo que es aconsejable aprender estas locaciones. 
@@ -207,7 +207,7 @@ dir
 type flag1.txt
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/13.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/14.png)
 
 
 La segunda 'flag' dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, 'C:\Windows\System32\Config'.
@@ -218,7 +218,7 @@ dir
 type flag2.txt
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/14.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/15.png)
 
 La última 'flag' dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas "bastante interesantes", personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo `flag3.txt`, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí:
 
@@ -227,7 +227,7 @@ cd \
 dir flag3.txt /s /p 
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/15.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/16.png)
 
 Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última `flag`, de modo que nos dirigiremos a esa ubicación para leer la 'flag'.
 
@@ -237,4 +237,4 @@ dir
 type flag3.txt  
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/16.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/17.png)
