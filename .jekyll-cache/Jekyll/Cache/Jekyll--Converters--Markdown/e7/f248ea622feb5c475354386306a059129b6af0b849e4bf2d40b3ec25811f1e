@@ -1,4 +1,4 @@
-I"<p>En esta ocasión vamos a resolver la máquina <em>Blue</em> de <em>TryHackMe</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá <code class="language-plaintext highlighter-rouge">EternalBlue</code>?</p>
+I"�<p>En esta ocasión vamos a resolver la máquina <em>Blue</em> de <em>TryHackMe</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá <code class="language-plaintext highlighter-rouge">EternalBlue</code>?</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/1.png" alt="" /></p>
 
@@ -50,9 +50,9 @@
   <li>¿A qué es vulnerable esta máquina?</li>
 </ul>
 
-<p>Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con <em>Nmap</em>. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que es vulnerable la máquina específicamente; a modo de pista, la plataforma nos da un ejemplo de respuesta: <em>ms08-067</em>, lo cual nos hace pensar a que la respuesta tiene que ver con algún parche de Windows.</p>
+<p>Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con <em>Nmap</em>. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que ataque es vulnerable la máquina; a modo de pista, la plataforma nos da un ejemplo de respuesta: <em>ms08-067</em>.</p>
 
-<p>Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con <em>Nmap</em>, es el <code class="language-plaintext highlighter-rouge">Samba</code>.</p>
+<p>Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con <em>Nmap</em>, es el puerto <code class="language-plaintext highlighter-rouge">445</code>, o servicio <code class="language-plaintext highlighter-rouge">Samba</code>.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/2.png" alt="" /></p>
 
@@ -62,9 +62,24 @@
 
 <p>Para poder utilizarlos podemos hacer lo siguiente:</p>
 
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap --script="smb-vuln*" -p 445 10.10.229.101 -oN smbScan
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del servicio <code class="language-plaintext highlighter-rouge">Samba</code> con <em>Nmap</em>:</p>
+
+<ul>
+  <li>–script - Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos script que comiencen por <em>smb-vuln</em></li>
+  <li>p - Especificamos a que puertos queremos aplicar este escaneo</li>
+  <li>oN - Exportar el escaneo en formato <em>Nmap</em></li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/4.png" alt="" /></p>
+
+<p>Como podemos darnos cuenta, esta máquina es vulnerable a MS17-010, o también conocido como <code class="language-plaintext highlighter-rouge">EternalBlue</code>.</p>
+
 <h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
 
-<p>ABC</p>
+<p>Para esta segunda fase, <em>TryHackMe</em> realiza la fase de explotación con el uso de <code class="language-plaintext highlighter-rouge">Metasploit</code>, no obstante, no recomiendo acostumbrarse a utilizar herramientas automatizadas, ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, en esta máquina en concreto, no es posible realizar un procedimiento manual, ya que la máquina <code class="language-plaintext highlighter-rouge">Blue</code>, está pensada para ser explotada mediante el uso de <code class="language-plaintext highlighter-rouge">Metasploit</code>.</p>
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 

