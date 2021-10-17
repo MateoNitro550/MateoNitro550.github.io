@@ -195,8 +195,46 @@ sudo john --format=NT --wordlist=dirección/del/diccionario/rockyou nombreArchiv
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/12.png)
 
 
+Una vez hemos _crackeado_ la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas 'flags'. En este caso existe un total de 3 'flags', las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema _Windows_, por lo que es aconsejable aprender estas locaciones. 
+
+La primera 'flag' dice que se encuentra en la raíz del sistema, dicho de otra forma, 'Disco Local C'.
+
+Para poder navegar dentro de la máquina víctima, podríamos usar el mismo `meterpreter`, sin embargo, en este caso nos manejaremos a través de una _shell_, para ello ejecutaremos el comando _shell_. Una vez hecho esto, podemos ir hacia el directorio 'C:\\', listar su contenido y encontrar la 'flag'.
+
+```
+cd C:\\
+dir
+type flag1.txt
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/13.png)
 
 
+La segunda 'flag' dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, 'C:\Windows\System32\Config'.
 
+```
+cd C:\Windows\System32\Config
+dir
+type flag2.txt
+```
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/14.png)
 
+La última 'flag' dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas "bastante interesantes", personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo `flag3.txt`, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí:
+
+```  
+cd \
+dir flag3.txt /s /p 
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/15.png)
+
+Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última `flag`, de modo que nos dirigiremos a esa ubicación para leer la 'flag'.
+
+```  
+cd C:\Users\Jon\Documents
+dir  
+type flag3.txt  
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/16.png)
