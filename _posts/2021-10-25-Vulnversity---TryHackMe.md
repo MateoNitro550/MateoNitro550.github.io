@@ -43,14 +43,14 @@ sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP> -oG allPort
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
-  
+
 * p - Escanea todo el rango de puertos (65535 en total)
 * open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)
 * T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido  ", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat`
 * v - _Verbose_, reporta lo encontrado por consola
 * n - No aplicar _resolución DNS_
 * sS - Escaneo _TCP SYN_
-* min-rate - Emitir paquetes no más lentos que _valor_ por segundo
+* min-rate - Emitir paquetes no más lentos que <<valor>> por segundo
 * vvv - Triple _verbose_, para obtener mayor información por consola
 * Pn - No aplicar _host discovery_
 * oG - Exportar el escaneo en formato "_grepeable_"
@@ -151,7 +151,7 @@ Una vez, hemos creado nuestro diccionario, en el apartado _Payloads_, en la opci
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity-TryHackMe/11.png)
 
-Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado `200`, la _longitud_ de estas no es la misma para para todas las extensiones, la única extensión cuya _longitud_ varía es `.phtml`; si quisieramos estar completamente seguros, podríamos revisar el `render` de la respuesta, el cual nos devuelve un `success`.
+Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado `200`, la _longitud_ de estas no es la misma para para todas las extensiones, la única extensión cuya _longitud_ varía es `.phtml`; si quisieramos estar completamente seguros, podríamos revisar el _render_ de la respuesta, el cual nos devuelve un _success_.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity-TryHackMe/12.png)
 
@@ -199,7 +199,7 @@ stty -a
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity-TryHackMe/14.png)
 
-Continuando con las preguntas de la plataforma, se nos pide averigurar por el usuario que maneja el servidor web, así como su respectiva `flag`. Para realizar esto podríamos dirigirnos al directorio `/home`, y listar los directorios que existen.
+Continuando con las preguntas de la plataforma, se nos pide averigurar por el usuario que maneja el servidor web, así como su respectiva flag. Para realizar esto podríamos dirigirnos al directorio `/home`, y listar los directorios que existen.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity-TryHackMe/15.png)
 
@@ -220,7 +220,7 @@ cat /etc/passwd | grep "sh$"
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity-TryHackMe/16.png)
 
-Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la `flag` del usuario con bajos privilegios, para ello podemos hacer lo siguiente:
+Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente:
 
 ```
 find . -name user.txt 2> /dev/null
@@ -252,7 +252,7 @@ El binario más extraño que nos encontramos es `/bin/systemctl`, ya que este co
 
 Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos
 
-Para conseguir la última `flag` haremos lo siguiente:
+Para conseguir la última flag haremos lo siguiente:
 
 ```
 TF=$(mktemp).service
@@ -273,7 +273,7 @@ Una vez hemos abusado del binario `/bin/systemctl`, haremos lo siguiente:
 /bin/bash -p
 ```
 
-Una vez siendo _root_, podemos pasar a buscar su respectiva `flag`, esto lo podemos hacer así:
+Una vez siendo _root_, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así:
 
 ```
 find . -name root.txt

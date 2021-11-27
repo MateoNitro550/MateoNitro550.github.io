@@ -53,7 +53,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 * v - _Verbose_, reporta lo encontrado por consola
 * n - No aplicar _resolución DNS_
 * sS - Escaneo _TCP SYN_
-* min-rate - Emitir paquetes no más lentos que -valor- por segundo
+* min-rate - Emitir paquetes no más lentos que <<valor>> por segundo
 * vvv - Triple _verbose_, para obtener mayor información por consola
 * Pn - No aplicar _host discovery_
 * oG - Exportar el escaneo en formato "_grepeable_"
@@ -77,7 +77,7 @@ Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que
 
 ### [](#header-3)Fase De Explotación
 
-Para explotar el servicio `ES File Explorer`, empezaremos buscando algun _exploit_ que se encuentre en _Exploit Database_, para ello utilizaremos _SearchSploit_ para poder seguir trabajando desde nuestra terminal.
+Para explotar el servicio `ES File Explorer`, empezaremos buscando algun exploit que se encuentre en _Exploit Database_, para ello utilizaremos _SearchSploit_ para poder seguir trabajando desde nuestra terminal.
 
 ```
 searchsploit ES File Explorer                               
@@ -85,7 +85,7 @@ searchsploit ES File Explorer
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/5.png)
 
-En este caso _SearchSploit_ no mostró nada interesante, sin embargo, si revisamos manualmente en la página de _Exploit Database_, podemos encontrar un script que nos permite leer archivos alojados en el servicio de `ES File Explorer` de versión `4.1.9.7.4`, por esta razón es importante no quedarnos conformes únicamente con el primer resultado.
+En este caso _SearchSploit_ no mostró nada interesante, sin embargo, si revisamos manualmente en la página de _Exploit Database_, podemos encontrar un script que nos permite leer archivos alojados en el servicio de `ES File Explorer` de versión `4.1.9.7.4`, por esta razón es importante no quedarnos conformes únicamente con el primer resultado que encontremos.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/6.png)
 
@@ -117,7 +117,7 @@ python3 poc.py --get-file /storage/emulated/0/DCIM/creds.jpg --ip 10.10.10.247
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/9.png)
 
-Si recordamos, otro servicio que detectamos con _Nmap_, fue el servicio _SSH_ en el puerto 2222.
+Si recordamos, otro servicio que detectamos con _Nmap_, fue el servicio _SSH_ en el puerto `2222`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/10.png)
 
@@ -129,7 +129,7 @@ ssh kristi@10.10.10.247 -p 2222
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/11.png)
 
-Una vez dentro de la máquina, procederemos a buscar la primera `flag`. Por lo que buscaremos el archivo `user.txt` dentro de todo el sistema.
+Una vez dentro de la máquina, procederemos a buscar la primera flag. Por lo que buscaremos el archivo `user.txt` dentro de todo el sistema.
 
 ```
 echo **/*user.txt*
@@ -139,13 +139,13 @@ echo **/*user.txt*
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/13.png)
 
-Podemos ver que en efecto esta es la `flag` del usuario con bajos privilegios.
+Podemos ver que en efecto esta es la flag del usuario con bajos privilegios.
 
-Lo más común sería utilizar `find . -name user.txt` (y en este caso, redirigir todo el `stderr` o `Standard Error` hacia el `/dev/null`), sin embargo no conseguimos ningún resultado en esta máquina, por lo que resulta conveniente conocer otros métodos para realizar el mismo proceso.
+Lo más común sería utilizar `find . -name user.txt` (y en este caso, redirigir todo el _stderr_ o _Standard Error_ hacia el `/dev/null`), sin embargo no conseguimos ningún resultado en esta máquina, por lo que resulta conveniente conocer otros métodos para realizar el mismo proceso.
 
 ### [](#header-3)Escalada De Privilegios
 
-Para poder conseguir la siguiente `flag` (la del usuario con máximos privilegios), tenemos que percatarnos que la máquina tiene más puertos abiertos que los registrados con _Nmap_, a estos se los conoce como _puertos internos_.
+Para poder conseguir la siguiente flag (la del usuario con máximos privilegios), tenemos que percatarnos que la máquina tiene más puertos abiertos que los registrados con _Nmap_, a estos se los conoce como _puertos internos_.
 
 ```  
 netstat -nlpt
@@ -153,9 +153,9 @@ netstat -nlpt
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/14.png)
 
-Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con `Android`; esto tiene sentido ya que algunos dispositivos _Android_ tienen este puerto abierto para realizar procesos relacionados con el `Android Debug Bridge` o `ADB` por sus siglas en inglés. 
+Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con _Android_; esto tiene sentido ya que algunos dispositivos _Android_ tienen este puerto abierto para realizar procesos relacionados con el `Android Debug Bridge` o `ADB` por sus siglas en inglés. 
 
-Por lo que, lo que vamos a realizar es un _remote port forwarding_, para posteriormente, con el servicio `ADB` conseguir una shell de máximos privilegios con la que poder migrar al usario root y conseguir la última `flag`. 
+Por lo que, lo que vamos a realizar es un `remote port forwarding`, para posteriormente, con el servicio `ADB` conseguir una shell de máximos privilegios con la que poder migrar al usario root y conseguir la última flag. 
 
 En caso de no contar con el servicio `ADB` instalado, bastará con realizar lo siguiente:
 
@@ -174,11 +174,12 @@ adb start-server
 adb connect localhost:5555
 adb devices
 adb -s localhost:5555 shell
+su root
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/15.png)
 
-Una vez hemos migrado al usuario `root`, simplemente tendremos que buscar la respectiva `flag`.
+Una vez hemos migrado al usuario _root_, simplemente tendremos que buscar la respectiva flag.
 
 ```
 echo **/*root.txt*

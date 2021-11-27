@@ -1,0 +1,189 @@
+I"%6<p>En esta ocasión vamos a estar resolviendo la máquina <em>Explore</em> de <em>Hack The Box</em>. Es una máquina <em>Android</em> de nivel de dificultad fácil en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/1.png" alt="" /></p>
+
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
+
+<p>Primeramente vamos a lanzar una <em>traza ICMP</em> para saber si la máquina está activa.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.247
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/2.png" alt="" /></p>
+
+<p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">63</code>, por lo que podemos intuir que estamos ante una máquina <em>Linux</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Sistema Operativo (OS)</th>
+      <th style="text-align: left">TTL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Linux</td>
+      <td style="text-align: left">64</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Windows</td>
+      <td style="text-align: left">128</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Solaris</td>
+      <td style="text-align: left">254</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Si nos damos cuenta, en esta ocasión, el valor del <em>TTL</em> es <code class="language-plaintext highlighter-rouge">63</code> y no <code class="language-plaintext highlighter-rouge">64</code> como indica la tabla anterior, esto se debe a que en el entorno de máquinas de <em>Hack The Box</em>, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el <em>TTL</em> disminuye en una unidad.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.247 -R                               
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/3.png" alt="" /></p>
+
+<p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap -p- --open -T5 -v -n 10.10.10.247 -oG allPorts
+</code></pre></div></div>
+
+<p>Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.247 -oG allPorts
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de puertos con <em>Nmap</em>:</p>
+
+<ul>
+  <li>p - Escanea todo el rango de puertos (65535 en total)</li>
+  <li>open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)</li>
+  <li>T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos <code class="language-plaintext highlighter-rouge">White Hat</code></li>
+  <li>v - <em>Verbose</em>, reporta lo encontrado por consola</li>
+  <li>n - No aplicar <em>resolución DNS</em></li>
+  <li>sS - Escaneo <em>TCP SYN</em></li>
+  <li>min-rate - Emitir paquetes no más lentos que «valor» por segundo</li>
+  <li>vvv - Triple <em>verbose</em>, para obtener mayor información por consola</li>
+  <li>Pn - No aplicar <em>host discovery</em></li>
+  <li>oG - Exportar el escaneo en formato “<em>grepeable</em>”</li>
+</ul>
+
+<p>Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247 -oN targeted
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con <em>Nmap</em>:</p>
+
+<ul>
+  <li>sC - Scripts básicos de enumeración</li>
+  <li>sV - Versión y servicios que corren bajo los puertos encontrados</li>
+  <li>p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)</li>
+  <li>oN - Exportar el escaneo en formato <em>Nmap</em></li>
+</ul>
+
+<p>Basándonos en la información que nos reporta <em>Nmap</em>, podemos darnos cuenta que nos encontramos frente a un teléfono móvil, y nuestra primera gran pista para la siguiente fase es el puerto <code class="language-plaintext highlighter-rouge">42135</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/4.png" alt="" /></p>
+
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+
+<p>Para explotar el servicio <code class="language-plaintext highlighter-rouge">ES File Explorer</code>, empezaremos buscando algun exploit que se encuentre en <em>Exploit Database</em>, para ello utilizaremos <em>SearchSploit</em> para poder seguir trabajando desde nuestra terminal.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit ES File Explorer                               
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/5.png" alt="" /></p>
+
+<p>En este caso <em>SearchSploit</em> no mostró nada interesante, sin embargo, si revisamos manualmente en la página de <em>Exploit Database</em>, podemos encontrar un script que nos permite leer archivos alojados en el servicio de <code class="language-plaintext highlighter-rouge">ES File Explorer</code> de versión <code class="language-plaintext highlighter-rouge">4.1.9.7.4</code>, por esta razón es importante no quedarnos conformes únicamente con el primer resultado que encontremos.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/6.png" alt="" /></p>
+
+<p>Sin embargo, tampoco será este el script con el que trabajaremos; en esta ocasión estaremos utilizando un proyecto de <em>GitHub</em> del usuario <em>fs0c131y</em>, este se llama <a href="https://github.com/fs0c131y/ESFileExplorerOpenPortVuln">ESFileExplorerOpenPortVuln</a>.</p>
+
+<p>Para empezar a trabajar con este repositorio bastará con clonarlo en nuestra máquina.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/fs0c131y/ESFileExplorerOpenPortVuln
+</code></pre></div></div>
+
+<p>Una vez lo tengamos descargado, podemos empezar a revisar que información se alojaba en el servicio <code class="language-plaintext highlighter-rouge">ES File Explorer</code>.</p>
+
+<p>Después de estar listando el contenido almacenado en el teléfono móvil, encontramos entre las fotografías, una llamada <code class="language-plaintext highlighter-rouge">creds</code>, lo cual nos hace pensar a que se refiere a credenciales con las que posteriormente autenticarnos.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 poc.py --cmd listPics --ip 10.10.10.247                               
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/7.png" alt="" /></p>
+
+<p>Por lo que procedemos a descargar esta imagen.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 poc.py --get-file /storage/emulated/0/DCIM/creds.jpg --ip 10.10.10.247 
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/8.png" alt="" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/9.png" alt="" /></p>
+
+<p>Si recordamos, otro servicio que detectamos con <em>Nmap</em>, fue el servicio <em>SSH</em> en el puerto <code class="language-plaintext highlighter-rouge">2222</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/10.png" alt="" /></p>
+
+<p>Por lo que procederemos a autenticarnos con las credenciales encontradas:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh kristi@10.10.10.247 -p 2222
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/11.png" alt="" /></p>
+
+<p>Una vez dentro de la máquina, procederemos a buscar la primera flag. Por lo que buscaremos el archivo <code class="language-plaintext highlighter-rouge">user.txt</code> dentro de todo el sistema.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo **/*user.txt*
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/12.png" alt="" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/13.png" alt="" /></p>
+
+<p>Podemos ver que en efecto esta es la flag del usuario con bajos privilegios.</p>
+
+<p>Lo más común sería utilizar <code class="language-plaintext highlighter-rouge">find . -name user.txt</code> (y en este caso, redirigir todo el <em>stderr</em> o <em>Standard Error</em> hacia el /dev/null), sin embargo no conseguimos ningún resultado en esta máquina, por lo que resulta conveniente conocer otros métodos para realizar el mismo proceso.</p>
+
+<h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
+
+<p>Para poder conseguir la siguiente flag (la del usuario con máximos privilegios), tenemos que percatarnos que la máquina tiene más puertos abiertos que los registrados con <em>Nmap</em>, a estos se los conoce como <em>puertos internos</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netstat -nlpt
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/14.png" alt="" /></p>
+
+<p>Si nos percatamos, la máquina utiliza el puerto <code class="language-plaintext highlighter-rouge">5555</code> para realizar varios procesos relacionados con <em>Android</em>; esto tiene sentido ya que algunos dispositivos <em>Android</em> tienen este puerto abierto para realizar procesos relacionados con el <code class="language-plaintext highlighter-rouge">Android Debug Bridge</code> o <code class="language-plaintext highlighter-rouge">ADB</code> por sus siglas en inglés.</p>
+
+<p>Por lo que, lo que vamos a realizar es un <code class="language-plaintext highlighter-rouge">remote port forwarding</code>, para posteriormente, con el servicio <code class="language-plaintext highlighter-rouge">ADB</code> conseguir una shell de máximos privilegios con la que poder migrar al usario root y conseguir la última flag.</p>
+
+<p>En caso de no contar con el servicio <code class="language-plaintext highlighter-rouge">ADB</code> instalado, bastará con realizar lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install adb
+</code></pre></div></div>
+
+<p>Una vez instalado el servicio <code class="language-plaintext highlighter-rouge">ADB</code>, podemos pasar a conseguir una shell con máximos privilegios dentro del dispositivo.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh -L 5555:localhost:5555 kristi@10.10.10.247 -p 2222
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adb start-server
+adb connect localhost:5555
+adb devices
+adb -s localhost:5555 shell
+su root
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/15.png" alt="" /></p>
+
+<p>Una vez hemos migrado al usuario <em>root</em>, simplemente tendremos que buscar la respectiva flag.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo **/*root.txt*
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/16.png" alt="" /></p>
+:ET
