@@ -5,7 +5,7 @@ published: true
 
 En esta ocasión vamos a estar resolviendo la máquina _Explore_ de _Hack The Box_. Es una máquina _Android_ de nivel de dificultad fácil en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/1.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/1.png)
 
 ### [](#header-3)Fase De Reconocimiento
 
@@ -15,7 +15,7 @@ Primeramente vamos a lanzar una _traza ICMP_ para saber si la máquina está act
 ping -c 1 10.10.10.247
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/2.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/2.png)
 
 Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del _TTL_; en este caso el valor del _TTL_ de la máquina es `63`, por lo que podemos intuir que estamos ante una máquina _Linux_. Recordemos que algunos de los valores referenciales son los siguientes:
 
@@ -31,7 +31,7 @@ Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `63` y no `64` como
 ping -c 1 10.10.10.247 -R                               
 ``` 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/3.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/3.png)
 
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
@@ -71,7 +71,7 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 
 Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que nos encontramos frente a un teléfono móvil, y nuestra primera gran pista para la siguiente fase es el puerto `42135`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/4.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/4.png)
 
 ### [](#header-3)Fase De Explotación
 
@@ -81,11 +81,11 @@ Para explotar el servicio `ES File Explorer`, empezaremos buscando algun exploit
 searchsploit ES File Explorer                               
 ``` 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/5.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/5.png)
 
 En este caso _SearchSploit_ no mostró nada interesante, sin embargo, si revisamos manualmente en la página de _Exploit Database_, podemos encontrar un script que nos permite leer archivos alojados en el servicio de `ES File Explorer` de versión `4.1.9.7.4`, por esta razón es importante no quedarnos conformes únicamente con el primer resultado que encontremos.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/6.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/6.png)
 
 Sin embargo, tampoco será este el script con el que trabajaremos; en esta ocasión estaremos utilizando un proyecto de _GitHub_ del usuario _fs0c131y_, este se llama [ESFileExplorerOpenPortVuln](https://github.com/fs0c131y/ESFileExplorerOpenPortVuln).
 
@@ -103,7 +103,7 @@ Después de estar listando el contenido almacenado en el teléfono móvil, encon
 python3 poc.py --cmd listPics --ip 10.10.10.247                               
 ``` 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/7.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/7.png)
 
 Por lo que procedemos a descargar esta imagen.
 
@@ -111,13 +111,13 @@ Por lo que procedemos a descargar esta imagen.
 python3 poc.py --get-file /storage/emulated/0/DCIM/creds.jpg --ip 10.10.10.247 
 ``` 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/8.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/8.png)
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/9.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/9.png)
 
 Si recordamos, otro servicio que detectamos con _Nmap_, fue el servicio _SSH_ en el puerto `2222`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/10.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/10.png)
 
 Por lo que procederemos a autenticarnos con las credenciales encontradas:
 
@@ -125,7 +125,7 @@ Por lo que procederemos a autenticarnos con las credenciales encontradas:
 ssh kristi@10.10.10.247 -p 2222
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/11.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/11.png)
 
 Una vez dentro de la máquina, procederemos a buscar la primera flag. Por lo que buscaremos el archivo `user.txt` dentro de todo el sistema.
 
@@ -133,9 +133,9 @@ Una vez dentro de la máquina, procederemos a buscar la primera flag. Por lo que
 echo **/*user.txt*
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/12.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/12.png)
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/13.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/13.png)
 
 Podemos ver que en efecto esta es la flag del usuario con bajos privilegios.
 
@@ -149,7 +149,7 @@ Para poder conseguir la siguiente flag (la del usuario con máximos privilegios)
 netstat -nlpt
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/14.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/14.png)
 
 Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con _Android_; esto tiene sentido ya que algunos dispositivos _Android_ tienen este puerto abierto para realizar procesos relacionados con el `Android Debug Bridge` o `ADB` por sus siglas en inglés. 
 
@@ -175,7 +175,7 @@ adb -s localhost:5555 shell
 su root
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/15.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/15.png)
 
 Una vez hemos migrado al usuario _root_, simplemente tendremos que buscar la respectiva flag.
 
@@ -183,4 +183,4 @@ Una vez hemos migrado al usuario _root_, simplemente tendremos que buscar la res
 echo **/*root.txt*
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/16.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/16.png)
