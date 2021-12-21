@@ -109,15 +109,25 @@ Respecto a la tercera página web, el navegador nuevamente nos avisará del _cer
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/8.png)
 
-Una vez dentro, 
+Una vez dentro, lo primero que vemos es un panel que nos pide autenticar para tener acceso a `Webmin`, una herramienta que permite la administración de servicios basados en _Unix_. 
 
 ### [](#header-3)Fase De Explotación
 
-Como mencioné en un inicio, la máquina _Beep_ cuenta con varios vectores para realizar la fase de explotación; de hecho, para dos de ellos ni siquiera hace falta la fase de escalada de privilegios.
+Como mencioné en un inicio, la máquina _Beep_ cuenta con varios vectores para realizar la fase de explotación; de hecho, para dos de ellos ni siquiera hace falta la escalada de privilegios.
 
 ### [](#header-4)Fase De Explotación - Local File Inclusion
 
-ABC
+Lo primero que se nos puede ocurrir a la hora de encontrar un panel de login, sería probar contraseñas por defecto (un error bastante común aún hoy en día), sin embargo ninguna de las [siguientes](https://www.elastix.org/community/threads/default-passwords-not-password.8416/) nos es de ayuda.
+
+La siguiente idea que podemos probar, sería buscar algún tipo de _exploit_ para el servicio `Elastix`; para ello utilizaremos _SearchSploit_.
+
+```
+searchsploit Elastix
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/9.png)
+
+En este caso _SearchSploit_
 
 ### [](#header-4)Fase De Explotación - Shellshock
 
