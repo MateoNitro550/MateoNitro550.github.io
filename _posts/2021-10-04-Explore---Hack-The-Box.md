@@ -36,13 +36,13 @@ ping -c 1 10.10.10.247 -R
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
 ```
-nmap -p- --open -T5 -v -n 10.10.10.247 -oG allPorts
+nmap -p- --open -T5 -v -n 10.10.10.247
 ```
 
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
 
 ``` 
-sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.247 -oG allPorts
+sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.247
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
@@ -56,12 +56,11 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 * min-rate - Emitir paquetes no más lentos que <<valor>> por segundo
 * vvv - Triple _verbose_, para obtener mayor información por consola
 * Pn - No aplicar _host discovery_
-* oG - Exportar el escaneo en formato "_grepeable_"
 
 Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.
 
 ```  
-nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247 -oN targeted
+nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
@@ -69,7 +68,6 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 * sC - Scripts básicos de enumeración
 * sV - Versión y servicios que corren bajo los puertos encontrados
 * p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
-* oN - Exportar el escaneo en formato _Nmap_
 
 Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que nos encontramos frente a un teléfono móvil, y nuestra primera gran pista para la siguiente fase es el puerto `42135`.
 

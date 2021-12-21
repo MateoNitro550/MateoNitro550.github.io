@@ -33,13 +33,13 @@ Todas estas preguntas son fáciles de responder si realizamos un buen escaneo co
 Para determinar que puertos están abiertos podemos realizar lo siguiente:
   
 ```
-nmap -p- --open -T5 -v -n <dirección IP> -oG allPorts
+nmap -p- --open -T5 -v -n <dirección IP>
 ```
  
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
   
 ``` 
-sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP> -oG allPorts
+sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP>
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
@@ -53,12 +53,11 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 * min-rate - Emitir paquetes no más lentos que <<valor>> por segundo
 * vvv - Triple _verbose_, para obtener mayor información por consola
 * Pn - No aplicar _host discovery_
-* oG - Exportar el escaneo en formato "_grepeable_"
 
 Para determinar la versión y servicios que corren bajo estos puertos podemos realizar lo siguiente:
 
 ```  
-nmap -sC -sV -p 21,22,139,445,3128,3333 <dirección IP> -oN targeted
+nmap -sC -sV -p 21,22,139,445,3128,3333 <dirección IP>
 ```
   
 A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
@@ -66,14 +65,13 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 * sC - Scripts básicos de enumeración
 * sV - Versión y servicios que corren bajo los puertos encontrados
 * p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
-* oN - Exportar el escaneo en formato _Nmap_
 
 Con estos dos escaneos bastará para responder a las preguntas planteadas con anterioridad, sin embargo nos quedan dos preguntas más, las cuales son:
 
 * ¿Cuántos puertos se escanearán si utilizamos el parámetro -p-400?
 * Utilizando el parámetro -n, ¿qué no se está resolviendo?
 
-Para responder a estas dos preguntas bastará con haber leído el `manual` de _Nmap_, haber utilizado su parámetro `--help`, o bien, haber prestado atención a los parámetros utilizados durante el escaneo. En este caso, si colocamos un número después de `-p-`, se escaneará tantos puertos hayamos indicado; y en el caso del parámetro `-n`, no se aplicará resolución DNS.
+Para responder a estas dos preguntas bastará con haber leído el `manual` de _Nmap_, haber utilizado su parámetro `--help`, o bien, haber prestado atención a los parámetros utilizados durante el escaneo. En este caso, si colocamos un número después de `-p-`, se escaneará tantos puertos hayamos indicado; y en el caso del parámetro `-n`, no se aplicará _resolución DNS_.
 
 Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el `fuzzing`; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web.
 
@@ -95,7 +93,7 @@ A continuación se explican los parámetros utilizados en el _fuzzeo_ del servid
 * L - Sigue las redirecciones HTTP, de modo que conseguimos el código de estado final verdadero
 * t - Específicamos el número de hilos con el queremos trabajar
 * hc - Oculta las respuestas con el código de estado que indiquemos, en este caso los errores (código de estado 404)
-* hh - Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo es útil para descartar respuestas con contenido que vemos que no nos interesan
+* hh - Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo, es útil para descartar respuestas con contenido que vemos que no nos interesan
 * w - Especificamos el diccionario con el que queremos trabajar
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity-TryHackMe/2.png)
@@ -151,7 +149,7 @@ Una vez, hemos creado nuestro diccionario, en el apartado _Payloads_, en la opci
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity-TryHackMe/11.png)
 
-Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado `200`, la _longitud_ de estas no es la misma para para todas las extensiones, la única extensión cuya _longitud_ varía es `.phtml`; si quisieramos estar completamente seguros, podríamos revisar el _render_ de la respuesta, el cual nos devuelve un _success_.
+Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado `200`, la _longitud_ de estas no es la misma para todas las extensiones, la única extensión cuya _longitud_ varía es `.phtml`; si quisieramos estar completamente seguros, podríamos revisar el _render_ de la respuesta, el cual nos devuelve un _success_.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-27-Vulnversity-TryHackMe/12.png)
 
