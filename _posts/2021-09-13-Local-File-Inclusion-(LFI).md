@@ -8,7 +8,7 @@ La vulnerabilidad _Local File Inclusion_, _LFI_ por sus siglas en inglés, permi
 Dependiendo de la gravedad, esta vulnerabilidad puede llevar al atacante a:
 	
 * RCE (Remote Code Execution)
-* XSS (Cross-Site Scripting)
+* [XSS] (https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)) (Cross-Site Scripting)
 * DoS (Denial Of Service)
 
 Un ejemplo muy básico sería el siguiente script en _PHP_.
