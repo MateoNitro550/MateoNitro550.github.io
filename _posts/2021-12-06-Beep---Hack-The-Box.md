@@ -38,13 +38,13 @@ ping -c 1 10.10.10.247 -R
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
 ```
-nmap -p- --open -T5 -v -n 10.10.10.247
+nmap -p- --open -T5 -v -n 10.10.10.7
 ```
 
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
 
 ``` 
-sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.247
+sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.7
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
@@ -62,7 +62,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.
 
 ```  
-nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247
+nmap -sC -sV -p 22,25,80,110,111,143,443,878,993,995,3306,4190,4445,4559,5038,10000 10.10.10.7
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
@@ -71,7 +71,7 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 * sV - Versión y servicios que corren bajo los puertos encontrados
 * p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
 
-Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que nos encontramos frente a un teléfono móvil, y nuestra primera gran pista para la siguiente fase es el puerto `42135`.
+Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abiertos algunos puertos relacionados `HTTP` y `HTTPS`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/4.png)
 
