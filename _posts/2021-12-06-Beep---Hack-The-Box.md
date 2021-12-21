@@ -137,7 +137,7 @@ searchsploit -x php/webapps/37637.pl
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/10.png)
 
-En efecto, pero antes de intentar explotar este _LFI_, debemos confirmar si en primer lugar existe la primera ruta, `vtigercrm`.
+En efecto, pero antes de intentar explotar este _LFI_, debemos confirmar si en primer lugar existe la primera ruta, `/vtigercrm/`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/11.png)
 
@@ -149,7 +149,31 @@ Leer esto así es un poco complicado, así que podríamos hacer `Ctrl + U`, para
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/13.png)
 
-El archivo `/etc/amportal.conf`
+El archivo `/etc/amportal.conf`, como su nombre mismo indica, es un archivo de configuración para el portal de gestión de `Asterisk`.
+
+Si recordamos, otro servicio que detectamos con _Nmap_, fue el servicio _SSH_ en el puerto `22`.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/14.png)
+
+Por lo que procederemos a autenticarnos con las credenciales encontradas:
+
+```
+ssh root@10.10.10.7
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/15.png)
+
+Al intentar conectarnos por _SSH_, vemos que la conexión no se puede establecer debido a que no existe un algoritmo de encriptación en común entre la máquina víctima, y nuestra máquina de atacante. Para solucionar este problema, debemos forzar a nuestra máquina usar alguno de los algoritmos que se nos presenta, pese a ser considerados como menos seguros.
+
+```
+ssh -o KexAlgorithms=diffie-hellman-group-exchange-sha1 root@10.10.10.7
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/16.png)
+
+Al habernos conectado a la máquina directamente como root, no es necesario realizar la escalada de privilegios, por lo que podríamos listar sin ningún problema tanto la flag del usuario con bajos privilegios, como la del usuario con máximos privilegios.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/17.png)
 
 ### [](#header-4)Fase De Explotación - Shellshock
 

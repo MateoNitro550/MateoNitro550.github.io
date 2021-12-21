@@ -1,4 +1,4 @@
-I"�2<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+I"�:<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png" alt="" /></p>
 
@@ -143,7 +143,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/10.png" alt="" /></p>
 
-<p>En efecto, pero antes de intentar explotar este <em>LFI</em>, debemos confirmar si en primer lugar existe la primera ruta, <code class="language-plaintext highlighter-rouge">vtigercrm</code>.</p>
+<p>En efecto, pero antes de intentar explotar este <em>LFI</em>, debemos confirmar si en primer lugar existe la primera ruta, <code class="language-plaintext highlighter-rouge">/vtigercrm/</code>.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/11.png" alt="" /></p>
 
@@ -155,7 +155,29 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/13.png" alt="" /></p>
 
-<p>El archivo <code class="language-plaintext highlighter-rouge">/etc/amportal.conf</code></p>
+<p>El archivo <code class="language-plaintext highlighter-rouge">/etc/amportal.conf</code>, como su nombre mismo indica, es un archivo de configuración para el portal de gestión de <code class="language-plaintext highlighter-rouge">Asterisk</code>.</p>
+
+<p>Si recordamos, otro servicio que detectamos con <em>Nmap</em>, fue el servicio <em>SSH</em> en el puerto <code class="language-plaintext highlighter-rouge">22</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/14.png" alt="" /></p>
+
+<p>Por lo que procederemos a autenticarnos con las credenciales encontradas:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh root@10.10.10.7
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/15.png" alt="" /></p>
+
+<p>Al intentar conectarnos por <em>SSH</em>, vemos que la conexión no se puede establecer debido a que no existe un algoritmo de encriptación en común entre la máquina víctima, y nuestra máquina de atacante. Para solucionar este problema, debemos forzar a nuestra máquina usar alguno de los algoritmos que se nos presenta, pese a ser considerados como menos seguros.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh -o KexAlgorithms=diffie-hellman-group-exchange-sha1 root@10.10.10.7
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/16.png" alt="" /></p>
+
+<p>Al habernos conectado a la máquina directamente como root, no es necesario realizar la escalada de privilegios, por lo que podríamos listar sin ningún problema tanto la flag del usuario con bajos privilegios, como la del usuario con máximos privilegios.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/17.png" alt="" /></p>
 
 <h3 id="fase-de-explotación---shellshock"><a href="#header-4"></a>Fase De Explotación - Shellshock</h3>
 
