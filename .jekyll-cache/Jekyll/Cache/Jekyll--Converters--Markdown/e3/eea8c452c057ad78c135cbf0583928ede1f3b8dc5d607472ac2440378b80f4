@@ -1,0 +1,135 @@
+I"�#<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png" alt="" /></p>
+
+<p>Esta máquina nos permite realizar, tanto la intrusión, como la escalada de privilegios, de distintas maneras, por lo que es genial para aprender algunas técnicas de explotación, las cuales vamos a cubrir.</p>
+
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
+
+<p>Primeramente vamos a lanzar una <em>traza ICMP</em> para saber si la máquina está activa.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.7
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/2.png" alt="" /></p>
+
+<p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">63</code>, por lo que podemos intuir que estamos ante una máquina <em>Linux</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Sistema Operativo (OS)</th>
+      <th style="text-align: left">TTL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Linux</td>
+      <td style="text-align: left">64</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Windows</td>
+      <td style="text-align: left">128</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Solaris</td>
+      <td style="text-align: left">254</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Si nos damos cuenta, en esta ocasión, el valor del <em>TTL</em> es <code class="language-plaintext highlighter-rouge">63</code> y no <code class="language-plaintext highlighter-rouge">64</code> como indica la tabla anterior, esto se debe a que en el entorno de máquinas de <em>Hack The Box</em>, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el <em>TTL</em> disminuye en una unidad.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.247 -R                               
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/3.png" alt="" /></p>
+
+<p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap -p- --open -T5 -v -n 10.10.10.7
+</code></pre></div></div>
+
+<p>Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.7
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de puertos con <em>Nmap</em>:</p>
+
+<ul>
+  <li>p - Escanea todo el rango de puertos (65535 en total)</li>
+  <li>open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)</li>
+  <li>T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos <code class="language-plaintext highlighter-rouge">White Hat</code></li>
+  <li>v - <em>Verbose</em>, reporta lo encontrado por consola</li>
+  <li>n - No aplicar <em>resolución DNS</em></li>
+  <li>sS - Escaneo <em>TCP SYN</em></li>
+  <li>min-rate - Emitir paquetes no más lentos que «valor» por segundo</li>
+  <li>vvv - Triple <em>verbose</em>, para obtener mayor información por consola</li>
+  <li>Pn - No aplicar <em>host discovery</em></li>
+</ul>
+
+<p>Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap -sC -sV -p 22,25,80,110,111,143,443,878,993,995,3306,4190,4445,4559,5038,10000 10.10.10.7
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con <em>Nmap</em>:</p>
+
+<ul>
+  <li>sC - Scripts básicos de enumeración</li>
+  <li>sV - Versión y servicios que corren bajo los puertos encontrados</li>
+  <li>p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)</li>
+</ul>
+
+<p>Basándonos en la información que nos reporta <em>Nmap</em>, podemos darnos cuenta que la máquina víctima tiene abiertos algunos puertos relacionados con <code class="language-plaintext highlighter-rouge">HTTP</code> y <code class="language-plaintext highlighter-rouge">HTTPS</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/4.png" alt="" /></p>
+
+<p>Debido a que la máquina cuenta con estos puertos abiertos, podríamos intentar aplicar <code class="language-plaintext highlighter-rouge">fuzzing</code>, no obstante, no vamos a encontrar nada interesante.</p>
+
+<p>Lo siguiente que podemos hacer es determinar ante que nos estamos enfrentando, para ello podemos hacer uso de <code class="language-plaintext highlighter-rouge">WhatWeb</code>, herramienta que se encarga de identificar que tecnologías web se están empleando, véase gestores de contenido (CMS), librerias o plugins, o finalmente el sistema operativo que se está utilizando para alojar el servidor web.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>whatweb http://10.10.10.7
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>whatweb https://10.10.10.7
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>whatweb https://10.10.10.7:10000
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/5.png" alt="" /></p>
+
+<p>Como podemos observar, no hay nada especialmente relevante, a excepción de ese error relacionado con <em>SSL</em> que aparece cuando visitamos la página a través del puerto <code class="language-plaintext highlighter-rouge">443</code>, el cual no es nada grave, y de hecho lo veremos en un momento.</p>
+
+<p>En vista de que ya no nos es posible trabajar desde la terminal, tendremos que visitar estas páginas desde nuestro navegador.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/6.png" alt="" /></p>
+
+<p>Vemos que al abrir la primera página desde nuestro navegador (y por consiguiente la segunda, pues se está aplicando un redirect como pudimos ver en lo reportado por <code class="language-plaintext highlighter-rouge">WhatWeb</code>), nos salta un aviso de que la conexión no es segura, y esto se debe a que el <em>certificado SSL</em> que se está empleando, es autofirmado, por lo que se lo considera inseguro. En esta ocasión, y como sabemos que la página web pertenece a <em>HackTheBox</em>, haremos caso omiso a la advertencia y procederemos a la página web.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/7.png" alt="" /></p>
+
+<p>Una vez dentro,</p>
+
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+
+<p>Como mencioné en un inicio, la máquina <em>Beep</em> cuenta con varios vectores para realizar la fase de explotación; de hecho, para dos de ellos ni siquiera hace falta la fase de escalada de privilegios.</p>
+
+<h3 id="fase-de-explotación---local-file-inclusion"><a href="#header-4"></a>Fase De Explotación - Local File Inclusion</h3>
+
+<p>ABC</p>
+
+<h3 id="fase-de-explotación---shellshock"><a href="#header-4"></a>Fase De Explotación - Shellshock</h3>
+
+<p>DEF</p>
+
+<h3 id="fase-de-explotación---file-upload-bypass"><a href="#header-4"></a>Fase De Explotación - File Upload Bypass</h3>
+
+<p>GHI</p>
+
+<h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
+
+<p>JKL</p>
+:ET
