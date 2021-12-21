@@ -71,118 +71,42 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 * sV - Versión y servicios que corren bajo los puertos encontrados
 * p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
 
-Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abiertos algunos puertos relacionados `HTTP` y `HTTPS`.
+Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abiertos algunos puertos relacionados con `HTTP` y `HTTPS`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/4.png)
 
-### [](#header-3)Fase De Explotación
-
-Para explotar el servicio `ES File Explorer`, empezaremos buscando algun exploit que se encuentre en _Exploit Database_, para ello utilizaremos _SearchSploit_ para poder seguir trabajando desde nuestra terminal.
+Debido a que la máquina cuenta con estos puertos abiertos, podríamos intentar aplicar `fuzzing`, no obstante, no vamos a encontrar nada interesante. Lo siguiente que podemos hacer es determinar ante que nos estamos enfrentando, para ello podems hacer uso de `WhatWeb`.
 
 ```
-searchsploit ES File Explorer                               
-``` 
+whatweb http://10.10.10.7
+```
+
+```
+whatweb https://10.10.10.7
+```
+
+```
+whatweb https://10.10.10.7:10000
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/5.png)
 
-En este caso _SearchSploit_ no mostró nada interesante, sin embargo, si revisamos manualmente en la página de _Exploit Database_, podemos encontrar un script que nos permite leer archivos alojados en el servicio de `ES File Explorer` de versión `4.1.9.7.4`, por esta razón es importante no quedarnos conformes únicamente con el primer resultado que encontremos.
+### [](#header-3)Fase De Explotación
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/6.png)
+Como mencioné en un inicio, la máquina _Beep_ cuenta con varios vectores para realizar la fase de explotación; de hecho, para dos de ellos ni siquiera hace falta la fase de escalada de privilegios.
 
-Sin embargo, tampoco será este el script con el que trabajaremos; en esta ocasión estaremos utilizando un proyecto de _GitHub_ del usuario _fs0c131y_, este se llama [ESFileExplorerOpenPortVuln](https://github.com/fs0c131y/ESFileExplorerOpenPortVuln).
+### [](#header-4)Fase De Explotación - Local File Inclusion
 
-Para empezar a trabajar con este repositorio bastará con clonarlo en nuestra máquina.
+ABC
 
-``` 
-git clone https://github.com/fs0c131y/ESFileExplorerOpenPortVuln
-```
+### [](#header-4)Fase De Explotación - Shellshock
 
-Una vez lo tengamos descargado, podemos empezar a revisar que información se alojaba en el servicio `ES File Explorer`.
+DEF
 
-Después de estar listando el contenido almacenado en el teléfono móvil, encontramos entre las fotografías, una llamada `creds`, lo cual nos hace pensar a que se refiere a credenciales con las que posteriormente autenticarnos.
+### [](#header-4)Fase De Explotación - File Upload Bypass
 
-```
-python3 poc.py --cmd listPics --ip 10.10.10.247                               
-``` 
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/7.png)
-
-Por lo que procedemos a descargar esta imagen.
-
-```  
-python3 poc.py --get-file /storage/emulated/0/DCIM/creds.jpg --ip 10.10.10.247 
-``` 
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/8.png)
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/9.png)
-
-Si recordamos, otro servicio que detectamos con _Nmap_, fue el servicio _SSH_ en el puerto `2222`.
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/10.png)
-
-Por lo que procederemos a autenticarnos con las credenciales encontradas:
-
-```  
-ssh kristi@10.10.10.247 -p 2222
-```
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/11.png)
-
-Una vez dentro de la máquina, procederemos a buscar la primera flag. Por lo que buscaremos el archivo `user.txt` dentro de todo el sistema.
-
-```
-echo **/*user.txt*
-```
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/12.png)
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/13.png)
-
-Podemos ver que en efecto esta es la flag del usuario con bajos privilegios.
-
-Lo más común sería utilizar `find . -name user.txt` (y en este caso, redirigir todo el _stderr_ o _Standard Error_ hacia el `/dev/null`), sin embargo no conseguimos ningún resultado en esta máquina, por lo que resulta conveniente conocer otros métodos para realizar el mismo proceso.
+GHI
 
 ### [](#header-3)Escalada De Privilegios
 
-Para poder conseguir la siguiente flag (la del usuario con máximos privilegios), tenemos que percatarnos que la máquina tiene más puertos abiertos que los registrados con _Nmap_, a estos se los conoce como _puertos internos_.
-
-```  
-netstat -nlpt
-```
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/14.png)
-
-Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con _Android_; esto tiene sentido ya que algunos dispositivos _Android_ tienen este puerto abierto para realizar procesos relacionados con el `Android Debug Bridge` o `ADB` por sus siglas en inglés. 
-
-Por lo que, lo que vamos a realizar es un `remote port forwarding`, para posteriormente, con el servicio `ADB` conseguir una shell de máximos privilegios con la que poder migrar al usario root y conseguir la última flag. 
-
-En caso de no contar con el servicio `ADB` instalado, bastará con realizar lo siguiente:
-
-```
-sudo apt install adb
-```
-
-Una vez instalado el servicio `ADB`, podemos pasar a conseguir una shell con máximos privilegios dentro del dispositivo.
-
-```
-ssh -L 5555:localhost:5555 kristi@10.10.10.247 -p 2222
-``` 
-
-```
-adb start-server
-adb connect localhost:5555
-adb devices
-adb -s localhost:5555 shell
-su root
-```
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/15.png)
-
-Una vez hemos migrado al usuario _root_, simplemente tendremos que buscar la respectiva flag.
-
-```
-echo **/*root.txt*
-```
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/16.png)
+JKL
