@@ -5,7 +5,7 @@ published: true
 
 En esta ocasión vamos a resolver la máquina _Blue_ de _TryHackMe_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá `EternalBlue`?
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/1.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/1.png)
 
 ### [](#header-3)Fase De Reconocimiento
 
@@ -54,11 +54,11 @@ Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo
 
 Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con _Nmap_, es el puerto `445`, o servicio `Samba`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/2.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/2.png)
 
 De modo que procederemos a utilizar los scripts específicos con los que cuenta _Nmap_, para detectar vulnerabilidades en un servicio `Samba`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/3.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/3.png)
 
 Para poder utilizarlos podemos hacer lo siguiente:
 
@@ -71,7 +71,7 @@ A continuación se explican los parámetros utilizados en el escaneo de vulnerab
   * script - Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos script que comiencen por _smb-vuln_
   * p - Especificamos a que puertos queremos aplicar este escaneo
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/4.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/4.png)
 
 Como podemos darnos cuenta, esta máquina es vulnerable a `MS17-010`, o también conocido como `EternalBlue`.
 
@@ -92,7 +92,7 @@ search eternalblue
 search ms17-010
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/5.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/5.png)
 
 Posteriormente elegiremos el _exploit_ a utilizar; de hecho, una de las preguntas de la plataforma justamente es, introducir el _exploit_ que vamos a utilizar.
 
@@ -106,18 +106,18 @@ Una vez hemos seleccionado el _exploit_, procederemos a configurar tanto el `LHO
 show options
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/6.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/6.png)
 
 ```      
 set LHOST <nuestra IP> 
 set RHOST <IP víctima>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/7.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/7.png)
 
 Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos _Metasploit_ una shell dentro de la máquina víctima.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/8.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/8.png)
 
 Una vez llegados a este punto, _TryHackMe_ nos pide convertir nuestra shell actual, en `meterpreter`, para ello tendremos que abandonar nuestra sesión actual `Ctrl + Z`.
 
@@ -139,7 +139,7 @@ Y al igual que antes, tendremos que configurar cierto parámetro para poder cons
 show options                                  
 ```  
   
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/9.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/9.png)
 
 ```        
 sessions
@@ -150,7 +150,7 @@ run
 La opción `sessions` nos permite listar todas las sesiones que tengamos activas; esto es útil si tenemos más de una sesión activa, y necesitamos indicar una en particular.
 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/10.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/10.png)
 
 Una vez hemos conseguido un `meterpreter`, podemos volver a nuestra sesión.
 
@@ -162,11 +162,11 @@ sessions 1
 
 _TryHackMe_ nos indica que a través del comando `migrate <ID del proceso>`, podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos `NT AUTHORITY\SYSTEM`, de modo que no tiene sentido migrar al usuario que ya somos.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/11.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/11.png)
 
 Antes de pasar a conseguir las flags de la máquina, la plataforma nos sigue enseñando comandos útiles de _Metasploit_, en este caso el comando `hashdump`, con el cual podemos listar todos los usarios del sistema, así como sus contraseñas _hasheadas_. 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/12.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/12.png)
 
 En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea _Guest_, o _Administrator_; finalmente, se nos pide _crackear_ la contraseña de este usuario, para ello utilizaremos la herramienta `John the Ripper`, en conjunto del diccionario [rockyou](https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt).
 
@@ -188,7 +188,7 @@ Una vez creado el archivo de texto, podemos pasar a _crackear_ la contraseña:
 sudo john --format=NT --wordlist=dirección/del/diccionario/rockyou nombreArchivoTexto.txt
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/13.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/13.png)
 
 
 Una vez hemos _crackeado_ la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas flags. En este caso existe un total de 3 flags, las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema _Windows_, por lo que es aconsejable aprender estas locaciones. 
@@ -203,7 +203,7 @@ dir
 type flag1.txt
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/14.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/14.png)
 
 
 La segunda flag dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, `C:\Windows\System32\Config`.
@@ -214,7 +214,7 @@ dir
 type flag2.txt
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/15.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/15.png)
 
 La última flag dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas "bastante interesantes", personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo `flag3.txt`, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí:
 
@@ -223,7 +223,7 @@ cd \
 dir flag3.txt /s /p 
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/16.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/16.png)
 
 Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última flag, de modo que nos dirigiremos a esa ubicación para leer la flag.
 
@@ -233,4 +233,4 @@ dir
 type flag3.txt  
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Blue-TryHackMe/17.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/17.png)
