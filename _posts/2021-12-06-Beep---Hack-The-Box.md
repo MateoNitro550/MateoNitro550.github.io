@@ -93,7 +93,7 @@ whatweb https://10.10.10.7:10000
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/5.png)
 
-Como podemos observar, no hay nada especialmente relevante, a excepción de ese error relacionado con _SSL_ que aparece cuando visitamos la página a través del puerto `443`, el cual no es nada grave, y de hecho lo veremos en un momento. 
+Como podemos observar, no hay nada especialmente relevante, a excepción de ese error relacionado con _SSL_ que aparece cuando visitamos la página a través del protocolo `HTTPS`, el cual no es nada grave, y de hecho lo veremos en un momento. 
 
 En vista de que ya no nos es posible trabajar desde la terminal, tendremos que visitar estas páginas desde nuestro navegador.
 
