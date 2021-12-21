@@ -72,7 +72,7 @@ localhost/lfi.php?filename=/etc/passwd%00
 
 ### [](#header-3)Wrappers
 
-_PHP_ cuenta con una serie de _wrappers_, los cuales a menudo pueden ser abusados, por mencionar algunos tenemos:
+_PHP_ cuenta con una serie de _wrappers_, los cuales a menudo pueden ser abusados; por mencionar algunos tenemos:
 
 #### [](#header-4)expect://
 
