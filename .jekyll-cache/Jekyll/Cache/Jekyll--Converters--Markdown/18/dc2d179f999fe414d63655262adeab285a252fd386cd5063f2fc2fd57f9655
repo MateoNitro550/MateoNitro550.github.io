@@ -1,15 +1,17 @@
-I"�5<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+I"I6<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/1.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png" alt="" /></p>
+
+<p>Esta máquina nos permite realizar, tanto la intrusión, como la escalada de privilegios, de distintas maneras, por lo que es genial para aprender algunas técnicas de explotación, las cuales vamos a cubrir.</p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
 <p>Primeramente vamos a lanzar una <em>traza ICMP</em> para saber si la máquina está activa.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.247
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.7
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/2.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/2.png" alt="" /></p>
 
 <p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">63</code>, por lo que podemos intuir que estamos ante una máquina <em>Linux</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
 
@@ -41,7 +43,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.247 -R                               
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/3.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/3.png" alt="" /></p>
 
 <p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
 
@@ -82,7 +84,7 @@
 
 <p>Basándonos en la información que nos reporta <em>Nmap</em>, podemos darnos cuenta que nos encontramos frente a un teléfono móvil, y nuestra primera gran pista para la siguiente fase es el puerto <code class="language-plaintext highlighter-rouge">42135</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/4.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/4.png" alt="" /></p>
 
 <h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
 
@@ -91,11 +93,11 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit ES File Explorer                               
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/5.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/5.png" alt="" /></p>
 
 <p>En este caso <em>SearchSploit</em> no mostró nada interesante, sin embargo, si revisamos manualmente en la página de <em>Exploit Database</em>, podemos encontrar un script que nos permite leer archivos alojados en el servicio de <code class="language-plaintext highlighter-rouge">ES File Explorer</code> de versión <code class="language-plaintext highlighter-rouge">4.1.9.7.4</code>, por esta razón es importante no quedarnos conformes únicamente con el primer resultado que encontremos.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/6.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/6.png" alt="" /></p>
 
 <p>Sin embargo, tampoco será este el script con el que trabajaremos; en esta ocasión estaremos utilizando un proyecto de <em>GitHub</em> del usuario <em>fs0c131y</em>, este se llama <a href="https://github.com/fs0c131y/ESFileExplorerOpenPortVuln">ESFileExplorerOpenPortVuln</a>.</p>
 
@@ -111,36 +113,36 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 poc.py --cmd listPics --ip 10.10.10.247                               
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/7.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/7.png" alt="" /></p>
 
 <p>Por lo que procedemos a descargar esta imagen.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 poc.py --get-file /storage/emulated/0/DCIM/creds.jpg --ip 10.10.10.247 
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/8.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/8.png" alt="" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/9.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/9.png" alt="" /></p>
 
 <p>Si recordamos, otro servicio que detectamos con <em>Nmap</em>, fue el servicio <em>SSH</em> en el puerto <code class="language-plaintext highlighter-rouge">2222</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/10.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/10.png" alt="" /></p>
 
 <p>Por lo que procederemos a autenticarnos con las credenciales encontradas:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh kristi@10.10.10.247 -p 2222
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/11.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/11.png" alt="" /></p>
 
 <p>Una vez dentro de la máquina, procederemos a buscar la primera flag. Por lo que buscaremos el archivo <code class="language-plaintext highlighter-rouge">user.txt</code> dentro de todo el sistema.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo **/*user.txt*
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/12.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/12.png" alt="" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/13.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/13.png" alt="" /></p>
 
 <p>Podemos ver que en efecto esta es la flag del usuario con bajos privilegios.</p>
 
@@ -153,7 +155,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netstat -nlpt
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/14.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/14.png" alt="" /></p>
 
 <p>Si nos percatamos, la máquina utiliza el puerto <code class="language-plaintext highlighter-rouge">5555</code> para realizar varios procesos relacionados con <em>Android</em>; esto tiene sentido ya que algunos dispositivos <em>Android</em> tienen este puerto abierto para realizar procesos relacionados con el <code class="language-plaintext highlighter-rouge">Android Debug Bridge</code> o <code class="language-plaintext highlighter-rouge">ADB</code> por sus siglas en inglés.</p>
 
@@ -176,12 +178,12 @@ adb -s localhost:5555 shell
 su root
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/15.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/15.png" alt="" /></p>
 
 <p>Una vez hemos migrado al usuario <em>root</em>, simplemente tendremos que buscar la respectiva flag.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo **/*root.txt*
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-20-Explore-Hack-The-Box/16.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/16.png" alt="" /></p>
 :ET
