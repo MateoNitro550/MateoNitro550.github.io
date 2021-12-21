@@ -117,7 +117,7 @@ Como mencioné en un inicio, la máquina _Beep_ cuenta con varios vectores para 
 
 ### [](#header-4)Fase De Explotación - Local File Inclusion
 
-Lo primero que se nos puede ocurrir a la hora de encontrar un panel de login, sería probar contraseñas por defecto (un error bastante común aún hoy en día), sin embargo ninguna de las [siguientes](https://www.elastix.org/community/threads/default-passwords-not-password.8416/) nos es de ayuda.
+Lo primero que se nos puede ocurrir a la hora de encontrar un panel de login, sería probar contraseñas por defecto (un error bastante común aún hoy en día). Sin embargo ninguna de las [siguientes](https://www.elastix.org/community/threads/default-passwords-not-password.8416/) credenciales nos es de ayuda para logearnos en el servicio de `Elastix`
 
 La siguiente idea que podemos probar, sería buscar algún tipo de _exploit_ para el servicio `Elastix`; para ello utilizaremos _SearchSploit_.
 
@@ -177,7 +177,9 @@ Al habernos conectado a la máquina directamente como root, no es necesario real
 
 ### [](#header-4)Fase De Explotación - Shellshock
 
-DEF
+[shellshock](https://mateonitro550.github.io/Shellshock)
+
+Al igual que intentamos probar contraseñas por defecto en el panel de login del servicio `Elastix`, podemos hacer lo mismo en el panel de autenticación del servicio `Webmin`, pero al igual que ocurrió antes, las [siguientes](https://help.eset.com/era_deploy_va/64/en-US/index.html?webmin.htm) credenciales no nos permiten ingresar.
 
 ### [](#header-4)Fase De Explotación - File Upload Bypass
 
