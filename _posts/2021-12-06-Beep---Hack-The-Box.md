@@ -127,7 +127,17 @@ searchsploit Elastix
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/9.png)
 
-En este caso _SearchSploit_
+En este caso _SearchSploit_ nos muestra algunos _exploits_ interesantes, sin embargo nos vamos a quedar con el que nos permite realizar un [_Local File Inclusion (LFI)_](https://mateonitro550.github.io/Local-File-Inclusion-(LFI)), vulnerabilidad que ya revisamos.
+
+En este caso no nos haría falta descargar el _exploit_, ya que lo más probable es que nos indique en que ruta podemos aplicar el _LFI_.
+
+```
+searchsploit -x php/webapps/37637.pl
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/10.png)
+
+
 
 ### [](#header-4)Fase De Explotación - Shellshock
 
