@@ -11,6 +11,9 @@ Dependiendo de la gravedad, esta vulnerabilidad puede llevar al atacante a:
 * [XSS] (https://mateonitro550.github.io/Cross-Site-Scripting%28XSS%29) (Cross-Site Scripting)
 * DoS (Denial Of Service)
 
+[XSS] (https://mateonitro550.github.io/Cross-Site-Scripting-%28XSS%29)
+[XSS] (https://mateonitro550.github.io/Cross-Site-Scripting-(XSS))
+
 Un ejemplo muy básico sería el siguiente script en _PHP_.
 
 ```php
