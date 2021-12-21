@@ -1,4 +1,4 @@
-I"�+<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+I"�2<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png" alt="" /></p>
 
@@ -134,7 +134,28 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/9.png" alt="" /></p>
 
-<p>En este caso <em>SearchSploit</em> nos muestra algunos <em>exploits</em> interesantes, sin embargo nos vamos a quedar con el que nos permite realizar un <em>[Local File Inclusion]</em>(https://mateonitro550.github.io/Local-File-Inclusion-(LFI))</p>
+<p>En este caso <em>SearchSploit</em> nos muestra algunos <em>exploits</em> interesantes, sin embargo nos vamos a quedar con el que nos permite realizar un <a href="https://mateonitro550.github.io/Local-File-Inclusion-(LFI)"><em>Local File Inclusion (LFI)</em></a>, vulnerabilidad que ya revisamos.</p>
+
+<p>En este caso no nos haría falta descargar el <em>exploit</em>, ya que lo más probable es que nos indique en que ruta podemos aplicar el <em>LFI</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit -x php/webapps/37637.pl
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/10.png" alt="" /></p>
+
+<p>En efecto, pero antes de intentar explotar este <em>LFI</em>, debemos confirmar si en primer lugar existe la primera ruta, <code class="language-plaintext highlighter-rouge">vtigercrm</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/11.png" alt="" /></p>
+
+<p>Una vez confirmamos que la ruta existe, podemos pasar a explotar el <em>LFI</em>. Si nos percatamos, se está haciendo uso de un <em>null byte</em>, así como de varios <em>directory path traversal</em>, esto con el fin de leer el archivo <code class="language-plaintext highlighter-rouge">/etc/amportal.conf</code>, pero perfectamente podríamos listar cualquier otro archivo del sistema.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/12.png" alt="" /></p>
+
+<p>Leer esto así es un poco complicado, así que podríamos hacer <code class="language-plaintext highlighter-rouge">Ctrl + U</code>, para verlo de mejor manera.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/13.png" alt="" /></p>
+
+<p>El archivo <code class="language-plaintext highlighter-rouge">/etc/amportal.conf</code></p>
 
 <h3 id="fase-de-explotación---shellshock"><a href="#header-4"></a>Fase De Explotación - Shellshock</h3>
 

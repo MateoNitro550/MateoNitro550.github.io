@@ -137,7 +137,19 @@ searchsploit -x php/webapps/37637.pl
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/10.png)
 
+En efecto, pero antes de intentar explotar este _LFI_, debemos confirmar si en primer lugar existe la primera ruta, `vtigercrm`.
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/11.png)
+
+Una vez confirmamos que la ruta existe, podemos pasar a explotar el _LFI_. Si nos percatamos, se está haciendo uso de un _null byte_, así como de varios _directory path traversal_, esto con el fin de leer el archivo `/etc/amportal.conf`, pero perfectamente podríamos listar cualquier otro archivo del sistema.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/12.png)
+
+Leer esto así es un poco complicado, así que podríamos hacer `Ctrl + U`, para verlo de mejor manera.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/13.png)
+
+El archivo `/etc/amportal.conf`
 
 ### [](#header-4)Fase De Explotación - Shellshock
 
