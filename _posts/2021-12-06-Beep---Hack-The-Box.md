@@ -262,6 +262,8 @@ Y en efecto, una vez dentro, podemos empezar a investigar un poco; en el apartad
 
 De manera casi similar a la máquina [Vulnversity-TryHackMe](https://mateonitro550.github.io/Vulnversity-TryHackMe), vamos a tener que disfrazar un archivo `.php` como `.jpg`. No obstante, en este caso será un poco más sencillo ya que no haremos uso de `Burp Suite` (aunque podríamos); lo único que vamos a hacer es añadir la extensión `.jpg` a nuestra `reverseShell.php`.
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/30.png)
+
 Podríamos utilizar la [_reverse shell_](https://pentestmonkey.net/tools/web-shells/php-reverse-shell) que nos provee `pentestmonkey` (para lo cual debemos modificar el campo _ip_, y colocar la nuestra, y si quisiéramos el campo _port_), o bien, crear nuestra propia `reverse shell`.
 
 ```php
@@ -276,7 +278,7 @@ Y al igual que en los casos anteriores, previo a darle a `Save`, debemos de esta
 sudo nc -nlvp <puertoCualquiera>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/30.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/31.png)
 
 Si nos percatamos, a diferencia de los casos anteriores, en esta ocasión ya no somos el usuario root, somos el usuario `asterisk`, por lo que ahora si debemos de realizar la escalada de privilegios.
 
