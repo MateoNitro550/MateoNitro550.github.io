@@ -290,7 +290,7 @@ Para conseguir la primera flag, no tenemos que realizar ningún proceso, como el
 
 Para conseguir la flag del usuario con máximos privilegios, al ser el usuario `asterisk`, este usuario usualmente tiene acceso a ejectuar algunos binarios haciendo uso de `sudo`, por lo que lo primero que vamos a hacer es listar que binarios podemos ejecutar con `sudo`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/36.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/33.png)
 
 Había una vez.
 
