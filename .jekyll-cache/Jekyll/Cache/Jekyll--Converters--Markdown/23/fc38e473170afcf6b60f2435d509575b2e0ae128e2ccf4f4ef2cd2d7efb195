@@ -1,4 +1,4 @@
-I"rg<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+I"Dk<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png" alt="" /></p>
 
@@ -281,5 +281,13 @@
 <p>Si nos percatamos, a diferencia de los casos anteriores, en esta ocasión ya no somos el usuario root, somos el usuario <code class="language-plaintext highlighter-rouge">asterisk</code>, por lo que ahora si debemos de realizar la escalada de privilegios.</p>
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
+
+<p>Para conseguir la primera flag, no tenemos que realizar ningún proceso, como el usuario <code class="language-plaintext highlighter-rouge">asterisk</code>, nos es posible leer la flag del usuario con bajos privilegios.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/32.png" alt="" /></p>
+
+<p>Para conseguir la flag del usuario con máximos privilegios, al ser el usuario <code class="language-plaintext highlighter-rouge">asterisk</code>, este usuario usualmente tiene acceso a ejectuar algunos binarios haciendo uso de <code class="language-plaintext highlighter-rouge">sudo</code>, por lo que lo primero que vamos a hacer es listar que binarios podemos ejecutar con <code class="language-plaintext highlighter-rouge">sudo</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/33.png" alt="" /></p>
 
 :ET

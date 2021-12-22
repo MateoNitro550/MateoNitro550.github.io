@@ -284,4 +284,14 @@ Si nos percatamos, a diferencia de los casos anteriores, en esta ocasión ya no 
 
 ### [](#header-3)Escalada De Privilegios
 
+Para conseguir la primera flag, no tenemos que realizar ningún proceso, como el usuario `asterisk`, nos es posible leer la flag del usuario con bajos privilegios.
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/32.png)
+
+Para conseguir la flag del usuario con máximos privilegios, al ser el usuario `asterisk`, este usuario usualmente tiene acceso a ejectuar algunos binarios haciendo uso de `sudo`, por lo que lo primero que vamos a hacer es listar que binarios podemos ejecutar con `sudo`.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/33.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/34.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/35.png)
