@@ -292,6 +292,10 @@ Para conseguir la flag del usuario con máximos privilegios, al ser el usuario `
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/33.png)
 
+Había una vez.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/34.png)
+
+Un circo que alegraba siempre el corazón.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/35.png)
