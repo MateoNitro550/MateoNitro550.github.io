@@ -1,4 +1,4 @@
-I"�F<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+I"_H<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png" alt="" /></p>
 
@@ -212,7 +212,9 @@
 
 <h3 id="fase-de-explotación---shellshock"><a href="#header-4"></a>Fase De Explotación - Shellshock</h3>
 
-<p>ABC</p>
+<p>Si nos percatamos, en el ataque anterior, depués de haber intentado ingresar como un usuario no válido, se añade al <em>url</em> <code class="language-plaintext highlighter-rouge">/session_login.cgi</code></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/23.png" alt="" /></p>
 
 <h3 id="fase-de-explotación---file-upload-bypass"><a href="#header-4"></a>Fase De Explotación - File Upload Bypass</h3>
 

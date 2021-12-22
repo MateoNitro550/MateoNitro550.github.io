@@ -210,7 +210,13 @@ De modo que podremos leer sin problema alguno tanto la flag del usuario con bajo
 
 ### [](#header-4)Fase De Explotación - Shellshock
 
-ABC
+Si nos percatamos, en el ataque anterior, depués de haber intentado ingresar como un usuario no válido, se añade al _url_ `/session_login.cgi`
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/23.png)
+
+Esto llama nuestra atención ya que los archivos de extensión `.cgi`, o dentro del directorio `/cgi-bin/`, son utilizados para ejecutar programas en el servidor, y esto lo hacen a través de una interfaz de línea comandos (CLI), por lo que si la bash es vulnerable, podemos realizar un ataque [shellshock](https://mateonitro550.github.io/Shellshock).
+
+Lo más cómodo 
 
 ### [](#header-4)Fase De Explotación - File Upload Bypass
 
