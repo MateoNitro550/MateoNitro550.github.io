@@ -177,7 +177,7 @@ su root
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/15.png)
 
-Una vez hemos migrado al usuario _root_, simplemente tendremos que buscar la respectiva flag.
+Una vez hemos migrado al usuario root, simplemente tendremos que buscar la respectiva flag.
 
 ```
 echo **/*root.txt*

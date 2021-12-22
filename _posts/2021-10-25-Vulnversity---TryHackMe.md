@@ -242,7 +242,7 @@ find / -uid 0 -perm -4000 -type f 2>/dev/null
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/18.png)
 
-La mejor forma para abusar de algún binario, es recurrir a [GTFOBins](https://gtfobins.github.io/), esta página nos enseña como explotar binarios con _capabilities_ mal asignadas, binarios que se pueden ejectuar como _root_, y en este caso, binarios con permisos `SUID` mal asignados.
+La mejor forma para abusar de algún binario, es recurrir a [GTFOBins](https://gtfobins.github.io/), esta página nos enseña como explotar binarios con _capabilities_ mal asignadas, binarios que se pueden ejectuar como root, y en este caso, binarios con permisos `SUID` mal asignados.
 
 El binario más extraño que nos encontramos es `/bin/systemctl`, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscarlo en [GTFOBins](https://gtfobins.github.io/).
 
@@ -263,7 +263,7 @@ WantedBy=multi-user.target' > $TF
 /bin/systemctl enable --now $TF
 ```
 
-Si nos percatamos, lo único que modificamos de la información que nos provee `GTFOBins`, fue el código a ejecutar, en este caso, estamos asignando un permiso `SUID` a la `/bin/bash`, para posteriormente, a través del parámetro `-p`, ejecutar el binario `/bin/bash` manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario _root_. Otro aspecto que se modificó, fue utilizar el binario `/bin/systemctl` desde su ruta absoluta, mas no de su ruta relativa.
+Si nos percatamos, lo único que modificamos de la información que nos provee `GTFOBins`, fue el código a ejecutar, en este caso, estamos asignando un permiso `SUID` a la `/bin/bash`, para posteriormente, a través del parámetro `-p`, ejecutar el binario `/bin/bash` manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario root. Otro aspecto que se modificó, fue utilizar el binario `/bin/systemctl` desde su ruta absoluta, mas no de su ruta relativa.
 
 Una vez hemos abusado del binario `/bin/systemctl`, haremos lo siguiente:
 
@@ -271,7 +271,7 @@ Una vez hemos abusado del binario `/bin/systemctl`, haremos lo siguiente:
 /bin/bash -p
 ```
 
-Una vez siendo _root_, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así:
+Una vez siendo root, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así:
 
 ```
 find . -name root.txt

@@ -288,14 +288,27 @@ Para conseguir la primera flag, no tenemos que realizar ningún proceso, como el
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/32.png)
 
-Para conseguir la flag del usuario con máximos privilegios, al ser el usuario `asterisk`, este usuario usualmente tiene acceso a ejectuar algunos binarios haciendo uso de `sudo`, por lo que lo primero que vamos a hacer es listar que binarios podemos ejecutar con `sudo`.
+Para conseguir la flag del usuario con máximos privilegios, al ser el usuario `asterisk`, será bastante sencillo, ya que este usuario usualmente tiene acceso a ejectuar algunos binarios haciendo uso de `sudo`, por lo que, lo primero que vamos a hacer es listar que binarios podemos ejecutar como root.
+
+```
+sudo -l
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/33.png)
 
-Había una vez.
+La mejor forma para abusar de algún binario, es recurrir a [GTFOBins](https://gtfobins.github.io/), esta página nos enseña como explotar binarios con capabilities mal asignadas, binarios con permisos SUID mal asignados, y en este caso, binarios que se pueden ejectuar como root.
+
+En este caso, tenemos un abanico de oportunidades, tenemos binarios como `chmod`, `chown`, `service`, `yum`, y el binario que vamos a explotar en esta ocasión: `nmap`.
+
+Para explotar el binario `nmap`, bastará con ejecutar su modo interactivo, con el cual después, generaremos una bash con máximo privilegios.
+
+```
+sudo nmap --interactive
+nmap> !sh
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/34.png)
 
-Un circo que alegraba siempre el corazón.
+Posterior a ello, podemos buscar la flag dentro de todo el sistema, y leerla.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/35.png)
