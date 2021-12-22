@@ -216,7 +216,15 @@ Si nos percatamos, en el ataque anterior, depués de haber intentado ingresar co
 
 Esto llama nuestra atención ya que los archivos de extensión `.cgi`, o dentro del directorio `/cgi-bin/`, son utilizados para ejecutar programas en el servidor, y esto lo hacen a través de una interfaz de línea comandos (CLI), por lo que si la bash es vulnerable, podemos realizar un ataque [shellshock](https://mateonitro550.github.io/Shellshock).
 
-Lo más cómodo 
+Lo más cómodo sería realizar este ataque desde nuestra terminal, sin embargo, debido al problema del _certificado SSL_ autofirmado, a la hora de utilizar el comando `curl`, nos va a dar un error.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/24.png)
+
+Este error lo podríamos solucionar utilizando uno de los parámetros que nos otorga `curl`, concretamente el parámetro `-k` o `insecure`, el cual permite tramitar este tipo de peticiones inseguras. Sin embargo, ni así nos es posible explotar el `shellshock` de esta forma, por lo que tendremos que hacerlo de otra forma.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/25.png)
+
+Otra manera 
 
 ### [](#header-4)Fase De Explotación - File Upload Bypass
 
