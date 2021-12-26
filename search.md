@@ -4,7 +4,7 @@ title: Search
 ---
 
 <div id="search-container">
-    <input type="text" id="search-input" placeholder="Busca Plataforma, Máquina, Vulnerabilidad...">
+    <input type="text" id="search-input" placeholder="Busca Plataforma, Máquina, Vulnerabilidad, CTF...">
     <ul id="results-container"></ul>
 </div>
 
