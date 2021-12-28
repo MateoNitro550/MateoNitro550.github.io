@@ -3,7 +3,7 @@ title: Safe - Hack The Box
 published: true
 ---
 
-oy vamos a resolver la máquina _Safe_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma. 
+Hoy vamos a resolver la máquina _Safe_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma. 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/1.png)
 
