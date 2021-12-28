@@ -101,7 +101,21 @@ Al añadir `/myapp`, al final del url, se nos va a descargar un archivo que llev
 
 ### [](#header-3)Fase De Explotación
 
-ABC
+Lo primero que debemos hacer, es saber que es `myapp`, para ello podemos usar el comando `file`.
+
+```
+file myapp
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/8.png)
+
+Nos damos cuenta que el archivo `myapp`, es un binario, por lo que procederemos a ejecutarlo para saber que hace:
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/9.png)
+
+Al parecer, al ejecutar el binario `myapp`, nos reporta por consola la hora actual, además de imprimir el mismo mensaje que introduzcamos.
+
+
 
 ### [](#header-3)Escalada De Privilegios
 
