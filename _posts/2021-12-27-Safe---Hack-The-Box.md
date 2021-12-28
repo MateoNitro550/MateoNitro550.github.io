@@ -36,13 +36,13 @@ ping -c 1 10.10.10.147 -R
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
 ```
-nmap -p- --open -T5 -v -n 10.10.10.7
+nmap -p- --open -T5 -v -n 10.10.10.147
 ```
 
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
 
 ``` 
-sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.7
+sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.147
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
@@ -60,7 +60,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.
 
 ```  
-nmap -sC -sV -p 22,25,80,110,111,143,443,878,993,995,3306,4190,4445,4559,5038,10000 10.10.10.7
+nmap -sC -sV -p 22,80,1337 10.10.10.147
 ```
 
 A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
@@ -69,45 +69,27 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 * sV - Versión y servicios que corren bajo los puertos encontrados
 * p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
 
-Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abiertos algunos puertos relacionados con `HTTP` y `HTTPS`.
+Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abierto un puerto relacionado con `HTTP`; asimismo, encontramos abierto el puerto `1337`, relacionado con el protocolo `WASTE`, el cual permite el intercambio de archivos de forma cifrada.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/4.png)
-
-Debido a que la máquina cuenta con estos puertos abiertos, podríamos intentar aplicar `fuzzing`, no obstante, no vamos a encontrar nada interesante. 
+Debido a que la máquina cuenta con el puerto `80` abierto, podríamos intentar aplicar `fuzzing`, no obstante, no vamos a encontrar nada interesante. 
 
 Lo siguiente que podemos hacer es determinar ante que nos estamos enfrentando, para ello podemos hacer uso de `WhatWeb`, herramienta que se encarga de identificar que tecnologías web se están empleando, véase gestores de contenido (CMS), librerias o plugins, o finalmente el sistema operativo que se está utilizando para alojar el servidor web.
 
 ```
-whatweb http://10.10.10.7
+whatweb http://10.10.10.147
 ```
 
-```
-whatweb https://10.10.10.7
-```
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/4.png)
 
-```
-whatweb https://10.10.10.7:10000
-```
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/5.png)
-
-Como podemos observar, no hay nada especialmente relevante, a excepción de ese error relacionado con _SSL_ que aparece cuando visitamos la página a través del protocolo `HTTPS`, el cual no es nada grave, y de hecho lo veremos en un momento. 
+Como podemos observar, no hay nada especialmente relevante a excepción del título de la página, el cual es el mensaje por defecto que aparece cuando montamos una página web haciendo uso del servidor `Apache`, por lo que podemos irnos haciendo a la idea, de que la entrada a la máquina, no será vía web.
 
 En vista de que ya no nos es posible trabajar desde la terminal, tendremos que visitar estas páginas desde nuestro navegador.
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/5.png)
+
+En efecto, lo primero que vemos al abrir la página web, es la página por defecto que viene cuando montamos una página web mediante el servidor `Apache`, por lo que, podemos inspeccionar el código fuente, en busca de alguna pista; para verlo de manera más cómoda podemos hacer `Ctrl + U`.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/6.png)
-
-Vemos que al abrir la primera página desde nuestro navegador (y por consiguiente la segunda, pues se está aplicando un redirect como pudimos ver en lo reportado por `WhatWeb`), nos salta un aviso de que la conexión no es segura, y esto se debe a que el _certificado SSL_ que se está empleando, es autofirmado, por lo que se lo considera inseguro. En esta ocasión, y como sabemos que la página web pertenece a _HackTheBox_, haremos caso omiso a la advertencia y procederemos a la página web.
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/7.png)
-
-Lo primero que llama nuestra atención es `Elastix`, el cual es un software encargado de unificar servicios PBX IP, correo electrónico, mensajería instantánea, fax entre otros, el cual va bastante de la mano con `Asterisk`.
-
-Respecto a la tercera página web, el navegador nuevamente nos avisará del _certificado SSL_ autofirmado, aviso, el cual una vez más obviaremos.
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/8.png)
-
-Una vez dentro, lo primero que vemos es un panel que nos pide autenticar para tener acceso a `Webmin`, una herramienta que permite la administración de servicios basados en _Unix_. 
 
 ### [](#header-3)Fase De Explotación
 
