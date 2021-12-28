@@ -1,4 +1,4 @@
-I"�q<p>El día de hoy vamos a resolver la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+I"�q<p>El día de hoy vamos a estar resolviendo la máquina <em>Beep</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png" alt="" /></p>
 
@@ -40,7 +40,7 @@
 
 <p>Si nos damos cuenta, en esta ocasión, el valor del <em>TTL</em> es <code class="language-plaintext highlighter-rouge">63</code> y no <code class="language-plaintext highlighter-rouge">64</code> como indica la tabla anterior, esto se debe a que en el entorno de máquinas de <em>Hack The Box</em>, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el <em>TTL</em> disminuye en una unidad.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.247 -R                               
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.7 -R                               
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/3.png" alt="" /></p>
