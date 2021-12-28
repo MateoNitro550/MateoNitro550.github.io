@@ -91,6 +91,14 @@ En efecto, lo primero que vemos al abrir la página web, es la página por defec
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/6.png)
 
+Si nos percatamos, en las primeras líneas del código fuente, hay un comentario que nos menciona que `myapp`, alojado en el puerto `1337`, lo podemos descargar; para ello, podemos intentar añadir `/myapp`, al final del url.
+
+__Los comentarios en HTML, siempre tienen la estrctura: <!-- Este es un comentario a modo de prueba --> __
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/7.png)
+
+Al añadir `/myapp`, al final del url, se nos va a descargar un archivo que lleva por nombre, `myapp`, el cual vamos a empezar a analizar. 
+
 ### [](#header-3)Fase De Explotación
 
 Como mencioné en un inicio, la máquina _Beep_ cuenta con varios vectores para realizar la fase de explotación; de hecho, para tres de ellos ni siquiera hace falta la escalada de privilegios.
