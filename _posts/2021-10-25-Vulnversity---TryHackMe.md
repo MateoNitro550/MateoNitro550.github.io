@@ -50,7 +50,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 * v - _Verbose_, reporta lo encontrado por consola
 * n - No aplicar _resolución DNS_
 * sS - Escaneo _TCP SYN_
-* min-rate - Emitir paquetes no más lentos que <<valor>> por segundo
+* min-rate - Emitir paquetes no más lentos que \<valor\> por segundo
 * vvv - Triple _verbose_, para obtener mayor información por consola
 * Pn - No aplicar _host discovery_
 
