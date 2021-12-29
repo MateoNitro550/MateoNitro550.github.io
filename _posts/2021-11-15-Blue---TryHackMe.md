@@ -11,13 +11,13 @@ En esta ocasión vamos a resolver la máquina _Blue_ de _TryHackMe_. Esta es una
 
 Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
-```
+```bash
 nmap -p- --open -T5 -v -n <dirección IP>
 ```
  
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
   
-``` 
+```bash
 sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP>
 ```
 
@@ -35,7 +35,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
   
 Para determinar la versión y servicios que corren bajo estos puertos podemos realizar lo siguiente:
 
-```  
+```bash
 nmap -sC -sV -p 135,139,445,3389,49152,49153,49154,49158,49160 <dirección IP>
 ```
   
@@ -62,7 +62,7 @@ De modo que procederemos a utilizar los scripts específicos con los que cuenta 
 
 Para poder utilizarlos podemos hacer lo siguiente:
 
-```  
+```bash
 nmap --script="smb-vuln*" -p 445 <dirección IP>
 ```
 
@@ -136,8 +136,8 @@ use post/multi/manage/shell_to_meterpreter
 Y al igual que antes, tendremos que configurar cierto parámetro para poder conseguir un `meterpreter`, en este caso, la sesión con la que estábamos trabajando antes.
 
 ```      
-show options                                  
-```  
+show options
+```
   
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/9.png)
 
@@ -154,7 +154,7 @@ La opción `sessions` nos permite listar todas las sesiones que tengamos activas
 
 Una vez hemos conseguido un `meterpreter`, podemos volver a nuestra sesión.
 
-```      
+```
 sessions 1
 ```
 
@@ -178,7 +178,7 @@ sudo apt install john
 
 En nuestra máquina, crearemos un documento de texto que contenga la contraseña _hasheada_ del usuario, podemos hacerlo de manera manual, o desde la misma terminal:
 
-```
+```bash
 echo "Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" >> nombreArchivoTexto.txt
 ```
 

@@ -28,20 +28,20 @@ Una vez comprobamos que la máquina está activa (pues nos devuelve una respuest
 Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `63` y no `64` como indica la tabla anterior, esto se debe a que en el entorno de máquinas de _Hack The Box_, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el _TTL_ disminuye en una unidad.
 
 ```
-ping -c 1 10.10.10.247 -R                               
+ping -c 1 10.10.10.247 -R
 ``` 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/3.png)
 
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
-```
+```bash
 nmap -p- --open -T5 -v -n 10.10.10.247
 ```
 
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
 
-``` 
+```bash
 sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.247
 ```
 
@@ -59,7 +59,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 
 Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.
 
-```  
+```bash
 nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247
 ```
 
@@ -78,8 +78,8 @@ Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que
 Para explotar el servicio `ES File Explorer`, empezaremos buscando algun exploit que se encuentre en _Exploit Database_, para ello utilizaremos _SearchSploit_ para poder seguir trabajando desde nuestra terminal.
 
 ```
-searchsploit ES File Explorer                               
-``` 
+searchsploit ES File Explorer
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/5.png)
 
@@ -100,7 +100,7 @@ Una vez lo tengamos descargado, podemos empezar a revisar que información se al
 Después de estar listando el contenido almacenado en el teléfono móvil, encontramos entre las fotografías, una llamada `creds`, lo cual nos hace pensar a que se refiere a credenciales con las que posteriormente autenticarnos.
 
 ```
-python3 poc.py --cmd listPics --ip 10.10.10.247                               
+python3 poc.py --cmd listPics --ip 10.10.10.247
 ``` 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/7.png)
@@ -121,7 +121,7 @@ Si recordamos, otro servicio que detectamos con _Nmap_, fue el servicio _SSH_ en
 
 Por lo que procederemos a autenticarnos con las credenciales encontradas:
 
-```  
+``` 
 ssh kristi@10.10.10.247 -p 2222
 ```
 
@@ -145,7 +145,7 @@ Lo más común sería utilizar `find . -name user.txt` (y en este caso, redirigi
 
 Para poder conseguir la siguiente flag (la del usuario con máximos privilegios), tenemos que percatarnos que la máquina tiene más puertos abiertos que los registrados con _Nmap_, a estos se los conoce como _puertos internos_.
 
-```  
+``` 
 netstat -nlpt
 ```
 

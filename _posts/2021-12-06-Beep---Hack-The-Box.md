@@ -37,13 +37,13 @@ ping -c 1 10.10.10.7 -R
 
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
-```
+```bash
 nmap -p- --open -T5 -v -n 10.10.10.7
 ```
 
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
 
-``` 
+```bash
 sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.7
 ```
 
@@ -61,7 +61,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 
 Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.
 
-```  
+```bash
 nmap -sC -sV -p 22,25,80,110,111,143,443,878,993,995,3306,4190,4445,4559,5038,10000 10.10.10.7
 ```
 
@@ -115,7 +115,7 @@ Una vez dentro, lo primero que vemos es un panel que nos pide autenticar para te
 
 Como mencioné en un inicio, la máquina _Beep_ cuenta con varios vectores para realizar la fase de explotación; de hecho, para tres de ellos ni siquiera hace falta la escalada de privilegios.
 
-### [](#header-4)Fase De Explotación - Local File Inclusion
+#### [](#header-4)Fase De Explotación - Local File Inclusion
 
 Lo primero que se nos puede ocurrir a la hora de encontrar un panel de login, sería probar contraseñas por defecto (un error bastante común aún hoy en día). Sin embargo ninguna de las [siguientes](https://www.elastix.org/community/threads/default-passwords-not-password.8416/) credenciales nos es de ayuda para logearnos en el servicio de `Elastix`
 
@@ -175,7 +175,7 @@ Al habernos conectado a la máquina directamente como root, no es necesario real
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/17.png)
 
-### [](#header-4)Fase De Explotación - Webmin
+#### [](#header-4)Fase De Explotación - Webmin
 
 [shellshock](https://mateonitro550.github.io/Shellshock)
 
@@ -208,7 +208,7 @@ De modo que podremos leer sin problema alguno tanto la flag del usuario con bajo
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/22.png)
 
-### [](#header-4)Fase De Explotación - Shellshock
+#### [](#header-4)Fase De Explotación - Shellshock
 
 Si nos percatamos, en el ataque anterior, depués de haber intentado ingresar como un usuario no válido, se añade al _url_ `/session_login.cgi`
 
@@ -252,7 +252,7 @@ Finalmente, presionaremos el botón `Send`, para que emitir nuestra petición.
 
 Y al igual que en los casos anteriores, sin necesidad de escalada de privilegios, podremos leer tanto la flag del usuario con bajos privilegios, como la del usuario con máximos privilegios, sin ninguna complicación.
 
-### [](#header-4)Fase De Explotación - File Upload Bypass
+#### [](#header-4)Fase De Explotación - File Upload Bypass
 
 Si recordamos, en la fase de explotación a través del uso de un _LFI_, habíamos descubierto un panel de login de `vtiger CRM`; al igual que en las situaciones anteriores, podemos probar una serie de credenciales por defecto, pero estas no servirán, por lo que nos queda la opción de reutilizar las credenciales que ya habíamos encontrado.
 
@@ -302,9 +302,9 @@ En este caso, tenemos un abanico de oportunidades, tenemos binarios como `chmod`
 
 Para explotar el binario `nmap`, bastará con ejecutar su modo interactivo, con el cual después, generaremos una bash con máximo privilegios.
 
-```
+```bash
 sudo nmap --interactive
-nmap> !sh
+!sh
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/34.png)

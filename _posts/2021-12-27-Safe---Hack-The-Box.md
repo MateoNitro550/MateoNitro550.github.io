@@ -35,13 +35,13 @@ ping -c 1 10.10.10.147 -R
 
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
-```
+```bash
 nmap -p- --open -T5 -v -n 10.10.10.147
 ```
 
 Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
 
-``` 
+```bash 
 sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.147
 ```
 
@@ -59,7 +59,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 
 Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.
 
-```  
+```bash
 nmap -sC -sV -p 22,80,1337 10.10.10.147
 ```
 
@@ -93,7 +93,11 @@ En efecto, lo primero que vemos al abrir la página web, es la página por defec
 
 Si nos percatamos, en las primeras líneas del código fuente, hay un comentario que nos menciona que `myapp`, alojado en el puerto `1337`, lo podemos descargar; para ello, podemos intentar añadir `/myapp`, al final del url.
 
-_Los comentarios en HTML, tienen la estructura: \<!\-\- Este es un comentario a modo de prueba \-\-\>_
+_Los comentarios en HTML, siempre tienen la siguiente estructura:_
+
+```
+<!-- Este es un comentario a modo de prueba -->
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/7.png)
 
@@ -113,9 +117,17 @@ Nos damos cuenta que el archivo `myapp`, es un binario, por lo que procederemos 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/9.png)
 
-Al parecer, al ejecutar el binario `myapp`, nos reporta por consola la hora actual, además de imprimir el mismo mensaje que introduzcamos.
+Al ejecutar el binario `myapp`, nos reporta por consola la hora actual, además de imprimir el mismo mensaje que introduzcamos; esto no nos es de ayuda, por lo que podriamos intentar extraer las cadenas de caracteres que se encuentran dentro del binario con el comando `strings`, sin embargo, no hay nada interesante.
 
+Lo siguiente que podríamos intentar, sería realizar un `Buffer Overflow`, para ello, cuándo el binario `myapp`, nos pregunte por una cadena de caracteres, debemos ingresar una que sea bastante larga.
 
+Una manera rápida con la cual podemos conseguir cadenas de caracteres cuan largas queramos, sería haciendo uso de `Python`.
+
+```bash
+python -c 'print "A"*365'
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/10.png)
 
 ### [](#header-3)Escalada De Privilegios
 
