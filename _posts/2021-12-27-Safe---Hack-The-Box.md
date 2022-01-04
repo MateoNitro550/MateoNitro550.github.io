@@ -129,6 +129,10 @@ python -c 'print "A"*365'
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/10.png)
 
+Si nos percatamos, al introducir nuestra cadena de _365 letras A_, el binario `myapp`, deja de funcionar como debería, esto se debe a un `Segmentation Fault` (_Fallo de Segmentación_), los cuales se dan cuando 'algo', intenta acceder a una parte de la memoria a la que no debería; es importante mencionar que no estamos sobrescribiendo la memoria, estamos sobrescribiendo la dirección de retorno con las _letras A_ que desbordan el buffer, nuestro 'algo'. 
+
+
+
 ### [](#header-3)Escalada De Privilegios
 
 DEF
