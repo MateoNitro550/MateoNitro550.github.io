@@ -10,6 +10,8 @@ title: Search
 
 <script src="{{ site.url }}/js/simple-jekyll-search.min.js"></script>
 
+<script src="{{ site.baseurl }}/js/simple-jekyll-search.min.js" type="text/javascript"></script>
+
 <script>
     SimpleJekyllSearch({
     searchInput: document.getElementById('search-input'),  
