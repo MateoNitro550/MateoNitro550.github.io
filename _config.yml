@@ -6,7 +6,7 @@ author:
   url: "https://mateonitro550.github.io"
 
 baseurl: "/"
-newbaseurl: ""
+newbaseurl: "js"
 
 source: .
 destination: ./_site
