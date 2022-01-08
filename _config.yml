@@ -5,8 +5,8 @@ author:
   email: "mandinoparedes@hotmail.com"
   url: "https://mateonitro550.github.io"
 
-baseurl: "holaaaaa"
-newbaseurl: "kajsdlkjasld"
+baseurl: "/"
+newbaseurl: ""
 
 source: .
 destination: ./_site
