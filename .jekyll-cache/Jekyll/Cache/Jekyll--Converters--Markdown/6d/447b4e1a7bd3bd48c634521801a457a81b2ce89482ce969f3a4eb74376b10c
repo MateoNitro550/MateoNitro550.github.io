@@ -1,13 +1,9 @@
-I"s<div id="search-container">
+I"�<div id="search-container">
     <input type="text" id="search-input" placeholder="Busca Plataforma, Máquina, Vulnerabilidad, Temática, CTF..." />
     <ul id="results-container"></ul>
 </div>
 
 <script src="http://0.0.0.0:8000/js/simple-jekyll-search.min.js"></script>
-
-<script src="js/simple-jekyll-search.min.js" type="text/javascript"></script>
-
-<script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
 
 <script>
     SimpleJekyllSearch({
