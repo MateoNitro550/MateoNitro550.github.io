@@ -129,9 +129,34 @@ python -c 'print "A"*365'
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/10.png)
 
-Si nos percatamos, al introducir nuestra cadena de _365 letras A_, el binario `myapp`, deja de funcionar como debería, esto se debe a un `Segmentation Fault` (_Fallo de Segmentación_), los cuales se dan cuando 'algo', intenta acceder a una parte de la memoria a la que no debería; es importante mencionar que no estamos sobrescribiendo la memoria, estamos sobrescribiendo la dirección de retorno con las _letras A_ que desbordan el buffer, nuestro 'algo'. 
+Si nos percatamos, al introducir nuestra cadena de _365 letras A_, el binario `myapp`, deja de funcionar como debería, esto se debe a un `Segmentation Fault` (_Fallo de Segmentación_), los cuales se dan cuando empezamos a sobreescribir registros. Ahora, ¿por qué se están sobreescribiendo algunos registros? 
 
+Cuando el programa `myapp`, nos pregunta por una cadena de caracteres, este almacena nuestra respuesta en un bloque de memoria, el `buffer`, el cual puede almacenar una cierta cantidad de bytes, la cual de momento desconocemos; si introducimos una cantidad de bytes mayor a la que el buffer estaba diseñado, el programa corrompe.
 
+La pregunta ahora es, ¿a dónde se dirigen estos bytes que están desbordando el `buffer`, acaso desaparecen? La respuesta es no, como mencioné, empezamos a sobreescribir registros, de modo que los bytes siguientes a la cantidad máxima de bytes que soporta el buffer, se dirigen al siguiente valor de memoria, y así sucesivamente.
+
+El concepto de `Buffer Overflow` puede parecer complejo en un inicio, pero es mucho más fácil de asimilarlo cuando lo visualizamos; para ello, haremos uso de `GDB`, herramienta que nos permitirá depurar el binario `myapp`. Concretamente estaré haciendo uso de `GEF` (_GDB Enhanced Features_), el cual es una extensión para GDB, así como lo es `PEDA` (_Python Exploit Development Assistance_). Si queremos instalar `GEF`, podemos seguir las instrucciones que nos da la [página oficial](https://gef.readthedocs.io/en/master/#setup), sin embargo,
+
+```
+pip3 install capstone unicorn keystone-engine ropper
+
+bash -c "$(curl -fsSL http://gef.blah.cat/sh)"
+```
+
+En este caso, estos registros se están sobreescribiendo con las _letras A_ que desbordan el buffer
+
+'algo', intenta acceder a una parte de la memoria a la que no debería; no estamos sobrescribiendo una parte de la memoria, la dirección de retorno se está sobreescribiendo con las _letras A_ que desbordan el buffer, nuestro 'algo'. 
+
+tanta A empieza a sobrecscribir registros, el flujo del progrma se pierde
+??? - ebp - 
+ret - eip - retrun adress
+sobrescribe direccion de memoria, el eip apunta a la suigente direccion
+cuatnas para llegar a eip
+ya tiens control del eip
+dirigir el flujo del progreama a una direccion donde haya conteido maliciooso
+??? esp - pila
+
+checksec -> dep (data exectuon preventip) -> 
 
 ### [](#header-3)Escalada De Privilegios
 

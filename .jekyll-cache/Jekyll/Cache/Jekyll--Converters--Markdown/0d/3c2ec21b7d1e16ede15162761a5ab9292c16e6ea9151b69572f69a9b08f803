@@ -1,4 +1,4 @@
-I"�/<p>Hoy vamos a resolver la máquina <em>Safe</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
+I"�9<p>Hoy vamos a resolver la máquina <em>Safe</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/1.png" alt="" /></p>
 
@@ -136,7 +136,33 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/10.png" alt="" /></p>
 
-<p>Si nos percatamos, al introducir nuestra cadena de <em>365 letras A</em>, el binario <code class="language-plaintext highlighter-rouge">myapp</code>, deja de funcionar como debería, esto se debe a un <code class="language-plaintext highlighter-rouge">Segmentation Fault</code> (<em>Fallo de Segmentación</em>), los cuales se dan cuando ‘algo’, intenta acceder a una parte de la memoria a la que no debería; es importante mencionar que no estamos sobrescribiendo la memoria, estamos sobrescribiendo la dirección de retorno con las <em>letras A</em> que desbordan el buffer, nuestro ‘algo’.</p>
+<p>Si nos percatamos, al introducir nuestra cadena de <em>365 letras A</em>, el binario <code class="language-plaintext highlighter-rouge">myapp</code>, deja de funcionar como debería, esto se debe a un <code class="language-plaintext highlighter-rouge">Segmentation Fault</code> (<em>Fallo de Segmentación</em>), los cuales se dan cuando empezamos a sobreescribir registros. Ahora, ¿por qué se están sobreescribiendo algunos registros?</p>
+
+<p>Cuando el programa <code class="language-plaintext highlighter-rouge">myapp</code>, nos pregunta por una cadena de caracteres, este almacena nuestra respuesta en un bloque de memoria, el <code class="language-plaintext highlighter-rouge">buffer</code>, el cual puede almacenar una cierta cantidad de bytes, la cual de momento desconocemos; si introducimos una cantidad de bytes mayor a la que el buffer estaba diseñado, el programa corrompe.</p>
+
+<p>La pregunta ahora es, ¿a dónde se dirigen estos bytes que están desbordando el <code class="language-plaintext highlighter-rouge">buffer</code>, acaso desaparecen? La respuesta es no, como mencioné, empezamos a sobreescribir registros, de modo que los bytes siguientes a la cantidad máxima de bytes que soporta el buffer, se dirigen al siguiente valor de memoria, y así sucesivamente.</p>
+
+<p>El concepto de <code class="language-plaintext highlighter-rouge">Buffer Overflow</code> puede parecer complejo en un inicio, pero es mucho más fácil de asimilarlo cuando lo visualizamos; para ello, haremos uso de <code class="language-plaintext highlighter-rouge">GDB</code>, herramienta que nos permitirá depurar el binario <code class="language-plaintext highlighter-rouge">myapp</code>. Concretamente estaré haciendo uso de <code class="language-plaintext highlighter-rouge">GEF</code> (<em>GDB Enhanced Features</em>), el cual es una extensión para GDB, así como lo es <code class="language-plaintext highlighter-rouge">PEDA</code> (<em>Python Exploit Development Assistance</em>). Si queremos instalar <code class="language-plaintext highlighter-rouge">GEF</code>, podemos seguir las instrucciones que nos da la <a href="https://gef.readthedocs.io/en/master/#setup">página oficial</a>, sin embargo,</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip3 install capstone unicorn keystone-engine ropper
+
+bash -c "$(curl -fsSL http://gef.blah.cat/sh)"
+</code></pre></div></div>
+
+<p>En este caso, estos registros se están sobreescribiendo con las <em>letras A</em> que desbordan el buffer</p>
+
+<p>‘algo’, intenta acceder a una parte de la memoria a la que no debería; no estamos sobrescribiendo una parte de la memoria, la dirección de retorno se está sobreescribiendo con las <em>letras A</em> que desbordan el buffer, nuestro ‘algo’.</p>
+
+<p>tanta A empieza a sobrecscribir registros, el flujo del progrma se pierde
+??? - ebp - 
+ret - eip - retrun adress
+sobrescribe direccion de memoria, el eip apunta a la suigente direccion
+cuatnas para llegar a eip
+ya tiens control del eip
+dirigir el flujo del progreama a una direccion donde haya conteido maliciooso
+??? esp - pila</p>
+
+<p>checksec -&gt; dep (data exectuon preventip) -&gt;</p>
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 
