@@ -9,7 +9,7 @@ Dependiendo de la gravedad, esta vulnerabilidad puede llevar al atacante a:
 	
 * RCE (Remote Code Execution)
 * [XSS](https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)) (Cross-Site Scripting)
-* DoS (Denial Of Service)
+* DoS (Denial of Service)
 
 Un ejemplo muy básico sería el siguiente script en _PHP_.
 
@@ -60,7 +60,7 @@ De igual manera, es posible que en el código se nos limite a acceder a archivos
 ?>
 ```
 
-De modo que cuando intentemos leer el archivo `/etc/passwd`, o cualquier otro archivo del sistema, lo que estariamos leyendo en realidad sería el archivo `/etc/passwd.php`, el cual no existe. 
+De modo que cuando intentemos leer el archivo `/etc/passwd`, o cualquier otro archivo del sistema, lo que estaríamos leyendo en realidad sería el archivo `/etc/passwd.php`, el cual no existe. 
 
 Sin embargo, si añadimos el nullbyte `%00` al final de nuestra cadena de ataque, el `.php` no será tenido en cuenta, pudiendo así leer con normalidad el `/etc/passwd`, o cualquier otro archivo del sistema.
 
@@ -88,7 +88,7 @@ localhost/lfi.php?filename=expect://whoami
 
 Nos permite codificar archivos del sistema a través de diferentes métodos como podría ser _Base64_ o _ROT13_. 
 
-Este _wrapper_ resulta bastante útil si necesitamos leer un archivo en _PHP_, ya que recordemos, este es un lenguaje interpretado, por lo que si intentáramos leer un archivo _PHP_ del servidor vulnerable, lo que veríamos sería simplemente el output del script.
+Este _wrapper_ resulta bastante útil si necesitamos leer un archivo en _PHP_, ya que recordemos, este es un lenguaje interpretado, por lo que, si intentáramos leer un archivo _PHP_ del servidor vulnerable, lo que veríamos sería simplemente el output del script.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/5.png)
 
