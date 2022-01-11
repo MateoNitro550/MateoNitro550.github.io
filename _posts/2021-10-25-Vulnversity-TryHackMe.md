@@ -221,7 +221,7 @@ cat /etc/passwd | grep "sh$"
 Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente:
 
 ```bash
-find . -name user.txt 2> /dev/null
+find / -name user.txt 2> /dev/null
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/17.png)
@@ -274,7 +274,7 @@ Una vez hemos abusado del binario `/bin/systemctl`, haremos lo siguiente:
 Una vez siendo root, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así:
 
 ```bash
-find . -name root.txt
+find / -name root.txt
 ```
  
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/20.png)

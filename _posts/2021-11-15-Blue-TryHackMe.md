@@ -168,7 +168,7 @@ Antes de pasar a conseguir las flags de la máquina, la plataforma nos sigue ens
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/12.png)
 
-En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea _Guest_, o _Administrator_; finalmente, se nos pide _crackear_ la contraseña de este usuario, para ello utilizaremos la herramienta `John the Ripper`, en conjunto del diccionario [rockyou](https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt).
+En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea _Guest_, o _Administrator_; finalmente, se nos pide _crackear_ la contraseña de este usuario, para ello utilizaremos la herramienta `John the Ripper`, en conjunto del diccionario [rockyou.txt](https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt).
 
 En caso de no contar con la herramienta `John the Ripper` instalada, podemos hacer lo siguiente:
 
@@ -179,13 +179,13 @@ sudo apt install john
 En nuestra máquina, crearemos un documento de texto que contenga la contraseña _hasheada_ del usuario, podemos hacerlo de manera manual, o desde la misma terminal:
 
 ```bash
-echo "Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" >> nombreArchivoTexto.txt
+echo "Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" >> nombreArchivo
 ```
 
 Una vez creado el archivo de texto, podemos pasar a _crackear_ la contraseña:
 
 ```
-sudo john --format=NT --wordlist=dirección/del/diccionario/rockyou nombreArchivoTexto.txt
+sudo john --format=NT --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/13.png)

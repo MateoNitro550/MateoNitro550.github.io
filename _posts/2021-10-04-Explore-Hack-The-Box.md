@@ -139,7 +139,7 @@ echo **/*user.txt*
 
 Podemos ver que en efecto esta es la flag del usuario con bajos privilegios.
 
-Lo más común sería utilizar `find . -name user.txt` (y en este caso, redirigir todo el _stderr_ o _Standard Error_ hacia el `/dev/null`), sin embargo, no conseguimos ningún resultado en esta máquina, por lo que resulta conveniente conocer otros métodos para realizar el mismo proceso.
+Lo más común sería utilizar `find / -name user.txt` (y en este caso, redirigir todo el _stderr_ o _Standard Error_ hacia el `/dev/null`), sin embargo, no conseguimos ningún resultado en esta máquina, por lo que resulta conveniente conocer otros métodos para realizar el mismo proceso.
 
 ### [](#header-3)Escalada De Privilegios
 
