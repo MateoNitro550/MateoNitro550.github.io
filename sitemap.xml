@@ -2,52 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://mateonitro550.github.io/</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>1.00</priority>
+    <lastmod>2022-01-21</lastmod>
   </url>
   <url>
     <loc>https://mateonitro550.github.io/search</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>0.90</priority>
+    <lastmod>2022-01-21</lastmod>
   </url>
   <url>
     <loc>https://mateonitro550.github.io/archive</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>0.90</priority>
+    <lastmod>2022-01-21</lastmod>
   </url>
   <url>
     <loc>https://mateonitro550.github.io/about</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>0.80</priority>
+    <lastmod>2022-01-21</lastmod>
   </url>
   <url>
     <loc>https://mateonitro550.github.io/Local-File-Inclusion-(LFI)</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>0.80</priority>
+    <lastmod>2021-09-13</lastmod>
   </url>
   <url>
     <loc>https://mateonitro550.github.io/Explore-Hack-The-Box</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>0.80</priority>
+    <lastmod>2021-04-10</lastmod>
   </url>
   <url>
     <loc>https://mateonitro550.github.io/Vulnversity-TryHackMe</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>0.80</priority>
+    <lastmod>2021-25-10</lastmod>
   </url>
   <url>
     <loc>https://mateonitro550.github.io/Blue-TryHackMe</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>0.80</priority>
+    <lastmod>2021-15-11</lastmod>
   </url>
   <url>
     <loc>https://mateonitro550.github.io/Beep-Hack-The-Box</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>0.80</priority>
+    <lastmod>2021-06-12</lastmod>
   </url>
   <url>
     <loc>https://mateonitro550.github.io/Safe-Hack-The-Box</loc>
-    <lastmod>2022-01-19T00:05:22+00:00</lastmod>
-    <priority>0.80</priority>
+    <lastmod>2021-27-12</lastmod>
   </url>
 </urlset>
