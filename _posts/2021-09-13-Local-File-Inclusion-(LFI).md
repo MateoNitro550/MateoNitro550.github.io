@@ -74,7 +74,7 @@ localhost/lfi.php?filename=/etc/passwd%00
 
 _PHP_ cuenta con una serie de _wrappers_, los cuales a menudo pueden ser abusados; por mencionar algunos tenemos:
 
-#### [](#header-4)expect://
+### [](#header-3)expect://
 
 Nos permite una ejecución remota de comandos (RCE); cabe aclarar que este _wrapper_ no está activado por defecto, por lo que no siempre será posible utilizarlo.
 
@@ -84,7 +84,7 @@ localhost/lfi.php?filename=expect://whoami
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/4.png)
 
-#### [](#header-4)filter://
+### [](#header-3)filter://
 
 Nos permite codificar archivos del sistema a través de diferentes métodos como podría ser _Base64_ o _ROT13_. 
 

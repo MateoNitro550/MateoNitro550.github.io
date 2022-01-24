@@ -115,7 +115,7 @@ Una vez dentro, lo primero que vemos es un panel que nos pide autenticar para te
 
 Como mencioné en un inicio, la máquina _Beep_ cuenta con varios vectores para realizar la fase de explotación; de hecho, para tres de ellos ni siquiera hace falta la escalada de privilegios.
 
-#### [](#header-4)Fase De Explotación - Local File Inclusion
+### [](#header-3)Fase De Explotación - Local File Inclusion
 
 Lo primero que se nos puede ocurrir a la hora de encontrar un panel de login, sería probar contraseñas por defecto (un error bastante común aún hoy en día). Sin embargo, ninguna de las [siguientes](https://www.elastix.org/community/threads/default-passwords-not-password.8416/) credenciales nos es de ayuda para logearnos en el servicio de `Elastix`
 
@@ -175,7 +175,7 @@ Al habernos conectado a la máquina directamente como root, no es necesario real
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/17.png)
 
-#### [](#header-4)Fase De Explotación - Webmin
+### [](#header-3)Fase De Explotación - Webmin
 
 Al igual que intentamos probar contraseñas por defecto en el panel de login del servicio `Elastix`, podemos hacer lo mismo en el panel de autenticación del servicio `Webmin`, pero al igual que ocurrió antes, las [siguientes](https://help.eset.com/era_deploy_va/64/en-US/index.html?webmin.htm) credenciales no nos permiten ingresar.
 
@@ -206,7 +206,7 @@ De modo que podremos leer sin problema alguno tanto la flag del usuario con bajo
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/22.png)
 
-#### [](#header-4)Fase De Explotación - Shellshock
+### [](#header-3)Fase De Explotación - Shellshock
 
 Si nos percatamos, en el ataque anterior, depués de haber intentado ingresar como un usuario no válido, se añade al _url_ `/session_login.cgi`
 
@@ -250,7 +250,7 @@ Finalmente, presionaremos el botón `Send`, para que emitir nuestra petición.
 
 Y al igual que en los casos anteriores, sin necesidad de escalada de privilegios, podremos leer tanto la flag del usuario con bajos privilegios, como la del usuario con máximos privilegios, sin ninguna complicación.
 
-#### [](#header-4)Fase De Explotación - File Upload Bypass
+### [](#header-3)Fase De Explotación - File Upload Bypass
 
 Si recordamos, en la fase de explotación a través del uso de un _LFI_, habíamos descubierto un panel de login de `vtiger CRM`; al igual que en las situaciones anteriores, podemos probar una serie de credenciales por defecto, pero estas no servirán, por lo que nos queda la opción de reutilizar las credenciales que ya habíamos encontrado.
 
@@ -258,7 +258,7 @@ Si recordamos, en la fase de explotación a través del uso de un _LFI_, habíam
 
 Y en efecto, una vez dentro, podemos empezar a investigar un poco; en el apartado _Settings/Company Details_, vamos a ver que hay una opción que nos permite cambiar el logo de la compañía, por lo que ya vamos teniendo una idea, de que podemos hacer.
 
-De manera casi similar a la máquina [Vulnversity-TryHackMe](https://mateonitro550.github.io/Vulnversity-TryHackMe), vamos a tener que disfrazar un archivo `.php` como `.jpg`. No obstante, en este caso será un poco más sencillo ya que no haremos uso de `Burp Suite` (aunque podríamos); lo único que vamos a hacer es añadir la extensión `.jpg` a nuestra `reverseShell.php`.
+De manera casi similar a la máquina [Vulnversity](https://mateonitro550.github.io/Vulnversity-TryHackMe) de _TryHackMe_, vamos a tener que disfrazar un archivo `.php` como `.jpg`. No obstante, en este caso será un poco más sencillo ya que no haremos uso de `Burp Suite` (aunque podríamos); lo único que vamos a hacer es añadir la extensión `.jpg` a nuestra `reverseShell.php`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/30.png)
 
