@@ -168,7 +168,7 @@ Algo importante a mencionar, antes de empezar el análisis con `GEF`, es que la 
 
 Para explotar un `Buffer Overflow` satisfactoriamente, existen dos requisitos indispensables, el primero es sobrescribir el registro _RIP_ o _EIP_ (según corresponda), ya que este, apunta a la dirección siguiente a ejecutar, por lo que nos interesa como atacantes redirigir el flujo del programa, a nuestro antojo, cabe aclarar que la dirección introducida debe de existir dentro del programa, caso contrario, este corromperá como lo está haciendo ahora mismo; el segundo requisito se refiere a, de qué manera vamos a sobrescribir el registro `RIP`, para ello debemos calcular su _offset_.
 
-Sobre el mensaje _Cannot disassemble from $PC_, veremos una pequeña flecha que nos indica en que sección, el programa dejó de funcionar, en este caso es en una función de retorno que apunta hacia el registro `RSP`, el cual, si nos percatamos, está lleno de _letras A_; nuestro objetivo ahora, es determinar después de cuántos bytes, empezaremos a sobrescribir el registro `RSP`.
+Sobre el mensaje _Cannot disassemble from $PC_, veremos una pequeña flecha que nos indica en que sección, el programa dejó de funcionar, en este caso es en una función de retorno que apunta hacia el registro `RSP`, el cual, si nos percatamos, está lleno de _letras A_; nuestro objetivo ahora es, determinar después de cuántos bytes, empezaremos a sobrescribir el registro `RSP`.
 
 Haciendo uso de `GEF`, esto es bastante sencillo, ya que lo hará por nosotros, por lo que debemos realizar lo siguiente:
 
