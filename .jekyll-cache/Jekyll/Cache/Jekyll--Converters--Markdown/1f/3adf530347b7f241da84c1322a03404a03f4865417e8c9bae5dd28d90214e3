@@ -1,4 +1,4 @@
-I"N$<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorias.</p>
+I"�'<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorias.</p>
 
 <div style="text-align:center">
   <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/1.png" />
@@ -27,7 +27,7 @@
 
 <h4 id="whats-your-name"><a href="#header-4"></a>What’s Your Name</h4>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/6.png" alt="" /></p>
+<p><img src="http://0.0.0.0:80/6.png" alt="" /></p>
 
 <p>Al extraer y ejecutar el binario, <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/whats_your_name.zip">whats_your_name</a>, vamos a darnos cuenta que nos pregunta por un nombre; si introducimos cualquier cadena de caracteres, el binario nos devolverá un mensaje de bienvenida.</p>
 
@@ -106,4 +106,23 @@
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{SONY_DSC_S&amp;980}
 </code></pre></div></div>
+
+<h3 id="steganography"><a href="#header-3"></a>Steganography</h3>
+
+<h4 id="follow-the-white-rabbit"><a href="#header-4"></a>Follow The White Rabbit</h4>
+
+<p><img src="http://0.0.0.0:80/18.png" alt="" /></p>
+
+<p>Una vez descargamos el <a href="http://0.0.0.0:80/whiterabbit.jpg">archivo adjunto</a>, podemos darnos cuenta que existe una serie de puntos y líneas, por lo que podemos intuir que estamos frente a <code class="language-plaintext highlighter-rouge">código morse</code>. Para ello, podemos usar herramientas como <a href="https://www.dcode.fr/codigo-morse">dcode</a>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{L0OKB4Y0UL34P}
+</code></pre></div></div>
+
+<h4 id="follow"><a href="#header-4"></a>Follow</h4>
+
+<p><img src="http://0.0.0.0:80/19.png" alt="" /></p>
+
+<h4 id="qr-code-from-the-future"><a href="#header-4"></a>QR Code From The Future</h4>
+
+<p>ABC</p>
 :ET

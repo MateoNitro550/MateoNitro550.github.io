@@ -15,6 +15,7 @@ paginate: 3
 paginate_path: /page/:num/
 
 defaults:
+  -
     scope:
       path: ""
       type: "posts"
@@ -28,8 +29,8 @@ plugins:
   - jekyll-paginate
   - jekyll-sitemap
 
-google_analytics: UA-219710333-2
 
 # Custom variables
 owner : "m4teo"
 year : "2022"
+google_analytics: UA-219710333-2
