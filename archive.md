@@ -4,12 +4,17 @@ title: Archive
 ---
 
 <section>
+
   {% if site.posts[0] %}
 
     {% capture currentyear %}{{ 'now' | date: "%Y" }}{% endcapture %}
     {% capture firstpostyear %}{{ site.posts[0].date | date: '%Y' }}{% endcapture %}
+#    {% capture date %}{% assign m = page.date | date: "%-m" | minus: 1 %}{{ site.months[m] }}{% endcapture %}
+    {% capture etad %}{{ site. }}{% endcapture %}
     {% if currentyear == firstpostyear %}
-        <h3>Publicaciones de este año</h3>
+        <h3>Publicaciones de este año </h3>
+	{{ currentyear }}
+	{{ etad }}
     {% else %}  
         <h3>{{ firstpostyear }}</h3>
     {% endif %}

@@ -15,7 +15,6 @@ paginate: 3
 paginate_path: /page/:num/
 
 defaults:
-  -
     scope:
       path: ""
       type: "posts"
@@ -23,11 +22,26 @@ defaults:
       layout: "post"
 
 future: true
+
 plugins:
   - jekyll-seo-tag
   - jekyll-paginate
   - jekyll-sitemap
 
+months:
+  - Enero
+  - Febrero
+  - Marzo
+  - Abril
+  - Mayo
+  - Junio
+  - Julio
+  - Agosto
+  - Septiembre
+  - Octubre
+  - Noviembre
+  - Diciembre
+
 # Custom variables
 owner : "m4teo"
-year : "2021"
+year : "2022"
