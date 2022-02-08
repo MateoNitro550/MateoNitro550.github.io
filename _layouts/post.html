@@ -4,7 +4,7 @@ layout: default
 
 <article>
   <h2>{{ page.title }}</h2>
-  {% capture month %}{% assign m = page.date | date: "%-m" | minus: 1 %}{{ site.data.es.short[m] }}{% endcapture %}
+  {% capture month %}{% assign m = page.date | date: "%m" | minus: 1 %}{{ site.data.es.short[m] }}{% endcapture %}
   <time datetime="{{ page.date | date_to_xmlschema }}" class="by-line">{{ page.date | date: "%d" }} {{ month }} {{ page.date | date: "%Y" }}</time>
   {{ content }}
 </article>

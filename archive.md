@@ -9,15 +9,16 @@ title: Archive
 
     {% capture currentyear %}{{ 'now' | date: "%Y" }}{% endcapture %}
     {% capture firstpostyear %}{{ site.posts[0].date | date: '%Y' }}{% endcapture %}
-    {% capture month %}{% assign m = post.date | date: "%-m" | minus: 11 %}{{ site.data.es.short[m] }}{% endcapture %}
     {% if currentyear == firstpostyear %}
         <h3>Publicaciones de este año</h3>
+	{{ mont }}
     {% else %}  
         <h3>{{ firstpostyear }}</h3>
     {% endif %}
 
     {%for post in site.posts %}
       {% unless post.next %}
+        {% capture month %}{% assign m = post.date | date: "%-m" | minus: 1 %}{{ site.data.es.short[m] }}{% endcapture %}
         <ul>
       {% else %}
         {% capture year %}{{ post.date | date: '%Y' }}{% endcapture %}
@@ -29,7 +30,7 @@ title: Archive
           <ul>
         {% endif %}
       {% endunless %}
-        <li><time>{{ post.date | date:"%d" }}{{ month }} - </time>
+        <li><time>{{ post.date | date:"%d" }} {{ month }} - </time>
           <a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">
             {{ post.title }}
           </a>
