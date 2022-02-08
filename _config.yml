@@ -28,7 +28,12 @@ plugins:
   - jekyll-paginate
   - jekyll-sitemap
 
-months:
+abc: "def"
+
+ghi:
+  jkl: "mnp"
+
+mes:
   - Enero
   - Febrero
   - Marzo
