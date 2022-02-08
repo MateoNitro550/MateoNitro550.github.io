@@ -28,24 +28,7 @@ plugins:
   - jekyll-paginate
   - jekyll-sitemap
 
-abc: "def"
-
-ghi:
-  jkl: "mnp"
-
-mes:
-  - Enero
-  - Febrero
-  - Marzo
-  - Abril
-  - Mayo
-  - Junio
-  - Julio
-  - Agosto
-  - Septiembre
-  - Octubre
-  - Noviembre
-  - Diciembre
+google_analytics: UA-219710333-2
 
 # Custom variables
 owner : "m4teo"
