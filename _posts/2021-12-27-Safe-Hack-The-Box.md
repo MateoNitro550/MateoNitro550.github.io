@@ -474,7 +474,7 @@ for image in $(echo "IMG_0545.JPG  IMG_0546.JPG  IMG_0547.JPG  IMG_0548.JPG  IMG
 ```
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/36.png)
 
-Finalmente, para crackear la contraseña, haremos uso de `john` en conjunto del diccionario [rockyou.txt](https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220111T031535Z&X-Amz-Expires=300&X-Amz-Signature=a2189ee927b2cf3f8ed994d5079a153827b7653c7e24e4865c16a6e88aadcf51&X-Amz-SignedHeaders=host&actor_id=79855501&key_id=0&repo_id=97553311&response-content-disposition=attachment%3B%20filename%3Drockyou.txt&response-content-type=application%2Foctet-stream).
+Finalmente, para crackear la contraseña, haremos uso de `john` en conjunto del diccionario [rockyou.txt](https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220209%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220209T031834Z&X-Amz-Expires=300&X-Amz-Signature=d8b079596701be0a466831ad31ee5cc654d2cc6b43291d532f275e51b6e480fb&X-Amz-SignedHeaders=host&actor_id=79855501&key_id=0&repo_id=97553311&response-content-disposition=attachment%3B%20filename%3Drockyou.txt&response-content-type=application%2Foctet-stream).
 
 En caso de no contar con la herramienta John the Ripper instalada, podemos hacer lo siguiente:
 

