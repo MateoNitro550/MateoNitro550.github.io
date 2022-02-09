@@ -1,4 +1,4 @@
-I"J<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorias.</p>
+I"�X<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorias.</p>
 
 <div style="text-align:center">
   <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/1.png" />
@@ -202,25 +202,74 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install audacity
 </code></pre></div></div>
 
-<p><img src="http://0.0.0.0:80/29.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/29.png" alt="" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://drive.google.com/file/d/1_6c_waS9ijouTpqI_tUO6VCRf7fE6gCY/view?usp=sharing
 </code></pre></div></div>
 
 <p>En el enlace encontraremos un video que aparte de verse fatal, contiene dos cadenas de caracteres escritas en binario.</p>
 
-<p><img src="http://0.0.0.0:80/30.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/30.png" alt="" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01001011 01000011 01010100 01000110 01111011 01001000 00110011
 </code></pre></div></div>
 
-<p><img src="http://0.0.0.0:80/31.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/31.png" alt="" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01001100 01001100 01001111 01011111 01001010 00110011 01001100 01001100 01001111 01111101 
 </code></pre></div></div>
 
-<p>Una vez las unimos, y <a href="https://gchq.github.io/CyberChef/#recipe=From_Binary('Space',8)">traducimos</a></p>
+<p>Una vez las unimos, y <a href="https://gchq.github.io/CyberChef/#recipe=From_Binary('Space',8)">traducimos</a> obtenemos la flag.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{H3LLO_J3LLO}
 </code></pre></div></div>
+
+<h3 id="digital-forensics"><a href="#header-3"></a>Digital Forensics</h3>
+
+<h4 id="the-lost-flag"><a href="#header-4"></a>The Lost Flag</h4>
+
+<p><img src="http://0.0.0.0:80/32.png" alt="" /></p>
+
+<p>A la hora de abrir el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/Lost%20Flag%20.png">archivo adjunto</a> no vamos a encontrar nada sospechoso a primera vista.</p>
+
+<p>No obstante, si utilizamos herramientas como <code class="language-plaintext highlighter-rouge">StegSolve</code>, vamos a poder visualizar la flag.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://www.caesum.com/handbook/Stegsolve.jar -O stegsolve.jar
+chmod +x stegsolve.jar
+</code></pre></div></div>
+
+<p><img src="http://0.0.0.0:80/33.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{Y0U_F0UND_M3}
+</code></pre></div></div>
+
+<h4 id="unknown-file"><a href="#header-4"></a>Unknown File</h4>
+
+<p><img src="http://0.0.0.0:80/34.png" alt="" /></p>
+
+<p>Al descomprimir el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/unknown file.zip">archivo adjunto</a>, extraeremos un archivo que lleva por nombre <code class="language-plaintext highlighter-rouge">unknown file</code>.</p>
+
+<p>Así como el enunciado sugiere, no se sabe ante que tipo de archivo nos estamos enfrentando, por lo que comandos como <code class="language-plaintext highlighter-rouge">file</code>, no nos serán de utilidad. Lo que podemos hacer es visualizar el contenido del archivo en <em>hexadecimal</em> haciendo uso de <code class="language-plaintext highlighter-rouge">xxd</code>, para así conseguir su <code class="language-plaintext highlighter-rouge">magic number</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xxd unknown\ file | head
+</code></pre></div></div>
+
+<p><img src="http://0.0.0.0:80/35.png" alt="" /></p>
+
+<p>Si nos percatamos, el <code class="language-plaintext highlighter-rouge">magic number</code> no corresponde con ninguno conocido, sin embargo, podemos observar una sección que dice <code class="language-plaintext highlighter-rouge">IHDR</code>, el cual corresponde con uno de los <em>chunks</em> principales de cualquier imagen <code class="language-plaintext highlighter-rouge">PNG</code>.</p>
+
+<p>De modo que reemplazando los cuatro primeros dígitos con <code class="language-plaintext highlighter-rouge">89 50 4E 47</code>, conseguiremos visualizar la flag, esto podemos hacerlo mediante herramientas online como <a href="https://www.onlinehexeditor.com/">Online Hex Editor</a>, o <code class="language-plaintext highlighter-rouge">ghex</code>, que para instalarlo es bastante sencillo.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install ghex
+</code></pre></div></div>
+
+<p><img src="http://0.0.0.0:80/36.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{Imag3_H3ad3r_M4nipul4t10N}
+</code></pre></div></div>
+
+<h4 id="lets-walk-together"><a href="#header-4"></a>Let’s Walk Together</h4>
+
+<p><img src="http://192.168.100.3:80/37.png" alt="" /></p>
+
 :ET
