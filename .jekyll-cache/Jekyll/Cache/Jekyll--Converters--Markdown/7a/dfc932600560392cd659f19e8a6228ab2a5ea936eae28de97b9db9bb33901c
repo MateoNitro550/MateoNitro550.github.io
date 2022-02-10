@@ -1,4 +1,4 @@
-I"洅<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categor铆as.</p>
+I"袛<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categor铆as.</p>
 
 <div style="text-align:center">
   <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/1.png" />
@@ -413,7 +413,7 @@ chmod +x stegsolve.jar
 <p>Sabidas el n煤mero total de columnas de la base de datos, el atacante empieza a determinar cuales son <code class="language-plaintext highlighter-rouge">vulnerables</code>, esto lo hace a trav茅s del comando <code class="language-plaintext highlighter-rouge">union</code>, con el cual empieza a reemplazar ciertas columnas por otra serie de <em>comandos</em> que le otorgan <em>informaci贸n relevante</em> de la base de datos.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>users.php?id=1' union select 1,2,3,4,5,6,7,8 --+
-users.php?id=-1' union select 1,2,version(),4,5,6,7,8 --+
+users.php?id=1' union select 1,2,version(),4,5,6,7,8 --+
 </code></pre></div></div>
 
 <p>Una vez analizadas las columnas que el atacante utiliza, podemos determinar que son <code class="language-plaintext highlighter-rouge">cuatro</code>, las columnas <code class="language-plaintext highlighter-rouge">vulnerables</code>; concretamente, las columnas <em>3</em>, <em>6</em>, <em>7</em> y <em>8</em>.</p>
@@ -437,11 +437,21 @@ users.php?id=-1' union select 1,2,version(),4,5,6,7,8 --+
 
 <h4 id="database-flag"><a href="#header-4"></a>Database Flag</h4>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/58.png" alt="" /></p>
+<p><img src="http://192.168.100.3:80/58.png" alt="" /></p>
 
-<p>ABC</p>
+<p>Al igual que el reto anterior, se pude asumir que el atacante a trav茅s de las <code class="language-plaintext highlighter-rouge">inyecciones SQL</code>, logr贸 filtrar informaci贸n relevante de la plataforma de CTF, en este caso una <em>flag</em>, la inyecci贸n en cuesti贸n es:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<p><img src="http://192.168.100.3:80/58.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
 
 <h4 id="attacker"><a href="#header-4"></a>Attacker</h4>
+
+<p><img src="http://192.168.100.3:80/.png" alt="" /></p>
 
 <p>ABC</p>
 

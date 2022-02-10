@@ -1,4 +1,4 @@
-I"֒<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorías.</p>
+I"|�<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorías.</p>
 
 <div style="text-align:center">
   <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/1.png" />
@@ -19,8 +19,6 @@
 <p>Podemos consultar una <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/4.png">tabla de código ASCII</a>, para saber en que orden van los caracteres, y así simplificar las cosas.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/5.png" alt="" /></p>
-
-<p><img src="http://192.168.100.3:80/5.png" alt="" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{s1Mpl3_3Nc0D3r_1337}
 </code></pre></div></div>
@@ -415,7 +413,7 @@ chmod +x stegsolve.jar
 <p>Sabidas el número total de columnas de la base de datos, el atacante empieza a determinar cuales son <code class="language-plaintext highlighter-rouge">vulnerables</code>, esto lo hace a través del comando <code class="language-plaintext highlighter-rouge">union</code>, con el cual empieza a reemplazar ciertas columnas por otra serie de <em>comandos</em> que le otorgan <em>información relevante</em> de la base de datos.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>users.php?id=1' union select 1,2,3,4,5,6,7,8 --+
-users.php?id=-1' union select 1,2,version(),4,5,6,7,8 --+
+users.php?id=1' union select 1,2,version(),4,5,6,7,8 --+
 </code></pre></div></div>
 
 <p>Una vez analizadas las columnas que el atacante utiliza, podemos determinar que son <code class="language-plaintext highlighter-rouge">cuatro</code>, las columnas <code class="language-plaintext highlighter-rouge">vulnerables</code>; concretamente, las columnas <em>3</em>, <em>6</em>, <em>7</em> y <em>8</em>.</p>
@@ -439,11 +437,13 @@ users.php?id=-1' union select 1,2,version(),4,5,6,7,8 --+
 
 <h4 id="database-flag"><a href="#header-4"></a>Database Flag</h4>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/58.png" alt="" /></p>
+<p><img src="http://192.168.100.3:80/58.png" alt="" /></p>
 
 <p>ABC</p>
 
 <h4 id="attacker"><a href="#header-4"></a>Attacker</h4>
+
+<p><img src="http://192.168.100.3:80/.png" alt="" /></p>
 
 <p>ABC</p>
 

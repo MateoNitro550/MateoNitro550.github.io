@@ -1,4 +1,4 @@
-I"֒<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorías.</p>
+I"	�<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorías.</p>
 
 <div style="text-align:center">
   <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/1.png" />
@@ -13,8 +13,6 @@
 <p>Al extraer y ejecutar el binario, <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/the_encoder.zip">the_encoder.out</a>, vamos a darnos cuenta que nos pregunta por una cadena de caracteres; si introducimos cualquier carácter, el binario nos devolverá un valor bastante similar a los que encontramos en el enunciado del reto.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/3.png" alt="" /></p>
-
-<p><img src="http://192.168.100.3:80/3.png" alt="" /></p>
 
 <p>Por otra parte, podemos darnos cuenta que si introducimos caracteres consecutivos, el valor que nos devuelve también lo es, esto ya nos da una posible idea de por donde van los tiros.</p>
 
@@ -415,7 +413,7 @@ chmod +x stegsolve.jar
 <p>Sabidas el número total de columnas de la base de datos, el atacante empieza a determinar cuales son <code class="language-plaintext highlighter-rouge">vulnerables</code>, esto lo hace a través del comando <code class="language-plaintext highlighter-rouge">union</code>, con el cual empieza a reemplazar ciertas columnas por otra serie de <em>comandos</em> que le otorgan <em>información relevante</em> de la base de datos.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>users.php?id=1' union select 1,2,3,4,5,6,7,8 --+
-users.php?id=-1' union select 1,2,version(),4,5,6,7,8 --+
+users.php?id=1' union select 1,2,version(),4,5,6,7,8 --+
 </code></pre></div></div>
 
 <p>Una vez analizadas las columnas que el atacante utiliza, podemos determinar que son <code class="language-plaintext highlighter-rouge">cuatro</code>, las columnas <code class="language-plaintext highlighter-rouge">vulnerables</code>; concretamente, las columnas <em>3</em>, <em>6</em>, <em>7</em> y <em>8</em>.</p>
@@ -429,7 +427,7 @@ users.php?id=-1' union select 1,2,version(),4,5,6,7,8 --+
 
 <p>Para este reto se nos pregunta por el hash de la contraseña del usuario <code class="language-plaintext highlighter-rouge">tareq</code>, la cual el atacante consiguió haciendo uso de las <code class="language-plaintext highlighter-rouge">inyecciones SQL</code>, concretamente:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>users.php?d=1' union select 1,2,3,group_concat(username,0x203a20,password),5,user(),7,8 from users --+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>users.php?id=1' union select 1,2,3,group_concat(username,0x203a20,password),5,user(),7,8 from users --+
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/57.png" alt="" /></p>
@@ -439,12 +437,30 @@ users.php?id=-1' union select 1,2,version(),4,5,6,7,8 --+
 
 <h4 id="database-flag"><a href="#header-4"></a>Database Flag</h4>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/58.png" alt="" /></p>
+<p><img src="http://192.168.100.3:80/58.png" alt="" /></p>
 
-<p>ABC</p>
+<p>Al igual que el reto anterior, se pude asumir que el atacante a través de las <code class="language-plaintext highlighter-rouge">inyecciones SQL</code>, logró filtrar información relevante de la plataforma de CTF, en este caso una <em>flag</em>; la <em>inyección</em> en cuestión es:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>users.php?id=1' union select 1,2,3,4,5,6,group_concat(flag),8 from vulnerable --+
+</code></pre></div></div>
+
+<p><img src="http://192.168.100.3:80/59.png" alt="" /></p>
+
+<p>Conseguimos filtrar dos cadenas encriptadas en <code class="language-plaintext highlighter-rouge">Base64</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>S0NURntTcUw=
+XzFOajNDN2kwbn0=
+</code></pre></div></div>
+
+<p>Al <a href="https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true)">desencriptarlas</a> conseguiremos la flag.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{SqL_1Nj3C7i0n}
+</code></pre></div></div>
 
 <h4 id="attacker"><a href="#header-4"></a>Attacker</h4>
 
-<p>ABC</p>
+<p><img src="http://192.168.100.3:80/60.png" alt="" /></p>
+
+<p>Finalmente, parece ser que el atacante</p>
 
 :ET
