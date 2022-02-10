@@ -1,4 +1,4 @@
-I"��<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorias.</p>
+I"ٌ<p>KnightCTF 2022, es el primer <em>capture de flag</em> organizado por <a href="https://knightsquad.org/">Knight Squad</a>, este es de tipo <em>jeopardy</em>, por lo que encontraremos distintas categorías.</p>
 
 <div style="text-align:center">
   <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/1.png" />
@@ -10,7 +10,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/2.png" alt="" /></p>
 
-<p>Al extraer y ejecutar el binario, <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/the_encoder.zip">the_encoder.out</a>, vamos a darnos cuenta que nos pregunta por una cadena de caracteres; si introducimos cualquier caracter, el binario nos devolverá un valor bastante similar a los que encontramos en el enunciado del reto.</p>
+<p>Al extraer y ejecutar el binario, <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/the_encoder.zip">the_encoder.out</a>, vamos a darnos cuenta que nos pregunta por una cadena de caracteres; si introducimos cualquier carácter, el binario nos devolverá un valor bastante similar a los que encontramos en el enunciado del reto.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/3.png" alt="" /></p>
 
@@ -90,7 +90,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/14.png" alt="" /></p>
 
-<p>Vemos que aparte de algunas páginas rusas, nuestra búsqueda guarda relación con autobuses, por lo que estamos en el lugar correcto, entraremos en el primer resultado.</p>
+<p>Vemos que, aparte de algunas páginas rusas, nuestra búsqueda guarda relación con autobuses, por lo que estamos en el lugar correcto, entraremos en el primer resultado.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/15.png" alt="" /></p>
 
@@ -98,7 +98,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/16.png" alt="" /></p>
 
-<p>Ambas fotografías curiosamente pertenecen al usuario <code class="language-plaintext highlighter-rouge">JenCh012</code>, por lo que haremos click en la fotografía que nos interesa.</p>
+<p>Ambas fotografías curiosamente pertenecen al usuario <code class="language-plaintext highlighter-rouge">JenCh012</code>, por lo que haremos clic en la fotografía que nos interesa.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/17.png" alt="" /></p>
 
@@ -306,18 +306,18 @@ chmod +x stegsolve.jar
 
 <h4 id="compromised-ctf-platform"><a href="#header-4"></a>Compromised CTF Platform</h4>
 
-<p><img src="http://192.168.100.3:80/39.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/39.png" alt="" /></p>
 
 <p>Se nos da una <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/traffic.pcapng">captura de tráfico</a> que bien podemos analizar con <code class="language-plaintext highlighter-rouge">TShark</code> o <code class="language-plaintext highlighter-rouge">Wireshark</code>.</p>
 
-<p><img src="http://192.168.100.3:80/40.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/40.png" alt="" /></p>
 
 <p>En este caso, como se nos pide averiguar por un nombre de usuario y contraseña, lo más sensato sería filtrar la captura por peticiones de tipo <code class="language-plaintext highlighter-rouge">POST</code>.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http.request.method == POST
 </code></pre></div></div>
 
-<p><img src="http://192.168.100.3:80/41.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/41.png" alt="" /></p>
 
 <p>Si empezamos a revisar cada petición, veremos que el atacante probó credenciales típicas como <em>admin/admin</em>, <em>admin/admin123</em>, <em>test/test</em>, <em>admin/password</em> devolviendo siempre el servidor un mensaje <code class="language-plaintext highlighter-rouge">Invalid Username or Password</code>, hasta que da con las credenciales correctas, <code class="language-plaintext highlighter-rouge">demo/demo</code>.</p>
 
@@ -326,38 +326,38 @@ chmod +x stegsolve.jar
 
 <h4 id="robotstxt"><a href="#header-4"></a>Robots.txt</h4>
 
-<p><img src="http://192.168.100.3:80/42.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/42.png" alt="" /></p>
 
 <p>Como estamos en búsqueda del archivo <code class="language-plaintext highlighter-rouge">robots.txt</code>, podemos filtrar la <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/traffic.pcapng">captura de tráfico</a> por peticiones de tipo <code class="language-plaintext highlighter-rouge">GET</code>, y posteriormente por todas aquellas que mencionen el archivo que buscamos, esto último lo podemos hacer con <code class="language-plaintext highlighter-rouge">CTRL + F</code>.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http.request.method == GET
 </code></pre></div></div>
 
-<p><img src="http://192.168.100.3:80/43.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/43.png" alt="" /></p>
 
-<p><img src="http://192.168.100.3:80/44.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/44.png" alt="" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{/includes/users.php}
 </code></pre></div></div>
 
 <h4 id="php-version"><a href="#header-4"></a>PHP Version</h4>
 
-<p><img src="http://192.168.100.3/45.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/45.png" alt="" /></p>
 
 <p>Este reto era bastante sencillo, podíamos completarlo a medida que realizábamos otros retos. La versión de PHP podemos visualizarla en cualquier petición que se realice al servidor.</p>
 
-<p><img src="http://192.168.100.3:80/46.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/46.png" alt="" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{PHP/7.4.27}
 </code></pre></div></div>
 
 <h4 id="kctf"><a href="#header-4"></a>KCTF</h4>
 
-<p><img src="http://192.168.100.3:80/47.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/47.png" alt="" /></p>
 
 <p>Objetos exportados</p>
 
-<p><img src="http://192.168.100.3:80/48.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/48.png" alt="" /></p>
 
 <p>Pic: This one</p>
 
@@ -366,25 +366,25 @@ chmod +x stegsolve.jar
 
 <h4 id="admin-arena"><a href="#header-4"></a>Admin Arena</h4>
 
-<p><img src="http://192.168.100.3:80/49.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/49.png" alt="" /></p>
 
 <p>Nuevamente tenemos que filtrar de la <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/traffic.pcapng">captura de tráfico</a>, información que viaja por <code class="language-plaintext highlighter-rouge">POST</code>, en este caso, en la ruta <code class="language-plaintext highlighter-rouge">Admin Arena</code>.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http.request.method == POST
 </code></pre></div></div>
 
-<p><img src="http://192.168.100.3:80/50.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/50.png" alt="" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KCTF{tareq@hackerzarena.com_P@$$w0Rd}
 </code></pre></div></div>
 
 <h4 id="vuln"><a href="#header-4"></a>Vuln</h4>
 
-<p><img src="http://192.168.100.3:80/51.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/51.png" alt="" /></p>
 
 <p>A partir de este punto, los retos van enfocados al ataque que se realizó en contra de la plataforma de CTF. Si hemos estado atentos a las diversas peticiones <code class="language-plaintext highlighter-rouge">HTTP</code> que se realizaron, nos habremos percatado que hay varias bastante sospechosas.</p>
 
-<p><img src="http://192.168.100.3:80/52.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/52.png" alt="" /></p>
 
 <p>Ya viendo esto podríamos determinar el tipo de ataque que se realizó, <code class="language-plaintext highlighter-rouge">SQL Injection</code> , no obstante, al verse <em>url encodeado</em>, puede resultar un poco complicado leer la petición.</p>
 
@@ -393,13 +393,13 @@ chmod +x stegsolve.jar
 
 <h4 id="vuln-columns"><a href="#header-4"></a>Vuln Columns</h4>
 
-<p><img src="http://192.168.100.3:80/.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/53.png" alt="" /></p>
 
 <p>Para visualizar de mejor manera las <em>inyecciones SQL</em> que se realizaron, podemos exportar los objetos <code class="language-plaintext highlighter-rouge">HTTP</code>.</p>
 
-<p><img src="http://192.168.100.3:80/.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/48.png" alt="" /></p>
 
-<p><img src="http://192.168.100.3:80/.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/54.png" alt="" /></p>
 
 <p>Si observamos detenidamente, nos daremos cuenta que el atacante empieza a <code class="language-plaintext highlighter-rouge">ordenar</code> las columnas de la base de datos de manera consecutiva, con el objetivo de conocer el total de columnas existentes.</p>
 
