@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Filthy Hacker</title>
-    <description>A Blog For Filthy Hackers</description>
+    <description>Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF's y varias temáticas relacionadas al hacking.</description>
     <link>http://0.0.0.0:8000</link>
     <atom:link href="http://0.0.0.0:8000/feed.xml" rel="self" type="application/rss+xml" />
     <author>
@@ -189,7 +189,7 @@
 
 &lt;p&gt;Al descomprimir el archivo &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/unzipme.tar.gz&quot;&gt;unzipme.tar.gz&lt;/a&gt;, extraeremos un archivo que lleva por nombre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;unzipme&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;El propio nombre del archivo nos sugiere que debemos de descomprimirlo, sin embargo, no conocemos en que formato está comprimido; podríamos hacer uso del comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file&lt;/code&gt;, sin embargo nos dirá que simplemente se trata de &lt;em&gt;data&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;El propio nombre del archivo nos sugiere que debemos de descomprimirlo, sin embargo, no conocemos en que formato está comprimido; podríamos hacer uso del comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file&lt;/code&gt;, pero nos dirá que simplemente se trata de &lt;em&gt;data&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;Como no conocemos el formato del archivo, podríamos visualizar su contenido en &lt;em&gt;hexadecimal&lt;/em&gt; haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xxd&lt;/code&gt;, para así conseguir su &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;magic number&lt;/code&gt;.&lt;/p&gt;
 
@@ -275,7 +275,7 @@ chmod +x stegsolve.jar
 
 &lt;p&gt;Si nos percatamos, el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;magic number&lt;/code&gt; no corresponde con &lt;a href=&quot;https://asecuritysite.com/forensics/magic&quot;&gt;ninguno conocido&lt;/a&gt;, sin embargo, podemos observar una sección que dice &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IHDR&lt;/code&gt;, el cual corresponde con uno de los &lt;em&gt;chunks&lt;/em&gt; principales de cualquier imagen &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PNG&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;De modo que reemplazando los cuatro primeros dígitos con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;89 50 4E 47&lt;/code&gt;, conseguiremos visualizar la flag, esto podemos hacerlo mediante herramientas online como &lt;a href=&quot;https://www.onlinehexeditor.com/&quot;&gt;Online Hex Editor&lt;/a&gt;, o &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ghex&lt;/code&gt;, que para instalarlo es bastante sencillo:&lt;/p&gt;
+&lt;p&gt;De modo que reemplazando los cuatro primeros dígitos con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;89 50 4E 47&lt;/code&gt;, conseguiremos visualizar la flag; esto podemos hacerlo mediante herramientas online como &lt;a href=&quot;https://www.onlinehexeditor.com/&quot;&gt;Online Hex Editor&lt;/a&gt;, o &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ghex&lt;/code&gt;, que para instalarlo es bastante sencillo:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install ghex
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -294,7 +294,7 @@ chmod +x stegsolve.jar
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;binwalk -e interesting_waves.png
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Se nos creará una carpeta dentro de la cual estará todo lo que se encontraba dentro de la imagen; entre ello, un archizo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.zip&lt;/code&gt; protegido por contraseña.&lt;/p&gt;
+&lt;p&gt;Se nos creará una carpeta dentro de la cual estará todo lo que se encontraba dentro de la imagen; entre ello, un archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.zip&lt;/code&gt; protegido por contraseña.&lt;/p&gt;
 
 &lt;p&gt;En vista de que no tenemos ningún indicio de ninguna contraseña, aplicaremos fuerza bruta sobre el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.zip&lt;/code&gt; mediante &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fcrackzip&lt;/code&gt;.&lt;/p&gt;
 
@@ -403,7 +403,7 @@ chmod +x stegsolve.jar
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/53.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Ya viendo esto podríamos determinar el tipo de ataque que se realizó, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SQL Injection&lt;/code&gt; , no obstante, al verse &lt;em&gt;url encodeado&lt;/em&gt;, puede resultar un poco complicado leer la petición.&lt;/p&gt;
+&lt;p&gt;Ya viendo esto podríamos determinar el tipo de ataque que se realizó, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SQL Injection&lt;/code&gt;, no obstante, al verse &lt;em&gt;url encodeado&lt;/em&gt;, puede resultar un poco complicado leer la petición.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{sql_injection}
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -420,7 +420,7 @@ chmod +x stegsolve.jar
 
 &lt;p&gt;Si observamos detenidamente, nos daremos cuenta que el atacante empieza a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ordenar&lt;/code&gt; las columnas de la base de datos de manera consecutiva, con el objetivo de conocer el total de columnas existentes.&lt;/p&gt;
 
-&lt;p&gt;Este proceso lo realiza un total de &lt;em&gt;diez veces&lt;/em&gt;, en el primer intento hay un pequeño fallo de sintáxis por lo que lo descartamos, y a partir del segundo intento, empieza a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ordenar&lt;/code&gt; las columnas, una a una, esto lo hace hasta la columna &lt;em&gt;nueve&lt;/em&gt;, la cual no existe, razón por la cual, en el décimo intento, vuelve a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ordenar&lt;/code&gt; las columnas hasta la número &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ocho&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Este proceso lo realiza un total de &lt;em&gt;diez veces&lt;/em&gt;, en el primer intento hay un pequeño fallo de sintaxis por lo que lo descartamos, y a partir del segundo intento, empieza a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ordenar&lt;/code&gt; las columnas, una a una, esto lo hace hasta la columna &lt;em&gt;nueve&lt;/em&gt;, la cual no existe, razón por la cual, en el décimo intento, vuelve a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ordenar&lt;/code&gt; las columnas hasta la número &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ocho&lt;/code&gt;.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;users.php?id=1' order by 1,2,3,4,5,6,7,8 --+
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -452,14 +452,14 @@ users.php?id=1' union select 1,2,version(),4,5,6,7,8 --+
 
 &lt;h4 id=&quot;database-flag&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Database Flag&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.100.3:80/58.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/58.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Al igual que el reto anterior, se pude asumir que el atacante a través de las &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inyecciones SQL&lt;/code&gt;, logró filtrar información relevante de la plataforma de CTF, en este caso una &lt;em&gt;flag&lt;/em&gt;; la &lt;em&gt;inyección&lt;/em&gt; en cuestión es:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;users.php?id=1' union select 1,2,3,4,5,6,group_concat(flag),8 from vulnerable --+
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.100.3:80/59.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/59.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Conseguimos filtrar dos cadenas encriptadas en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Base64&lt;/code&gt;.&lt;/p&gt;
 
@@ -474,7 +474,7 @@ XzFOajNDN2kwbn0=
 
 &lt;h4 id=&quot;attacker&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Attacker&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.100.3:80/60.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/60.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Finalmente, parece ser que el atacante decidió ‘firmar’ el ataque, dejando su nombre en la última &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inyección SQL&lt;/code&gt;, donde deja un mensaje encriptado en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hexadecimal&lt;/code&gt;.&lt;/p&gt;
 
@@ -483,7 +483,7 @@ XzFOajNDN2kwbn0=
 
 &lt;p&gt;No obstante, si no queremos &lt;a href=&quot;https://gchq.github.io/CyberChef/#recipe=From_Hex('None')&quot;&gt;desencriptar&lt;/a&gt; el mensaje, podemos verlo en texto plano desde el propio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Wireshark&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.100.3:80/61.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/61.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 17 Jan 2022 00:00:00 -0500</pubDate>
         <link>http://0.0.0.0:8000//KnightCTF-2022</link>
@@ -665,7 +665,7 @@ run
 
 &lt;p&gt;Algo importante a mencionar, antes de empezar el análisis con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GEF&lt;/code&gt;, es que la arquitectura del sistema ante el que nos estamos enfrentando a la hora de explotar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Buffer Overflow&lt;/code&gt;, tiene bastante relevancia; en este caso concreto, nos estamos enfrentando ante una máquina de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64 bits&lt;/code&gt;, y esto lo podemos saber ya que el nombre de los registros empieza por ‘R’ (&lt;em&gt;RBP, RSP, RIP&lt;/em&gt;), en caso de que el sistema fuera de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;32 bits&lt;/code&gt;, el nombre de los registros empezaría por ‘E’ (&lt;em&gt;EBP, ESP, EIP&lt;/em&gt;), no obstante, independientemente de la arquitectura, estos registros se refieren a lo mismo.&lt;/p&gt;
 
-&lt;p&gt;Para explotar un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Buffer Overflow&lt;/code&gt; satisfactoriamente, existen dos requisitos indispensables, el primero es sobrescribir el registro &lt;em&gt;RIP&lt;/em&gt; o &lt;em&gt;EIP&lt;/em&gt; (según corresponda), ya que este, apunta a la dirección siguiente a ejecutar, por lo que nos interesa como atacantes redirigir el flujo del programa, a nuestro antojo, cabe aclarar que la dirección introducida debe de existir dentro del programa, caso contrario, este corromperá como lo está haciendo ahora mismo; el segundo requisito se refiere a, de qué manera vamos a sobrescribir el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RIP&lt;/code&gt;, para ello debemos calcular su &lt;em&gt;offset&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Para explotar un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Buffer Overflow&lt;/code&gt; satisfactoriamente, existen dos requisitos indispensables, el primero es sobrescribir el registro &lt;em&gt;RIP&lt;/em&gt; o &lt;em&gt;EIP&lt;/em&gt; (según corresponda), ya que este, apunta a la dirección siguiente a ejecutar, por lo que nos interesa como atacantes redirigir el flujo del programa a nuestro antojo, cabe aclarar que la dirección introducida debe de existir dentro del programa, caso contrario, este corromperá como lo está haciendo ahora mismo; el segundo requisito se refiere a, de qué manera vamos a sobrescribir el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RIP&lt;/code&gt;, para ello debemos calcular su &lt;em&gt;offset&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;Sobre el mensaje &lt;em&gt;Cannot disassemble from $PC&lt;/em&gt;, veremos una pequeña flecha que nos indica en que sección, el programa dejó de funcionar, en este caso es en una función de retorno que apunta hacia el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;, el cual, si nos percatamos, está lleno de &lt;em&gt;letras A&lt;/em&gt;; nuestro objetivo ahora es, determinar después de cuántos bytes, empezaremos a sobrescribir el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;.&lt;/p&gt;
 
@@ -1788,7 +1788,7 @@ WantedBy=multi-user.target'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/20.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
-        <pubDate>Mon, 25 Oct 2021 00:00:00 -0500</pubDate>
+        <pubDate>Mon, 25 Oct 2021 00:00:00 -0400</pubDate>
         <link>http://0.0.0.0:8000//Vulnversity-TryHackMe</link>
         <link href="http://0.0.0.0:8000/Vulnversity-TryHackMe"/>
         <guid isPermaLink="true">http://0.0.0.0:8000/Vulnversity-TryHackMe</guid>
@@ -1983,7 +1983,7 @@ su root
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/16.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
-        <pubDate>Mon, 04 Oct 2021 00:00:00 -0500</pubDate>
+        <pubDate>Mon, 04 Oct 2021 00:00:00 -0400</pubDate>
         <link>http://0.0.0.0:8000//Explore-Hack-The-Box</link>
         <link href="http://0.0.0.0:8000/Explore-Hack-The-Box"/>
         <guid isPermaLink="true">http://0.0.0.0:8000/Explore-Hack-The-Box</guid>
@@ -2082,7 +2082,7 @@ su root
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
-        <pubDate>Mon, 13 Sep 2021 00:00:00 -0500</pubDate>
+        <pubDate>Mon, 13 Sep 2021 00:00:00 -0400</pubDate>
         <link>http://0.0.0.0:8000//Local-File-Inclusion-(LFI)</link>
         <link href="http://0.0.0.0:8000/Local-File-Inclusion-(LFI)"/>
         <guid isPermaLink="true">http://0.0.0.0:8000/Local-File-Inclusion-(LFI)</guid>
