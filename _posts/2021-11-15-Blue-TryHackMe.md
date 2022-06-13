@@ -1,5 +1,6 @@
 ---
 title: Blue - TryHackMe
+categories: [EternalBlue, SMB, Server Message Block, MS17-010, Metasploit, Meterpreter, John the Ripper]
 published: true
 ---
 
@@ -25,7 +26,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
   
 * p - Escanea todo el rango de puertos (65535 en total)
 * open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)
-* T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido  ", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat`
+* T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat`
 * v - _Verbose_, reporta lo encontrado por consola
 * n - No aplicar _resolución DNS_
 * sS - Escaneo _TCP SYN_
@@ -52,11 +53,11 @@ Entre las preguntas que nos realiza la plataforma en esta primera fase, se encue
 
 Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con _Nmap_. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que ataque es vulnerable la máquina; a modo de pista, la plataforma nos da un ejemplo de respuesta: _ms08-067_.
 
-Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con _Nmap_, es el puerto `445`, o servicio `Samba`.
+Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con _Nmap_, es el puerto `445`, o protocolo `SMB` (Server Message Block).
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/2.png)
 
-De modo que procederemos a utilizar los scripts específicos con los que cuenta _Nmap_, para detectar vulnerabilidades en un servicio `Samba`.
+De modo que procederemos a utilizar los scripts específicos con los que cuenta _Nmap_, para detectar vulnerabilidades en dicho protocolo.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/3.png)
 
@@ -66,7 +67,7 @@ Para poder utilizarlos podemos hacer lo siguiente:
 nmap --script="smb-vuln*" -p 445 <dirección IP>
 ```
 
-A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del servicio `Samba` con _Nmap_:
+A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del protocolo `SMB` con _Nmap_:
   
   * script - Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos scripts que comiencen por _smb-vuln_
   * p - Especificamos a que puertos queremos aplicar este escaneo

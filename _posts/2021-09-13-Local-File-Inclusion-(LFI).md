@@ -1,5 +1,6 @@
 ---
 title: Local File Inclusion (LFI)
+categories: [Directory Path Traversal, Null Byte, Wrappers]
 published: true
 ---
 

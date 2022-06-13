@@ -9,11 +9,6 @@ title: Search
 </div>
 
 <script src="{{ site.url }}/js/simple-jekyll-search.min.js"></script>
-<script src="{{ site.url }}/js/simple-jekyll-search.min.js" type="text/javascript"></script>
-<script src="{{ site.newbaseurl }}/simple-jekyll-search.min.js"></script>
-<script src="{{ site.newbaseurl }}/simple-jekyll-search.min.js" type="text/javascript"></script>
-
-<script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
 
 <script>
     SimpleJekyllSearch({

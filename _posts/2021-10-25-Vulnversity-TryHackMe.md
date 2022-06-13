@@ -1,5 +1,6 @@
 ---
 title: Vulnversity - TryHackMe
+categories: [Fuzzing, Reverse Shell, Burp Suite, File Upload Bypass, SUID]
 published: true
 ---
 
@@ -46,7 +47,7 @@ A continuación se explican los parámetros utilizados en el escaneo de puertos 
 
 * p - Escanea todo el rango de puertos (65535 en total)
 * open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)
-* T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido  ", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat`
+* T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat`
 * v - _Verbose_, reporta lo encontrado por consola
 * n - No aplicar _resolución DNS_
 * sS - Escaneo _TCP SYN_

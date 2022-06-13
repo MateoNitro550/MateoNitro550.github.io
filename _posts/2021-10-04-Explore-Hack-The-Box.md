@@ -1,5 +1,6 @@
 ---
 title: Explore - Hack The Box
+categories: [Android, Linux, ES File Explorer, Android Debug Bridge, ADB, Remote Port Forwarding]
 published: true
 ---
 

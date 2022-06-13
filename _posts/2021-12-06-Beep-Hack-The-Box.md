@@ -1,5 +1,6 @@
 ---
 title: Beep - Hack The Box
+categories: [Linux, Elastix, Asterisk, Webmin, Local File Inclusion, LFI, Vtiger CRM, Reverse Shell, Shellshock, CGI, Common Gateway Interface, User-Agent, Burp Suite, File Upload Bypass, Sudo]
 published: true
 ---
 
@@ -252,7 +253,7 @@ Y al igual que en los casos anteriores, sin necesidad de escalada de privilegios
 
 ### [](#header-3)Fase De Explotación - File Upload Bypass
 
-Si recordamos, en la fase de explotación a través del uso de un _LFI_, habíamos descubierto un panel de login de `vtiger CRM`; al igual que en las situaciones anteriores, podemos probar una serie de credenciales por defecto, pero estas no servirán, por lo que nos queda la opción de reutilizar las credenciales que ya habíamos encontrado.
+Si recordamos, en la fase de explotación a través del uso de un _LFI_, habíamos descubierto un panel de login de `Vtiger CRM`; al igual que en las situaciones anteriores, podemos probar una serie de credenciales por defecto, pero estas no servirán, por lo que nos queda la opción de reutilizar las credenciales que ya habíamos encontrado.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/29.png)
 

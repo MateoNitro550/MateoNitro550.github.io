@@ -1,5 +1,6 @@
 ---
 title: Safe - Hack The Box
+categories: [Linux, WASTE, Buffer Overflow, Python, Segmentation Fault, GDB, GEF, x64, 64 bits, DEP, Data Execution Prevention, NX, No-Execute, ROP, Return Oriented Programming, Reverse Engineering, Ghidra, pwntools, gadgets, pop, KeePass, SSH, SCP, Secure Copy Protocol, Busybox, John the Ripper, keepass2john]
 published: true
 ---
 
