@@ -15,7 +15,7 @@
         <title>Kenobi - TryHackMe</title>
         <description>&lt;p&gt;Hoy vamos a estar resolviendo la máquina &lt;em&gt;Kenobi&lt;/em&gt; de &lt;em&gt;TryHackMe&lt;/em&gt;. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
 
@@ -81,7 +81,7 @@
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Lo primero que podemos darnos cuenta es que existen &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3&lt;/code&gt; recursos compartidos, de los cuales solo tenemos acceso a uno, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
 
@@ -90,7 +90,7 @@
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt; &lt;span class=&quot;nt&quot;&gt;-R&lt;/span&gt; anonymous
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Para poder descargar el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, podremos hacerlo usando tanto su ruta absoluta con el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--download&lt;/code&gt;, o bien creando patrones mediante &lt;em&gt;expresiones regulares&lt;/em&gt; con el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-A&lt;/code&gt;.&lt;/p&gt;
 
@@ -100,7 +100,7 @@
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt; &lt;span class=&quot;nt&quot;&gt;-R&lt;/span&gt; anonymous &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; log.txt
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;smbclient&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;smbclient&lt;/h3&gt;
 
@@ -109,7 +109,7 @@
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;En este caso, no se nos indica los permisos que tenemos sobre los recursos, no obstante, podemos intuir a que recursos tenemos acceso, por ejemplo, el recurso &lt;a href=&quot;https://wiki.samba.org/index.php/Setting_up_Automatic_Printer_Driver_Downloads_for_Windows_Clients#Setting_up_the_.5Bprint.24.5D_Share&quot;&gt;print$&lt;/a&gt; se relaciona con impresoras que que se están compartiendo a nivel de red, por otra parte tenemos el recurso &lt;a href=&quot;https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session&quot;&gt;IPC$&lt;/a&gt; el cual crea el propio &lt;em&gt;Windows&lt;/em&gt; para poder hacer uso de los &lt;em&gt;null sessions&lt;/em&gt;; de modo que de los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3&lt;/code&gt; recursos compartidos existentes, solo nos queda &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
 
@@ -119,16 +119,17 @@
 &lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Podemos observar que dentro existe un archivo llamado &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, el cual procederemos a descargar.&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; //dirección IP/anonymous
 get log.txt
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Independientemente de como hayamos descargado el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, al leerlo, lo más importante que encontraremos será la ubicación del par de claves &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSA&lt;/code&gt;, ubicadas en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home/kenobi/.ssh/id_rsa&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Independientemente de como hayamos descargado el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, al leerlo, lo más importante que encontraremos será la ubicación del par de claves &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSA&lt;/code&gt;, ubicadas en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home/kenobi/.ssh&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Adicionalmente, encontraremos información tanto del servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;, como del &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Samba&lt;/code&gt;, pero nada realmente interesante, por lo que estamos omitiendo algo.&lt;/p&gt;
 
@@ -139,7 +140,7 @@ get log.txt
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;showmount &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;La ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; está siendo compartida a nivel de red, de modo que si lográramos mover algún archivo potencial dentro de esta ruta, y luego la montásemos en nuestro equipo, podríamos visualizar dicho archivo de manera local.&lt;/p&gt;
 
@@ -152,15 +153,15 @@ get log.txt
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;searchsploit ProFTPD 1.3.5
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;De los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;4&lt;/code&gt; exploits que encontramos, nos quedaremos con el último&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/10.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/10.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Concretamente con las líneas 12, 13 y 14.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Las cuales nos permiten hacer justamente lo que nos interesa, copiar un archivo de una ruta (&lt;em&gt;CPFR&lt;/em&gt;), a otra (&lt;em&gt;CPTO&lt;/em&gt;).&lt;/p&gt;
 
@@ -173,7 +174,7 @@ get log.txt
 SITE CPTO /var/tmp/id_rsa
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/12.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/12.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Ya con todo esto, podemos &lt;em&gt;montar&lt;/em&gt; la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; en nuestro equipo, para ello haremos lo siguiente:&lt;/p&gt;
 
@@ -182,7 +183,7 @@ SITE CPTO /var/tmp/id_rsa
 
 &lt;p&gt;En caso de que tengamos un error similar a este:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/13.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/13.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Simplemente tendremos que instalar lo siguiente:&lt;/p&gt;
 
@@ -194,21 +195,57 @@ SITE CPTO /var/tmp/id_rsa
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;cifs-utils
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Una vez tenemos montada la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; en nuestro equipo, procederemos a copiarnos el par de claves &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSA&lt;/code&gt; que movimos con anterioridad haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Una vez tenemos montada la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; en nuestro equipo, procederemos a copiarnos el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;id_rsa&lt;/code&gt; que movimos con anterioridad haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Finalmente, podemos conectarnos a la máquina víctima a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt; sin proporcionar contraseña, ya que tenemos en nuestro poder la &lt;em&gt;clave privada&lt;/em&gt; del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kenobi&lt;/code&gt;, no obstante, antes de hacerlo, vamos a asignar los permisos correspondientes al archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;id_rsa&lt;/code&gt;.&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo chmod &lt;/span&gt;600 id_rsa
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; id_rsa kenobi@&amp;lt;dirección IP&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/14.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;escalada-de-privilegios&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Escalada De Privilegios&lt;/h3&gt;
 
-&lt;p&gt;GHI&lt;/p&gt;
+&lt;p&gt;Para realizar esta última fase, la misma plataforma de &lt;em&gt;TryHackMe&lt;/em&gt; nos sugiere aprovecharnos de algún binario con permisos mal asignados, concretamente permisos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SUID&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://0.0.0.0:80/2022-02-07-Kenobi-TryHackMe/14.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Para listar todos aquellos binarios con permisos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SUID&lt;/code&gt; asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / &lt;span class=&quot;nt&quot;&gt;-perm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-4000&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-type&lt;/span&gt; f &lt;span class=&quot;nt&quot;&gt;-exec&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-la&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{}&lt;/span&gt; 2&amp;gt;/dev/null &lt;span class=&quot;se&quot;&gt;\;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / &lt;span class=&quot;nt&quot;&gt;-uid&lt;/span&gt; 0 &lt;span class=&quot;nt&quot;&gt;-perm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-4000&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-type&lt;/span&gt; f 2&amp;gt;/dev/null
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/15.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;La mejor forma para abusar de cualquier binario sería recurrir a &lt;a href=&quot;https://gtfobins.github.io/&quot;&gt;GTFOBins&lt;/a&gt;, sin embargo, el binario que llama nuestra atención no es propio del sistema, por lo que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GTFOBins&lt;/code&gt;, no nos será de utilidad.&lt;/p&gt;
+
+&lt;p&gt;Si comprobamos en nuestra máquina de atacantes, no existe ningún binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/bin/menu&lt;/code&gt;, por lo que este debe haber sido creado, de modo que puede tener alguna falla de seguridad, vamos a revisarlo.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/16.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Vemos que el binario es lo que dice ser, un menú que nos presenta tres únicas posibilidades, vamos a echar un vistazo más a fondo.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;strings /usr/bin/menu
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/17.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Podemos observar los binarios que utiliza el este menu dependiendo de la opción que seleccionemos, lo más interesante aquí es que no se está empleando la ruta completa de estos comandos, tan solo se los está mencionando, por lo que al no hacer esta verificación, podemos suplantarlos.&lt;/p&gt;
+
+&lt;p&gt;Antes de que el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/bin/menu&lt;/code&gt; encuentre los binarios legítimos dentro de la variable de entorno &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PATH&lt;/code&gt;, nosotros añadiremos nuestros propios binarios en el inicio, los cuales serán igual en nombre, pero ejecutarán el código que nos interese, en este caso una consola.&lt;/p&gt;
+
+&lt;p&gt;Este proceso podemos realizarlo para cualquiera de los tres binarios, &lt;em&gt;curl&lt;/em&gt;, &lt;em&gt;uname&lt;/em&gt; o &lt;em&gt;ifconfig&lt;/em&gt;, eso si, debemos de encontrarnos en una ruta donde tengamos permisos de escritura, el directorio del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kenobi&lt;/code&gt;, o la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/tmp&lt;/code&gt; por ejemplo.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/bin/sh'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;uname
+export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/kenobi:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;chmod&lt;/span&gt; +x &lt;span class=&quot;nb&quot;&gt;uname&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/18.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 07 Feb 2022 00:00:00 -0500</pubDate>
         <link>http://0.0.0.0:8000//Kenobi-TryHackMe</link>

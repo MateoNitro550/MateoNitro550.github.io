@@ -2,7 +2,7 @@
   
     {
       "title"    : "Kenobi - TryHackMe",
-      "category" : "FTPFile Transfer ProtocolSMBServer Message BlockrpcbindRPCRemote Procedure CallSambaSMBMapsmbclientNull SessionRSASSHNFSNetwork File System",
+      "category" : "FTPFile Transfer ProtocolSMBServer Message BlockrpcbindRPCRemote Procedure CallSambaSMBMapsmbclientNull SessionRSASSHNFSNetwork File SystemMonturaSUID",
       "url"      : "//Kenobi-TryHackMe",
       "date"     : "07/02/2022"
     } ,
