@@ -10,7 +10,7 @@ El día de hoy vamos a resolver la máquina _Vulnversity_ de _TryHackMe_. Esta e
 
 ### [](#header-3)Fase De Reconocimiento
 
-Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Es importante aclarar que, así como menciona la plataforma de _TryHackMe_, existen diversos [cheatsheets](https://www.stationx.net/nmap-cheat-sheet/) que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posibilidades que nos ofrece la herramienta.
+Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Es importante aclarar que, así como menciona la plataforma de _TryHackMe_, existen diversos [cheatsheets](https://www.stationx.net/nmap-cheat-sheet/) que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posibilidades que nos ofrece la herramienta.
 
 No obstante, recordemos que varias herramientas por defecto tienen incluidas un `manual` o vienen con un comando `--help`.
 

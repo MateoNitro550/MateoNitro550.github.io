@@ -10,7 +10,7 @@ Hoy vamos a estar resolviendo la máquina _Kenobi_ de _TryHackMe_. Esta es una m
 
 ### [](#header-3)Fase De Reconocimiento
 
-Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo.
+Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo.
 
 Para determinar que puertos están abiertos podemos realizar lo siguiente:
   
@@ -104,7 +104,7 @@ smbclient -N -L <dirección IP>
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/5.png)
 
-En este caso, no se nos indica los permisos que tenemos sobre los recursos, no obstante, podemos intuir a que recursos tenemos acceso, por ejemplo, el recurso [print$](https://wiki.samba.org/index.php/Setting_up_Automatic_Printer_Driver_Downloads_for_Windows_Clients#Setting_up_the_.5Bprint.24.5D_Share) se relaciona con impresoras que que se están compartiendo a nivel de red, por otra parte tenemos el recurso [IPC$](https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session) el cual crea el propio _Windows_ para poder hacer uso de los _null sessions_; de modo que de los `3` recursos compartidos existentes, solo nos queda `anonymous`.
+En este caso, no se nos indica los permisos que tenemos sobre los recursos, no obstante, podemos intuir a que recursos tenemos acceso, por ejemplo, el recurso [print$](https://wiki.samba.org/index.php/Setting_up_Automatic_Printer_Driver_Downloads_for_Windows_Clients#Setting_up_the_.5Bprint.24.5D_Share) se relaciona con impresoras que se están compartiendo a nivel de red, por otra parte, tenemos el recurso [IPC$](https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session) el cual crea el propio _Windows_ para poder hacer uso de los _null sessions_; de modo que, de los `3` recursos compartidos existentes, solo nos queda `anonymous`.
 
 Lo siguiente que haremos será listar el contenido que se encuentra dentro del recurso `anonymous`.
 
@@ -241,7 +241,7 @@ strings /usr/bin/menu
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/17.png)
 
-Podemos observar los binarios que utiliza el este menu dependiendo de la opción que seleccionemos, lo más interesante aquí es que no se está empleando la ruta completa de estos comandos, tan solo se los está mencionando, por lo que al no hacer esta verificación, podemos suplantarlos.
+Podemos observar los binarios que utiliza este menú dependiendo de la opción que seleccionemos, lo más interesante aquí es que no se está empleando la ruta completa de estos comandos, tan solo se los está mencionando, por lo que, al no hacer esta verificación, podemos suplantarlos.
 
 Antes de que el binario `/usr/bin/menu` encuentre los binarios legítimos dentro de la variable de entorno `PATH`, nosotros añadiremos nuestros propios binarios en el inicio, los cuales serán igual en nombre, pero ejecutarán el código que nos interese, en este caso una consola.
 

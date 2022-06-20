@@ -10,7 +10,7 @@ En esta ocasión vamos a resolver la máquina _Blue_ de _TryHackMe_. Esta es una
 
 ### [](#header-3)Fase De Reconocimiento
 
-Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
+Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
 ```bash
 nmap -p- --open -T5 -v -n <dirección IP>
