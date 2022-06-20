@@ -227,7 +227,7 @@ find / -uid 0 -perm -4000 -type f 2>/dev/null
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/15.png)
 
-La mejor forma para abusar de cualquier binario sería recurrir a [GTFOBins](https://gtfobins.github.io/), sin embargo, el binario que llama nuestra atención no es propio del sistema, por lo que `GTFOBins`, no nos será de utilidad.
+La forma más sencilla para abusar de algún binario con permisos mal asignados sería recurrir a [GTFOBins](https://gtfobins.github.io/), sin embargo, el binario que llama nuestra atención no es propio del sistema, por lo que `GTFOBins`, no nos será de utilidad.
 
 Si comprobamos en nuestra máquina de atacantes, no existe ningún binario `/usr/bin/menu`, por lo que este debe haber sido creado, de modo que puede tener alguna falla de seguridad, vamos a revisarlo.
 
@@ -243,7 +243,7 @@ strings /usr/bin/menu
 
 Podemos observar los binarios que utiliza este menú dependiendo de la opción que seleccionemos, lo más interesante aquí es que no se está empleando la ruta completa de estos comandos, tan solo se los está mencionando, por lo que, al no hacer esta verificación, podemos suplantarlos.
 
-Antes de que el binario `/usr/bin/menu` encuentre los binarios legítimos dentro de la variable de entorno `PATH`, nosotros añadiremos nuestros propios binarios en el inicio, los cuales serán igual en nombre, pero ejecutarán el código que nos interese, en este caso una consola.
+Antes de que el binario `/usr/bin/menu` encuentre los binarios legítimos dentro de la variable de entorno `PATH`, nosotros añadiremos nuestros propios binarios en el inicio, los cuales serán igual en nombre, pero ejecutarán el código que nos interese, en este caso una consola con máximos privilegios.
 
 Este proceso podemos realizarlo para cualquiera de los tres binarios, _curl_, _uname_ o _ifconfig_, eso si, debemos de encontrarnos en una ruta donde tengamos permisos de escritura, el directorio del usuario `Kenobi`, o la ruta `/tmp` por ejemplo.
 
