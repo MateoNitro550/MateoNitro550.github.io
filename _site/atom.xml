@@ -19,7 +19,7 @@
 
 &lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
 
-&lt;p&gt;Primeramente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo.&lt;/p&gt;
+&lt;p&gt;Primeramente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo.&lt;/p&gt;
 
 &lt;p&gt;Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
 
@@ -111,7 +111,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;En este caso, no se nos indica los permisos que tenemos sobre los recursos, no obstante, podemos intuir a que recursos tenemos acceso, por ejemplo, el recurso &lt;a href=&quot;https://wiki.samba.org/index.php/Setting_up_Automatic_Printer_Driver_Downloads_for_Windows_Clients#Setting_up_the_.5Bprint.24.5D_Share&quot;&gt;print$&lt;/a&gt; se relaciona con impresoras que que se están compartiendo a nivel de red, por otra parte tenemos el recurso &lt;a href=&quot;https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session&quot;&gt;IPC$&lt;/a&gt; el cual crea el propio &lt;em&gt;Windows&lt;/em&gt; para poder hacer uso de los &lt;em&gt;null sessions&lt;/em&gt;; de modo que de los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3&lt;/code&gt; recursos compartidos existentes, solo nos queda &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;En este caso, no se nos indica los permisos que tenemos sobre los recursos, no obstante, podemos intuir a que recursos tenemos acceso, por ejemplo, el recurso &lt;a href=&quot;https://wiki.samba.org/index.php/Setting_up_Automatic_Printer_Driver_Downloads_for_Windows_Clients#Setting_up_the_.5Bprint.24.5D_Share&quot;&gt;print$&lt;/a&gt; se relaciona con impresoras que se están compartiendo a nivel de red, por otra parte, tenemos el recurso &lt;a href=&quot;https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session&quot;&gt;IPC$&lt;/a&gt; el cual crea el propio &lt;em&gt;Windows&lt;/em&gt; para poder hacer uso de los &lt;em&gt;null sessions&lt;/em&gt;; de modo que, de los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3&lt;/code&gt; recursos compartidos existentes, solo nos queda &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Lo siguiente que haremos será listar el contenido que se encuentra dentro del recurso &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
 
@@ -221,7 +221,7 @@ SITE CPTO /var/tmp/id_rsa
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/15.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;La mejor forma para abusar de cualquier binario sería recurrir a &lt;a href=&quot;https://gtfobins.github.io/&quot;&gt;GTFOBins&lt;/a&gt;, sin embargo, el binario que llama nuestra atención no es propio del sistema, por lo que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GTFOBins&lt;/code&gt;, no nos será de utilidad.&lt;/p&gt;
+&lt;p&gt;La forma más sencilla para abusar de algún binario con permisos mal asignados sería recurrir a &lt;a href=&quot;https://gtfobins.github.io/&quot;&gt;GTFOBins&lt;/a&gt;, sin embargo, el binario que llama nuestra atención no es propio del sistema, por lo que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GTFOBins&lt;/code&gt;, no nos será de utilidad.&lt;/p&gt;
 
 &lt;p&gt;Si comprobamos en nuestra máquina de atacantes, no existe ningún binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/bin/menu&lt;/code&gt;, por lo que este debe haber sido creado, de modo que puede tener alguna falla de seguridad, vamos a revisarlo.&lt;/p&gt;
 
@@ -234,9 +234,9 @@ SITE CPTO /var/tmp/id_rsa
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/17.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Podemos observar los binarios que utiliza el este menu dependiendo de la opción que seleccionemos, lo más interesante aquí es que no se está empleando la ruta completa de estos comandos, tan solo se los está mencionando, por lo que al no hacer esta verificación, podemos suplantarlos.&lt;/p&gt;
+&lt;p&gt;Podemos observar los binarios que utiliza este menú dependiendo de la opción que seleccionemos, lo más interesante aquí es que no se está empleando la ruta completa de estos comandos, tan solo se los está mencionando, por lo que, al no hacer esta verificación, podemos suplantarlos.&lt;/p&gt;
 
-&lt;p&gt;Antes de que el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/bin/menu&lt;/code&gt; encuentre los binarios legítimos dentro de la variable de entorno &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PATH&lt;/code&gt;, nosotros añadiremos nuestros propios binarios en el inicio, los cuales serán igual en nombre, pero ejecutarán el código que nos interese, en este caso una consola.&lt;/p&gt;
+&lt;p&gt;Antes de que el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/bin/menu&lt;/code&gt; encuentre los binarios legítimos dentro de la variable de entorno &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PATH&lt;/code&gt;, nosotros añadiremos nuestros propios binarios en el inicio, los cuales serán igual en nombre, pero ejecutarán el código que nos interese, en este caso una consola con máximos privilegios.&lt;/p&gt;
 
 &lt;p&gt;Este proceso podemos realizarlo para cualquiera de los tres binarios, &lt;em&gt;curl&lt;/em&gt;, &lt;em&gt;uname&lt;/em&gt; o &lt;em&gt;ifconfig&lt;/em&gt;, eso si, debemos de encontrarnos en una ruta donde tengamos permisos de escritura, el directorio del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kenobi&lt;/code&gt;, o la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/tmp&lt;/code&gt; por ejemplo.&lt;/p&gt;
 
@@ -1540,7 +1540,7 @@ ssh-keygen
 
 &lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
 
-&lt;p&gt;Primeramente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
+&lt;p&gt;Primeramente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1764,7 +1764,7 @@ type flag3.txt
 
 &lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
 
-&lt;p&gt;Primeramente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Es importante aclarar que, así como menciona la plataforma de &lt;em&gt;TryHackMe&lt;/em&gt;, existen diversos &lt;a href=&quot;https://www.stationx.net/nmap-cheat-sheet/&quot;&gt;cheatsheets&lt;/a&gt; que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posibilidades que nos ofrece la herramienta.&lt;/p&gt;
+&lt;p&gt;Primeramente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Es importante aclarar que, así como menciona la plataforma de &lt;em&gt;TryHackMe&lt;/em&gt;, existen diversos &lt;a href=&quot;https://www.stationx.net/nmap-cheat-sheet/&quot;&gt;cheatsheets&lt;/a&gt; que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posibilidades que nos ofrece la herramienta.&lt;/p&gt;
 
 &lt;p&gt;No obstante, recordemos que varias herramientas por defecto tienen incluidas un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;manual&lt;/code&gt; o vienen con un comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--help&lt;/code&gt;.&lt;/p&gt;
 

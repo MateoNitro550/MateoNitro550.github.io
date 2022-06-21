@@ -1,10 +1,10 @@
-I"�G<p>En esta ocasión vamos a resolver la máquina <em>Blue</em> de <em>TryHackMe</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá <code class="language-plaintext highlighter-rouge">EternalBlue</code>?</p>
+I"�G<p>En esta ocasión vamos a resolver la máquina <em>Blue</em> de <em>TryHackMe</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá <code class="language-plaintext highlighter-rouge">EternalBlue</code>?</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/1.png" alt="" /></p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
-<p>Primeramente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
+<p>Primeramente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-T5</span> <span class="nt">-v</span> <span class="nt">-n</span> &lt;dirección IP&gt;
 </code></pre></div></div>
