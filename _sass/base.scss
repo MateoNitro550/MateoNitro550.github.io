@@ -11,8 +11,6 @@ $header: $conifer !default;
 $blockquote-color: $silver-chalice !default;
 $blockquote-border: $dove-grey !default;
 
-p { text-align: justify; }
-
 body {
   margin: 0;
   padding: 0;
@@ -20,6 +18,7 @@ body {
   color: $body-foreground;
   font-size: 16px;
   line-height: 1.5;
+  text-align: justify;
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
@@ -274,21 +273,7 @@ a:active, a:focus {
   min-height: calc(100vh - 100px);
 }
 
-#search-container {
-  text-align: center;
-}
-
-#search-input {
-  width: 80%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 18px;
-  background-color: #ffffff;
-}
+/* Glitch Header */
 
 .glitch-header {
   font-size: 24px;
@@ -367,3 +352,22 @@ a:active, a:focus {
     opacity: 1;
   }
 }
+
+/* Search Bar */
+
+#search-container {
+  text-align: center;
+}
+
+#search-input {
+  width: 80%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 18px;
+  background-color: #ffffff;
+}
+

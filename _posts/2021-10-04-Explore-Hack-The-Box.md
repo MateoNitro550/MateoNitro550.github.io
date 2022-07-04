@@ -48,15 +48,17 @@ sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.247
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
 
-* p - Escanea todo el rango de puertos (65535 en total)
-* open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)
-* T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat`
-* v - _Verbose_, reporta lo encontrado por consola
-* n - No aplicar _resolución DNS_
-* sS - Escaneo _TCP SYN_
-* min-rate - Emitir paquetes no más lentos que \<valor\> por segundo
-* vvv - Triple _verbose_, para obtener mayor información por consola
-* Pn - No aplicar _host discovery_
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-p\- | Escanea todo el rango de puertos (65535 en total) |
+| \-\-open | Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) |
+| \-T5 | La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat` | 
+| \-v | _Verbose_, reporta lo encontrado por consola |
+| \-n | No aplicar _resolución DNS_ |
+| \-sS | Escaneo _TCP SYN_ |
+| \-min-rate | Emitir paquetes no más lentos que \<valor\> por segundo |
+| \-vvv | Triple _verbose_, para obtener mayor información por consola |
+| \-Pn | No aplicar _host discovery_ |
 
 Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.
 
@@ -66,9 +68,11 @@ nmap -sC -sV -p 2222,42135,42607,59777 10.10.10.247
 
 A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
 
-* sC - Scripts básicos de enumeración
-* sV - Versión y servicios que corren bajo los puertos encontrados
-* p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-sC | Scripts básicos de enumeración |
+| \-sV | Versión y servicios que corren bajo los puertos encontrados |
+| \-p | Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) |
 
 Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que nos encontramos frente a un teléfono móvil, y nuestra primera gran pista para la siguiente fase es el puerto `42135`.
 

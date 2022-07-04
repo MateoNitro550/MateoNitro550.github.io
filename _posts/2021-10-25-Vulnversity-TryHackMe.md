@@ -45,17 +45,17 @@ sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP>
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
 
-* p - Escanea todo el rango de puertos (65535 en total)
-* open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)
-* T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat`
-* v - _Verbose_, reporta lo encontrado por consola
-* n - No aplicar _resolución DNS_
-* sS - Escaneo _TCP SYN_
-* min-rate - Emitir paquetes no más lentos que \<valor\> por segundo
-* vvv - Triple _verbose_, para obtener mayor información por consola
-* Pn - No aplicar _host discovery_
-
-Para determinar la versión y servicios que corren bajo estos puertos podemos realizar lo siguiente:
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-p\- | Escanea todo el rango de puertos (65535 en total) |
+| \-\-open | Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) |
+| \-T5 | La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat` | 
+| \-v | _Verbose_, reporta lo encontrado por consola |
+| \-n | No aplicar _resolución DNS_ |
+| \-sS | Escaneo _TCP SYN_ |
+| \-min-rate | Emitir paquetes no más lentos que \<valor\> por segundo |
+| \-vvv | Triple _verbose_, para obtener mayor información por consola |
+| \-Pn | No aplicar _host discovery_ |
 
 ```bash 
 nmap -sC -sV -p 21,22,139,445,3128,3333 <dirección IP>
@@ -63,9 +63,11 @@ nmap -sC -sV -p 21,22,139,445,3128,3333 <dirección IP>
   
 A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
 
-* sC - Scripts básicos de enumeración
-* sV - Versión y servicios que corren bajo los puertos encontrados
-* p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-sC | Scripts básicos de enumeración |
+| \-sV | Versión y servicios que corren bajo los puertos encontrados |
+| \-p | Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) |
 
 Con estos dos escaneos bastará para responder a las preguntas planteadas con anterioridad, sin embargo, nos quedan dos preguntas más, las cuales son:
 
@@ -90,12 +92,14 @@ wfuzz -c -L -t 400 --hc 404 --hh 33014 -w /usr/share/wordlists/dirbuster/directo
 
 A continuación se explican los parámetros utilizados en el _fuzzeo_ del servidor web:
 
-* c - Output colorizado 
-* L - Sigue las redirecciones HTTP, de modo que conseguimos el código de estado final verdadero
-* t - Específicamos el número de hilos con el queremos trabajar
-* hc - Oculta las respuestas con el código de estado que indiquemos, en este caso los errores (código de estado 404)
-* hh - Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo, es útil para descartar respuestas con contenido que vemos que no nos interesan
-* w - Especificamos el diccionario con el que queremos trabajar
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-c | Output colorizado |
+| \-L | Sigue las redirecciones HTTP, de modo que conseguimos el código de estado final verdadero |
+| \-t | Específicamos el número de hilos con el queremos trabajar |
+| \-\-hc | Oculta las respuestas con el código de estado que indiquemos, en este caso los errores (código de estado 404) |
+| \-\-hh | Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo, es útil para descartar respuestas con contenido que vemos que no nos interesan |
+| \-w | Especificamos el diccionario con el que queremos trabajar |
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/2.png)
 

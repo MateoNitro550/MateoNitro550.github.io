@@ -4,7 +4,9 @@ categories: [EternalBlue, SMB, Server Message Block, MS17-010, Metasploit, Meter
 published: true
 ---
 
-En esta ocasión vamos a resolver la máquina _Blue_ de _TryHackMe_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá `EternalBlue`?
+Hoy vamos a estar resolviendo la máquina _Blue_ de _TryHackMe_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.
+
+Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá `EternalBlue`?
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/1.png)
 
@@ -24,17 +26,17 @@ sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP>
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
   
-* p - Escanea todo el rango de puertos (65535 en total)
-* open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)
-* T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat`
-* v - _Verbose_, reporta lo encontrado por consola
-* n - No aplicar _resolución DNS_
-* sS - Escaneo _TCP SYN_
-* min-rate - Emitir paquetes no más lentos que \<valor\> por segundo
-* vvv - Triple _verbose_, para obtener mayor información por consola
-* Pn - No aplicar _host discovery_
-  
-Para determinar la versión y servicios que corren bajo estos puertos podemos realizar lo siguiente:
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-p\- | Escanea todo el rango de puertos (65535 en total) |
+| \-\-open | Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) |
+| \-T5 | La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat` | 
+| \-v | _Verbose_, reporta lo encontrado por consola |
+| \-n | No aplicar _resolución DNS_ |
+| \-sS | Escaneo _TCP SYN_ |
+| \-min-rate | Emitir paquetes no más lentos que \<valor\> por segundo |
+| \-vvv | Triple _verbose_, para obtener mayor información por consola |
+| \-Pn | No aplicar _host discovery_ |
 
 ```bash
 nmap -sC -sV -p 135,139,445,3389,49152,49153,49154,49158,49160 <dirección IP>
@@ -42,9 +44,11 @@ nmap -sC -sV -p 135,139,445,3389,49152,49153,49154,49158,49160 <dirección IP>
   
 A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
 
-* sC - Scripts básicos de enumeración
-* sV - Versión y servicios que corren bajo los puertos encontrados
-* p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-sC | Scripts básicos de enumeración |
+| \-sV | Versión y servicios que corren bajo los puertos encontrados |
+| \-p | Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) |
 
 Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra:
 
@@ -69,8 +73,10 @@ nmap --script="smb-vuln*" -p 445 <dirección IP>
 
 A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del protocolo `SMB` con _Nmap_:
   
-  * script - Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos scripts que comiencen por _smb-vuln_
-  * p - Especificamos a que puertos queremos aplicar este escaneo
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-\-script | Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos scripts que comiencen por _smb-vuln_ |
+| \-p | Especificamos a que puertos queremos aplicar este escaneo |
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/4.png)
 

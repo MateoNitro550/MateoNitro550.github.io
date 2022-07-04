@@ -4,7 +4,7 @@ categories: [Linux, Elastix, Asterisk, Webmin, Local File Inclusion, LFI, Vtiger
 published: true
 ---
 
-El día de hoy vamos a estar resolviendo la máquina _Beep_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma. 
+En esta ocasión vamos a resolver la máquina _Beep_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma. 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/1.png)
 
@@ -50,17 +50,17 @@ sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.7
 
 A continuación se explican los parámetros utilizados en el escaneo de puertos con _Nmap_:
 
-* p - Escanea todo el rango de puertos (65535 en total)
-* open - Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)
-* T5 - La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat`
-* v - _Verbose_, reporta lo encontrado por consola
-* n - No aplicar _resolución DNS_
-* sS - Escaneo _TCP SYN_
-* min-rate - Emitir paquetes no más lentos que \<valor\> por segundo
-* vvv - Triple _verbose_, para obtener mayor información por consola
-* Pn - No aplicar _host discovery_
-
-Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-p\- | Escanea todo el rango de puertos (65535 en total) |
+| \-\-open | Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) |
+| \-T5 | La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, "generaremos más ruido", pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos `White Hat` | 
+| \-v | _Verbose_, reporta lo encontrado por consola |
+| \-n | No aplicar _resolución DNS_ |
+| \-sS | Escaneo _TCP SYN_ |
+| \-min-rate | Emitir paquetes no más lentos que \<valor\> por segundo |
+| \-vvv | Triple _verbose_, para obtener mayor información por consola |
+| \-Pn | No aplicar _host discovery_ |
 
 ```bash
 nmap -sC -sV -p 22,25,80,110,111,143,443,878,993,995,3306,4190,4445,4559,5038,10000 10.10.10.7
@@ -68,9 +68,11 @@ nmap -sC -sV -p 22,25,80,110,111,143,443,878,993,995,3306,4190,4445,4559,5038,10
 
 A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con _Nmap_:
 
-* sC - Scripts básicos de enumeración
-* sV - Versión y servicios que corren bajo los puertos encontrados
-* p - Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-sC | Scripts básicos de enumeración |
+| \-sV | Versión y servicios que corren bajo los puertos encontrados |
+| \-p | Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) |
 
 Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abiertos algunos puertos relacionados con `HTTP` y `HTTPS`.
 
