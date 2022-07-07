@@ -6,7 +6,7 @@ published: true
 
 En esta ocasión vamos a estar resolviendo la máquina _SecNotes_ de _Hack The Box_. Es una máquina _Windows_ de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/1.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/1.png)
 
 ### [](#header-3)Fase De Reconocimiento
 
@@ -16,7 +16,7 @@ Primeramente vamos a lanzar una _traza ICMP_ para saber si la máquina está act
 ping -c 1 10.10.10.97
 ```
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/2.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/2.png)
 
 Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del _TTL_; en este caso el valor del _TTL_ de la máquina es `127`, por lo que podemos intuir que estamos ante una máquina _Windows_. Recordemos que algunos de los valores referenciales son los siguientes:
 
@@ -32,7 +32,7 @@ Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `127` y no `128` co
 ping -c 1 10.10.10.97 -R
 ``` 
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/3.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/3.png)
 
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
@@ -88,19 +88,19 @@ whatweb http://10.10.10.97
 whatweb http://10.10.10.97:8808
 ```
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/4.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/4.png)
 
 No hay nada que llame especialmente nuestra atención, más que el redireccionamiento que realiza la primera página hacia lo que parece ser un panel de login, y el título de la segunda página que es el que viene por defecto al montar una página con el servidor `IIS`.
 
 En vista de que ya no nos es posible trabajar desde la terminal, tendremos que visitar estas páginas desde nuestro navegador.
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/5.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/5.png)
 
 Lo primero que nos puede venir a la mente al ver un panel de login, sería probar credenciales por defecto, sin embargo este no va a ser el caso.
 
 Algo interesante que voy a comentar solo como curiosidad, es que si ingresamos un nombre de usuario que no existe en el sistema, la página nos devolverá el siguiente mensaje.
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/6.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/6.png)
 
 Algo que resulta crítico, ya que teniendo control sobre este mensaje, podemos aplicar fuerza bruta sobre el campo `Username` para descubrir usuarios válidos.
 
@@ -120,7 +120,7 @@ wfuzz -c -L -t 400 --hc 404 --hh 33014 -w /usr/share/wordlists/dirbuster/directo
 
 En caso de que aplicasemos fuerza bruta sobre este campo, descubriríamos que el usuario `tyler` existe dentro del sistema, por lo que ahora tendríamos que aplicar fuerza bruta sobre el campo `Password`, para lo cual ya no tendremos tanta suerte, ya que como veremos más adelante, su contraseña es bastante robusta, por lo que no es suceptible a ataques por diccionario.
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/7.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/7.png)
 
 Respecto a la segunda página no hay prácticamente nada que podamos hacer, por el momento, al menos.
 
@@ -132,15 +132,15 @@ La máquina _SecNotes_ cuenta con dos vías potenciales para realizar la intrusi
 
 En vista de que las credenciales por defecto no funcionaron, podemos hacer lo que haría un usuario normal, registrarnos, no todo se trata de romper.
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/8.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/8.png)
 
 Una vez hemos creado una cuenta, podemos logearnos, y veremos un panel bastante sencillo, pero donde destaca un nombre, `tyler`, un posible usuario potencial, que como mencioné antes, podíamos haberlo descubierto por fuerza bruta.
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/9.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/9.png)
 
 Por otra parte, vemos que la página nos permite crear una serie de notas, hagámoslo.
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/10.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/10.png)
 
 Vemos que el mecanismo de la página es bastante simple, pero si durante el desarrollo de esta no se tuvo en consideración ningún tipo de seguridad en mente, quizá esta sea vulnerable a algo tan básico como confiar plenamente en el input del usuario, intentemos ya algo no intencionado como una [inyección HTML](https://mateonitro550.github.io/HTML-Injection) por ejemplo.
 
@@ -150,7 +150,7 @@ En el campo _Title_ podemos escribir cualquier cosa, aunque perfectamente podrí
 <h1>Una frase cualquiera</h1>
 ```
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/11.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/11.png)
 
 O por ejemplo:
 
@@ -158,7 +158,7 @@ O por ejemplo:
 <marquee>Una frase cualquiera</marquee>
 ```
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/12.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/12.png)
 
 Vemos que como atacantes, tenemos la capacidad de inyectar código al propio código fuente de la página web. ¿Qué tal si probamos ahora un [XSS](https://mateonitro550.github.io/https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)) (Cross-Site Scripting)?
 
@@ -168,7 +168,7 @@ Igual que antes, en el campo _Title_ podemos escribir cualquier cosa, y en el ca
 <script>alert("Una frase cualquiera")</script>
 ```
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/13.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/13.png)
 
 En vez de mostrar por pantalla una frase cualquiera, ¿por qué mejor no vemos la cookie de la sesión actual?
 
@@ -176,11 +176,11 @@ En vez de mostrar por pantalla una frase cualquiera, ¿por qué mejor no vemos l
 <script>alert(document.cookie)</script>
 ```
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/14.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/14.png)
 
 POR AQUÍ DIGO DE PROBAR UN BLIND XSS
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/15.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/15.png)
 
 Una vez comprobamos que podemos visualizar la cookie de nuestra sesión, ¿por qué no intentamos secuestar la cookie de sesión de otro usuario? De esa manera, si tiene su sesión abierta, podríamos 'logearnos' sin proporcionar credenciales, únicamente su cookie de sesión.
 
@@ -194,16 +194,68 @@ Bien, lo primero que haremos será hostear un servidor con `Python`.
 sudo python3 -m http.server 80
 ```
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/16.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/16.png)
 
 ESTA FOTO ES DEL BLIND XSS CON TLYER
 
-![](http://0.0.0.0:80/2022-02-28-SecNotes-Hack-The-Box/16.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/16.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/17.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/18.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/20.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png)
 
 ### [](#header-3)SQL Injection
 
-DEF
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/24.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/25.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/26.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/27.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/28.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/29.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/30.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/31.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/32.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/33.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/34.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/35.png)
 
 ### [](#header-3)Escalada De Privilegios
 
-GHI
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/36.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/37.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/38.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/39.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/40.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/41.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/42.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/43.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/44.png)
