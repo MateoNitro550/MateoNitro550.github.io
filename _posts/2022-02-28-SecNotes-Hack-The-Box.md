@@ -90,7 +90,7 @@ whatweb http://10.10.10.97:8808
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/4.png)
 
-No hay nada que llame especialmente nuestra atención, más que el redireccionamiento que realiza la primera página hacia lo que parece ser un panel de login, y el título de la segunda página que es el que viene por defecto al montar una página con el servidor `IIS`.
+No hay nada que llame especialmente nuestra atención, más que el redireccionamiento que realiza la primera página hacia lo que parece ser un panel de login, y el título de la segunda página web que es el que viene por defecto al montarla con `IIS`.
 
 En vista de que ya no nos es posible trabajar desde la terminal, tendremos que visitar estas páginas desde nuestro navegador.
 
@@ -104,7 +104,7 @@ Algo interesante que voy a comentar solo como curiosidad, es que si ingresamos u
 
 Algo que resulta crítico, ya que teniendo control sobre este mensaje, podemos aplicar fuerza bruta sobre el campo `Username` para descubrir usuarios válidos.
 
-Esto sería fácil de ejecutar teniendo a mano herramientas como `Wfuzz` y diccionarios como [SecLists](https://github.com/danielmiessler/SecLists), que nos provee entre tantas cosas, un diccionario dedicado a nombres de usuario comunes.
+Esto sería fácil de ejecutar teniendo a mano herramientas como `Wfuzz` y diccionarios como [SecLists](https://github.com/danielmiessler/SecLists/blob/master/Usernames/Names/names.txt), que nos provee entre tantas cosas, un diccionario dedicado a nombres de usuario comunes.
 
 ```
 sudo apt install wfuzz
@@ -115,8 +115,17 @@ git clone https://github.com/danielmiessler/SecLists
 ```
 
 ```bash
-wfuzz -c -L -t 400 --hc 404 --hh 33014 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://dirección IP:3333/FUZZ 2> /dev/null
+wfuzz -c -L -t 400 --hs "No account found with that username." -w /dirección/del/diccionario/SecLists/Usernames/Names/names.txt -d "username=FUZZ&password=noConocemosLaContraseña" http://10.10.10.97
 ```
+
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-c | Output colorizado |
+| \-L | Sigue las redirecciones HTTP, de modo que conseguimos el código de estado final verdadero |
+| \-t | Específicamos el número de hilos con el queremos trabajar |
+| \-\-hs | Oculta las respuestas con la expresión regular que indiquemos, en este caso controlamos el mensaje de  error |
+| \-w | Especificamos el diccionario con el que queremos trabajar |
+| \-d | Especificamos la petición por POST |
 
 En caso de que aplicasemos fuerza bruta sobre este campo, descubriríamos que el usuario `tyler` existe dentro del sistema, por lo que ahora tendríamos que aplicar fuerza bruta sobre el campo `Password`, para lo cual ya no tendremos tanta suerte, ya que como veremos más adelante, su contraseña es bastante robusta, por lo que no es suceptible a ataques por diccionario.
 
@@ -142,7 +151,9 @@ Por otra parte, vemos que la página nos permite crear una serie de notas, hagá
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/10.png)
 
-Vemos que el mecanismo de la página es bastante simple, pero si durante el desarrollo de esta no se tuvo en consideración ningún tipo de seguridad en mente, quizá esta sea vulnerable a algo tan básico como confiar plenamente en el input del usuario, intentemos ya algo no intencionado como una [inyección HTML](https://mateonitro550.github.io/HTML-Injection) por ejemplo.
+Vemos que el mecanismo de la página es bastante simple, pero si durante el desarrollo de la misma, no se tuvo en consideración ningún tipo de seguridad, quizá esta sea vulnerable a algo tan básico como confiar plenamente en el input del usuario.
+
+Intentemos ya algo no intencionado como una [inyección HTML](https://mateonitro550.github.io/HTML-Injection).
 
 En el campo _Title_ podemos escribir cualquier cosa, aunque perfectamente podría ser la inyección, y en el campo _Note_, colocaremos lo siguiente:
 
