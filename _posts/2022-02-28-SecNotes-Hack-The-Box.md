@@ -237,9 +237,15 @@ Vemos que conseguimos una petición por GET por parte de la máquina víctima, p
 
 Para nuestra sorpresa, esto no funciona, así que tenemos que buscar otra alternativa.
 
+Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos. Adicionalmente, si revisamos esta petición con `Burp Suite`, nos daremos cuenta que no existe algún tipo de [CSRF Token](https://portswigger.net/web-security/csrf/tokens), por lo que en principio, podríamos modificar esta petición a nuestro antojo.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png)
 
+Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/20.png)
+
+Para ello, simplemente haremos _click derecho_, _Change request method_, y copiaremos la petición por GET.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png)
 
