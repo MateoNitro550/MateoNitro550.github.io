@@ -403,27 +403,35 @@
 
 &lt;p&gt;Para nuestra sorpresa, esto no funciona, así que tenemos que buscar otra alternativa.&lt;/p&gt;
 
-&lt;p&gt;Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos. Adicionalmente, si revisamos esta petición con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Burp Suite&lt;/code&gt;, nos daremos cuenta que no existe algún tipo de &lt;a href=&quot;https://portswigger.net/web-security/csrf/tokens&quot;&gt;CSRF Token&lt;/a&gt;, por lo que en principio, podríamos modificar esta petición a nuestro antojo.&lt;/p&gt;
+&lt;p&gt;Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET.&lt;/p&gt;
+&lt;p&gt;Adicionalmente, si revisamos esta petición con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Burp Suite&lt;/code&gt;, nos daremos cuenta que no existe algún tipo de &lt;a href=&quot;https://portswigger.net/web-security/csrf/tokens&quot;&gt;CSRF Token&lt;/a&gt;, por lo que en principio, podríamos modificar esta petición a nuestro antojo.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/20.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Para ello, simplemente haremos &lt;em&gt;click derecho&lt;/em&gt;, &lt;em&gt;Change request method&lt;/em&gt;, y copiaremos la petición por GET.&lt;/p&gt;
+&lt;p&gt;Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET. De modo que no haya que proporcionar los campos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Password&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Confirm Password&lt;/code&gt; de forma manual, nosotros lo haremos a través de la propia URL.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;Para ello, simplemente haremos &lt;em&gt;click derecho&lt;/em&gt;, &lt;em&gt;Change request method&lt;/em&gt;, y copiaremos la petición por GET.&lt;/p&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;De esta manera, si enviamos este enlace a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tyler&lt;/code&gt;, deberíamos de haber cambiado su contraseña.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;sql-injection&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;SQL Injection&lt;/h3&gt;
+&lt;p&gt;Posteriormente, proseguiremos a logearnos con la contraseña que establecimos anteriormente.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/24.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;Ya una vez dentro, encontraremos una nota, con lo que parece ser un usuario y contraseña para un recurso compartido; si recordamos de nuestro escaneo con &lt;em&gt;Nmap&lt;/em&gt;, el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;445&lt;/code&gt; estaba abierto.&lt;/p&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/25.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;sql-injection&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;SQL Injection&lt;/h3&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/26.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 

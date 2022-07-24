@@ -237,27 +237,35 @@ Vemos que conseguimos una petición por GET por parte de la máquina víctima, p
 
 Para nuestra sorpresa, esto no funciona, así que tenemos que buscar otra alternativa.
 
-Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos. Adicionalmente, si revisamos esta petición con `Burp Suite`, nos daremos cuenta que no existe algún tipo de [CSRF Token](https://portswigger.net/web-security/csrf/tokens), por lo que en principio, podríamos modificar esta petición a nuestro antojo.
+Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png)
 
-Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET.
+Adicionalmente, si revisamos esta petición con `Burp Suite`, nos daremos cuenta que no existe algún tipo de [CSRF Token](https://portswigger.net/web-security/csrf/tokens), por lo que en principio, podríamos modificar esta petición a nuestro antojo.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/20.png)
 
-Para ello, simplemente haremos _click derecho_, _Change request method_, y copiaremos la petición por GET.
+Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET. De modo que no haya que proporcionar los campos `Password` y `Confirm Password` de forma manual, nosotros lo haremos a través de la propia URL.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png)
 
+Para ello, simplemente haremos _click derecho_, _Change request method_, y copiaremos la petición por GET.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png)
+
+De esta manera, si enviamos este enlace a `tyler`, deberíamos de haber cambiado su contraseña.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png)
 
-### [](#header-3)SQL Injection
+Posteriormente, proseguiremos a logearnos con la contraseña que establecimos anteriormente.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/24.png)
 
+Ya una vez dentro, encontraremos una nota, con lo que parece ser un usuario y contraseña para un recurso compartido; si recordamos de nuestro escaneo con _Nmap_, el puerto `445` estaba abierto.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/25.png)
+
+### [](#header-3)SQL Injection
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/26.png)
 
