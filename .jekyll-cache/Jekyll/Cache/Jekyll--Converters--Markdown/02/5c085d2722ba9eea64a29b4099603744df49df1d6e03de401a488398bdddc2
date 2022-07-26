@@ -1,6 +1,8 @@
-I"o<p>En esta ocasión vamos a estar resolviendo la máquina <em>SecNotes</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
+I"Kp<p>En esta ocasión vamos a estar resolviendo la máquina <em>SecNotes</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/1.png" alt="" /></p>
+
+<p><img id="myImg" src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/1.png" style="width:100%;max-width:300px" /></p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
@@ -324,7 +326,10 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png" alt="" /></p>
 
-<p>De esta manera, si enviamos este enlace a <code class="language-plaintext highlighter-rouge">tyler</code>, deberíamos de haber cambiado su contraseña.</p>
+<p>De esta manera, si enviamos este enlace a <code class="language-plaintext highlighter-rouge">tyler</code>, deberíamos pode cambiar su contraseña.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png" alt="" /></p>
 

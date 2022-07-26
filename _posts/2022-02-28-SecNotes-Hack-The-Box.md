@@ -1,7 +1,7 @@
 ---
 title: SecNotes - Hack The Box
 categories: [Windows, XSS]
-published: true
+published: false
 ---
 
 En esta ocasión vamos a estar resolviendo la máquina _SecNotes_ de _Hack The Box_. Es una máquina _Windows_ de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.
@@ -253,7 +253,11 @@ Para ello, simplemente haremos _click derecho_, _Change request method_, y copia
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png)
 
-De esta manera, si enviamos este enlace a `tyler`, deberíamos de haber cambiado su contraseña.
+De esta manera, si enviamos este enlace a `tyler`, deberíamos pode cambiar su contraseña.
+
+```html
+
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png)
 

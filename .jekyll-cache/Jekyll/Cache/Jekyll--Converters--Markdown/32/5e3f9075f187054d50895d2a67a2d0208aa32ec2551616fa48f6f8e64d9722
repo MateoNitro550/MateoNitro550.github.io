@@ -1,4 +1,13 @@
-I"wk<p>En esta ocasión vamos a estar resolviendo la máquina <em>SecNotes</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
+I"p<p>img {
+    transition:transform 0.25s ease;
+}</p>
+
+<p>img:hover {
+    -webkit-transform:scale(1.5);
+    transform:scale(1.5);
+}</p>
+
+<p>En esta ocasión vamos a estar resolviendo la máquina <em>SecNotes</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/1.png" alt="" /></p>
 
@@ -308,25 +317,38 @@
 
 <p>Para nuestra sorpresa, esto no funciona, así que tenemos que buscar otra alternativa.</p>
 
-<p>Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos. Adicionalmente, si revisamos esta petición con <code class="language-plaintext highlighter-rouge">Burp Suite</code>, nos daremos cuenta que no existe algún tipo de <a href="https://portswigger.net/web-security/csrf/tokens">CSRF Token</a>, por lo que en principio, podríamos modificar esta petición a nuestro antojo.</p>
+<p>Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png" alt="" /></p>
 
-<p>Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET.</p>
+<p>Adicionalmente, si revisamos esta petición con <code class="language-plaintext highlighter-rouge">Burp Suite</code>, nos daremos cuenta que no existe algún tipo de <a href="https://portswigger.net/web-security/csrf/tokens">CSRF Token</a>, por lo que en principio, podríamos modificar esta petición a nuestro antojo.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/20.png" alt="" /></p>
 
+<p>Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET. De modo que no haya que proporcionar los campos <code class="language-plaintext highlighter-rouge">Password</code> y <code class="language-plaintext highlighter-rouge">Confirm Password</code> de forma manual, nosotros lo haremos a través de la propia URL.</p>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png" alt="" /></p>
+
+<p>Para ello, simplemente haremos <em>click derecho</em>, <em>Change request method</em>, y copiaremos la petición por GET.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png" alt="" /></p>
 
+<p>De esta manera, si enviamos este enlace a <code class="language-plaintext highlighter-rouge">tyler</code>, deberíamos pode cambiar su contraseña.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png" alt="" /></p>
 
-<h3 id="sql-injection"><a href="#header-3"></a>SQL Injection</h3>
+<p>Posteriormente, proseguiremos a logearnos con la contraseña que establecimos anteriormente.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/24.png" alt="" /></p>
 
+<p>Ya una vez dentro, encontraremos una nota, con lo que parece ser un usuario y contraseña para un recurso compartido; si recordamos de nuestro escaneo con <em>Nmap</em>, el puerto <code class="language-plaintext highlighter-rouge">445</code> estaba abierto.</p>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/25.png" alt="" /></p>
+
+<h3 id="sql-injection"><a href="#header-3"></a>SQL Injection</h3>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/26.png" alt="" /></p>
 
