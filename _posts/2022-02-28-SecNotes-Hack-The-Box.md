@@ -1,7 +1,7 @@
 ---
 title: SecNotes - Hack The Box
 categories: [Windows, XSS]
-published: false
+published: true
 ---
 
 En esta ocasión vamos a estar resolviendo la máquina _SecNotes_ de _Hack The Box_. Es una máquina _Windows_ de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.
@@ -195,9 +195,11 @@ Podemos observar que cada vez que la página web se recarga, aparece un mensaje 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/15.png)
 
-Una vez comprobamos que tenemos la capacidad de visualizar nuestra propia cookie de sesión a través de ventanas emergentes (pop-ups), tenemos que pensar en una forma de obtener la cookie directamente en nuestro equipo de atacantes, ya que de momento, estas ventanas solo son visibles por los usuarios cuando están en su panel de inicio, además de que llaman bastante la atención.
+Una vez comprobamos que tenemos la capacidad de visualizar nuestra propia cookie de sesión a través de ventanas emergentes (pop-ups), podemos empezar a esbozar una posible vía potencial para la intrusión.
 
-Para ello, haremos uso de un [Blind XSS](https://mateonitro550.github.io/https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)) para efectuar un `Cookie Hijacking`, de modo que secuestrando la cookie de sesión de otro usuario, si tiene este su sesión abierta, podríamos 'logearnos' sin proporcionar credenciales, únicamente el valor de su cookie.
+Podemos intentar efectuar un `Cookie Hijacking`, ya que secuestrando la cookie de sesión de otro usuario, si este tiene su sesión abierta, podríamos 'logearnos' sin proporcionar credenciales, únicamente el valor de su cookie.
+
+Adicionalmente, tenemos que pensar en una forma de obtener el valor de la cookie directamente en nuestro equipo de atacantes, ya que de momento, estas ventanas solo son visibles por los usuarios cuando están en su panel de inicio, además de que llaman bastante la atención. Para ello, haremos uso de un [Blind XSS](https://mateonitro550.github.io/https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)).
 
 Empezaremos por crear un servidor con `Python`, en el cual recibiremos las cookies de los usuarios cada que estos refresquen, o se encuentren en su panel de inicio.
 
@@ -235,7 +237,7 @@ Vemos que conseguimos una petición por GET por parte de la máquina víctima, p
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/18.png)
 
-Para nuestra sorpresa, esto no funciona, así que tenemos que buscar otra alternativa.
+Para nuestra sorpresa, esto no funciona, así que tendremos que buscar otra alternativa.
 
 Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos.
 
@@ -249,19 +251,15 @@ Lo que haremos será cambiar esta petición que se está tramitando por POST, a 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png)
 
-Para ello, simplemente haremos _click derecho_, _Change request method_, y copiaremos la petición por GET.
+Para ello, desde `Burp Suite`, habiendo capturado la petición del cambio de contraseña, simplemente haremos _click derecho_, _Change request method_, y copiaremos la petición por GET.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png)
 
-De esta manera, si enviamos este enlace a `tyler`, deberíamos pode cambiar su contraseña.
-
-```html
-
-```
+De esta manera, si añadimos _http://10.10.10.97_ al inicio de la petición que acabamos de copiar, generaremos un URL capaz de cambiar las contraseñas a través del método GET; probémoslo.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png)
 
-Posteriormente, proseguiremos a logearnos con la contraseña que establecimos anteriormente.
+Posteriormente, proseguiremos a logearnos con la contraseña que establecimos en el URL.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/24.png)
 
@@ -270,6 +268,8 @@ Ya una vez dentro, encontraremos una nota, con lo que parece ser un usuario y co
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/25.png)
 
 ### [](#header-3)SQL Injection
+
+Otro vector que podriamos considerar al encontrarnos frente a un panel de login sería probar [Inyecciones SQL](https://mateonitro550.github.io/SQL-Injection). De este modo lo que estamos haciendo es bypassear el panel con expresiones 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/26.png)
 
@@ -291,9 +291,9 @@ Ya una vez dentro, encontraremos una nota, con lo que parece ser un usuario y co
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/35.png)
 
-### [](#header-3)Escalada De Privilegios
-
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/36.png)
+
+### [](#header-3)Escalada De Privilegios
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/37.png)
 
@@ -308,5 +308,3 @@ Ya una vez dentro, encontraremos una nota, con lo que parece ser un usuario y co
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/42.png)
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/43.png)
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/44.png)
