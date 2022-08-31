@@ -304,6 +304,8 @@ get iisstart.htm
 get iisstart.png
 ```
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/30.png)
+
 Rápidamente nos daremos cuenta que estamos frente al contenido de la segunda página web, alojada en el puerto `8808`; por lo que, dada nuestra capacidad de escritura sobre el recurso, deberíamos de poder subir contenido que se vea reflejado en el servidor web.
 
 Empecemos por subir algo simple como una `web shell`.
@@ -318,13 +320,13 @@ Empecemos por subir algo simple como una `web shell`.
 put cmd.php
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/30.png)
-
-Una vez subida, desde nuestro navegador, podemos acceder a ella añadiendo _/cmd.php?cmd=comando_.
-
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/31.png)
 
+Una vez subida, desde nuestro navegador, podemos acceder a ella añadiendo _/cmd.php?cmd=comando_ al url.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/32.png)
+
+Podemos ejecutar _whoami_ para saber que usuario somos.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/33.png)
 

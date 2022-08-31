@@ -387,6 +387,8 @@
 get iisstart.png
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/30.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
 &lt;p&gt;Rápidamente nos daremos cuenta que estamos frente al contenido de la segunda página web, alojada en el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8808&lt;/code&gt;; por lo que, dada nuestra capacidad de escritura sobre el recurso, deberíamos de poder subir contenido que se vea reflejado en el servidor web.&lt;/p&gt;
 
 &lt;p&gt;Empecemos por subir algo simple como una &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;web shell&lt;/code&gt;.&lt;/p&gt;
@@ -399,13 +401,13 @@ get iisstart.png
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;put cmd.php
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/30.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez subida, desde nuestro navegador, podemos acceder a ella añadiendo &lt;em&gt;/cmd.php?cmd=comando&lt;/em&gt;.&lt;/p&gt;
-
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/31.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;Una vez subida, desde nuestro navegador, podemos acceder a ella añadiendo &lt;em&gt;/cmd.php?cmd=comando&lt;/em&gt; al url.&lt;/p&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/32.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Podemos ejecutar &lt;em&gt;whoami&lt;/em&gt; para saber que usuario somos.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/33.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
