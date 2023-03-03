@@ -6,7 +6,7 @@ title: English
 ​
 
 <div style="text-align:center">
-  <img display="flex" src="http://localhost:8080/assets/418.png">
+  <img display="flex" src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/418.png">
 </div>
 
 ​
