@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
   <meta name="generator" content="Jekyll">
 
-  <title>404</title>
+  <title>Search</title>
 
   <link rel="shortcut icon" href="/assets/favicon.ico">
   <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
@@ -14,21 +14,21 @@
   <link rel="stylesheet" href="/css/main.css">
   
   <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>404 | Filthy Hacker</title>
+<title>Search | Filthy Hacker</title>
 <meta name="generator" content="Jekyll v4.2.2" />
-<meta property="og:title" content="404" />
+<meta property="og:title" content="Search" />
 <meta name="author" content="m4teo" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
 <meta property="og:description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
-<link rel="canonical" href="http://localhost:8080/en404" />
-<meta property="og:url" content="http://localhost:8080/en404" />
+<link rel="canonical" href="http://localhost:8080/search" />
+<meta property="og:url" content="http://localhost:8080/search" />
 <meta property="og:site_name" content="Filthy Hacker" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="404" />
+<meta property="twitter:title" content="Search" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"m4teo","url":"https://mateonitro550.github.io"},"description":"Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking.","headline":"404","url":"http://localhost:8080/en404"}</script>
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"m4teo","url":"https://mateonitro550.github.io"},"description":"Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking.","headline":"Search","url":"http://localhost:8080/search"}</script>
 <!-- End Jekyll SEO tag -->
 
 </head>
@@ -44,8 +44,8 @@
     </a>
     <div class="header-links">
       <a href="/"><h2 class="header-link">Posts</h2></a>
-<a href="/buscar"><h2 class="header-link">Buscar</h2></a>
-<a href="/archivo"><h2 class="header-link">Archivo</h2></a>
+<a href="/search"><h2 class="header-link">Buscar</h2></a>
+<a href="/archive"><h2 class="header-link">Archivo</h2></a>
 <a href="/en"><h2 class="header-link">English</h2></a>
 
     </div>
@@ -54,22 +54,25 @@
 
     <div class="container">
       <section id="main_content">
-        <div style="text-align:center">
-  <img display="flex" src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/404%20(1).png" />
+        <article>
+  <div id="search-container">
+    <input type="text" id="search-input" placeholder="Busca Plataforma, Máquina, Vulnerabilidad, Temática, CTF..." />
+    <ul id="results-container"></ul>
 </div>
 
-<p>​</p>
+<script src="http://localhost:8080/js/simple-jekyll-search.min.js"></script>
 
-<div style="text-align:center">
-  <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/404%20(2).png" />
-</div>
+<script>
+    SimpleJekyllSearch({
+    searchInput: document.getElementById('search-input'),  
+    resultsContainer: document.getElementById('results-container'),
+    searchResultTemplate: '<div style="text-align:right !important;"><a href="http://localhost:8080{url}"><h1 style="text-align:left !important;">{title}</h1></a><span style="text-align:right !important;">{date}</span></div>',
+    json: '/search.json'
+    });
+</script>
 
-<p>​</p>
 
-<div style="text-align:center">
-  This page does not exist. But don't worry, there is more content
-  <a href="https://mateonitro550.github.io/eng/">here</a>.
-</div>
+</article>
 
       </section>
     </div>
