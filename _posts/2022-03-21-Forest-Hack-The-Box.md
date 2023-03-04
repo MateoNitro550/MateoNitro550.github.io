@@ -1,7 +1,7 @@
 ---
 title: Forest - Hack The Box
 categories: [Windows,]
-published: true
+published: false
 ---
 
 El día de hoy vamos a resolver la máquina _Forest_ de _Hack The Box_. Es una máquina _Windows_ de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.
