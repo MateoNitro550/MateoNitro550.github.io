@@ -297,6 +297,10 @@ smbmap -H 10.10.10.97 -u 'tyler' -p '92g!mA8BGj0irkL%0G*&' -R 'new-site'
 
 A partir de este punto empezaremos a trabajar con `smbclient`, ya que nos resultará mucho más cómoda su interfaz de línea de comandos (CLI).
 
+```
+smbclient //10.10.10.97/new-site -U 'tyler'
+```
+
 Para saber de que se trata el contenido dentro del recurso `new-site` podemos descargarlo en nuestra máquina con el comando `get`, aunque podemos también intuirlo en base al nombre de los archivos, `IIS`.
 
 ```
@@ -334,7 +338,7 @@ O _whoami_ para determinar que usuario somos.
 
 Ya a partir de este punto, lo que nos interesa como atacantes, es ganar acceso al sistema a través de una consola propiamente, para lo cual tenemos dos opciones:
 
-Podemos usar [Netcat](https://eternallybored.org/misc/netcat/), para lo cual descargaremos la última versión, subiremos al servidor web la versión compilada para 64 bits.
+Podemos usar [Netcat](https://eternallybored.org/misc/netcat/), para lo cual descargaremos la última versión y subiremos al servidor web el ejecutable.
 
 ```
 put nc64.exe
@@ -392,18 +396,73 @@ Para finalmente a través del navegador añadir lo siguiente al url.
 
 ### [](#header-3)Escalada De Privilegios
 
+Si empezamos a enumerar el sistema, nos daremos cuenta que dentro del _Disco Local C_ existe un archivo `Ubuntu.zip` así como una carpeta que lleva por nombre `Distros`, interesante.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/38.png)
+
+Si volvemos a revisar dentro del directorio del usuario `tyler` encontraremos un acceso directo a lo que parece ser una `bash`, echémosle un vistazo.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/39.png)
 
+```
+type bash.lnk
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/40.png)
+
+De lo poco que es legible, podemos observar que tenemos en el sistema una _bash_, ubicada en la ruta _C:\Windows\System32_.
+
+Esto significa que estamos frente a un `Windows Subsystem for Linux` (WSL). Una característica que introdujo _Windows_ para poder ejectuar entornos _Linux_ sin la necesidad de usar una máquina virtual o realizar un dual-boot.
+
+Podemos corroborar esto si listamos el directorio _C:\Users\tyler\AppData\Local\Packages_, dónde se almacenan los datos de las distribuciones para _WSL_.
+
+Tal y como encontramos inicialmente, nos hallamos frente a un subsistema `Ubuntu`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/41.png)
 
+Veamos si encontramos algo dentro del _WSL_, para ello podemos abrir la _bash_ bien desde el acceso directo o su ruta absoluta.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/42.png)
+
+Podemos ver que directamente somos el usuario _root_ por lo que en principio tenemos máximos privilegios. Además, podemos observar que nos encontramos en la ruta _/mnt/c/Users/tyler/Desktop_.
+
+```
+whoami
+pwd
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/43.png)
 
+Por lo que, deberíamos poder movernos a través de los disintos directorios de los demás usuarios.
+
+```
+ls /mnt/c/Users
+```
+
+Sin embargo, al querer acceder al directorio del usuario _Administrator_ salta un error, por lo que, la solución no es por aquí.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/44.png)
+
+Si nos dirigimos a nuestro directorio como usuario _root_, encontraremos el archivo `.bash_history`, nuestro histórico de comandos.
+
+```
+cd /root
+ls -la
+cat .bash_history
+```
+
+Dentro del cual, encontraremos en texto plano las credenciales del usuario _root_.
+
+A partir de este punto, podemos volver a conectarnos a la máquina víctima a través de `smbclient` pero ahora como el usuario `Administrator` y proporcionando su contraseña.
+
+```
+smbclient //10.10.10.97/Admin%/Desktop -U 'Administrator'
+```
+
+O, simplemente, haciendo uso de `impacket-psexec`.
+
+```
+rlwrap impacket-psexec administrator@10.10.10.97
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/45.png)

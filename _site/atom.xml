@@ -12,123 +12,6 @@
     </author>
     
       <item>
-        <title>Forest - Hack The Box</title>
-        <description>&lt;p&gt;El día de hoy vamos a resolver la máquina &lt;em&gt;Forest&lt;/em&gt; de &lt;em&gt;Hack The Box&lt;/em&gt;. Es una máquina &lt;em&gt;Windows&lt;/em&gt; de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
-
-&lt;p&gt;Primeramente vamos a lanzar una &lt;em&gt;traza ICMP&lt;/em&gt; para saber si la máquina está activa.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.161
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del &lt;em&gt;TTL&lt;/em&gt;; en este caso el valor del &lt;em&gt;TTL&lt;/em&gt; de la máquina es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt;, por lo que podemos intuir que estamos ante una máquina &lt;em&gt;Windows&lt;/em&gt;. Recordemos que algunos de los valores referenciales son los siguientes:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Sistema Operativo (OS)&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;TTL&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Linux&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;64&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Windows&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;128&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Solaris&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;254&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.161 -R
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/8.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/9.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/10.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/12.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/13.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/14.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/15.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/16.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/17.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/18.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/19.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/20.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/21.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/22.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/23.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/24.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/25.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/26.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/27.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/28.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/29.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/30.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/31.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/32.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/33.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/34.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/35.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 21 Mar 2022 00:00:00 -0400</pubDate>
-        <link>http://localhost:8080//Forest-Hack-The-Box</link>
-        <link href="http://localhost:8080/Forest-Hack-The-Box"/>
-        <guid isPermaLink="true">http://localhost:8080/Forest-Hack-The-Box</guid>
-      </item>
-    
-      <item>
         <title>SecNotes - Hack The Box</title>
         <description>&lt;p&gt;En esta ocasión vamos a estar resolviendo la máquina &lt;em&gt;SecNotes&lt;/em&gt; de &lt;em&gt;Hack The Box&lt;/em&gt;. Es una máquina &lt;em&gt;Windows&lt;/em&gt; de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.&lt;/p&gt;
 
@@ -498,6 +381,9 @@
 
 &lt;p&gt;A partir de este punto empezaremos a trabajar con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smbclient&lt;/code&gt;, ya que nos resultará mucho más cómoda su interfaz de línea de comandos (CLI).&lt;/p&gt;
 
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient //10.10.10.97/new-site -U 'tyler'
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;p&gt;Para saber de que se trata el contenido dentro del recurso &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;new-site&lt;/code&gt; podemos descargarlo en nuestra máquina con el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;get&lt;/code&gt;, aunque podemos también intuirlo en base al nombre de los archivos, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt;.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;get iisstart.htm
@@ -532,7 +418,7 @@ get iisstart.png
 
 &lt;p&gt;Ya a partir de este punto, lo que nos interesa como atacantes, es ganar acceso al sistema a través de una consola propiamente, para lo cual tenemos dos opciones:&lt;/p&gt;
 
-&lt;p&gt;Podemos usar &lt;a href=&quot;https://eternallybored.org/misc/netcat/&quot;&gt;Netcat&lt;/a&gt;, para lo cual descargaremos la última versión, subiremos al servidor web la versión compilada para 64 bits.&lt;/p&gt;
+&lt;p&gt;Podemos usar &lt;a href=&quot;https://eternallybored.org/misc/netcat/&quot;&gt;Netcat&lt;/a&gt;, para lo cual descargaremos la última versión y subiremos al servidor web el ejecutable.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;put nc64.exe
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -582,19 +468,68 @@ get iisstart.png
 
 &lt;h3 id=&quot;escalada-de-privilegios&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Escalada De Privilegios&lt;/h3&gt;
 
+&lt;p&gt;Si empezamos a enumerar el sistema, nos daremos cuenta que dentro del &lt;em&gt;Disco Local C&lt;/em&gt; existe un archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ubuntu.zip&lt;/code&gt; así como una carpeta que lleva por nombre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Distros&lt;/code&gt;, interesante.&lt;/p&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/38.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Si volvemos a revisar dentro del directorio del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tyler&lt;/code&gt; encontraremos un acceso directo a lo que parece ser una &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bash&lt;/code&gt;, echémosle un vistazo.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/39.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type bash.lnk
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/40.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;De lo poco que es legible, podemos observar que tenemos en el sistema una &lt;em&gt;bash&lt;/em&gt;, ubicada en la ruta &lt;em&gt;C:\Windows\System32&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Esto significa que estamos frente a un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Windows Subsystem for Linux&lt;/code&gt; (WSL). Una característica que introdujo &lt;em&gt;Windows&lt;/em&gt; para poder ejectuar entornos &lt;em&gt;Linux&lt;/em&gt; sin la necesidad de usar una máquina virtual o realizar un dual-boot.&lt;/p&gt;
+
+&lt;p&gt;Podemos corroborar esto si listamos el directorio &lt;em&gt;C:\Users\tyler\AppData\Local\Packages&lt;/em&gt;, dónde se almacenan los datos de las distribuciones para &lt;em&gt;WSL&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Tal y como encontramos inicialmente, nos hallamos frente a un subsistema &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ubuntu&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/41.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;Veamos si encontramos algo dentro del &lt;em&gt;WSL&lt;/em&gt;, para ello podemos abrir la &lt;em&gt;bash&lt;/em&gt; bien desde el acceso directo o su ruta absoluta.&lt;/p&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/42.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Podemos ver que directamente somos el usuario &lt;em&gt;root&lt;/em&gt; por lo que en principio tenemos máximos privilegios. Además, podemos observar que nos encontramos en la ruta &lt;em&gt;/mnt/c/Users/tyler/Desktop&lt;/em&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;whoami
+pwd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/43.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;p&gt;Por lo que, deberíamos poder movernos a través de los disintos directorios de los demás usuarios.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ls /mnt/c/Users
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Sin embargo, al querer acceder al directorio del usuario &lt;em&gt;Administrator&lt;/em&gt; salta un error, por lo que, la solución no es por aquí.&lt;/p&gt;
+
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/44.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Si nos dirigimos a nuestro directorio como usuario &lt;em&gt;root&lt;/em&gt;, encontraremos el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.bash_history&lt;/code&gt;, nuestro histórico de comandos.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cd /root
+ls -la
+cat .bash_history
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Dentro del cual, encontraremos en texto plano las credenciales del usuario &lt;em&gt;root&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;A partir de este punto, podemos volver a conectarnos a la máquina víctima a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smbclient&lt;/code&gt; pero ahora como el usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Administrator&lt;/code&gt; y proporcionando su contraseña.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient //10.10.10.97/Admin%/Desktop -U 'Administrator'
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;O, simplemente, haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;impacket-psexec&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rlwrap impacket-psexec administrator@10.10.10.97
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/45.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>

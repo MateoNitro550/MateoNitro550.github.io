@@ -1,13 +1,6 @@
 [
   
     {
-      "title"    : "Forest - Hack The Box",
-      "category" : "Windows",
-      "url"      : "//Forest-Hack-The-Box",
-      "date"     : "21/03/2022"
-    } ,
-  
-    {
       "title"    : "SecNotes - Hack The Box",
       "category" : "WindowsXSS",
       "url"      : "//SecNotes-Hack-The-Box",
