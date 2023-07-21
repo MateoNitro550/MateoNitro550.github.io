@@ -1,6 +1,6 @@
 ---
 title: SecNotes - Hack The Box
-categories: [Windows, XSS]
+categories: [Windows, Linux, WSL, Windows Subsystem for Linux, SMB, Server Message Block, IIS, Internet Information Services, Fuzzing, CSRF, Cross-Site Request Forgery, HTML Injection, XSS, Cross-Site Scripting, Cookie Hijacking, Blind XSS, Burp Suite, CSRF Token, SQL Injection, SMBMap, smbclient, Web Shell, Netcat, Invoke-PowerShellTcp, impacket-psexec]
 published: true
 ---
 

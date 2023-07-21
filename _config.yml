@@ -7,7 +7,8 @@ author:
 
 baseurl: "/"
 newbaseurl: "js"
-enbaseurl: "en"
+
+lang: es
 
 source: .
 destination: ./_site
@@ -29,7 +30,6 @@ plugins:
   - jekyll-seo-tag
   - jekyll-paginate
   - jekyll-sitemap
-
 
 # Custom variables
 owner : "m4teo"
