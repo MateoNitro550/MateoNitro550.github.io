@@ -1,4 +1,4 @@
-<a href="{{ "/" | prepend: site.baseurl | replace: '//', '/' }}"><h2 class="header-link">Posts</h2></a>
-<a href="{{ "/search" | prepend: site.baseurl | replace: '//', '/' }}"><h2 class="header-link">Buscar</h2></a>
-<a href="{{ "/archive" | prepend: site.baseurl | replace: '//', '/' }}"><h2 class="header-link">Archivo</h2></a>
-<a href="{{ "/en" | prepend: site.baseurl | replace: '//', '/' }}"><h2 class="header-link">English</h2></a>
+<a href="{{ prepend: site.baseurl | append: page_lang | replace: '//', '/' }}"><h2 class="header-link">{{ translations.posts[page.lang] }}</h2></a>
+<a href="{{ page_lang }}/search"><h2 class="header-link">{{ translations.search[page.lang] }}</h2></a>
+<a href="{{ page_lang }}/archive"><h2 class="header-link">{{ translations.archive[page.lang] }}</h2></a>
+<a href="{% if page.lang == 'es' %}{{ '/en' }}{% else %}{{ '/es' }}{% endif %}"><h2 class="header-link">{{ translations.language[page.lang] }}</h2></a>

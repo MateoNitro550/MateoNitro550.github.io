@@ -1,8 +1,18 @@
 <!DOCTYPE html>
 <html>
+{% assign translations = site.data.translations %}
 {% include head.html %}
-
+{% assign page_lang = '/es' %}
+{% if page.lang == 'en' %}
+  {% assign page_lang = '/en' %}
+{% endif %}
 <body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
   <div id="wrapper">
     {% include header.html %}
     <div class="container">
@@ -13,30 +23,37 @@
   </div>
 
   {% if paginator.total_pages > 1 %}
-  <div class="pagination">
-    {% if paginator.previous_page == 1 %}
-    <a href="{{ '/' | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">&laquo;</a>
-    {% elsif paginator.previous_page%}
-    <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">&laquo;</a>
-    {% else %}
-    <span class="page-item">&laquo;</span>
-    {% endif %} {% for page in (1..paginator.total_pages) %} {% if page == paginator.page %}
-    <span class="page-item">{{ page }}</span>
-    {% elsif page == 1 %}
-    <a href="{{ '/' | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">{{ page }}</a>
-    {% else %}
-    <a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}" class="page-item">{{ page }}</a>
-    {% endif %} {% endfor %} {% if paginator.next_page %}
-    <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">&raquo;</a>
-    {% else %}
-    <span class="page-item">&raquo;</span>
-    {% endif %}
-  </div>
-  {% endif %} {% include footer.html %}
+    <div class="pagination">
+      {% if paginator.previous_page %}
+        <a href="{{ paginator.previous_page_path | prepend: paginator.baseurl | replace: '//', '/' }}" class="page-item">&laquo;</a>
+      {% else %}
+        <span class="page-item">&laquo;</span>
+      {% endif %}
+      {% for page in (1..paginator.total_pages) %}
+        {% if page == paginator.page %}
+          <span class="page-item">{{ page }}</span>
+        {% else %}
+          {% if page == 1 %}
+            {% assign page_path = '/' | append: page_lang %}
+          {% else %}
+            {% assign page_path = '/' | append: page_lang | append: site.page_path | append: '/page/' | append: page %}
+          {% endif %}
+          <a href="{{ page_path | replace: '//', '/' }}" class="page-item">{{ page }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if paginator.next_page %}
+        <a href="{{ paginator.next_page_path | prepend: paginator.baseurl | replace: '//', '/' }}" class="page-item">&raquo;</a>
+      {% else %}
+        <span class="page-item">&raquo;</span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% include footer.html %}
 
   {% if site.google_analytics %}
     {% include analytics.html %}
   {% endif %}
-</body>
 
+</body>
 </html>

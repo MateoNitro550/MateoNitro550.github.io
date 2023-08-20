@@ -2,6 +2,7 @@
 title: Safe - Hack The Box
 categories: [Linux, WASTE, Buffer Overflow, Python, Segmentation Fault, GDB, GEF, x64, 64 bits, DEP, Data Execution Prevention, NX, No-Execute, ROP, Return Oriented Programming, Reverse Engineering, Ghidra, pwntools, gadgets, pop, KeePass, SSH, SCP, Secure Copy Protocol, Busybox, John the Ripper, keepass2john]
 published: true
+lang: es
 ---
 
 El día de hoy vamos a estar resolviendo la máquina _Safe_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma. 

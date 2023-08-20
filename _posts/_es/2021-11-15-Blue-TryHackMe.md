@@ -2,6 +2,7 @@
 title: Blue - TryHackMe
 categories: [EternalBlue, SMB, Server Message Block, MS17-010, Metasploit, Meterpreter, John the Ripper]
 published: true
+lang: es
 ---
 
 Hoy vamos a estar resolviendo la máquina _Blue_ de _TryHackMe_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.

@@ -353,6 +353,32 @@ a:active, a:focus {
   }
 }
 
+/* Typewriter Container */
+.typewriter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  overflow: hidden;
+}
+
+/* Typewriter Text */
+.typewriter-text {
+  font-size: 28px;
+  line-height: 1.5;
+  margin: 20px 0;
+  text-align: center;
+  font-weight: bold;
+  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+  color: #ffffff;
+  animation: blink-caret 0.75s step-end infinite;
+}
+
+/* Typewriter Placeholder */
+.typewriter-placeholder {
+  visibility: hidden;
+}
+
 /* Search Bar */
 
 #search-container {

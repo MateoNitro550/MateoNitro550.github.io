@@ -2,36 +2,49 @@ title: Filthy Hacker
 description: "Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF's y varias temáticas relacionadas al hacking." 
 author:
   name: "m4teo"
-  email: "mandinoparedes@hotmail.com"
   url: "https://mateonitro550.github.io"
 
 baseurl: "/"
-newbaseurl: "js"
-
-lang: es
-
 source: .
 destination: ./_site
-permalink: /:title
-paginate: 5
-paginate_path: /page/:num/
+permalink: /:title/
+
+collections:
+  en:
+    output: true
+    permalink: /en/:title/
+  es:
+    output: true
+    permalink: /es/:title/
+collections_dir: _posts
 
 defaults:
-  -
-    scope:
-      path: ""
-      type: "posts"
+  - scope:
+      path: "_en"
+      type: "en"
     values:
       layout: "post"
+  - scope:
+      path: "_es"
+      type: "es"
+    values:
+      layout: "post"
+
+pagination:
+  enabled: true
+  per_page: 5
+  permalink: '/:collection/page/:num/'
+  sort_field: 'date'
+  sort_reverse: true
 
 future: true
 
 plugins:
   - jekyll-seo-tag
-  - jekyll-paginate
+  - jekyll-paginate-v2
   - jekyll-sitemap
 
-# Custom variables
+google_analytics: G-524F5BE8G5
+
 owner : "m4teo"
 year : "2023"
-google_analytics: UA-219710333-2

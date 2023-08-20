@@ -1,22 +1,22 @@
 ---
 layout: page
-title: Archive
+title: Archivo
+lang: es
 ---
 
 <section>
-
-  {% if site.posts[0] %}
+  {% if site.es[0] %}
 
     {% capture currentyear %}{{ 'now' | date: "%Y" }}{% endcapture %}
-    {% capture firstpostyear %}{{ site.posts[0].date | date: '%Y' }}{% endcapture %}
+    {% capture firstpostyear %}{{ site.es.last.date | date: '%Y' }}{% endcapture %}
     {% if currentyear == firstpostyear %}
-        <h3>Publicaciones de este año</h3>
-	{{ mont }}
+      <h3>Publicaciones de este año</h3>
+    {{ mont }}
     {% else %}  
-        <h3>{{ firstpostyear }}</h3>
+      <h3>{{ firstpostyear }}</h3>
     {% endif %}
 
-    {%for post in site.posts %}
+    {% for post in site.es reversed %}
       {% unless post.next %}
         {% capture month %}{% assign m = post.date | date: "%-m" | minus: 1 %}{{ site.data.es.short[m] }}{% endcapture %}
         <ul>

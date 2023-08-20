@@ -2,6 +2,7 @@
 title: SecNotes - Hack The Box
 categories: [Windows, Linux, WSL, Windows Subsystem for Linux, SMB, Server Message Block, IIS, Internet Information Services, Fuzzing, CSRF, Cross-Site Request Forgery, HTML Injection, XSS, Cross-Site Scripting, Cookie Hijacking, Blind XSS, Burp Suite, CSRF Token, SQL Injection, SMBMap, smbclient, Web Shell, Netcat, Invoke-PowerShellTcp, impacket-psexec]
 published: true
+lang: es
 ---
 
 En esta ocasión vamos a estar resolviendo la máquina _SecNotes_ de _Hack The Box_. Es una máquina _Windows_ de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.

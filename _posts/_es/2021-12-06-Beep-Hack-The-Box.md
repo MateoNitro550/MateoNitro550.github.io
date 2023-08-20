@@ -2,6 +2,7 @@
 title: Beep - Hack The Box
 categories: [Linux, Elastix, Asterisk, Webmin, Local File Inclusion, LFI, Vtiger CRM, Reverse Shell, Shellshock, CGI, Common Gateway Interface, User-Agent, Burp Suite, File Upload Bypass, Sudo]
 published: true
+lang: es
 ---
 
 En esta ocasión vamos a resolver la máquina _Beep_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma. 

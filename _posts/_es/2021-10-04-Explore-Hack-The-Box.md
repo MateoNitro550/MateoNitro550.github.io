@@ -2,6 +2,7 @@
 title: Explore - Hack The Box
 categories: [Android, Linux, ES File Explorer, Android Debug Bridge, ADB, Remote Port Forwarding]
 published: true
+lang: es
 ---
 
 En esta ocasión vamos a estar resolviendo la máquina _Explore_ de _Hack The Box_. Es una máquina _Android_ de nivel de dificultad fácil en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.

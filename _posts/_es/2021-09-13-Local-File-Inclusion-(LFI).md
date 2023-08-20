@@ -2,6 +2,7 @@
 title: Local File Inclusion (LFI)
 categories: [Directory Path Traversal, Null Byte, Wrappers]
 published: true
+lang: es
 ---
 
 La vulnerabilidad _Local File Inclusion_, _LFI_ por sus siglas en inglés, permite a un atacante leer archivos del servidor vulnerable. Esta afección se produce debido a malas prácticas durante la programación de una página web. 

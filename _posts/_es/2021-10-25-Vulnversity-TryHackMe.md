@@ -2,6 +2,7 @@
 title: Vulnversity - TryHackMe
 categories: [Fuzzing, Reverse Shell, Burp Suite, File Upload Bypass, SUID]
 published: true
+lang: es
 ---
 
 El día de hoy vamos a resolver la máquina _Vulnversity_ de _TryHackMe_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.

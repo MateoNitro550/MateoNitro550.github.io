@@ -1,0 +1,23 @@
+domain:
+  en: en
+  es: es
+
+posts:
+  en: Posts
+  es: Publicaciones
+
+search:
+  en: Search
+  es: Buscar
+
+archive:
+  en: Archive
+  es: Archivo
+
+language:
+  en: Español
+  es: English
+
+no_results:
+  en: No results found.
+  es: No se encontraron resultados.

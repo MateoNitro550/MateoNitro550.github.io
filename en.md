@@ -1,12 +1,12 @@
 ---
 layout: default
-lang: es
+lang: en
 pagination: 
   enabled: true
-  collection: 'es'
+  collection: 'en'
   per_page: 5
   permalink: '/page/:num/'
-date_format: "%d/%m/%Y"
+date_format: "%m/%d/%Y"
 ---
 
 <ul>

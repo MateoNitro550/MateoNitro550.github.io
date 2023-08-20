@@ -4,6 +4,12 @@ layout: default
 
 <article>
   <h2>{{ page.title }}</h2>
-  <time datetime="{{ page.date | date_to_xmlschema }}" class="by-line">{{ page.date | date: "%d/%m/%Y" }}</time>
+  <time datetime="{{ page.date | date_to_xmlschema }}" class="by-line">
+    {% if page.lang == 'es' %}
+      {{ page.date | date: "%d/%m/%Y" }}
+    {% else %}
+      {{ page.date | date: "%m/%d/%Y" }}
+    {% endif %}
+  </time>
   {{ content }}
 </article>

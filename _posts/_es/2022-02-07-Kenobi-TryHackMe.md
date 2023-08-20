@@ -2,6 +2,7 @@
 title: Kenobi - TryHackMe
 categories: [FTP, File Transfer Protocol, SMB, Server Message Block, rpcbind, RPC, Remote Procedure Call, Samba, SMBMap, smbclient, Null Session, RSA, SSH, NFS, Network File System, Montura, SUID]
 published: true
+lang: es
 ---
 
 Hoy vamos a resolver la máquina _Kenobi_ de _TryHackMe_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+{% include head.html %}
+
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+  }
+
+  .glitch-header {
+    font-size: 5rem;
+  }
+
+  .language-buttons {
+    margin-top: 20px;
+    display: flex;
+  }
+
+  .language-button {
+    display: block;
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1.2rem;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+  }
+
+  .language-button:hover {
+    background-color: #0056b3;
+  }
+
+  .footer-container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 20px 0;
+    background-color: transparent;
+    text-align: center;
+  }
+
+</style>
+
+<body>
+
+    <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div class="glitch-header">
+    <h1>filthyHacker@home:~$</h1>
+  </div>
+
+  <div class="typewriter-container">
+    <div class="typewriter-text"></div>
+    <div class="typewriter-placeholder">&nbsp;</div>
+  </div>
+
+  <div class="language-buttons">
+    <a href="/es/" class="language-button">Español</a>
+    <a href="/en/" class="language-button">English</a>
+  </div>
+
+  <div class="footer-container">
+    {% include footer.html %}
+  </div>
+
+  {% if site.google_analytics %}
+    {% include analytics.html %}
+  {% endif %}
+
+  <script src="js/typewriter.js"></script>
+
+</body>
+
+</html>
