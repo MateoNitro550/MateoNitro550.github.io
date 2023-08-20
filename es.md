@@ -10,8 +10,6 @@ date_format: "%d/%m/%Y"
 ---
 
 <ul>
-    {{ site.es | inspect }}
-
     {% for post in site.es %}
         <li>
             <h2><a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">{{ post.title }}</a></h2>

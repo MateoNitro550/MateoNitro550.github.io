@@ -10,8 +10,6 @@ date_format: "%m/%d/%Y"
 ---
 
 <ul>
-    {{ paginator.posts | inspect }}
-
     {% for post in site.en %}
         <li>
             <h2><a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">{{ post.title }}</a></h2>
