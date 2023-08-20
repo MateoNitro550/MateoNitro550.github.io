@@ -5,11 +5,13 @@ pagination:
   enabled: true
   collection: es
   per_page: 5
-  permalink: '/page/:num/'
+  permalink: "/page/:num/"
 date_format: "%d/%m/%Y"
 ---
 
 <ul>
+    {{ paginator.posts | inspect }}
+
     {% for post in site.es %}
         <li>
             <h2><a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">{{ post.title }}</a></h2>
