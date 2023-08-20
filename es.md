@@ -10,7 +10,7 @@ date_format: "%d/%m/%Y"
 ---
 
 <ul>
-    {{ paginator.posts | inspect }}
+    {{ site.es | inspect }}
 
     {% for post in site.es %}
         <li>
