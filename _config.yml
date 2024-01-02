@@ -9,14 +9,15 @@ source: .
 destination: ./_site
 permalink: /:title/
 
+collections_dir: _posts
+
 collections:
   en:
     output: true
-    permalink: /en/:title/
+    permalink: /:collection/:title/
   es:
     output: true
-    permalink: /es/:title/
-collections_dir: _posts
+    permalink: /:collection/:title/
 
 defaults:
   - scope:
@@ -47,4 +48,4 @@ plugins:
 google_analytics: G-524F5BE8G5
 
 owner : "m4teo"
-year : "2023"
+year : "2024"

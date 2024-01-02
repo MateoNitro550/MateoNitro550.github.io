@@ -8,7 +8,7 @@ lang: en
   {% if site.en[0] %}
 
     {% capture currentyear %}{{ 'now' | date: "%Y" }}{% endcapture %}
-    {% capture firstpostyear %}{{ site.es.last.date | date: '%Y' }}{% endcapture %}
+    {% capture firstpostyear %}{{ site.en.last.date | date: '%Y' }}{% endcapture %}
     {% if currentyear == firstpostyear %}
       <h3>Posts from this year</h3>
     {{ mont }}

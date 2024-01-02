@@ -9,7 +9,7 @@ lang: es
     <ul id="results-container"></ul>
 </div>
 
-<script src="{{ site.url }}/js/simple-jekyll-search.min.js"></script>
+<script src="{{ site.url }}/assets/js/simple-jekyll-search.min.js"></script>
 
 <script>
     var noResultsText = "No se han encontrado resultados.";
