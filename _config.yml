@@ -31,9 +31,6 @@ defaults:
     values:
       layout: "post"
 
-autopages:
-  enabled: true
-
 pagination:
   enabled: true
   per_page: 5
