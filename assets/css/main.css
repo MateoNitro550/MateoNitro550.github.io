@@ -14,85 +14,71 @@
   --rajah: #f4bf75;
   --raw-sienna: #d28445;
   --silver-chalice: #aaa;
+  --header: var(--conifer);
+  --blockquote-color: var(--silver-chalice);
+  --blockquote-border: var(--dove-grey);
 }
 
 .highlight {
-  $plaintext: var(--alto);
-  $string: var(--chelsea-cucumber);
-  $literal: var(--chelsea-cucumber);
-  $keyword: var(--bouquet);
-  $error-foreground: var(--cod-grey);
-  $error-background: var(--apple-blossom);
-  $comment: var(--grey);
-  $preprocessor: var(--rajah);
-  $name-space: var(--rajah);
-  $name-attribute: var(--hippie-blue);
-  $operator: var(--rajah);
-  $keyword-type: var(--raw-sienna);
-  $regex: var(--gulf-stream);
-  $string-escape: var(--potters-clay);
-  $deleted: var(--apple-blossom);
-  $header: var(--hippie-blue);
-  
-  color: var(--plaintext);
+  color: var(--alto);
 
   table td { padding: 5px; }
   table pre { margin: 0; }
   .w {
-    color: var(--plaintext);
+    color: var(--alto);
   }
   .err {
-    color: var(--error-foreground);
-    background-color: var(--error-background);
+    color: var(--cod-grey);
+    background-color: var(--apple-blossom);
   }
   .c, .cd, .cm, .c1, .cs {
-    color: var(--comment);
+    color: var(--grey);
   }
   .cp {
-    color: var(--preprocessor);
+    color: var(--rajah);
   }
   .o, .ow {
-    color: var(--operator);
+    color: var(--rajah);
   }
   .p, .pi {
-    color: var(--plaintext);
+    color: var(--alto);
   }
   .gi {
-    color: var(--string);
+    color: var(--chelsea-cucumber);
   }
   .gd {
-    color: var(--deleted);
+    color: var(--apple-blossom);
   }
   .gh {
-    color: var(--header);
+    color: var(--hippie-blue);
     font-weight: bold;
   }
   .k, .kn, .kp, .kr, .kv {
-    color: var(--keyword);
+    color: var(--bouquet);
   }
   .kc, .kt, .kd {
-    color: var(--keyword-type);
+    color: var(--raw-sienna);
   }
   .s, .sb, .sc, .sd, .s2, .sh, .sx, .s1 {
-    color: var(--string);
+    color: var(--chelsea-cucumber);
   }
   .sr {
-    color: var(--regex);
+    color: var(--gulf-stream);
   }
   .si, .se {
-    color: var(--string-escape);
+    color: var(--potters-clay);
   }
   .nt, .nn, .nc, .no {
-    color: var(--name-space);
+    color: var(--rajah);
   }
   .na {
-    color: var(--name-attribute);
+    color: var(--hippie-blue);
   }
   .m, .mf, .mh, .mi, .il, .mo, .mb, .mx {
-    color: var(--literal);
+    color: var(--chelsea-cucumber);
   }
   .ss {
-    color: var(--string);
+    color: var(--chelsea-cucumber);
   }
 }
 
@@ -488,23 +474,23 @@ a:active, a:focus {
 
 /* The Modal (background) */
 .modal {
-  display: none; /* Hidden by default */
+  display: none;
   text-align: center;
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+  position: fixed;
+  z-index: 1;
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
+  width: 100%;
+  height: 100%;
+  overflow: auto;
 }
 
 /* Modal Content/Box */
 .modal-content {
-  margin: 15% auto; /* 15% from the top and centered */
+  margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 10%; /* Could be more or less, depending on screen size */
+  width: 10%;
 }
 
 /* The Close Button */
