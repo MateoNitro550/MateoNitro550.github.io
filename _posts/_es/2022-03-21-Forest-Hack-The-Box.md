@@ -33,6 +33,8 @@ Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `127` y no `128` co
 ping -c 1 10.10.10.161 -R
 ``` 
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/3.png)
+
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
 ```bash
@@ -73,15 +75,58 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 | \-sV | Versión y servicios que corren bajo los puertos encontrados |
 | \-p | Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) |
 
-Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con.
+Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con `DNS` (53), `Kerberos authentication` (88), `RPC` (135), `NetBIOS` (139), `LDAP` (389), `SMB` (445) y `WinRM` (5985). Por lo que podemos intuir nos estamos enfrentando ante un _Domain Controller_ y nos encontramos en un entorno de _Active Directory (AD)_.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/3.png)
+Lo primero que haremos será comprobar si la máquina cuenta con recursos compartidos a nivel de red a través del uso de un _null session_, pues no contamos con credenciales; para ello podemos hacer uso de herramientas como _SMBMap_ o _smbclient_, no obstante, no podremos listar nada.
+
+```bash
+smbmap -H 10.10.10.161
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/4.png)
 
+```bash
+smbclient -N -L 10.10.10.161
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/5.png)
 
+Lo siguiente que podemos probar es enumerar el protocolo `LDAP` para obtener información sobre usuarios, grupos u otros objetos en el entorno. Para realizar esto, utilizaremos la herramienta `ldapsearch`.
+
+Nuestro primer objetivo será obtener una porción del _Distinguished Name (DN)_, una cadena única que identifica de manera exclusiva las entradas en el _Directory Information Tree (DIT)_. Nos centraremos en identificar la porción _Domain Component (DC)_, ya que este elemento representa el nivel más alto en la jerarquía del _DIT_ y servirá como base para nuestras consultas.
+
+Utilizaremos el siguiente comando:
+
+```bash
+ldapsearch -x -h 10.10.10.161 -s base namingcontexts
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/6.png)
+
+Una vez obtenemos el _DN_, podemos empezar a realizar consultas específicas o bien, podríamos listar toda la información del _LDAP_ con el siguiente comando:
+
+```bash
+ldapsearch -x -h 10.10.10.161 -b "dc=htb,dc=local"
+```
+
+| Parámetro | Explicación |
+|:----------|:------------|
+| \-x | Simple authentication |
+| \-h | Host |
+| \-s | Search scope |
+| \-b | DN base para la búsqueda |
+
+Podemos comenzar buscando entradas que contengan la clase de objeto _user_ para listar usuarios del sistema.
+
+```bash
+ldapsearch -x -h 10.10.10.161 -b "dc=htb,dc=local" '(objectClass=user)'
+```
+
+Podemos observar que en los campos _sAMAccountName_ de cada usuario, encontramos sus respectivos nombres de usuario. Teniendo un listado potencial de usuarios, podemos pensar en realizar un ataque `AS-REP Roasting`.
+
+El `AS-REP Roasting` es un tipo de ataque contra el protocolo de autenticación `Kerberos` en entornos de _Active Directory_. Consiste en solicitar el `Ticket de Servicio de Autenticación (AS-REQ)` para un usuario sin autenticación previa, y luego intentar crackear el `Ticket de Respuesta (AS-REP)` offline para obtener la contraseña del usuario.
+
+En lugar de buscar usuario por usuario manualmente, podemos mediante el uso de un one-liner filtrar y parsear los usuarios y guardarlos en un archivo.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/7.png)
 
@@ -140,3 +185,5 @@ Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/34.png)
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/35.png)
+
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/36.png)
