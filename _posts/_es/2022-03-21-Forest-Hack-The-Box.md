@@ -122,13 +122,13 @@ Podemos comenzar buscando entradas que contengan la clase de objeto _user_ para 
 ldapsearch -x -h 10.10.10.161 -b "dc=htb,dc=local" '(objectClass=user)'
 ```
 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/7.png)
+
 Podemos observar que en los campos _sAMAccountName_ de cada usuario, encontramos sus respectivos nombres de usuario. Teniendo un listado potencial de usuarios, podemos pensar en realizar un ataque `AS-REP Roasting`.
 
 El `AS-REP Roasting` es un tipo de ataque contra el protocolo de autenticación `Kerberos` en entornos de _Active Directory_. Consiste en solicitar el `Ticket de Servicio de Autenticación (AS-REQ)` para un usuario sin autenticación previa, y luego intentar crackear el `Ticket de Respuesta (AS-REP)` offline para obtener la contraseña del usuario.
 
 En lugar de buscar usuario por usuario manualmente, podemos mediante el uso de un one-liner filtrar y parsear los usuarios y guardarlos en un archivo.
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/7.png)
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/8.png)
 
@@ -183,7 +183,3 @@ En lugar de buscar usuario por usuario manualmente, podemos mediante el uso de u
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/33.png)
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/34.png)
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/35.png)
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/36.png)
