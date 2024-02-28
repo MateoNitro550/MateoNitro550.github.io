@@ -132,11 +132,23 @@ En lugar de buscar usuario por usuario manualmente, podemos mediante el uso de u
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/8.png)
 
+Adicional podemos borrar las dos primeras, las 3 siguientes por el AD, las SM y las Mail por Microsoft Exchange y nos quedamos con 5 usuarios.
+
+Para utilizar el imacket necesitamos editar el /etc/hosts para que el dominio que nos sacamos con nmap nos resuelva a la ip.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/9.png)
+
+corramos el comando:
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/10.png)
 
+vemos que la vaina no funca. ok, sin problema.
+
+pasamos al rpc.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/11.png)
+
+aja hay un usuario nuevo.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/12.png)
 
