@@ -4,7 +4,7 @@ author:
   name: "m4teo"
   url: "https://mateonitro550.github.io"
 
-# baseurl: "/"
+baseurl: "/"
 source: .
 destination: ./_site
 permalink: /:title/
