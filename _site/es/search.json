@@ -1,0 +1,80 @@
+[
+  
+    {
+      "title"    : "Local File Inclusion (LFI)",
+      "category" : "Directory Path TraversalNull ByteWrappers",
+      "url"      : "//es/Local-File-Inclusion-(LFI)/",
+      "date"     : "13/09/2021"
+    } ,
+  
+    {
+      "title"    : "Explore - Hack The Box",
+      "category" : "AndroidLinuxES File ExplorerAndroid Debug BridgeADBRemote Port Forwarding",
+      "url"      : "//es/Explore-Hack-The-Box/",
+      "date"     : "04/10/2021"
+    } ,
+  
+    {
+      "title"    : "Vulnversity - TryHackMe",
+      "category" : "FuzzingReverse ShellBurp SuiteFile Upload BypassSUID",
+      "url"      : "//es/Vulnversity-TryHackMe/",
+      "date"     : "25/10/2021"
+    } ,
+  
+    {
+      "title"    : "Blue - TryHackMe",
+      "category" : "EternalBlueSMBServer Message BlockMS17-010MetasploitMeterpreterJohn the Ripper",
+      "url"      : "//es/Blue-TryHackMe/",
+      "date"     : "15/11/2021"
+    } ,
+  
+    {
+      "title"    : "Beep - Hack The Box",
+      "category" : "LinuxElastixAsteriskWebminLocal File InclusionLFIVtiger CRMReverse ShellShellshockCGICommon Gateway InterfaceUser-AgentBurp SuiteFile Upload BypassSudo",
+      "url"      : "//es/Beep-Hack-The-Box/",
+      "date"     : "06/12/2021"
+    } ,
+  
+    {
+      "title"    : "Safe - Hack The Box",
+      "category" : "LinuxWASTEBuffer OverflowPythonSegmentation FaultGDBGEFx6464 bitsDEPData Execution PreventionNXNo-ExecuteROPReturn Oriented ProgrammingReverse EngineeringGhidrapwntoolsgadgetspopKeePassSSHSCPSecure Copy ProtocolBusyboxJohn the Ripperkeepass2john",
+      "url"      : "//es/Safe-Hack-The-Box/",
+      "date"     : "27/12/2021"
+    } ,
+  
+    {
+      "title"    : "KnightCTF 2022",
+      "category" : "CTFCapture the FlagJeopardyReverse EngineeringPWNSegmentation FaultBuffer OverflowGEFx6464 bitsGhidraPythonOSINTSteganographydcodeMagic NumberCyberChefAudacityDigital ForensicsStegSolveForensicallyBinwalkfcrackzipNetworkingTSharkWiresharkSQL Injection",
+      "url"      : "//es/KnightCTF-2022/",
+      "date"     : "17/01/2022"
+    } ,
+  
+    {
+      "title"    : "Kenobi - TryHackMe",
+      "category" : "FTPFile Transfer ProtocolSMBServer Message BlockrpcbindRPCRemote Procedure CallSambaSMBMapsmbclientNull SessionRSASSHNFSNetwork File SystemMonturaSUID",
+      "url"      : "//es/Kenobi-TryHackMe/",
+      "date"     : "07/02/2022"
+    } ,
+  
+    {
+      "title"    : "SecNotes - Hack The Box",
+      "category" : "WindowsLinuxWSLWindows Subsystem for LinuxSMBServer Message BlockIISInternet Information ServicesFuzzingCSRFCross-Site Request ForgeryHTML InjectionXSSCross-Site ScriptingCookie HijackingBlind XSSBurp SuiteCSRF TokenSQL InjectionSMBMapsmbclientWeb ShellNetcatInvoke-PowerShellTcpimpacket-psexec",
+      "url"      : "//es/SecNotes-Hack-The-Box/",
+      "date"     : "28/02/2022"
+    } ,
+  
+    {
+      "title"    : "Forest - Hack The Box",
+      "category" : "Windows",
+      "url"      : "//es/Forest-Hack-The-Box/",
+      "date"     : "21/03/2022"
+    } ,
+  
+    {
+      "title"    : "Migrando de Parrot OS a Kali Linux",
+      "category" : "Parrot OSVMwareKali LinuxEntorno de TrabajoArcticTones",
+      "url"      : "//es/Migrando-de-Parrot-OS-a-Kali-Linux/",
+      "date"     : "09/01/2024"
+    } 
+  
+]
