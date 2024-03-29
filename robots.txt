@@ -1,1 +1,2 @@
-Sitemap: /sitemap.xml
+User-agent: *
+Sitemap: https://mateonitro550.github.io/sitemap.xml
