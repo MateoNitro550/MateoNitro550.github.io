@@ -1,46 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://mateonitro550.github.io</loc>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/Local-File-Inclusion-(LFI)</loc>
-    <lastmod>2021-09-13</lastmod>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/Explore-Hack-The-Box</loc>
-    <lastmod>2021-10-04</lastmod>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/Vulnversity-TryHackMe</loc>
-    <lastmod>2021-10-25</lastmod>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/Blue-TryHackMe</loc>
-    <lastmod>2021-11-15</lastmod>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/Beep-Hack-The-Box</loc>
-    <lastmod>2021-12-06</lastmod>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/Safe-Hack-The-Box</loc>
-    <lastmod>2021-12-27</lastmod>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/KnightCTF-2022</loc>
-    <lastmod>2022-01-17</lastmod>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/Kenobi-TryHackMe</loc>
-    <lastmod>2022-02-07</lastmod>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/SecNotes-Hack-The-Box</loc>
-    <lastmod>2022-02-28</lastmod>
-  </url>
-  <url>
-    <loc>https://mateonitro550.github.io/Forest-Hack-The-Box</loc>
-    <lastmod>2022-03-21</lastmod>
-  </url>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>/en/Migrating-from-Parrot-OS-to-Kali-Linux/</loc>
+<lastmod>2024-01-09T00:00:00-05:00</lastmod>
+</url>
+<url>
+<loc>/es/Local-File-Inclusion-(LFI)/</loc>
+<lastmod>2021-09-13T00:00:00-04:00</lastmod>
+</url>
+<url>
+<loc>/es/Explore-Hack-The-Box/</loc>
+<lastmod>2021-10-04T00:00:00-04:00</lastmod>
+</url>
+<url>
+<loc>/es/Vulnversity-TryHackMe/</loc>
+<lastmod>2021-10-25T00:00:00-04:00</lastmod>
+</url>
+<url>
+<loc>/es/Blue-TryHackMe/</loc>
+<lastmod>2021-11-15T00:00:00-05:00</lastmod>
+</url>
+<url>
+<loc>/es/Beep-Hack-The-Box/</loc>
+<lastmod>2021-12-06T00:00:00-05:00</lastmod>
+</url>
+<url>
+<loc>/es/Safe-Hack-The-Box/</loc>
+<lastmod>2021-12-27T00:00:00-05:00</lastmod>
+</url>
+<url>
+<loc>/es/KnightCTF-2022/</loc>
+<lastmod>2022-01-17T00:00:00-05:00</lastmod>
+</url>
+<url>
+<loc>/es/Kenobi-TryHackMe/</loc>
+<lastmod>2022-02-07T00:00:00-05:00</lastmod>
+</url>
+<url>
+<loc>/es/SecNotes-Hack-The-Box/</loc>
+<lastmod>2022-02-28T00:00:00-05:00</lastmod>
+</url>
+<url>
+<loc>/es/Forest-Hack-The-Box/</loc>
+<lastmod>2022-03-21T00:00:00-04:00</lastmod>
+</url>
+<url>
+<loc>/es/Migrando-de-Parrot-OS-a-Kali-Linux/</loc>
+<lastmod>2024-01-09T00:00:00-05:00</lastmod>
+</url>
+<url>
+<loc>/en/archive/</loc>
+</url>
+<url>
+<loc>/es/archive/</loc>
+</url>
+<url>
+<loc>/</loc>
+</url>
+<url>
+<loc>/en/search/</loc>
+</url>
+<url>
+<loc>/es/search/</loc>
+</url>
 </urlset>
