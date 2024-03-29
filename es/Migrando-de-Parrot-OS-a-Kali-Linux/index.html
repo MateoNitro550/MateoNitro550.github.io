@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Migrando de Parrot OS a Kali Linux</title>
+
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="icon" href="/assets/iamges/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Migrando de Parrot OS a Kali Linux | Filthy Hacker</title>
+<meta name="generator" content="Jekyll v4.3.3" />
+<meta property="og:title" content="Migrando de Parrot OS a Kali Linux" />
+<meta name="author" content="m4teo" />
+<meta property="og:locale" content="es" />
+<meta name="description" content="Últimamente he experimentado cuelgues aleatorios de forma frecuente con Parrot OS 5.3 en mi máquina virtual VMware Workstation Pro." />
+<meta property="og:description" content="Últimamente he experimentado cuelgues aleatorios de forma frecuente con Parrot OS 5.3 en mi máquina virtual VMware Workstation Pro." />
+<link rel="canonical" href="http://0.0.0.0:8000/es/Migrando-de-Parrot-OS-a-Kali-Linux/" />
+<meta property="og:url" content="http://0.0.0.0:8000/es/Migrando-de-Parrot-OS-a-Kali-Linux/" />
+<meta property="og:site_name" content="Filthy Hacker" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-01-09T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Migrando de Parrot OS a Kali Linux" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"m4teo","url":"https://mateonitro550.github.io"},"dateModified":"2024-01-09T00:00:00-05:00","datePublished":"2024-01-09T00:00:00-05:00","description":"Últimamente he experimentado cuelgues aleatorios de forma frecuente con Parrot OS 5.3 en mi máquina virtual VMware Workstation Pro.","headline":"Migrando de Parrot OS a Kali Linux","mainEntityOfPage":{"@type":"WebPage","@id":"http://0.0.0.0:8000/es/Migrando-de-Parrot-OS-a-Kali-Linux/"},"url":"http://0.0.0.0:8000/es/Migrando-de-Parrot-OS-a-Kali-Linux/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PPKV9V8T');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1 class="glitch-header">filthyHacker@home:~$</h1>
+    </a>
+    <div class="header-links">
+      <a href="/es"><h2 class="header-link">Publicaciones</h2></a>
+<a href="/es/search"><h2 class="header-link">Buscar</h2></a>
+<a href="/es/archive"><h2 class="header-link">Archivo</h2></a>
+<a href="/en"><h2 class="header-link">English</h2></a>
+
+    </div>
+  </div>
+</header>
+
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Migrando de Parrot OS a Kali Linux</h2>
+  <time datetime="2024-01-09T00:00:00-05:00" class="by-line">
+    
+      09/01/2024
+    
+  </time>
+  <p>Últimamente he experimentado cuelgues aleatorios de forma frecuente con <strong>Parrot OS 5.3</strong> en mi máquina virtual <strong>VMware Workstation Pro</strong>.</p>
+
+<p>En un principio, pensé que estos problemas podrían deberse a la actualización <strong>22H2</strong> de Windows, ya que había leído algunos posts que mencionaban posibles incompatibilidades. Sin embargo, después de explorar esta posibilidad, no noté mejoras.</p>
+
+<ul>
+  <li><a href="https://communities.vmware.com/t5/VMware-Workstation-Pro/Vmware-17-Pro-very-slow-on-Windows-11-22H2/td-p/2946164">Vmware 17 Pro very slow on Windows 11 22H2</a></li>
+  <li><a href="https://www.reddit.com/r/vmware/comments/17fc6t9/vm_machines_freezes_randomly_after_a_while_in/">VM machines freezes randomly after a while in VMware Workstation Pro 17.5</a></li>
+</ul>
+
+<p>Luego, consideré que la actualización de <strong>VMware</strong> a la versión <strong>17.5</strong> podría ser la causa, ya que los cuelgues se volvieron más frecuentes en mi computadora de escritorio. Curiosamente, en mi laptop, donde no actualicé <strong>VMware</strong> a esta versión, también comencé a experimentar cuelgues, aunque con mucha menos frecuencia.</p>
+
+<p>Incluso llegué a sospechar que el framework con el que estaba trabajando para un proyecto podría ser la fuente de los problemas, ya que los cuelgues parecían estar relacionados con los <em>crashes</em> del mismo.</p>
+
+<p>Después de meses lidiando con estos problemas y sin encontrar una solución, decidí realizar una actualización completa de <strong>Parrot OS</strong> utilizando el comando <code class="language-plaintext highlighter-rouge">parrot-upgrade</code>. Sin embargo, durante este proceso, surgieron varios mensajes de error y, finalmente, la máquina virtual dejó de arrancar debido a un <strong>kernel panic</strong>. Opté por no intentar solucionar este problema y, en su lugar, realicé un respaldo de mis archivos utilizando un <strong>live USB</strong> con la ISO de Parrot.</p>
+
+<p>Al observar que varios usuarios enfrentaban dificultades similares con <strong>Parrot OS</strong> y optaban por migrar a <strong>Kali Linux</strong>,  tomé la misma decisión. Descargué la <a href="https://www.kali.org/get-kali/#kali-virtual-machines">imagen preconfigurada</a> de <strong>Kali Linux</strong> para <strong>VMware</strong>, lo que facilitó el proceso al no tener que realizar ninguna instalación adicional.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png" alt="" /></p>
+
+<p>Simplemente abrí el archivo de configuración <code class="language-plaintext highlighter-rouge">.vmx</code> con <strong>VMware</strong>, y la máquina virtual estaba lista para ser ejecutada.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png" alt="" /></p>
+
+<p>El cambio a <strong>Kali Linux</strong> fue rápido y la experiencia resultó bastante sencilla.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png" alt="" /></p>
+
+<p>Al poco tiempo empecé a configurar el mismo entorno de trabajo que tenía previamente en <strong>Parrot OS</strong>, el cual pueden encontrar en el siguiente enlace a mi <a href="https://github.com/MateoNitro550/ArcticTones">repositorio</a>.</p>
+
+<p>Este cambio ha mejorado significativamente la estabilidad y la experiencia de uso, proporcionándome un entorno más fiable para continuar con mi trabajo y proyectos.</p>
+
+</article>
+
+      </section>
+    </div>
+  </div>
+
+  
+
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>m4teo</b>
+    </span>
+    
+    <span>© 2024</span>
+  </a>
+</footer>
+
+
+  
+    <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-524F5BE8G5', 'auto');
+  ga('send', 'pageview');
+</script>
+  
+
+</body>
+</html>

