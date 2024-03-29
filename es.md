@@ -13,7 +13,7 @@ date_format: "%d/%m/%Y"
 ---
 
 <ul>
-    {% for post in paginator.posts %}
+    {% for post in site.es %}
         <li>
             <h2><a href="{{ post.url | prepend: site.baseurl | replace: '//', '/' }}">{{ post.title }}</a></h2>
             <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: page.date_format }}</time>
