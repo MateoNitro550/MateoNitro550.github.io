@@ -22,14 +22,12 @@
 <meta property="og:locale" content="en" />
 <meta name="description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
 <meta property="og:description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
-<link rel="canonical" href="http://0.0.0.0:8000/en/search/" />
-<meta property="og:url" content="http://0.0.0.0:8000/en/search/" />
 <meta property="og:site_name" content="Filthy Hacker" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Search" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"m4teo","url":"https://mateonitro550.github.io"},"description":"Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking.","headline":"Search","url":"http://0.0.0.0:8000/en/search/"}</script>
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"m4teo","url":"https://mateonitro550.github.io"},"description":"Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking.","headline":"Search","url":"/en/search/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -77,7 +75,7 @@
     <ul id="results-container"></ul>
 </div>
 
-<script src="http://0.0.0.0:8000/assets/js/simple-jekyll-search.min.js"></script>
+<script src="/assets/js/simple-jekyll-search.min.js"></script>
 
 <script>
     var noResultsText = "No results found.";
@@ -85,7 +83,7 @@
     SimpleJekyllSearch({
         searchInput: document.getElementById('search-input'),  
         resultsContainer: document.getElementById('results-container'),
-        searchResultTemplate: '<div style="text-align:right !important;"><a href="http://0.0.0.0:8000{url}"><h1 style="text-align:left !important;">{title}</h1></a><span style="text-align:right !important;">{date}</span></div>',
+        searchResultTemplate: '<div style="text-align:right !important;"><a href="{url}"><h1 style="text-align:left !important;">{title}</h1></a><span style="text-align:right !important;">{date}</span></div>',
         json: '/en/search.json',
         noResultsText: noResultsText
     });
