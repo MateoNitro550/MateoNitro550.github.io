@@ -94,21 +94,54 @@
 
 <p>Seeing that many users were facing similar difficulties with <strong>Parrot OS</strong> and opting to migrate to <strong>Kali Linux</strong>, I made the same decision. I downloaded the <a href="https://www.kali.org/get-kali/#kali-virtual-machines">pre-configured image</a> of <strong>Kali Linux</strong> for <strong>VMware</strong>, making the process easier without the need for additional installations.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>I simply opened the <code class="language-plaintext highlighter-rouge">.vmx</code> configuration file with <strong>VMware</strong>, and the virtual machine was ready to run.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>The transition to <strong>Kali Linux</strong> was swift, and the experience was quite straightforward.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Soon after, I began configuring the same Linux setup I had in <strong>Parrot OS</strong>, which you can find in the following link to my <a href="https://github.com/MateoNitro550/ArcticTones">repository</a>.</p>
 
 <p>This change has significantly improved stability and the overall user experience, providing me with a more reliable environment to continue my work and projects.</p>
 
 </article>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<script>
+function expandImage(img) {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  expandedImg.src = img.src;
+
+  overlay.style.display = "block";
+  expandedImg.style.display = "block";
+
+  document.addEventListener("keydown", handleEscKey);
+}
+
+function closeImage() {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  overlay.style.display = "none";
+  expandedImg.style.display = "none";
+
+  document.removeEventListener("keydown", handleEscKey);
+}
+
+function handleEscKey(event) {
+  if (event.key === "Escape" || event.key === "Esc") {
+    closeImage();
+  }
+}
+</script>
 
       </section>
     </div>

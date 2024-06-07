@@ -79,7 +79,7 @@
   </time>
   <p>El día de hoy vamos a estar resolviendo la máquina <em>Safe</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/1.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/1.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
@@ -88,7 +88,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.147
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/2.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/2.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">63</code>, por lo que podemos intuir que estamos ante una máquina <em>Linux</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
 
@@ -120,7 +120,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.147 -R                               
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/3.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/3.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
 
@@ -218,17 +218,17 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>whatweb http://10.10.10.147
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/4.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/4.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Como podemos observar, no hay nada especialmente relevante a excepción del título de la página, el cual es el mensaje por defecto que aparece cuando montamos una página web haciendo uso del servidor <code class="language-plaintext highlighter-rouge">Apache</code>, por lo que podemos irnos haciendo a la idea, de que la entrada a la máquina, no será vía web.</p>
 
 <p>En vista de que ya no nos es posible trabajar desde la terminal, tendremos que visitar estas páginas desde nuestro navegador.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/5.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/5.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En efecto, lo primero que vemos al abrir la página web, es la página por defecto que viene cuando montamos una página web mediante el servidor <code class="language-plaintext highlighter-rouge">Apache</code>, por lo que, podemos inspeccionar el código fuente, en busca de alguna pista; para verlo de manera más cómoda podemos hacer <code class="language-plaintext highlighter-rouge">Ctrl + U</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/6.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/6.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Si nos percatamos, en las primeras líneas del código fuente, hay un comentario que nos menciona que <code class="language-plaintext highlighter-rouge">myapp</code>, alojado en el puerto <code class="language-plaintext highlighter-rouge">1337</code>, lo podemos descargar; para ello, podemos intentar añadir <code class="language-plaintext highlighter-rouge">/myapp</code>, al final del url.</p>
 
@@ -237,7 +237,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;!-- Este es un comentario a modo de prueba --&gt;
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/7.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/7.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Al añadir <code class="language-plaintext highlighter-rouge">/myapp</code>, al final del url, se nos va a descargar un archivo que lleva por nombre, <code class="language-plaintext highlighter-rouge">myapp</code>, el cual vamos a empezar a analizar.</p>
 
@@ -248,14 +248,14 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>file myapp
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/8.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/8.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Nos damos cuenta de que el archivo <code class="language-plaintext highlighter-rouge">myapp</code>, es un binario, por lo que procederemos a darle permisos de ejecución para saber qué hace:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>chmod 744 myapp
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/9.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/9.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Al ejecutar el binario <code class="language-plaintext highlighter-rouge">myapp</code>, nos reporta por consola la hora actual, además de imprimir el mismo mensaje que introduzcamos; esto no nos es de ayuda, por lo que podríamos intentar extraer las cadenas de caracteres que se encuentran dentro del binario con el comando <code class="language-plaintext highlighter-rouge">strings</code>, sin embargo, no hay nada interesante.</p>
 
@@ -266,7 +266,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python <span class="nt">-c</span> <span class="s1">'print "A"*365'</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/10.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/10.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Si nos percatamos, al introducir nuestra cadena de <em>365 letras A</em>, el binario <code class="language-plaintext highlighter-rouge">myapp</code>, deja de funcionar como debería, esto se debe a un <code class="language-plaintext highlighter-rouge">Segmentation Fault</code> (<em>Fallo de Segmentación</em>), los cuales se dan cuando empezamos a sobrescribir registros. Ahora, ¿por qué se están sobrescribiendo algunos registros?</p>
 
@@ -293,9 +293,9 @@ rm gefInstall.sh
 run
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/11.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/11.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/12.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/12.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Algo importante a mencionar, antes de empezar el análisis con <code class="language-plaintext highlighter-rouge">GEF</code>, es que la arquitectura del sistema ante el que nos estamos enfrentando a la hora de explotar <code class="language-plaintext highlighter-rouge">Buffer Overflow</code>, tiene bastante relevancia; en este caso concreto, nos estamos enfrentando ante una máquina de <code class="language-plaintext highlighter-rouge">64 bits</code>, y esto lo podemos saber ya que el nombre de los registros empieza por ‘R’ (<em>RBP, RSP, RIP</em>), en caso de que el sistema fuera de <code class="language-plaintext highlighter-rouge">32 bits</code>, el nombre de los registros empezaría por ‘E’ (<em>EBP, ESP, EIP</em>), no obstante, independientemente de la arquitectura, estos registros se refieren a lo mismo.</p>
 
@@ -311,9 +311,9 @@ pattern create
 run
 pattern offset $rsp
 </code></pre></div></div>
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/13.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/13.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/14.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/14.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Sabemos ahora que, después de ingresar <em>120 bytes</em>, empezaremos a sobrescribir el registro <code class="language-plaintext highlighter-rouge">RSP</code>, y esto lo podemos comprobar de manera sencilla, intentando ingresar en este registro, <em>8 letras B</em>, por ejemplo.</p>
 
@@ -324,9 +324,9 @@ pattern offset $rsp
 
 run
 </code></pre></div></div>
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/15.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/15.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/16.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/16.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En efecto, al ingresar <em>120 bytes</em>, empezamos a sobrescribir el <code class="language-plaintext highlighter-rouge">RSP</code>, ya con esto en mente, debemos verificar que estándares de seguridad se están aplicando sobre el binario, para así determinar que metodología emplearemos para explotarlo; para conocer que seguridades se están aplicando, haremos uso de <code class="language-plaintext highlighter-rouge">checksec</code>, esto podemos hacerlo tanto dentro de <code class="language-plaintext highlighter-rouge">GEF</code>, como fuera de él.</p>
 
@@ -334,11 +334,11 @@ run
 
 checksec
 </code></pre></div></div>
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/17.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>checksec myapp
 </code></pre></div></div>
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/18.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/18.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Podemos observar que el <code class="language-plaintext highlighter-rouge">DEP</code> (<em>Data Execution Prevention</em>), o <code class="language-plaintext highlighter-rouge">NX</code> (<em>No-Execute</em>), está activado; esta protección nos impedirá ejecutar código a través del <em>stack</em>, por lo que no tendrá sentido redirigir el flujo del programa por ahí, por lo que debemos ver, de qué manera, haciendo uso de las mismas posibilidades que nos ofrece el binario <code class="language-plaintext highlighter-rouge">myapp</code>, podemos explotarlo, a este concepto se lo conoce como <code class="language-plaintext highlighter-rouge">ROP</code> (<em>Return Oriented Programming</em>).</p>
 
@@ -346,7 +346,7 @@ checksec
 
 <p>Para descargar <code class="language-plaintext highlighter-rouge">Ghidra</code>, ingresaremos <a href="https://github.com/NationalSecurityAgency/ghidra/releases">aquí</a>, y descargaremos la versión más reciente.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/19.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/19.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>unzip &lt;archivoQueHayamosDescargado&gt;
 cd &lt;carpetaQueSeHayaCreado&gt;
@@ -355,10 +355,10 @@ cd &lt;carpetaQueSeHayaCreado&gt;
 
 <p>Presionaremos <em>File</em>, <em>New Project</em>, <em>Non-Shared Project</em>, elegiremos un espacio de trabajo, le damos un nombre a nuestro proyecto, presionamos <em>File</em>, <em>Import File</em>, seleccionamos el binario <code class="language-plaintext highlighter-rouge">myapp</code>, arrastramos el binario que acabamos de importar hacia el dragón, y finalmente aceptamos analizar.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/20.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/20.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Ya en este punto podemos empezar a analizar que hay dentro del binario <code class="language-plaintext highlighter-rouge">myapp</code>, por ejemplo, podemos analizar que funciones están definidas, para ello, desplegaremos el menú <em>Functions</em>, que se encuentra al lado izquierdo, podemos empezar por analizar la función <code class="language-plaintext highlighter-rouge">main</code>.
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/21.png" alt="" /></p>
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/21.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Si nos percatamos, esto es lo que encontramos cuando ejecutamos <code class="language-plaintext highlighter-rouge">myapp</code>; nos damos cuenta de que se está definiendo una variable de nombre <code class="language-plaintext highlighter-rouge">local_78</code> que acepta una cierta cantidad de bytes, concretamente, 112, la cual almacena la cadena de caracteres que nos pide ingresar, para posteriormente, volver a mostrarla por pantalla, adicionalmente, se está ejecutando una llamada al sistema para ejecutar el comando <code class="language-plaintext highlighter-rouge">uptime</code>.</p>
 
@@ -392,7 +392,7 @@ python3 -m pip install --upgrade pwntools
 
 <p>La dirección de la llamada al sistema, la podemos sacar de <code class="language-plaintext highlighter-rouge">Ghidra</code>:</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/22.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/22.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Ejecutamos nuestro script, no sin antes haberle asignado los permisos correspondientes:</p>
 
@@ -401,11 +401,11 @@ python3 -m pip install --upgrade pwntools
 
 <p>En este punto podemos presionar la tecla <code class="language-plaintext highlighter-rouge">c</code>, para continuar, y nos daremos cuenta que el comando <code class="language-plaintext highlighter-rouge">uptime</code>, está siendo almacenado en el registro <code class="language-plaintext highlighter-rouge">RDI</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/23.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/23.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En este punto, tenemos que buscar una forma de sobrescribir el registro <code class="language-plaintext highlighter-rouge">RDI</code>, y la clave está en la función <code class="language-plaintext highlighter-rouge">test</code></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/24.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/24.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Si nos percatamos, en la dirección <code class="language-plaintext highlighter-rouge">0x401156</code>, el contenido que se encuentra en el registro <code class="language-plaintext highlighter-rouge">RSP</code>, está siendo almacenado en el registro <code class="language-plaintext highlighter-rouge">RDI</code>; ¿cuándo almacenábamos las <em>8 letras B</em>, en qué registro las estábamos almacenando? Exacto, en <code class="language-plaintext highlighter-rouge">RSP</code>, por lo que ahora, debemos de buscar una forma en la que poder redirigir el flujo del programa a través de la función <code class="language-plaintext highlighter-rouge">test</code>, para que cuando esta termine, podamos ejecutar el comando que deseemos.</p>
 
@@ -415,14 +415,14 @@ python3 -m pip install --upgrade pwntools
 
 <p>Haciendo uso de nuestro script, escribiremos ahora <code class="language-plaintext highlighter-rouge">ropper</code>, lo cual nos permitirá listar todos los <code class="language-plaintext highlighter-rouge">gadgets</code> dentro del binario.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/25.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/25.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Vemos que se nos lista un total de <em>99 gadgets</em>, de los cuales nos interesa <code class="language-plaintext highlighter-rouge">pop</code>, ya que este nos permite cargar un valor en el registro al que esté asignado, por lo que procederemos a listar que opciones tenemos con el <code class="language-plaintext highlighter-rouge">gadget pop</code>.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ropper --search "pop"
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/26.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/26.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Observamos, que tenemos una opción que nos permite hacer un <code class="language-plaintext highlighter-rouge">pop</code> a <code class="language-plaintext highlighter-rouge">R13</code>, aunque esta va seguida de <code class="language-plaintext highlighter-rouge">pops</code> a otras direcciones, por lo que a estas, tendremos que asignarles valores nulos, ya que no nos interesan.</p>
 
@@ -432,7 +432,7 @@ python3 -m pip install --upgrade pwntools
 
 <p>La dirección de la función <code class="language-plaintext highlighter-rouge">test</code>, la podemos sacar de <code class="language-plaintext highlighter-rouge">Ghidra</code>:</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/27.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/27.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">popR13</span> <span class="o">=</span> <span class="nf">p64</span><span class="p">(</span><span class="mh">0x401206</span><span class="p">)</span>
 <span class="n">system</span> <span class="o">=</span> <span class="nf">p64</span><span class="p">(</span><span class="mh">0x40116e</span><span class="p">)</span>
@@ -511,13 +511,13 @@ python3 -m pip install --upgrade pwntools
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / -name user.txt 2&gt; /dev/null
 </code></pre></div></div>
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/28.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/28.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 
 <p>Para conseguir la flag del usuario con máximos privilegios, podemos emepezar por listar el contenido dentro de la carpeta del usuario user.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/29.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/29.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Nos vamos a encontrar con una serie de imágenes, en adición de un archivo de extensión <code class="language-plaintext highlighter-rouge">.kdbx</code>, el cual guarda relación con el gestor de contraseñas KeePass. Debido a que nos encontramos en una máquina remota, no podremos visualizar las imágenes alojadas dentro de la máquina víctima, por lo que tenemos que buscar una forma de transferirlas a nuestro equipo.</p>
 
@@ -528,31 +528,31 @@ python3 -m pip install --upgrade pwntools
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd ~/.ssh/
 ssh-keygen
 </code></pre></div></div>
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/30.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/30.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En caso de querer ingresar algún tipo de contraseña, se lo puede hacer. Ya teniendo el par de claves <code class="language-plaintext highlighter-rouge">SSH</code>, vamos a copiar el contenido de nuestra clave pública, para posteiormente añadirla en la ruta <code class="language-plaintext highlighter-rouge">/home/user/.ssh/authorized_keys</code>.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo "nuestraClavePública" &gt;&gt; /home/user/.ssh/authorized_keys
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/31.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/31.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez hecho esto, podemos conectarnos a través de <code class="language-plaintext highlighter-rouge">SSH</code> a la máquina víctima.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh user@10.10.10.147
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/32.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/32.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En vista de que estamos conectados a la máquina vía <code class="language-plaintext highlighter-rouge">SSH</code>, podríamos intentar transferir los archivos del directorio <code class="language-plaintext highlighter-rouge">/home/user/</code>, haciendo uso de <code class="language-plaintext highlighter-rouge">SCP</code> (<em>Secure Copy Protocol</em>), aunque también pudimos haberlo hecho creando un servidor en la máquina remota mediante <code class="language-plaintext highlighter-rouge">Busybox</code>, y posteriormente, descargando las imágnes a través de <code class="language-plaintext highlighter-rouge">Wget</code>.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>scp "user@10.10.10.147:/home/user/*" .
 </code></pre></div></div>
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/33.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/33.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez tengamos tanto las imágenes como el archivo <code class="language-plaintext highlighter-rouge">MyPasswords.kdbx</code> en nuestro equipo, podemos empezar a analizar que hacer con ello; dudo mucho que las imágenes tengan algo que ver con <code class="language-plaintext highlighter-rouge">esteganografía</code>, ya que si abrimos el archivo <code class="language-plaintext highlighter-rouge">MyPasswords.kdbx</code> con <code class="language-plaintext highlighter-rouge">keepassxc</code>, nos pregunta por un archivo clave.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/34.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/34.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En caso de no contar con <code class="language-plaintext highlighter-rouge">keepassxc</code> instalado, podemos hacer lo siguiente:</p>
 
@@ -571,13 +571,13 @@ ssh-keygen
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for </span>image <span class="k">in</span> <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"IMG_0545.JPG  IMG_0546.JPG  IMG_0547.JPG  IMG_0548.JPG  IMG_0552.JPG  IMG_0553.JPG"</span><span class="si">)</span><span class="p">;</span> <span class="k">do </span>keepass2john <span class="nt">-k</span> <span class="nv">$image</span> MyPasswords.kdbx<span class="p">;</span> <span class="k">done</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/35.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/35.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Utilizar el comando anterior nos sirve, sin embargo, si lo pensamos un poco, si redirigimos este ouput a un fichero hashes.txt, por ejemplo, al cual luego le aplicaremos <code class="language-plaintext highlighter-rouge">john</code>, cuando este encuentre la contraseña, nos dirá que la imágen que utilizó fue <em>MyPasswords</em>, lo cual no nos es de ayuda, por lo que podemos reemplazar <em>MyPasswords</em>, por el nombre de la imagen.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for </span>image <span class="k">in</span> <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"IMG_0545.JPG  IMG_0546.JPG  IMG_0547.JPG  IMG_0548.JPG  IMG_0552.JPG  IMG_0553.JPG"</span><span class="si">)</span><span class="p">;</span> <span class="k">do </span>keepass2john <span class="nt">-k</span> <span class="nv">$image</span> MyPasswords.kdbx | <span class="nb">sed</span> <span class="s2">"s/MyPasswords/</span><span class="nv">$image</span><span class="s2">/"</span><span class="p">;</span> <span class="k">done</span> <span class="o">&gt;&gt;</span> nombreArchivo
 </code></pre></div></div>
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/36.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/36.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Finalmente, para crackear la contraseña, haremos uso de <code class="language-plaintext highlighter-rouge">john</code> en conjunto del diccionario <a href="https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220209%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20220209T031834Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=d8b079596701be0a466831ad31ee5cc654d2cc6b43291d532f275e51b6e480fb&amp;X-Amz-SignedHeaders=host&amp;actor_id=79855501&amp;key_id=0&amp;repo_id=97553311&amp;response-content-disposition=attachment%3B%20filename%3Drockyou.txt&amp;response-content-type=application%2Foctet-stream">rockyou.txt</a>.</p>
 
@@ -589,19 +589,52 @@ ssh-keygen
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo john --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/37.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/37.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez conseguimos tanto la contraseña como el archivo clave, ya podremos abrir el archivo <code class="language-plaintext highlighter-rouge">MyPasswords.kdbx</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/38.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/38.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/39.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/39.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Y ya con la contraseña del usuario root en nuestro poder, podremos listar la última flag.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/40.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/40.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<script>
+function expandImage(img) {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  expandedImg.src = img.src;
+
+  overlay.style.display = "block";
+  expandedImg.style.display = "block";
+
+  document.addEventListener("keydown", handleEscKey);
+}
+
+function closeImage() {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  overlay.style.display = "none";
+  expandedImg.style.display = "none";
+
+  document.removeEventListener("keydown", handleEscKey);
+}
+
+function handleEscKey(event) {
+  if (event.key === "Escape" || event.key === "Esc") {
+    closeImage();
+  }
+}
+</script>
 
       </section>
     </div>

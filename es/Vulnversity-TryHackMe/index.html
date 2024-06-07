@@ -79,7 +79,7 @@
   </time>
   <p>El día de hoy vamos a resolver la máquina <em>Vulnversity</em> de <em>TryHackMe</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/1.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/1.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
@@ -249,39 +249,39 @@
   </tbody>
 </table>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/2.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/2.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En caso de no utilizar el parámetro <code class="language-plaintext highlighter-rouge">-hh</code>, vemos que obtenemos una mayor cantidad de respuestas, sin embargo, no son relevantes, por este motivo es que se las escondió.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/3.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/3.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección <code class="language-plaintext highlighter-rouge">internal</code>, ya que en <em>images</em>, <em>css</em>, <em>js</em> y <em>fonts</em> parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección <code class="language-plaintext highlighter-rouge">internal</code>, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una <code class="language-plaintext highlighter-rouge">reverse shell</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/4.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/4.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
 
 <p>Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una <code class="language-plaintext highlighter-rouge">reverse shell</code>; podemos descargar una <a href="https://pentestmonkey.net/tools/web-shells/php-reverse-shell">aquí</a>. Una vez la hayamos descargado, tenemos que modificar el valor de la <code class="language-plaintext highlighter-rouge">ip</code> (colocamos la nuestra), y si queremos, podemos también modificar el valor del <em>puerto</em>, aunque esto es completamente opcional.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/5.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/5.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Sin embargo, cuando intentamos subir nuestra <code class="language-plaintext highlighter-rouge">reverse shell</code>, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/6.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/6.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizáramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar <code class="language-plaintext highlighter-rouge">Burp Suite</code> para poder realizar un ataque de tipo <code class="language-plaintext highlighter-rouge">Sniper</code>.</p>
 
 <p>Para ello, vamos a empezar por volver a subir nuestra <code class="language-plaintext highlighter-rouge">reverse shell</code>, pero ahora tramitando todas las peticiones a través de <code class="language-plaintext highlighter-rouge">Burp Suite</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/7.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/7.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Posterior a ello presionaremos <code class="language-plaintext highlighter-rouge">Ctrl + I</code> para enviar esta petición al <code class="language-plaintext highlighter-rouge">Intruder</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/8.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/8.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Ahora, en el apartado <em>Positions</em>, en el tipo de ataque elegiremos la opción de <code class="language-plaintext highlighter-rouge">Sniper</code>, después seleccionaremos la opción <code class="language-plaintext highlighter-rouge">Clear §</code>, para posteriormente con nuestro cursor <code class="language-plaintext highlighter-rouge">resaltar</code> la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción <code class="language-plaintext highlighter-rouge">Add §</code>; esto se vería algo así:</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/9.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/9.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Posteriormente, procederemos a crear un pequeño diccionario con las extensiones más comunes de <em>PHP</em>:</p>
 
@@ -300,13 +300,13 @@
 
 <p>Una vez, hemos creado nuestro diccionario, en el apartado <em>Payloads</em>, en la opción <em>Sample List</em> cargaremos el diccionario que hemos creado; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/10.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/10.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/11.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/11.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado <code class="language-plaintext highlighter-rouge">200</code>, la <em>longitud</em> de estas no es la misma para todas las extensiones, la única extensión cuya <em>longitud</em> varía es <code class="language-plaintext highlighter-rouge">.phtml</code>; si quisiéramos estar completamente seguros, podríamos revisar el <em>render</em> de la respuesta, el cual nos devuelve un <em>success</em>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/12.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/12.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta <code class="language-plaintext highlighter-rouge">internal</code>, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez.</p>
 
@@ -323,7 +323,7 @@
 
 <p>Ambas opciones, nos conseguirán una <em>consola</em> dentro de la máquina víctima.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/13.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/13.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Es importante aclarar que la <em>consola</em> que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisiéramos limpiar la <em>consola</em> utilizando <code class="language-plaintext highlighter-rouge">Ctrl + L</code>, no pasará nada, así mismo si quisiéramos desplazarnos utilizando las <code class="language-plaintext highlighter-rouge">flechas</code> del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la <code class="language-plaintext highlighter-rouge">TTY</code>, para lo cual haremos lo siguiente:</p>
 
@@ -346,11 +346,11 @@ xterm
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>stty -a
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/14.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/14.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Continuando con las preguntas de la plataforma, se nos pide averiguar por el usuario que maneja el servidor web, así como su respectiva flag. Para realizar esto podríamos dirigirnos al directorio <code class="language-plaintext highlighter-rouge">/home</code>, y listar los directorios que existen.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/15.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/15.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Aunque también podríamos filtrar del archivo <code class="language-plaintext highlighter-rouge">/etc/passwd</code>, a través de expresiones regulares, todos aquello usuario que tengan una <em>shell</em>, sea esta una:</p>
 
@@ -368,14 +368,14 @@ xterm
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /etc/passwd | <span class="nb">grep</span> <span class="s2">"sh$"</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/16.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/16.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-name</span> user.txt 2&gt; /dev/null
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/17.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 
@@ -389,13 +389,13 @@ xterm
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-uid</span> 0 <span class="nt">-perm</span> <span class="nt">-4000</span> <span class="nt">-type</span> f 2&gt;/dev/null
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/18.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/18.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>La mejor forma para abusar de cualquier binario, es recurrir a <a href="https://gtfobins.github.io/">GTFOBins</a>, esta página nos enseña como explotar binarios con <em>capabilities</em> mal asignadas, binarios que se pueden ejecutar como root, y en este caso, binarios con permisos <code class="language-plaintext highlighter-rouge">SUID</code> mal asignados.</p>
 
 <p>El binario más extraño que nos encontramos es <code class="language-plaintext highlighter-rouge">/bin/systemctl</code>, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscarlo en <a href="https://gtfobins.github.io/">GTFOBins</a>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/19.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/19.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos</p>
 
@@ -423,9 +423,42 @@ WantedBy=multi-user.target'</span> <span class="o">&gt;</span> <span class="nv">
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-name</span> root.txt
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/20.png" alt="" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/20.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<script>
+function expandImage(img) {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  expandedImg.src = img.src;
+
+  overlay.style.display = "block";
+  expandedImg.style.display = "block";
+
+  document.addEventListener("keydown", handleEscKey);
+}
+
+function closeImage() {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  overlay.style.display = "none";
+  expandedImg.style.display = "none";
+
+  document.removeEventListener("keydown", handleEscKey);
+}
+
+function handleEscKey(event) {
+  if (event.key === "Escape" || event.key === "Esc") {
+    closeImage();
+  }
+}
+</script>
 
       </section>
     </div>
