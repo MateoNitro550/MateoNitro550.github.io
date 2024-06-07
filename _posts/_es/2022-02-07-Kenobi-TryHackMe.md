@@ -7,7 +7,7 @@ lang: es
 
 Hoy vamos a resolver la máquina _Kenobi_ de _TryHackMe_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/1.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/1.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Fase De Reconocimiento
 
@@ -73,7 +73,7 @@ Para poder listar los recursos compartidos haciendo uso de `SMBMap`, bastará co
 smbmap -H <dirección IP>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/2.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/2.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Lo primero que podemos darnos cuenta es que existen `3` recursos compartidos, de los cuales solo tenemos acceso a uno, `anonymous`.
 
@@ -83,7 +83,7 @@ Si decidimos listar de manera recursiva el recurso `anonymous`, encontraremos un
 smbmap -H <dirección IP> -R anonymous
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/3.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/3.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Para poder descargar el archivo `log.txt`, podremos hacerlo usando tanto su ruta absoluta con el parámetro `--download`, o bien creando patrones mediante _expresiones regulares_ con el parámetro `-A`.
 
@@ -95,7 +95,7 @@ smbmap -H <dirección IP> --download anonymous/log.txt
 smbmap -H <dirección IP> -R anonymous -A log.txt
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/4.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/4.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)smbclient
 
@@ -105,7 +105,7 @@ Para poder listar los recursos compartidos haciendo uso de `smbclient` tendremos
 smbclient -N -L <dirección IP>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/5.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/5.png){:class="blog-image" onclick="expandImage(this)"} 
 
 En este caso, no se nos indica los permisos que tenemos sobre los recursos, no obstante, podemos intuir a que recursos tenemos acceso, por ejemplo, el recurso [print$](https://wiki.samba.org/index.php/Setting_up_Automatic_Printer_Driver_Downloads_for_Windows_Clients#Setting_up_the_.5Bprint.24.5D_Share) se relaciona con impresoras que se están compartiendo a nivel de red, por otra parte, tenemos el recurso [IPC$](https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session) el cual crea el propio _Windows_ para poder hacer uso de los _null sessions_; de modo que, de los `3` recursos compartidos existentes, solo nos queda `anonymous`.
 
@@ -116,7 +116,7 @@ smbclient -N //dirección IP/anonymous
 ls
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/6.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/6.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Podemos observar que dentro existe un archivo llamado `log.txt`, el cual procederemos a descargar.
 
@@ -125,7 +125,7 @@ smbclient -N //dirección IP/anonymous
 get log.txt
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/7.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/7.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Independientemente de como hayamos descargado el archivo `log.txt`, al leerlo, lo más importante que encontraremos será la ubicación del par de claves `RSA`, ubicadas en `/home/kenobi/.ssh`.
 
@@ -139,7 +139,7 @@ El protocolo `NFS` se utiliza principalmente para acceder a archivos compartidos
 sudo showmount -e <dirección IP>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/8.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/8.png){:class="blog-image" onclick="expandImage(this)"} 
 
 La ruta `/var` está siendo compartida a nivel de red, de modo que si lográramos mover algún archivo potencial dentro de esta ruta, y luego la montásemos en nuestro equipo, podríamos visualizar dicho archivo de manera local.
 
@@ -153,15 +153,15 @@ Para explotar el servicio `ProFTPD`, empezaremos buscando algún exploit que se 
 searchsploit ProFTPD 1.3.5
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/9.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/9.png){:class="blog-image" onclick="expandImage(this)"} 
 
 De los `4` exploits que encontramos, nos quedaremos con el último
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/10.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/10.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Concretamente con las líneas 12, 13 y 14.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/11.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/11.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Las cuales nos permiten hacer justamente lo que nos interesa, copiar un archivo de una ruta (_CPFR_), a otra (_CPTO_).
 
@@ -176,7 +176,7 @@ SITE CPFR /home/kenobi/.ssh/id_rsa
 SITE CPTO /var/tmp/id_rsa
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/12.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/12.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Ya con todo esto, podemos _montar_ la ruta `/var` en nuestro equipo, para ello haremos lo siguiente:
 
@@ -186,7 +186,7 @@ sudo mount <dirección IP>:/var /mnt/kenobiNFS
 
 En caso de que tengamos un error similar a este:
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/13.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/13.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Simplemente tendremos que instalar lo siguiente:
 
@@ -212,7 +212,7 @@ sudo chmod 600 id_rsa
 ssh -i id_rsa kenobi@<dirección IP>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/14.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/14.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Escalada De Privilegios
 
@@ -228,13 +228,13 @@ find / -perm -4000 -type f -exec ls -la {} 2>/dev/null \;
 find / -uid 0 -perm -4000 -type f 2>/dev/null
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/15.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/15.png){:class="blog-image" onclick="expandImage(this)"} 
 
 La forma más sencilla para abusar de algún binario con permisos mal asignados sería recurrir a [GTFOBins](https://gtfobins.github.io/), sin embargo, el binario que llama nuestra atención no es propio del sistema, por lo que `GTFOBins`, no nos será de utilidad.
 
 Si comprobamos en nuestra máquina de atacantes, no existe ningún binario `/usr/bin/menu`, por lo que este debe haber sido creado, de modo que puede tener alguna falla de seguridad, vamos a revisarlo.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/16.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/16.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Vemos que el binario es lo que dice ser, un menú que nos presenta tres únicas posibilidades, vamos a echar un vistazo más a fondo.
 
@@ -242,7 +242,7 @@ Vemos que el binario es lo que dice ser, un menú que nos presenta tres únicas 
 strings /usr/bin/menu
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/17.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/17.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Podemos observar los binarios que utiliza este menú dependiendo de la opción que seleccionemos, lo más interesante aquí es que no se está empleando la ruta completa de estos comandos, tan solo se los está mencionando, por lo que, al no hacer esta verificación, podemos suplantarlos.
 
@@ -256,4 +256,4 @@ export PATH=/home/kenobi:$PATH
 chmod +x uname
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/18.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-07-Kenobi-TryHackMe/18.png){:class="blog-image" onclick="expandImage(this)"} 

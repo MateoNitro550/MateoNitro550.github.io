@@ -7,7 +7,7 @@ lang: es
 
 El día de hoy vamos a resolver la máquina _Vulnversity_ de _TryHackMe_. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/1.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/1.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Fase De Reconocimiento
 
@@ -102,39 +102,39 @@ A continuación se explican los parámetros utilizados en el _fuzzeo_ del servid
 | \-\-hh | Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo, es útil para descartar respuestas con contenido que vemos que no nos interesan |
 | \-w | Especificamos el diccionario con el que queremos trabajar |
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/2.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/2.png){:class="blog-image" onclick="expandImage(this)"} 
 
 En caso de no utilizar el parámetro `-hh`, vemos que obtenemos una mayor cantidad de respuestas, sin embargo, no son relevantes, por este motivo es que se las escondió.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/3.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/3.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección `internal`, ya que en _images_, _css_, _js_ y _fonts_ parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección `internal`, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una `reverse shell`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/4.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/4.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Fase De Explotación
 
 Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una `reverse shell`; podemos descargar una [aquí](https://pentestmonkey.net/tools/web-shells/php-reverse-shell). Una vez la hayamos descargado, tenemos que modificar el valor de la `ip` (colocamos la nuestra), y si queremos, podemos también modificar el valor del _puerto_, aunque esto es completamente opcional.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/5.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/5.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Sin embargo, cuando intentamos subir nuestra `reverse shell`, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/6.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/6.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizáramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar `Burp Suite` para poder realizar un ataque de tipo `Sniper`.
 
 Para ello, vamos a empezar por volver a subir nuestra `reverse shell`, pero ahora tramitando todas las peticiones a través de `Burp Suite`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/7.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/7.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Posterior a ello presionaremos `Ctrl + I` para enviar esta petición al `Intruder`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/8.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/8.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Ahora, en el apartado _Positions_, en el tipo de ataque elegiremos la opción de `Sniper`, después seleccionaremos la opción `Clear §`, para posteriormente con nuestro cursor `resaltar` la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción `Add §`; esto se vería algo así:
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/9.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/9.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Posteriormente, procederemos a crear un pequeño diccionario con las extensiones más comunes de _PHP_:
 
@@ -151,13 +151,13 @@ Posteriormente, procederemos a crear un pequeño diccionario con las extensiones
 
 Una vez, hemos creado nuestro diccionario, en el apartado _Payloads_, en la opción _Sample List_ cargaremos el diccionario que hemos creado; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos. 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/10.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/10.png){:class="blog-image" onclick="expandImage(this)"} 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/11.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/11.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado `200`, la _longitud_ de estas no es la misma para todas las extensiones, la única extensión cuya _longitud_ varía es `.phtml`; si quisiéramos estar completamente seguros, podríamos revisar el _render_ de la respuesta, el cual nos devuelve un _success_.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/12.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/12.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta `internal`, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez.
 
@@ -176,7 +176,7 @@ curl http://<dirección IP>:3333/internal/uploads/nombreDeLaReverseShell.phtml
 
 Ambas opciones, nos conseguirán una _consola_ dentro de la máquina víctima.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/13.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/13.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Es importante aclarar que la _consola_ que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisiéramos limpiar la _consola_ utilizando `Ctrl + L`, no pasará nada, así mismo si quisiéramos desplazarnos utilizando las `flechas` del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la `TTY`, para lo cual haremos lo siguiente:
 
@@ -201,11 +201,11 @@ Los valores que colocaremos en `<valor>` en el último comando, dependerán del 
 stty -a
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/14.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/14.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Continuando con las preguntas de la plataforma, se nos pide averiguar por el usuario que maneja el servidor web, así como su respectiva flag. Para realizar esto podríamos dirigirnos al directorio `/home`, y listar los directorios que existen.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/15.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/15.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Aunque también podríamos filtrar del archivo `/etc/passwd`, a través de expresiones regulares, todos aquello usuario que tengan una _shell_, sea esta una:
 
@@ -222,7 +222,7 @@ Esto sería bastante fácil, ya que todas, o casi todas las _shells_ terminan en
 cat /etc/passwd | grep "sh$"
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/16.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/16.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente:
 
@@ -230,7 +230,7 @@ Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ru
 find / -name user.txt 2> /dev/null
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/17.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/17.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Escalada De Privilegios
 
@@ -246,13 +246,13 @@ find / -perm -4000 -type f -exec ls -la {} 2>/dev/null \;
 find / -uid 0 -perm -4000 -type f 2>/dev/null
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/18.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/18.png){:class="blog-image" onclick="expandImage(this)"} 
 
 La mejor forma para abusar de cualquier binario, es recurrir a [GTFOBins](https://gtfobins.github.io/), esta página nos enseña como explotar binarios con _capabilities_ mal asignadas, binarios que se pueden ejecutar como root, y en este caso, binarios con permisos `SUID` mal asignados.
 
 El binario más extraño que nos encontramos es `/bin/systemctl`, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscarlo en [GTFOBins](https://gtfobins.github.io/).
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/19.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/19.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos
 
@@ -283,4 +283,4 @@ Una vez siendo root, podemos pasar a buscar su respectiva flag, esto lo podemos 
 find / -name root.txt
 ```
  
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/20.png)
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-10-25-Vulnversity-TryHackMe/20.png){:class="blog-image" onclick="expandImage(this)"} 
