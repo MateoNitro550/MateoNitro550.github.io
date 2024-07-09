@@ -19,7 +19,7 @@ Para determinar que puertos están abiertos podemos realizar lo siguiente:
 nmap -p- --open -T5 -v -n <dirección IP>
 ```
  
-Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
+En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
   
 ```bash
 sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP>

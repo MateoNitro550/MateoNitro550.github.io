@@ -19,7 +19,7 @@ Primeramente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos
 nmap -p- --open -T5 -v -n <dirección IP>
 ```
  
-Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
+En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
   
 ```bash
 sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn <dirección IP>

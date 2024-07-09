@@ -41,7 +41,7 @@ Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puert
 nmap -p- --open -T5 -v -n 10.10.10.161
 ```
 
-Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
+En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:
 
 ```bash
 sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.161
@@ -156,7 +156,7 @@ Haremos uso de `rpcclient`, nuevamente utilizando un _null session_, pues no con
 
 Podemos observar tres nuevos usuarios que no habíamos detectado cuando enumeramos con _ldapsearch_. De los cuales nos interesa `svc-alfresco`, pues tanto Administrator como krbtgt son creados por el propio _AD_.
 
-Si recordamos, cuando utilizamos _ldapsearch_, filtramos usuarios cuya clase de objeto contenga _user_, y los cinco usuarios que encontramos cumplen con esta condición.
+Si recordamos, cuando utilizamos _ldapsearch_, filtramos usuarios cuya clase de objeto contenga _user_, y los cinco usuarios que encontramos anteriormente, cumplen con esta condición.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/12.png){:class="blog-image" onclick="expandImage(this)"}
 
@@ -192,11 +192,11 @@ Para validar la credencial, emplearemos _CrackMapExec_ con el siguiente comando:
 crackmapexec winrm 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'
 ```
 
-Vemos junto al nombre del usuario, un mensaje que dice "_Pwn3d!_", lo que significa que la credencial es válida y podemos conectarnos a la máquina mediante `Evil-WinRM`. 
-
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
 
-Procederemos a usar `Evil-WinRM` para conectarnos de la siguiente manera:
+Nos damos cuenta de que la credencial no solo es válida, sino también que este usuario pertenece al grupo _Remote Management Users_, ya que vemos junto al nombre de usuario un mensaje que dice "_Pwn3d!_". Por lo tanto, podemos conectarnos a la máquina víctima mediante `Evil-WinRM`.
+
+Procederemos a conectarnos de la siguiente manera:
 
 ```bash
 evil-winrm -i 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'
