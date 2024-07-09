@@ -211,7 +211,7 @@
   </tbody>
 </table>
 
-<p>Basándonos en la información que nos reporta <em>Nmap</em>, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con <code class="language-plaintext highlighter-rouge">DNS</code> (53), <code class="language-plaintext highlighter-rouge">Kerberos authentication</code> (88), <code class="language-plaintext highlighter-rouge">RPC</code> (135), <code class="language-plaintext highlighter-rouge">NetBIOS</code> (139), <code class="language-plaintext highlighter-rouge">LDAP</code> (389), <code class="language-plaintext highlighter-rouge">SMB</code> (445) y <code class="language-plaintext highlighter-rouge">WinRM</code> (5985). Por lo que podemos intuir nos estamos enfrentando ante un <em>Domain Controller</em> y nos encontramos en un entorno de <em>Active Directory (AD)</em>.</p>
+<p>Basándonos en la información que nos reporta <em>Nmap</em>, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con <code class="language-plaintext highlighter-rouge">DNS</code> (53), <code class="language-plaintext highlighter-rouge">Kerberos authentication</code> (88), <code class="language-plaintext highlighter-rouge">RPC</code> (135), <code class="language-plaintext highlighter-rouge">NetBIOS</code> (139), <code class="language-plaintext highlighter-rouge">LDAP</code> (389), <code class="language-plaintext highlighter-rouge">SMB</code> (445) y <code class="language-plaintext highlighter-rouge">WinRM</code> (5985). Por lo que podemos intuir nos estamos enfrentando ante un <em>Domain Controller (DC)</em> y nos encontramos en un entorno de <em>Active Directory (AD)</em>.</p>
 
 <p>Lo primero que haremos será comprobar si la máquina cuenta con recursos compartidos a nivel de red a través del uso de un <em>null session</em>, pues no contamos con credenciales; para ello podemos hacer uso de herramientas como <em>SMBMap</em> o <em>smbclient</em>, no obstante, no podremos listar nada.</p>
 
@@ -227,14 +227,16 @@
 
 <p>Lo siguiente que podemos probar es enumerar el protocolo <code class="language-plaintext highlighter-rouge">LDAP</code> para obtener información sobre usuarios, grupos u otros objetos en el entorno. Para realizar esto, utilizaremos la herramienta <code class="language-plaintext highlighter-rouge">ldapsearch</code>.</p>
 
-<p>Nuestro primer objetivo será obtener una porción del <em>Distinguished Name (DN)</em>, una cadena única que identifica de manera exclusiva las entradas en el <em>Directory Information Tree (DIT)</em>. Nos centraremos en identificar la porción <em>Domain Component (DC)</em>, ya que este elemento representa el nivel más alto en la jerarquía del <em>DIT</em> y servirá como base para nuestras consultas.</p>
-
-<p>Utilizaremos el siguiente comando:</p>
+<p>Nuestro primer objetivo será identificar el <em>Naming Context</em>, que es el <em>Distinguished Name (DN)</em> que representa el nivel más alto en la jerarquía del <em>Directory Information Tree (DIT)</em> y servirá como base para nuestras consultas. Utilizaremos el siguiente comando:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-h</span> 10.10.10.161 <span class="nt">-s</span> base namingcontexts
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/6.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>El campo <em>dn</em> se encuentra vacío porque estamos consultando el objeto base del directorio. Los campos <em>namingContexts</em> listan los diferentes <em>Naming Contexts</em> del servidor <em>LDAP</em>. Cada entrada en <em>namingContexts</em> representa una parte distinta del directorio <em>LDAP</em> que puede ser la base de varias búsquedas.</p>
+
+<p>Utilizaremos <code class="language-plaintext highlighter-rouge">DC=htb,DC=local</code> como base de nuestras consultas porque este es el <em>Naming Context</em> principal que representa el dominio <code class="language-plaintext highlighter-rouge">htb.local</code>, incluyendo usuarios, grupos y otros objetos principales. Los demás <em>Naming Contexts</em> (CN=Configuration, CN=Schema, DC=DomainDnsZones, DC=ForestDnsZones) son específicos para configuraciones y esquemas dentro del entorno de <em>AD</em>.</p>
 
 <p>Una vez obtenemos el <em>DN</em>, podemos empezar a realizar consultas específicas o bien, podríamos listar toda la información del <em>LDAP</em> con el siguiente comando:</p>
 
@@ -275,45 +277,82 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/7.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Podemos observar que en los campos <em>sAMAccountName</em> de cada usuario, encontramos sus respectivos nombres de usuario. Teniendo un listado potencial de usuarios, podemos pensar en realizar un ataque <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>.</p>
+<p>En los campos <em>sAMAccountName</em> de cada usuario, encontraremos sus respectivos nombres de usuario. Con un listado potencial de usuarios en nuestro poder, podríamos considerar un ataque <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>.</p>
 
-<p>El <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code> es un tipo de ataque contra el protocolo de autenticación <code class="language-plaintext highlighter-rouge">Kerberos</code> en entornos de <em>Active Directory</em>. Consiste en solicitar el <code class="language-plaintext highlighter-rouge">Ticket de Servicio de Autenticación (AS-REQ)</code> para un usuario sin autenticación previa, y luego intentar crackear el <code class="language-plaintext highlighter-rouge">Ticket de Respuesta (AS-REP)</code> offline para obtener la contraseña del usuario.</p>
+<p>El ataque <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code> explota una debilidad en la autenticación de <code class="language-plaintext highlighter-rouge">Kerberos</code> en entornos de <em>Active Directory</em>. Este ataque comienza enviando un mensaje de solicitud de <em>Authentication Server Request (AS-REQ)</em> al <em>DC</em> para usuarios que están configurados para no requierer preautenticación de <em>Kerberos</em>. Si la cuenta del usuario está configurada de esta manera, el <em>DC</em> nos responderá con un mensaje de <em>Authentication Server Response (AS-REP)</em>, que contiene un <em>Ticket Granting Ticket (TGT)</em> emitido por el <em>Key Distribution Center (KDC)</em>. Este <em>TGT</em> puede ser vulnerable a ataques de fuerza bruta si la contraseña es débil, permitiéndonos romper la contraseña del usuario sin tener que realizar una autenticación completa. Esta vulnerabilidad se explota debido a que el servidor responde con un mensaje <em>AS-REP</em> en lugar de rechazar la solicitud debido a la falta de preautenticación.</p>
 
-<p>En lugar de buscar usuario por usuario manualmente, podemos mediante el uso de un one-liner filtrar y parsear los usuarios y guardarlos en un archivo.</p>
+<p>Con esto en mente, en vez de buscar usuario por usuario manualmente, podemos utilizar un one-liner para filtrar y parsear los usuarios directamente.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/8.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Adicional podemos borrar las dos primeras, las 3 siguientes por el AD, las SM y las Mail por Microsoft Exchange y nos quedamos con 5 usuarios.</p>
+<p>Podemos refinar aún más la lista de usuarios obtenida para centrarnos exclusivamente en las cuentas relevantes. Las dos primeras cuentas, <em>DefaultAccount</em> y <em>Guest</em>, son creadas por el propio <em>AD</em> (aunque <em>Guest</em> no está habilitada por defecto). Las cuentas que terminan en <em>$</em> son cuentas de equipos (<em>computer accounts</em>), mientras que la cuenta <em>$331000-VK4ADACQNUCA</em> tiene un formato inusual y podría ser una cuenta de servicio especial o generada automáticamente. Las cuentas que empiezan por <em>SM_</em> y <em>HealthMailbox</em> están relacionadas con el servicio <em>Microsoft Exchange</em>. Esto nos deja con cinco usuarios potenciales para nuestro análisis.</p>
 
-<p>Para utilizar el imacket necesitamos editar el /etc/hosts para que el dominio que nos sacamos con nmap nos resuelva a la ip.</p>
+<p>Lo siguiente que haremos será utilizar el script <code class="language-plaintext highlighter-rouge">GetNPUsers</code> de la suite <code class="language-plaintext highlighter-rouge">Impacket</code>. Para ejecutarlo, necesitamos proporcionar el nombre del dominio del <em>AD</em> al que queremos apuntar. Para configurar esto, editaremos el archivo <code class="language-plaintext highlighter-rouge">/etc/hosts</code> para asegurarnos de que el nombre de dominio se resuelva a la dirección IP correspondiente del servidor.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/9.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>corramos el comando:</p>
+<p>Con esto hecho, el comando que utilizaremos es el siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-GetNPUsers htb.local/ <span class="nt">-no-pass</span> <span class="nt">-userfile</span> archivoListadoUsuarios 
+</code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/10.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>vemos que la vaina no funca. ok, sin problema.</p>
+<p>Curiosamente, ninguno de los usuarios que hemos obtenido parece ser vulnerable a <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>. Por lo tanto, procederemos a enumerar otro protocolo que hemos identificado durante nuestro escaneo con <em>Nmap</em>, <code class="language-plaintext highlighter-rouge">RPC</code>.</p>
 
-<p>pasamos al rpc.</p>
+<p>Haremos uso de <code class="language-plaintext highlighter-rouge">rpcclient</code>, nuevamente utilizando un <em>null session</em>, pues no contamos con credenciales. Verificamos que podemos conectarnos exitosamente, por lo que procederemos a enumerar información adicional. Podríamos listar los grupos dentro del dominio mediante <em>enumdomgroup</em> o, alternativamente, volver a listar los usuarios del dominio mediante <em>enumdomusers</em>.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/11.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>aja hay un usuario nuevo.</p>
+<p>Podemos observar tres nuevos usuarios que no habíamos detectado cuando enumeramos con <em>ldapsearch</em>. De los cuales nos interesa <code class="language-plaintext highlighter-rouge">svc-alfresco</code>, pues tanto Administrator como krbtgt son creados por el propio <em>AD</em>.</p>
+
+<p>Si recordamos, cuando utilizamos <em>ldapsearch</em>, filtramos usuarios cuya clase de objeto contenga <em>user</em>, y los cinco usuarios que encontramos cumplen con esta condición.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/12.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>Sin embargo, al investigar un poco más, descubrimos que este “usuario” <code class="language-plaintext highlighter-rouge">svc-alfresco</code> no tiene una clase de objeto definida. Esto probablemente se debe a que pertenece a la <em>Unidad Organizativa (OU)</em> de Cuentas de Servicio (Service Accounts).</p>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/13.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Nuevamente, mediante el uso de un one-liner podríamos filtrar y parsear los usuarios, refinar la lista y utilizarla junto a <code class="language-plaintext highlighter-rouge">Impacket</code> para comprobar si este nuevo usuario es vulnerable a <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/14.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/15.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>Descubrimos que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> es vulnerable a <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code> y obtenemos un hash que procederemos a intentar romper por fuerza bruta utilizando <code class="language-plaintext highlighter-rouge">John the Ripper</code> en conjunto con el diccionario <a href="https://github.com/brannondorsey/naive-hashcat/releases/tag/data">rockyou.txt</a>.</p>
+
+<p>En caso de no contar con la herramienta <code class="language-plaintext highlighter-rouge">John the Ripper</code> instalada, podemos hacer lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt <span class="nb">install </span>john
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>john <span class="nt">--wordlist</span><span class="o">=</span>/ruta/del/diccionario/rockyou.txt <span class="nb">hash</span>
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/16.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez obtenemos la contraseña del usuario <code class="language-plaintext highlighter-rouge">svc-alfresco</code>, podemos validar la credencial antes de intentar conectarnos a la máquina víctima para asegurarnos de que es correcta. Recordemos que durante nuestro escaneo con <em>Nmap</em>, observamos que el servicio <code class="language-plaintext highlighter-rouge">WinRM</code> (<em>Windows Remote Management</em>) está activo en la máquina víctima; utilizaremos este protocolo para la conexión.</p>
+
+<p>Para validar la credencial, emplearemos <em>CrackMapExec</em> con el siguiente comando:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>crackmapexec winrm 10.10.10.161 <span class="nt">-u</span> <span class="s1">'svc-alfresco'</span> <span class="nt">-p</span> <span class="s1">'s3rvice'</span>
+</code></pre></div></div>
+
+<p>Vemos junto al nombre del usuario, un mensaje que dice “<em>Pwn3d!</em>”, lo que significa que la credencial es válida y podemos conectarnos a la máquina mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>Procederemos a usar <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> para conectarnos de la siguiente manera:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-i</span> 10.10.10.161 <span class="nt">-u</span> <span class="s1">'svc-alfresco'</span> <span class="nt">-p</span> <span class="s1">'s3rvice'</span>
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/18.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez dentro de la máquina víctima, podríamos listar la primera flag.</p>
+
+<h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/19.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
