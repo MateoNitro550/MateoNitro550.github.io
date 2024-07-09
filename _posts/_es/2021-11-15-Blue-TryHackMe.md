@@ -176,7 +176,7 @@ Antes de pasar a conseguir las flags de la máquina, la plataforma nos sigue ens
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/12.png){:class="blog-image" onclick="expandImage(this)"} 
 
-En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea _Guest_, o _Administrator_; finalmente, se nos pide _crackear_ la contraseña de este usuario, para ello utilizaremos la herramienta `John the Ripper`, en conjunto del diccionario [rockyou.txt](https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220209%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220209T031834Z&X-Amz-Expires=300&X-Amz-Signature=d8b079596701be0a466831ad31ee5cc654d2cc6b43291d532f275e51b6e480fb&X-Amz-SignedHeaders=host&actor_id=79855501&key_id=0&repo_id=97553311&response-content-disposition=attachment%3B%20filename%3Drockyou.txt&response-content-type=application%2Foctet-stream).
+En esta fase se nos pregunta por el nombre del usuario no predeterminado, es decir, aquel usuario que no sea _Guest_, o _Administrator_; finalmente, se nos pide _crackear_ la contraseña de este usuario, para ello utilizaremos la herramienta `John the Ripper`, en conjunto del diccionario [rockyou.txt](https://github.com/brannondorsey/naive-hashcat/releases/tag/data).
 
 En caso de no contar con la herramienta `John the Ripper` instalada, podemos hacer lo siguiente:
 
@@ -187,13 +187,13 @@ sudo apt install john
 En nuestra máquina, crearemos un documento de texto que contenga la contraseña _hasheada_ del usuario, podemos hacerlo de manera manual, o desde la misma terminal:
 
 ```bash
-echo "Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" >> nombreArchivo
+echo "Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" >> hash
 ```
 
 Una vez creado el archivo de texto, podemos pasar a _crackear_ la contraseña:
 
 ```
-sudo john --format=NT --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo
+sudo john --format=NT --wordlist=/ruta/del/diccionario/rockyou.txt hash
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-11-15-Blue-TryHackMe/13.png){:class="blog-image" onclick="expandImage(this)"} 

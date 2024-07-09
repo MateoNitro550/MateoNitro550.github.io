@@ -487,7 +487,7 @@ sudo apt install john
 ```
 
 ```
-sudo john --wordlist=/dirección/del/diccionario/rockyou.txt nombreArchivo
+sudo john --wordlist=/ruta/del/diccionario/rockyou.txt nombreArchivo
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2021-12-27-Safe-Hack-The-Box/37.png){:class="blog-image" onclick="expandImage(this)"} 

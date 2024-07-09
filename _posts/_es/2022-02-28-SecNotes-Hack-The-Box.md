@@ -116,7 +116,7 @@ git clone https://github.com/danielmiessler/SecLists
 ```
 
 ```bash
-wfuzz -c -L -t 400 --hs "No account found with that username." -w /dirección/del/diccionario/SecLists/Usernames/Names/names.txt -d "username=FUZZ&password=noConocemosLaContraseña" http://10.10.10.97
+wfuzz -c -L -t 400 --hs "No account found with that username." -w /ruta/del/diccionario/SecLists/Usernames/Names/names.txt -d "username=FUZZ&password=noConocemosLaContraseña" http://10.10.10.97
 ```
 
 | Parámetro | Explicación |
