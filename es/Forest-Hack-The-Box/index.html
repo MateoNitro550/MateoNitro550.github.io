@@ -127,7 +127,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-T5</span> <span class="nt">-v</span> <span class="nt">-n</span> 10.10.10.161
 </code></pre></div></div>
 
-<p>Y en caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
+<p>En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-sS</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> 10.10.10.161
 </code></pre></div></div>
@@ -306,7 +306,7 @@
 
 <p>Podemos observar tres nuevos usuarios que no habíamos detectado cuando enumeramos con <em>ldapsearch</em>. De los cuales nos interesa <code class="language-plaintext highlighter-rouge">svc-alfresco</code>, pues tanto Administrator como krbtgt son creados por el propio <em>AD</em>.</p>
 
-<p>Si recordamos, cuando utilizamos <em>ldapsearch</em>, filtramos usuarios cuya clase de objeto contenga <em>user</em>, y los cinco usuarios que encontramos cumplen con esta condición.</p>
+<p>Si recordamos, cuando utilizamos <em>ldapsearch</em>, filtramos usuarios cuya clase de objeto contenga <em>user</em>, y los cinco usuarios que encontramos anteriormente, cumplen con esta condición.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/12.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
@@ -339,11 +339,11 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>crackmapexec winrm 10.10.10.161 <span class="nt">-u</span> <span class="s1">'svc-alfresco'</span> <span class="nt">-p</span> <span class="s1">'s3rvice'</span>
 </code></pre></div></div>
 
-<p>Vemos junto al nombre del usuario, un mensaje que dice “<em>Pwn3d!</em>”, lo que significa que la credencial es válida y podemos conectarnos a la máquina mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>.</p>
-
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2022-03-21-Forest-Hack-The-Box/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Procederemos a usar <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> para conectarnos de la siguiente manera:</p>
+<p>Nos damos cuenta de que la credencial no solo es válida, sino también que este usuario pertenece al grupo <em>Remote Management Users</em>, ya que vemos junto al nombre de usuario un mensaje que dice “<em>Pwn3d!</em>”. Por lo tanto, podemos conectarnos a la máquina víctima mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>.</p>
+
+<p>Procederemos a conectarnos de la siguiente manera:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-i</span> 10.10.10.161 <span class="nt">-u</span> <span class="s1">'svc-alfresco'</span> <span class="nt">-p</span> <span class="s1">'s3rvice'</span>
 </code></pre></div></div>
