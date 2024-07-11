@@ -341,7 +341,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Nos damos cuenta de que la credencial no solo es válida, sino también que este usuario pertenece al grupo <em>Remote Management Users</em>, ya que vemos junto al nombre de usuario un mensaje que dice “<em>Pwn3d!</em>”. Por lo tanto, podemos conectarnos a la máquina víctima mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>.</p>
+<p>Nos damos cuenta de que la credencial no solo es válida, sino también que este usuario pertenece al grupo <em>Remote Management Users</em>, ya que vemos junto al nombre de usuario un mensaje que dice <em>Pwn3d!</em>. Por lo tanto, podemos conectarnos a la máquina víctima mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>.</p>
 
 <p>Procederemos a conectarnos de la siguiente manera:</p>
 
@@ -372,18 +372,40 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/19.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<p>Lo siguiente que haremos será importar el archivo comprimido que generó <code class="language-plaintext highlighter-rouge">SharpHound</code> a <code class="language-plaintext highlighter-rouge">BloodHound</code>. Para ello, en caso de no contar con la herramienta instalada, podemos hacer lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt <span class="nb">install </span>neo4j bloodhound
+</code></pre></div></div>
+
+<p><em>Neo4j</em> es la base de datos gráfica que <code class="language-plaintext highlighter-rouge">BloodHound</code> utiliza. La arrancaremos de la siguiente manera:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>neo4j console
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/20.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>Nos indicará que nos dirijamos a <a href="http://localhost:7474/">http://localhost:7474/</a>. Para conectarnos a <em>Neo4j</em> por primera vez, las credenciales que introduciremos son las que vienen por defecto:</p>
+
+<ul>
+  <li>Username: neo4j</li>
+  <li>Password: neo4j</li>
+</ul>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/21.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>A continuación, nos solicitará que cambiemos la contraseña; esta será la que utilizaremos para BloodHound.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/22.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>Una vez abramos BloodHound y nos logueemos, en la parte derecha veremos una sección que dice <em>Upload Data</em>. Aquí es donde subiremos nuestro archivo comprimido.</p>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/23.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>En la barra de búsqueda en la parte superior izquierda, podemos buscar por el usuario que acabamos de comprometer, <code class="language-plaintext highlighter-rouge">svc-alfresco</code>. Podemos hacer clic derecho sobre él y seleccionar <em>Mark User as Owned</em>.</p>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/24.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Si nos dirigimos al apartado <em>Analysis</em>, encontraremos una sección <em>Shortest Paths</em>. Dentro de esta sección, seleccionamos <em>Shortest Path from Owned Principals</em>. Al hacer clic, se desplegará un gráfico que ilustra el mejor camino para convertirnos en administrador del sistema.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/25.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
