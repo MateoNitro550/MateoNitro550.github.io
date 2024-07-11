@@ -20,15 +20,15 @@ After months of dealing with these issues and finding no solution, I decided to 
 
 Seeing that many users were facing similar difficulties with __Parrot OS__ and opting to migrate to __Kali Linux__, I made the same decision. I downloaded the [pre-configured image](https://www.kali.org/get-kali/#kali-virtual-machines) of __Kali Linux__ for __VMware__, making the process easier without the need for additional installations.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png){:class="blog-image" onclick="expandImage(this)"} 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png){:class="blog-image" onclick="expandImage(this)"} 
 
 I simply opened the `.vmx` configuration file with __VMware__, and the virtual machine was ready to run.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png){:class="blog-image" onclick="expandImage(this)"} 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png){:class="blog-image" onclick="expandImage(this)"} 
 
 The transition to __Kali Linux__ was swift, and the experience was quite straightforward.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png){:class="blog-image" onclick="expandImage(this)"} 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Soon after, I began configuring the same Linux setup I had in __Parrot OS__, which you can find in the following link to my [repository](https://github.com/MateoNitro550/ArcticTones).
 

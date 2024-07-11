@@ -20,15 +20,15 @@ Después de meses lidiando con estos problemas y sin encontrar una solución, de
 
 Al observar que varios usuarios enfrentaban dificultades similares con __Parrot OS__ y optaban por migrar a __Kali Linux__,  tomé la misma decisión. Descargué la [imagen preconfigurada](https://www.kali.org/get-kali/#kali-virtual-machines) de __Kali Linux__ para __VMware__, lo que facilitó el proceso al no tener que realizar ninguna instalación adicional.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png){:class="blog-image" onclick="expandImage(this)"} 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Simplemente abrí el archivo de configuración `.vmx` con __VMware__, y la máquina virtual estaba lista para ser ejecutada.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png){:class="blog-image" onclick="expandImage(this)"} 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png){:class="blog-image" onclick="expandImage(this)"} 
 
 El cambio a __Kali Linux__ fue rápido y la experiencia resultó bastante sencilla. 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/master/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png){:class="blog-image" onclick="expandImage(this)"} 
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Al poco tiempo empecé a configurar el mismo entorno de trabajo que tenía previamente en __Parrot OS__, el cual pueden encontrar en el siguiente enlace a mi [repositorio](https://github.com/MateoNitro550/ArcticTones).
 
