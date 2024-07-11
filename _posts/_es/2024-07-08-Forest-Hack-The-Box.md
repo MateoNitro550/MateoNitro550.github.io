@@ -194,7 +194,7 @@ crackmapexec winrm 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
 
-Nos damos cuenta de que la credencial no solo es válida, sino también que este usuario pertenece al grupo _Remote Management Users_, ya que vemos junto al nombre de usuario un mensaje que dice "_Pwn3d!_". Por lo tanto, podemos conectarnos a la máquina víctima mediante `Evil-WinRM`.
+Nos damos cuenta de que la credencial no solo es válida, sino también que este usuario pertenece al grupo _Remote Management Users_, ya que vemos junto al nombre de usuario un mensaje que dice _Pwn3d!_. Por lo tanto, podemos conectarnos a la máquina víctima mediante `Evil-WinRM`.
 
 Procederemos a conectarnos de la siguiente manera:
 
@@ -229,20 +229,41 @@ download <timestamp>_BloodHound.zip BloodHound.zip
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/19.png){:class="blog-image" onclick="expandImage(this)"}
 
+Lo siguiente que haremos será importar el archivo comprimido que generó `SharpHound` a `BloodHound`. Para ello, en caso de no contar con la herramienta instalada, podemos hacer lo siguiente:
 
 ```bash
+sudo apt install neo4j bloodhound
+```
 
+_Neo4j_ es la base de datos gráfica que `BloodHound` utiliza. La arrancaremos de la siguiente manera:
+
+```bash
+sudo neo4j console
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/20.png){:class="blog-image" onclick="expandImage(this)"}
 
+Nos indicará que nos dirijamos a [http://localhost:7474/](http://localhost:7474/). Para conectarnos a _Neo4j_ por primera vez, las credenciales que introduciremos son las que vienen por defecto:
+
+* Username: neo4j
+* Password: neo4j
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/21.png){:class="blog-image" onclick="expandImage(this)"}
+
+A continuación, nos solicitará que cambiemos la contraseña; esta será la que utilizaremos para BloodHound.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/22.png){:class="blog-image" onclick="expandImage(this)"}
 
+Una vez abramos BloodHound y nos logueemos, en la parte derecha veremos una sección que dice _Upload Data_. Aquí es donde subiremos nuestro archivo comprimido.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/23.png){:class="blog-image" onclick="expandImage(this)"}
 
+
+En la barra de búsqueda en la parte superior izquierda, podemos buscar por el usuario que acabamos de comprometer, `svc-alfresco`. Podemos hacer clic derecho sobre él y seleccionar _Mark User as Owned_.
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/24.png){:class="blog-image" onclick="expandImage(this)"}
+
+Si nos dirigimos al apartado _Analysis_, encontraremos una sección _Shortest Paths_. Dentro de esta sección, seleccionamos _Shortest Path from Owned Principals_. Al hacer clic, se desplegará un gráfico que ilustra el mejor camino para convertirnos en administrador del sistema.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/25.png){:class="blog-image" onclick="expandImage(this)"}
 
