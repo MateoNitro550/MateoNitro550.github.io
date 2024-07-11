@@ -409,6 +409,17 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/25.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>Podemos observar que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> es miembro del grupo <em>Service Accounts</em>, el cual es miembro del grupo <em>Privileged IT Accounts</em>, que a su vez es miembro del grupo <em>Account Operators</em>. Además, el grupo <em>Account Operators</em> tiene permisos <em>GenericAll</em> sobre el grupo <em>Exchange Windows Permissions</em>, lo que les da control total sobre este grupo. El grupo <em>Exchange Windows Permissions</em> tiene permisos <em>WriteDacl</em> sobre el dominio, lo que permite modificar la lista de control de acceso discrecional (<em>DACL</em>) del dominio.</p>
+
+<p>Vamos por partes, el grupo <em>Account Operators</em> otorga privilegios limitados de creación de cuentas a un usuario. Por lo tanto, el usuario <code class="language-plaintext highlighter-rouge">svc-alfresco</code> puede crear otras cuentas en el dominio. Por otra parte, el grupo <em>Account Operators</em> tiene permisos <em>GenericAll</em> sobre el grupo <em>Exchange Windows Permissions</em>, lo que significa que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> puede modificar los permisos del grupo <em>Exchange Windows Permissions</em>. Finalmente, el grupo <em>Exchange Windows Permissions</em> tiene permisos <em>WriteDacl</em> sobre el dominio. Abusaremos de esto para otorgarnos privilegios de <code class="language-plaintext highlighter-rouge">DCSync</code>.</p>
+
+<p>El ataque <code class="language-plaintext highlighter-rouge">DCSync</code> simula el comportamiento de un <em>Domain Controller</em> y solicita a otros <em>Domain Controllers</em> que repliquen información utilizando el protocolo <em>Directory Replication Service Remote Protocol</em> (<em>MS-DRSR</em>). Debido a que este protocolo es esencial para el funcionamiento de <em>Active Directory</em>, no se lo puede desactivar. Realizando este ataque, podemos replicar la información del dominio y dumpear todos los hashes del mismo.</p>
+
+<p>Dicho todo esto, lo primero que haremos será aprovechar que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> es miembro del grupo <em>Account Operators</em>, y crear un nuevo usuario. Para ello, haremos lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net user nombreDeUsuario contraseña /add /domain
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/26.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/27.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
