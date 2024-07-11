@@ -267,6 +267,18 @@ Si nos dirigimos al apartado _Analysis_, encontraremos una sección _Shortest Pa
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/25.png){:class="blog-image" onclick="expandImage(this)"}
 
+Podemos observar que `svc-alfresco` es miembro del grupo _Service Accounts_, el cual es miembro del grupo _Privileged IT Accounts_, que a su vez es miembro del grupo _Account Operators_. Además, el grupo _Account Operators_ tiene permisos _GenericAll_ sobre el grupo _Exchange Windows Permissions_, lo que les da control total sobre este grupo. El grupo _Exchange Windows Permissions_ tiene permisos _WriteDacl_ sobre el dominio, lo que permite modificar la lista de control de acceso discrecional (_DACL_) del dominio.
+
+Vamos por partes, el grupo _Account Operators_ otorga privilegios limitados de creación de cuentas a un usuario. Por lo tanto, el usuario `svc-alfresco` puede crear otras cuentas en el dominio. Por otra parte, el grupo _Account Operators_ tiene permisos _GenericAll_ sobre el grupo _Exchange Windows Permissions_, lo que significa que `svc-alfresco` puede modificar los permisos del grupo _Exchange Windows Permissions_. Finalmente, el grupo _Exchange Windows Permissions_ tiene permisos _WriteDacl_ sobre el dominio. Abusaremos de esto para otorgarnos privilegios de `DCSync`.
+
+El ataque `DCSync` simula el comportamiento de un _Domain Controller_ y solicita a otros _Domain Controllers_ que repliquen información utilizando el protocolo _Directory Replication Service Remote Protocol_ (_MS-DRSR_). Debido a que este protocolo es esencial para el funcionamiento de _Active Directory_, no se lo puede desactivar. Realizando este ataque, podemos replicar la información del dominio y dumpear todos los hashes del mismo.
+
+Dicho todo esto, lo primero que haremos será aprovechar que `svc-alfresco` es miembro del grupo _Account Operators_, y crear un nuevo usuario. Para ello, haremos lo siguiente:
+
+```bash
+net user nombreDeUsuario contraseña /add /domain
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/26.png){:class="blog-image" onclick="expandImage(this)"}
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"}

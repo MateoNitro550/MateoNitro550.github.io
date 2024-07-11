@@ -252,7 +252,7 @@ Lo que haremos será cambiar esta petición que se está tramitando por POST, a 
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-28-SecNotes-Hack-The-Box/21.png){:class="blog-image" onclick="expandImage(this)"} 
 
-Para ello, desde `Burp Suite`, habiendo capturado la petición del cambio de contraseña, simplemente haremos _click derecho_, _Change request method_, y copiaremos la nueva petición por GET.
+Para ello, desde `Burp Suite`, habiendo capturado la petición del cambio de contraseña, simplemente haremos _clic derecho_, _Change request method_, y copiaremos la nueva petición por GET.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-28-SecNotes-Hack-The-Box/22.png){:class="blog-image" onclick="expandImage(this)"} 
 
