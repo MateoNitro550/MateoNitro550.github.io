@@ -208,7 +208,7 @@ evil-winrm -i 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'
 
 Una vez dentro de la máquina víctima, podríamos empezar a recolectar información del _Active Directory_ que nos permita escalar privilegios. Para ello nos ayudaremos de `SharpHound`, un recolector de datos para `BloodHound`, una herramienta que permite analizar y visualizar relaciones y permisos en un entorno de _Active Directory_ para identificar posibles caminos de escalada de privilegios.
 
-Lo primero que haremos será descargar [SharpHound](https://raw.githubusercontent.com/puckiestyle/powershell/main/SharpHound.ps1) en nuestro equipo. Algo muy cómodo de `Evil-WinRM` es que nos permite subir y descargar archivos muy fácilmente. Para ello, ejecutaremos el siguiente comando para subir el archivo `SharpHound.ps1` a la máquina víctima:
+Lo primero que haremos será descargar [SharpHound](https://github.com/puckiestyle/powershell/blob/master/SharpHound.ps1) en nuestro equipo. Algo muy cómodo de `Evil-WinRM` es que nos permite subir y descargar archivos muy fácilmente. Para ello, ejecutaremos el siguiente comando para subir el archivo `SharpHound.ps1` a la máquina víctima:
 
 ```bash
 upload SharpHound.ps1
@@ -276,12 +276,22 @@ El ataque `DCSync` simula el comportamiento de un _Domain Controller_ y solicita
 Dicho todo esto, lo primero que haremos será aprovechar que `svc-alfresco` es miembro del grupo _Account Operators_, y crear un nuevo usuario. Para ello, haremos lo siguiente:
 
 ```bash
-net user nombreDeUsuario contraseña /add /domain
+net user nombreUsuario contraseña /add /domain
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/26.png){:class="blog-image" onclick="expandImage(this)"}
 
+Lo siguiente que haremos será añadir el usuario que acabamos de crear al grupo _Exchange Windows Permissions_, aprovechando que `svc-alfresco` tiene control total sobre este grupo:
+
+```bash
+net group "Exchange Windows Permissions" nombreUsuario /add
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"}
+
+Finalmente, para otorgarnos permisos de `DCsync`, podemos apoyarnos en `BloodHound`, que nos da una idea de cómo realizarlo. 
+
+Lo primero que haremos será descargar en nuestro equipo el script [PowerView](https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1), que pertenece a PowerSploit (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante Evil-WinRM y posteriormente lo importaremos:
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/28.png){:class="blog-image" onclick="expandImage(this)"}
 
