@@ -354,7 +354,7 @@
 
 <p>Una vez dentro de la máquina víctima, podríamos empezar a recolectar información del <em>Active Directory</em> que nos permita escalar privilegios. Para ello nos ayudaremos de <code class="language-plaintext highlighter-rouge">SharpHound</code>, un recolector de datos para <code class="language-plaintext highlighter-rouge">BloodHound</code>, una herramienta que permite analizar y visualizar relaciones y permisos en un entorno de <em>Active Directory</em> para identificar posibles caminos de escalada de privilegios.</p>
 
-<p>Lo primero que haremos será descargar <a href="https://raw.githubusercontent.com/puckiestyle/powershell/main/SharpHound.ps1">SharpHound</a> en nuestro equipo. Algo muy cómodo de <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> es que nos permite subir y descargar archivos muy fácilmente. Para ello, ejecutaremos el siguiente comando para subir el archivo <code class="language-plaintext highlighter-rouge">SharpHound.ps1</code> a la máquina víctima:</p>
+<p>Lo primero que haremos será descargar <a href="https://github.com/puckiestyle/powershell/blob/master/SharpHound.ps1">SharpHound</a> en nuestro equipo. Algo muy cómodo de <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> es que nos permite subir y descargar archivos muy fácilmente. Para ello, ejecutaremos el siguiente comando para subir el archivo <code class="language-plaintext highlighter-rouge">SharpHound.ps1</code> a la máquina víctima:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upload SharpHound.ps1
 </code></pre></div></div>
@@ -417,12 +417,21 @@
 
 <p>Dicho todo esto, lo primero que haremos será aprovechar que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> es miembro del grupo <em>Account Operators</em>, y crear un nuevo usuario. Para ello, haremos lo siguiente:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net user nombreDeUsuario contraseña /add /domain
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net user nombreUsuario contraseña /add /domain
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/26.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>Lo siguiente que haremos será añadir el usuario que acabamos de crear al grupo <em>Exchange Windows Permissions</em>, aprovechando que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> tiene control total sobre este grupo:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net group <span class="s2">"Exchange Windows Permissions"</span> nombreUsuario /add
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/27.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Finalmente, para otorgarnos permisos de <code class="language-plaintext highlighter-rouge">DCsync</code>, podemos apoyarnos en <code class="language-plaintext highlighter-rouge">BloodHound</code>, que nos da una idea de cómo realizarlo.</p>
+
+<p>Lo primero que haremos será descargar en nuestro equipo el script <a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1">PowerView</a>, que pertenece a PowerSploit (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante Evil-WinRM y posteriormente lo importaremos:</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/28.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
