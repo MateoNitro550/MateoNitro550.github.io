@@ -206,7 +206,7 @@ evil-winrm -i 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'
 
 ### [](#header-3)Escalada De Privilegios
 
-Una vez dentro de la máquina víctima, podríamos empezar a recolectar información del _Active Directory_ que nos permita escalar privilegios. Para ello nos ayudaremos de `SharpHound`, un recolector de datos para `BloodHound`, una herramienta que permite analizar y visualizar relaciones y permisos en un entorno de _Active Directory_ para identificar posibles caminos de escalada de privilegios.
+Una vez dentro de la máquina víctima, podemos empezar a recolectar información del _Active Directory_ que nos permita escalar privilegios. Para ello nos ayudaremos de `SharpHound`, un recolector de datos para `BloodHound`, una herramienta que permite analizar y visualizar relaciones y permisos en un entorno de _Active Directory_ para identificar posibles caminos de escalada de privilegios.
 
 Lo primero que haremos será descargar [SharpHound](https://github.com/puckiestyle/powershell/blob/master/SharpHound.ps1) en nuestro equipo. Algo muy cómodo de `Evil-WinRM` es que nos permite subir y descargar archivos muy fácilmente. Para ello, ejecutaremos el siguiente comando para subir el archivo `SharpHound.ps1` a la máquina víctima:
 
@@ -295,7 +295,7 @@ Add-ADGroupMember -Identity "Remote Management Users" -Members "nombreDeUsuario"
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"}
 
-Al añadir al usuario al grupo _Remote Management Users_, evitamos el uso de _PSCredentials_, normalmente utilizadas para ejecutar comandos con las credenciales de otro usuario, que estaban generando conflictos con `PowerView`.
+Al añadir al usuario al grupo _Remote Management Users_, evitamos el uso de _PSCredentials_, que normalmente se utilizan para ejecutar comandos con las credenciales de otro usuario, las cuales, personalmente, me generaban conflictos con `PowerView`.
 
 A continuación, cerraremos la sesión actual de `Evil-WinRM` y nos conectaremos nuevamente con el usuario recién creado. Una vez conectados como el nuevo usuario, descargaremos en nuestro equipo el script [PowerView](https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1), que pertenece a `PowerSploit` (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante `Evil-WinRM` y posteriormente lo importaremos:
 
