@@ -352,7 +352,7 @@
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 
-<p>Una vez dentro de la máquina víctima, podríamos empezar a recolectar información del <em>Active Directory</em> que nos permita escalar privilegios. Para ello nos ayudaremos de <code class="language-plaintext highlighter-rouge">SharpHound</code>, un recolector de datos para <code class="language-plaintext highlighter-rouge">BloodHound</code>, una herramienta que permite analizar y visualizar relaciones y permisos en un entorno de <em>Active Directory</em> para identificar posibles caminos de escalada de privilegios.</p>
+<p>Una vez dentro de la máquina víctima, podemos empezar a recolectar información del <em>Active Directory</em> que nos permita escalar privilegios. Para ello nos ayudaremos de <code class="language-plaintext highlighter-rouge">SharpHound</code>, un recolector de datos para <code class="language-plaintext highlighter-rouge">BloodHound</code>, una herramienta que permite analizar y visualizar relaciones y permisos en un entorno de <em>Active Directory</em> para identificar posibles caminos de escalada de privilegios.</p>
 
 <p>Lo primero que haremos será descargar <a href="https://github.com/puckiestyle/powershell/blob/master/SharpHound.ps1">SharpHound</a> en nuestro equipo. Algo muy cómodo de <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> es que nos permite subir y descargar archivos muy fácilmente. Para ello, ejecutaremos el siguiente comando para subir el archivo <code class="language-plaintext highlighter-rouge">SharpHound.ps1</code> a la máquina víctima:</p>
 
@@ -434,7 +434,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/27.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Al añadir al usuario al grupo <em>Remote Management Users</em>, evitamos el uso de <em>PSCredentials</em>, normalmente utilizadas para ejecutar comandos con las credenciales de otro usuario, que estaban generando conflictos con <code class="language-plaintext highlighter-rouge">PowerView</code>.</p>
+<p>Al añadir al usuario al grupo <em>Remote Management Users</em>, evitamos el uso de <em>PSCredentials</em>, que normalmente se utilizan para ejecutar comandos con las credenciales de otro usuario, las cuales, personalmente, me generaban conflictos con <code class="language-plaintext highlighter-rouge">PowerView</code>.</p>
 
 <p>A continuación, cerraremos la sesión actual de <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> y nos conectaremos nuevamente con el usuario recién creado. Una vez conectados como el nuevo usuario, descargaremos en nuestro equipo el script <a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1">PowerView</a>, que pertenece a <code class="language-plaintext highlighter-rouge">PowerSploit</code> (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> y posteriormente lo importaremos:</p>
 
