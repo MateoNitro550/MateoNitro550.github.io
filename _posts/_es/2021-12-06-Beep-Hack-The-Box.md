@@ -282,13 +282,11 @@ sudo nc -nlvp <puertoCualquiera>
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-06-Beep-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"} 
 
-Si nos percatamos, a diferencia de los casos anteriores, en esta ocasión ya no somos el usuario root, somos el usuario `asterisk`, por lo que ahora si debemos de realizar la escalada de privilegios.
-
-### [](#header-3)Escalada De Privilegios
-
-Para conseguir la primera flag, no tenemos que realizar ningún proceso, como el usuario `asterisk`, nos es posible leer la flag del usuario con bajos privilegios.
+Si nos percatamos, a diferencia de los casos anteriores, no somos el usuario root, somos el usuario `asterisk`, por lo que ahora si debemos escalar privilegios.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-06-Beep-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"} 
+
+### [](#header-3)Escalada De Privilegios
 
 Para conseguir la flag del usuario con máximos privilegios, al ser el usuario `asterisk`, será bastante sencillo, ya que este usuario usualmente tiene acceso a ejecutar algunos binarios haciendo uso de `sudo`, por lo que, lo primero que vamos a hacer es listar que binarios podemos ejecutar como root.
 
