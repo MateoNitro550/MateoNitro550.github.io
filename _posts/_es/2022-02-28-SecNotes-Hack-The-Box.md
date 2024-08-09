@@ -452,15 +452,17 @@ ls -la
 cat .bash_history
 ```
 
-Dentro del cual, encontraremos en texto plano las credenciales del usuario _root_.
+Dentro del cual, encontraremos en texto plano las credenciales del usuario `Administrator`.
 
 A partir de este punto, podemos volver a conectarnos a la máquina víctima a través de `smbclient` pero ahora como el usuario `Administrator` y proporcionando su contraseña.
 
 ```
-smbclient //10.10.10.97/Admin%/Desktop -U 'Administrator'
+smbclient //10.10.10.97/C$ -U Administrator
 ```
 
-O, simplemente, haciendo uso de `impacket-psexec`.
+Esto nos permitirá acceder al recurso compartido `C$`, que representa el disco local C de la máquina. Desde ahí, podremos movernos por los diferentes directorios hasta localizar la flag y descargarla a nuestro equipo utilizando el comando `get`.
+
+Alternativamente, podemos optar por usar `impacket-psexec` para ejecutar comandos en la máquina víctima directamente como el usuario `Administrator`:
 
 ```
 impacket-psexec administrator@10.10.10.97
