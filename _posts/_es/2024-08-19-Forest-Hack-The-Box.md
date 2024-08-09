@@ -1,6 +1,6 @@
 ---
 title: Forest - Hack The Box
-categories: [Windows, Domain Controller, DC, Active Directory, AD, LDAP, ldapsearch, AS-REP Roasting, Kerberos, GetNPUsers, Impacket, RPC, rpcclient, John the Ripper, WinRM, Windows Remote Management, CrackMapExec, Evil-WinRM, SharpHound, BloodHound, ccount Operators, WriteDacl, DCSync, MS-DRSR, PowerView, PowerSploit, Add-DomainObjectAcl, secretsdump, Pass the Hash, PtH, psexec]
+categories: [Windows, Domain Controller, DC, Active Directory, AD, LDAP, ldapsearch, AS-REP Roasting, Kerberos, GetNPUsers, Impacket, RPC, rpcclient, John the Ripper, WinRM, Windows Remote Management, CrackMapExec, Evil-WinRM, SharpHound, BloodHound, Account Operators, WriteDacl, DCSync, MS-DRSR, PowerView, PowerSploit, Add-DomainObjectAcl, secretsdump, Pass the Hash, PtH, psexec]
 published: true
 lang: es
 ---
