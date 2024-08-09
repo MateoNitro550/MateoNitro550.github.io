@@ -1,10 +1,14 @@
+---
+layout: none
+---
+
 [
-  
+  {% for post in site.en %}
     {
-      "title"    : "Migrating from Parrot OS to Kali Linux",
-      "category" : "Parrot OSVMwareKali LinuxLinux SetupArcticTones",
-      "url"      : "//en/Migrating-from-Parrot-OS-to-Kali-Linux/",
-      "date"     : "01/01/2024"
-    } 
-  
+      "title"    : "{{ post.title | escape }}",
+      "category" : "{{ post.categories }}",
+      "url"      : "{{ post.url }}",
+      "date"     : "{{ post.date | date: "%m/%d/%Y" }}"
+    } {% unless forloop.last %},{% endunless %}
+  {% endfor %}
 ]
