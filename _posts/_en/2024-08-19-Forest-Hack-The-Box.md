@@ -137,7 +137,7 @@ With this in mind, instead of searching for users manually one by one, we can us
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/8.png){:class="blog-image" onclick="expandImage(this)"}
 
-We can further refine the list of users obtained to focus exclusively on relevant accounts. The first two accounts, _DefaultAccount_ and _Guest_, are created by the _AD_ itself (although _Guest_ is not enabled by default). Accounts ending in _$_ are _computer accounts_, while the _$331000-VK4ADACQNUCA_ account has an unusual format and could be a specialservice account or automatically generated. Accounts starting with _SM\__ and _HealthMailbox_ are related to the _Microsoft Exchange_ service. This leaves us with five potential users for our analysis.
+We can further refine the list of users obtained to focus exclusively on relevant accounts. The first two accounts, _DefaultAccount_ and _Guest_, are created by the _AD_ itself (although _Guest_ is not enabled by default). Accounts ending in _$_ are _computer accounts_, while the _$331000-VK4ADACQNUCA_ account has an unusual format and could be a special service account or automatically generated. Accounts starting with _SM\__ and _HealthMailbox_ are related to the _Microsoft Exchange_ service. This leaves us with five potential users for our analysis.
 
 The next thing we’ll do is use the `GetNPUsers` script from the `Impacket` suite. To run it, we need to provide the _AD_ domain name we want to target. To set this up, we will edit the `/etc/hosts` file to ensure that the domain name resolves to the corresponding IP address of the server.
 
@@ -146,7 +146,7 @@ The next thing we’ll do is use the `GetNPUsers` script from the `Impacket` sui
 With this done, the command we will use is the following:
 
 ```bash
-impacket-GetNPUsers htb.local/ -no-pass -userfile archivoListadoUsuarios 
+impacket-GetNPUsers htb.local/ -no-pass -userfile userListFile  
 ```
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png){:class="blog-image" onclick="expandImage(this)"}
