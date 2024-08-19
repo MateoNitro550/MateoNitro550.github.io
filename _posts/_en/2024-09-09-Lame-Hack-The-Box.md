@@ -2,14 +2,14 @@
 title: Lame - Hack The Box
 categories: []
 published: false
-lang: es
+lang: en
 ---
 
-Hoy vamos a estar resolviendo la máquina _Lame_ de _Hack The Box_.
+Today we will be solving _Hack The Box's_ _Lame_ machine.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"}
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/2.png){:class="blog-image" onclick="expandImage(this)"}
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/3a.png){:class="blog-image" onclick="expandImage(this)"}
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/3b.png){:class="blog-image" onclick="expandImage(this)"}
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/4.png){:class="blog-image" onclick="expandImage(this)"}
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/5.png){:class="blog-image" onclick="expandImage(this)"}
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/6.png){:class="blog-image" onclick="expandImage(this)"}

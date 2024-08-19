@@ -27,13 +27,13 @@ Una vez comprobamos que la máquina está activa (pues nos devuelve una respuest
 | Windows                | 128 |
 | Solaris                | 254 | 
 
-Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `127` y no `128` como indica la tabla anterior, esto se debe a que en el entorno de máquinas de _Hack The Box_, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el _TTL_ disminuye en una unidad.
+Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `127` y no `128` como indica la tabla anterior, esto se debe a que en el entorno de máquinas de _Hack The Box_, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el _TTL_ disminuye en una unidad.
 
 ```
 ping -c 1 10.10.10.161 -R
 ``` 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3.png){:class="blog-image" onclick="expandImage(this)"}
+![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3a.png){:class="blog-image" onclick="expandImage(this)"}
 
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
@@ -76,6 +76,8 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 | \-p | Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) |
 
 Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con `DNS` (53), `Kerberos authentication` (88), `RPC` (135), `NetBIOS` (139), `LDAP` (389), `SMB` (445) y `WinRM` (5985). Por lo que podemos intuir nos estamos enfrentando ante un _Domain Controller (DC)_ y nos encontramos en un entorno de _Active Directory (AD)_.
+
+### [](#header-3)Fase De Explotación
 
 Lo primero que haremos será comprobar si la máquina cuenta con recursos compartidos a nivel de red a través del uso de un _null session_, pues no contamos con credenciales; para ello podemos hacer uso de herramientas como _SMBMap_ o _smbclient_, no obstante, no podremos listar nada.
 
@@ -250,14 +252,13 @@ Nos indicará que nos dirijamos a [http://localhost:7474/](http://localhost:7474
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/21.png){:class="blog-image" onclick="expandImage(this)"}
 
-A continuación, nos solicitará que cambiemos la contraseña; esta será la que utilizaremos para BloodHound.
+A continuación, nos solicitará que cambiemos la contraseña; esta será la que utilizaremos para `BloodHound`.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/22.png){:class="blog-image" onclick="expandImage(this)"}
 
-Una vez abramos BloodHound y nos logueemos, en la parte derecha veremos una sección que dice _Upload Data_. Aquí es donde subiremos nuestro archivo comprimido.
+Una vez abramos `BloodHound` y nos logueemos, en la parte derecha veremos una sección que dice _Upload Data_. Aquí es donde subiremos nuestro archivo comprimido.
 
 ![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/23.png){:class="blog-image" onclick="expandImage(this)"}
-
 
 En la barra de búsqueda en la parte superior izquierda, podemos buscar por el usuario que acabamos de comprometer, `svc-alfresco`. Podemos hacer clic derecho sobre él y seleccionar _Mark User as Owned_.
 
