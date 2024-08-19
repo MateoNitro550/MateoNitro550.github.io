@@ -287,7 +287,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/8.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>We can further refine the list of users obtained to focus exclusively on relevant accounts. The first two accounts, <em>DefaultAccount</em> and <em>Guest</em>, are created by the <em>AD</em> itself (although <em>Guest</em> is not enabled by default). Accounts ending in <em>$</em> are <em>computer accounts</em>, while the <em>$331000-VK4ADACQNUCA</em> account has an unusual format and could be a specialservice account or automatically generated. Accounts starting with <em>SM_</em> and <em>HealthMailbox</em> are related to the <em>Microsoft Exchange</em> service. This leaves us with five potential users for our analysis.</p>
+<p>We can further refine the list of users obtained to focus exclusively on relevant accounts. The first two accounts, <em>DefaultAccount</em> and <em>Guest</em>, are created by the <em>AD</em> itself (although <em>Guest</em> is not enabled by default). Accounts ending in <em>$</em> are <em>computer accounts</em>, while the <em>$331000-VK4ADACQNUCA</em> account has an unusual format and could be a special service account or automatically generated. Accounts starting with <em>SM_</em> and <em>HealthMailbox</em> are related to the <em>Microsoft Exchange</em> service. This leaves us with five potential users for our analysis.</p>
 
 <p>The next thing we’ll do is use the <code class="language-plaintext highlighter-rouge">GetNPUsers</code> script from the <code class="language-plaintext highlighter-rouge">Impacket</code> suite. To run it, we need to provide the <em>AD</em> domain name we want to target. To set this up, we will edit the <code class="language-plaintext highlighter-rouge">/etc/hosts</code> file to ensure that the domain name resolves to the corresponding IP address of the server.</p>
 
@@ -295,7 +295,7 @@
 
 <p>With this done, the command we will use is the following:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-GetNPUsers htb.local/ <span class="nt">-no-pass</span> <span class="nt">-userfile</span> archivoListadoUsuarios 
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-GetNPUsers htb.local/ <span class="nt">-no-pass</span> <span class="nt">-userfile</span> userListFile  
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>

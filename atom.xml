@@ -629,7 +629,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/8.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;We can further refine the list of users obtained to focus exclusively on relevant accounts. The first two accounts, &lt;em&gt;DefaultAccount&lt;/em&gt; and &lt;em&gt;Guest&lt;/em&gt;, are created by the &lt;em&gt;AD&lt;/em&gt; itself (although &lt;em&gt;Guest&lt;/em&gt; is not enabled by default). Accounts ending in &lt;em&gt;$&lt;/em&gt; are &lt;em&gt;computer accounts&lt;/em&gt;, while the &lt;em&gt;$331000-VK4ADACQNUCA&lt;/em&gt; account has an unusual format and could be a specialservice account or automatically generated. Accounts starting with &lt;em&gt;SM_&lt;/em&gt; and &lt;em&gt;HealthMailbox&lt;/em&gt; are related to the &lt;em&gt;Microsoft Exchange&lt;/em&gt; service. This leaves us with five potential users for our analysis.&lt;/p&gt;
+&lt;p&gt;We can further refine the list of users obtained to focus exclusively on relevant accounts. The first two accounts, &lt;em&gt;DefaultAccount&lt;/em&gt; and &lt;em&gt;Guest&lt;/em&gt;, are created by the &lt;em&gt;AD&lt;/em&gt; itself (although &lt;em&gt;Guest&lt;/em&gt; is not enabled by default). Accounts ending in &lt;em&gt;$&lt;/em&gt; are &lt;em&gt;computer accounts&lt;/em&gt;, while the &lt;em&gt;$331000-VK4ADACQNUCA&lt;/em&gt; account has an unusual format and could be a special service account or automatically generated. Accounts starting with &lt;em&gt;SM_&lt;/em&gt; and &lt;em&gt;HealthMailbox&lt;/em&gt; are related to the &lt;em&gt;Microsoft Exchange&lt;/em&gt; service. This leaves us with five potential users for our analysis.&lt;/p&gt;
 
 &lt;p&gt;The next thing we’ll do is use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GetNPUsers&lt;/code&gt; script from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Impacket&lt;/code&gt; suite. To run it, we need to provide the &lt;em&gt;AD&lt;/em&gt; domain name we want to target. To set this up, we will edit the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/hosts&lt;/code&gt; file to ensure that the domain name resolves to the corresponding IP address of the server.&lt;/p&gt;
 
@@ -637,7 +637,7 @@
 
 &lt;p&gt;With this done, the command we will use is the following:&lt;/p&gt;
 
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;impacket-GetNPUsers htb.local/ &lt;span class=&quot;nt&quot;&gt;-no-pass&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-userfile&lt;/span&gt; archivoListadoUsuarios 
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;impacket-GetNPUsers htb.local/ &lt;span class=&quot;nt&quot;&gt;-no-pass&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-userfile&lt;/span&gt; userListFile  
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
