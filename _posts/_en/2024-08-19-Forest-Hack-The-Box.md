@@ -50,7 +50,7 @@ sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.161
 Below is an explanation of the parameters used in the port scan with _Nmap_:
 
 
-| Parámetro | Explicación |
+| Parameter | Explanation |
 |:----------|:------------|
 | \-p\- | Scans the entire range of ports (65535 in total) |
 | \-\-open | Shows all ports that are open (or possibly open) |
@@ -70,7 +70,7 @@ nmap -sC -sV -p 53,88,135,139,389,445,464,593,636,3268,3269,5985,9389,47001,4966
 
 Below is an explanation of the parameters used in the version and service scan with _Nmap_:
 
-| Parámetro | Explicación |
+| Parameter | Explanation |
 |:----------|:------------|
 | \-sC | Basic enumeration scripts |
 | \-sV | Version and services running on the found ports |
@@ -114,7 +114,7 @@ Once we obtain the _DN_, we can start making specific queries, or we could list 
 ldapsearch -x -h 10.10.10.161 -b "dc=htb,dc=local"
 ```
 
-| Parámetro | Explicación |
+| Parameter | Explanation |
 |:----------|:------------|
 | \-x | Simple authentication |
 | \-h | Host |
