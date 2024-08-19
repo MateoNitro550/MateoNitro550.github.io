@@ -72,7 +72,7 @@
   
     {
       "title"    : "Forest - Hack The Box",
-      "category" : "WindowsDomain ControllerDCActive DirectoryADLDAPldapsearchAS-REP RoastingKerberosGetNPUsersImpacketRPCrpcclientJohn the RipperWinRMWindows Remote ManagementCrackMapExecEvil-WinRMSharpHoundBloodHoundAccount OperatorsWriteDaclDCSyncMS-DRSRPowerViewPowerSploitAdd-DomainObjectAclsecretsdumpPass the HashPtHpsexec",
+      "category" : "Windows Domain Controller DC Active Directory AD LDAP ldapsearch AS-REP Roasting Kerberos GetNPUsers Impacket RPC rpcclient John the Ripper WinRM Windows Remote Management CrackMapExec Evil-WinRM SharpHound BloodHound Account Operators WriteDacl DCSync MS-DRSR PowerView PowerSploit Add-DomainObjectAcl secretsdump Pass the Hash PtH psexec",
       "url"      : "/es/Forest-Hack-The-Box/",
       "date"     : "19/08/2024"
     } 

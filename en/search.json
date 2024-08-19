@@ -2,9 +2,16 @@
   
     {
       "title"    : "Migrating from Parrot OS to Kali Linux",
-      "category" : "Parrot OSVMwareKali LinuxLinux SetupArcticTones",
+      "category" : "Parrot OS VMware Kali Linux Linux Setup ArcticTones",
       "url"      : "/en/Migrating-from-Parrot-OS-to-Kali-Linux/",
       "date"     : "01/01/2024"
-    } 
+    } ,
+
+    {
+      "title"    : "Forest - Hack The Box",
+      "category" : "Windows Domain Controller DC Active Directory AD LDAP ldapsearch AS-REP Roasting Kerberos GetNPUsers Impacket RPC rpcclient John the Ripper WinRM Windows Remote Management CrackMapExec Evil-WinRM SharpHound BloodHound Account Operators WriteDacl DCSync MS-DRSR PowerView PowerSploit Add-DomainObjectAcl secretsdump Pass the Hash PtH psexec",
+      "url"      : "/en/Forest-Hack-The-Box/",
+      "date"     : "08/19/2024"
+    }
   
 ]

