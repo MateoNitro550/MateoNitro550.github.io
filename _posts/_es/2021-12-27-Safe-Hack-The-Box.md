@@ -7,7 +7,7 @@ lang: es
 
 El día de hoy vamos a estar resolviendo la máquina _Safe_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma. 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"} 
+![User Rated Difficulty](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Fase De Reconocimiento
 
@@ -17,7 +17,7 @@ Primeramente vamos a lanzar una _traza ICMP_ para saber si la máquina está act
 ping -c 1 10.10.10.147
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/2.png){:class="blog-image" onclick="expandImage(this)"} 
+![2](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/2.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del _TTL_; en este caso el valor del _TTL_ de la máquina es `63`, por lo que podemos intuir que estamos ante una máquina _Linux_. Recordemos que algunos de los valores referenciales son los siguientes:
 
@@ -33,7 +33,7 @@ Si nos damos cuenta, en esta ocasión, el valor del _TTL_ es `63` y no `64` como
 ping -c 1 10.10.10.147 -R                               
 ``` 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/3.png){:class="blog-image" onclick="expandImage(this)"} 
+![3](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/3.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Posteriormente, vamos a utilizar la herramienta _Nmap_ para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:
 
@@ -83,17 +83,17 @@ Lo siguiente que podemos hacer es determinar ante que nos estamos enfrentando, p
 whatweb http://10.10.10.147
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/4.png){:class="blog-image" onclick="expandImage(this)"} 
+![4](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/4.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Como podemos observar, no hay nada especialmente relevante a excepción del título de la página, el cual es el mensaje por defecto que aparece cuando montamos una página web haciendo uso del servidor `Apache`, por lo que podemos irnos haciendo a la idea, de que la entrada a la máquina, no será vía web.
 
 En vista de que ya no nos es posible trabajar desde la terminal, tendremos que visitar estas páginas desde nuestro navegador.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/5.png){:class="blog-image" onclick="expandImage(this)"} 
+![5](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/5.png){:class="blog-image" onclick="expandImage(this)"} 
 
 En efecto, lo primero que vemos al abrir la página web, es la página por defecto que viene cuando montamos una página web mediante el servidor `Apache`, por lo que, podemos inspeccionar el código fuente, en busca de alguna pista; para verlo de manera más cómoda podemos hacer `Ctrl + U`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/6.png){:class="blog-image" onclick="expandImage(this)"} 
+![6](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/6.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Si nos percatamos, en las primeras líneas del código fuente, hay un comentario que nos menciona que `myapp`, alojado en el puerto `1337`, lo podemos descargar; para ello, podemos intentar añadir `/myapp`, al final del url.
 
@@ -103,7 +103,7 @@ _Los comentarios en HTML, siempre tienen la siguiente estructura:_
 <!-- Este es un comentario a modo de prueba -->
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/7.png){:class="blog-image" onclick="expandImage(this)"} 
+![7](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/7.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Al añadir `/myapp`, al final del url, se nos va a descargar un archivo que lleva por nombre, `myapp`, el cual vamos a empezar a analizar. 
 
@@ -115,7 +115,7 @@ Lo primero que debemos hacer, es saber que es `myapp`, para ello podemos usar el
 file myapp
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/8.png){:class="blog-image" onclick="expandImage(this)"} 
+![8](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/8.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Nos damos cuenta de que el archivo `myapp`, es un binario, por lo que procederemos a darle permisos de ejecución para saber qué hace:
 
@@ -123,7 +123,7 @@ Nos damos cuenta de que el archivo `myapp`, es un binario, por lo que procederem
 chmod 744 myapp
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/9.png){:class="blog-image" onclick="expandImage(this)"} 
+![9](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/9.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Al ejecutar el binario `myapp`, nos reporta por consola la hora actual, además de imprimir el mismo mensaje que introduzcamos; esto no nos es de ayuda, por lo que podríamos intentar extraer las cadenas de caracteres que se encuentran dentro del binario con el comando `strings`, sin embargo, no hay nada interesante.
 
@@ -135,7 +135,7 @@ Una manera rápida con la cual podemos conseguir cadenas de caracteres cuan larg
 python -c 'print "A"*365'
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/10.png){:class="blog-image" onclick="expandImage(this)"} 
+![10](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/10.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Si nos percatamos, al introducir nuestra cadena de _365 letras A_, el binario `myapp`, deja de funcionar como debería, esto se debe a un `Segmentation Fault` (_Fallo de Segmentación_), los cuales se dan cuando empezamos a sobrescribir registros. Ahora, ¿por qué se están sobrescribiendo algunos registros? 
 
@@ -164,9 +164,9 @@ gdb myapp
 run
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/11.png){:class="blog-image" onclick="expandImage(this)"} 
+![11](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/11.png){:class="blog-image" onclick="expandImage(this)"} 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/12.png){:class="blog-image" onclick="expandImage(this)"} 
+![12](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/12.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Algo importante a mencionar, antes de empezar el análisis con `GEF`, es que la arquitectura del sistema ante el que nos estamos enfrentando a la hora de explotar `Buffer Overflow`, tiene bastante relevancia; en este caso concreto, nos estamos enfrentando ante una máquina de `64 bits`, y esto lo podemos saber ya que el nombre de los registros empieza por 'R' (_RBP, RSP, RIP_), en caso de que el sistema fuera de `32 bits`, el nombre de los registros empezaría por 'E' (_EBP, ESP, EIP_), no obstante, independientemente de la arquitectura, estos registros se refieren a lo mismo.
 
@@ -183,9 +183,9 @@ pattern create
 run
 pattern offset $rsp
 ```
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/13.png){:class="blog-image" onclick="expandImage(this)"} 
+![13](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/13.png){:class="blog-image" onclick="expandImage(this)"} 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/14.png){:class="blog-image" onclick="expandImage(this)"} 
+![14](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/14.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Sabemos ahora que, después de ingresar _120 bytes_, empezaremos a sobrescribir el registro `RSP`, y esto lo podemos comprobar de manera sencilla, intentando ingresar en este registro, _8 letras B_, por ejemplo.
 
@@ -198,9 +198,9 @@ gdb myapp
 
 run
 ```
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/15.png){:class="blog-image" onclick="expandImage(this)"} 
+![15](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/15.png){:class="blog-image" onclick="expandImage(this)"} 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/16.png){:class="blog-image" onclick="expandImage(this)"} 
+![16](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/16.png){:class="blog-image" onclick="expandImage(this)"} 
 
 En efecto, al ingresar _120 bytes_, empezamos a sobrescribir el `RSP`, ya con esto en mente, debemos verificar que estándares de seguridad se están aplicando sobre el binario, para así determinar que metodología emplearemos para explotarlo; para conocer que seguridades se están aplicando, haremos uso de `checksec`, esto podemos hacerlo tanto dentro de `GEF`, como fuera de él.
 
@@ -209,12 +209,12 @@ gdb myapp
 
 checksec
 ```
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"} 
+![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ```
 checksec myapp
 ```
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/18.png){:class="blog-image" onclick="expandImage(this)"} 
+![18](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/18.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Podemos observar que el `DEP` (_Data Execution Prevention_), o `NX` (_No-Execute_), está activado; esta protección nos impedirá ejecutar código a través del _stack_, por lo que no tendrá sentido redirigir el flujo del programa por ahí, por lo que debemos ver, de qué manera, haciendo uso de las mismas posibilidades que nos ofrece el binario `myapp`, podemos explotarlo, a este concepto se lo conoce como `ROP` (_Return Oriented Programming_).
 
@@ -222,7 +222,7 @@ Ya en este punto, sabido lo que tenemos que hacer, podemos empezar a aplicar _in
 
 Para descargar `Ghidra`, ingresaremos [aquí](https://github.com/NationalSecurityAgency/ghidra/releases), y descargaremos la versión más reciente.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/19.png){:class="blog-image" onclick="expandImage(this)"} 
+![19](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/19.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ```
 unzip <archivoQueHayamosDescargado>
@@ -232,10 +232,10 @@ cd <carpetaQueSeHayaCreado>
 
 Presionaremos _File_, _New Project_, _Non-Shared Project_, elegiremos un espacio de trabajo, le damos un nombre a nuestro proyecto, presionamos _File_, _Import File_, seleccionamos el binario `myapp`, arrastramos el binario que acabamos de importar hacia el dragón, y finalmente aceptamos analizar. 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/20.png){:class="blog-image" onclick="expandImage(this)"} 
+![20](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/20.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Ya en este punto podemos empezar a analizar que hay dentro del binario `myapp`, por ejemplo, podemos analizar que funciones están definidas, para ello, desplegaremos el menú _Functions_, que se encuentra al lado izquierdo, podemos empezar por analizar la función `main`.
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/21.png){:class="blog-image" onclick="expandImage(this)"} 
+![21](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/21.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Si nos percatamos, esto es lo que encontramos cuando ejecutamos `myapp`; nos damos cuenta de que se está definiendo una variable de nombre `local_78` que acepta una cierta cantidad de bytes, concretamente, 112, la cual almacena la cadena de caracteres que nos pide ingresar, para posteriormente, volver a mostrarla por pantalla, adicionalmente, se está ejecutando una llamada al sistema para ejecutar el comando `uptime`.
 
@@ -272,7 +272,7 @@ p.recvuntil("What do you want me to echo back?")
 
 La dirección de la llamada al sistema, la podemos sacar de `Ghidra`:
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/22.png){:class="blog-image" onclick="expandImage(this)"} 
+![22](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/22.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Ejecutamos nuestro script, no sin antes haberle asignado los permisos correspondientes:
 
@@ -282,11 +282,11 @@ chmod 744 <nuestroScript.py>
 
 En este punto podemos presionar la tecla `c`, para continuar, y nos daremos cuenta que el comando `uptime`, está siendo almacenado en el registro `RDI`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/23.png){:class="blog-image" onclick="expandImage(this)"} 
+![23](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/23.png){:class="blog-image" onclick="expandImage(this)"} 
 
 En este punto, tenemos que buscar una forma de sobrescribir el registro `RDI`, y la clave está en la función `test`
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/24.png){:class="blog-image" onclick="expandImage(this)"} 
+![24](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/24.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Si nos percatamos, en la dirección `0x401156`, el contenido que se encuentra en el registro `RSP`, está siendo almacenado en el registro `RDI`; ¿cuándo almacenábamos las _8 letras B_, en qué registro las estábamos almacenando? Exacto, en `RSP`, por lo que ahora, debemos de buscar una forma en la que poder redirigir el flujo del programa a través de la función `test`, para que cuando esta termine, podamos ejecutar el comando que deseemos.
 
@@ -296,7 +296,7 @@ La pregunta ahora es, ¿de qué manera inyectamos la dirección de la llamada al
 
 Haciendo uso de nuestro script, escribiremos ahora `ropper`, lo cual nos permitirá listar todos los `gadgets` dentro del binario.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/25.png){:class="blog-image" onclick="expandImage(this)"} 
+![25](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/25.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Vemos que se nos lista un total de _99 gadgets_, de los cuales nos interesa `pop`, ya que este nos permite cargar un valor en el registro al que esté asignado, por lo que procederemos a listar que opciones tenemos con el `gadget pop`.
 
@@ -304,7 +304,7 @@ Vemos que se nos lista un total de _99 gadgets_, de los cuales nos interesa `pop
 ropper --search "pop"
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/26.png){:class="blog-image" onclick="expandImage(this)"} 
+![26](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/26.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Observamos, que tenemos una opción que nos permite hacer un `pop` a `R13`, aunque esta va seguida de `pops` a otras direcciones, por lo que a estas, tendremos que asignarles valores nulos, ya que no nos interesan. 
 
@@ -314,7 +314,7 @@ Lo primero que vamos a hacer, es comentar o borrar la línea en la que aplicába
 
 La dirección de la función `test`, la podemos sacar de `Ghidra`:
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"} 
+![27](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/27.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ```python
 popR13 = p64(0x401206)
@@ -401,13 +401,13 @@ Al ejecutar nuestro script, lo que vamos a conseguir es una consola, por lo que 
 ```
 find / -name user.txt 2> /dev/null
 ```
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/28.png){:class="blog-image" onclick="expandImage(this)"} 
+![28](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/28.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Escalada De Privilegios
 
 Para conseguir la flag del usuario con máximos privilegios, podemos emepezar por listar el contenido dentro de la carpeta del usuario user.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/29.png){:class="blog-image" onclick="expandImage(this)"} 
+![29](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/29.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Nos vamos a encontrar con una serie de imágenes, en adición de un archivo de extensión `.kdbx`, el cual guarda relación con el gestor de contraseñas KeePass. Debido a que nos encontramos en una máquina remota, no podremos visualizar las imágenes alojadas dentro de la máquina víctima, por lo que tenemos que buscar una forma de transferirlas a nuestro equipo.
 
@@ -419,7 +419,7 @@ Lo primero que haremos será crear un par de claves `SSH`, una pública, y una p
 cd ~/.ssh/
 ssh-keygen
 ```
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/30.png){:class="blog-image" onclick="expandImage(this)"} 
+![30](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/30.png){:class="blog-image" onclick="expandImage(this)"} 
 
 En caso de querer ingresar algún tipo de contraseña, se lo puede hacer. Ya teniendo el par de claves `SSH`, vamos a copiar el contenido de nuestra clave pública, para posteiormente añadirla en la ruta `/home/user/.ssh/authorized_keys`.
 
@@ -428,7 +428,7 @@ En caso de querer ingresar algún tipo de contraseña, se lo puede hacer. Ya ten
 echo "nuestraClavePública" >> /home/user/.ssh/authorized_keys
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"} 
+![31](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Una vez hecho esto, podemos conectarnos a través de `SSH` a la máquina víctima.
 
@@ -436,18 +436,18 @@ Una vez hecho esto, podemos conectarnos a través de `SSH` a la máquina víctim
 ssh user@10.10.10.147
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"} 
+![32](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"} 
 
 En vista de que estamos conectados a la máquina vía `SSH`, podríamos intentar transferir los archivos del directorio `/home/user/`, haciendo uso de `SCP` (_Secure Copy Protocol_), aunque también pudimos haberlo hecho creando un servidor en la máquina remota mediante `Busybox`, y posteriormente, descargando las imágnes a través de `Wget`.
 
 ```
 scp "user@10.10.10.147:/home/user/*" .
 ```
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/33.png){:class="blog-image" onclick="expandImage(this)"} 
+![33](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/33.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Una vez tengamos tanto las imágenes como el archivo `MyPasswords.kdbx` en nuestro equipo, podemos empezar a analizar que hacer con ello; dudo mucho que las imágenes tengan algo que ver con `esteganografía`, ya que si abrimos el archivo `MyPasswords.kdbx` con `keepassxc`, nos pregunta por un archivo clave.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/34.png){:class="blog-image" onclick="expandImage(this)"} 
+![34](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/34.png){:class="blog-image" onclick="expandImage(this)"} 
 
 En caso de no contar con `keepassxc` instalado, podemos hacer lo siguiente:
 
@@ -469,14 +469,14 @@ Esto va a hacer el trabajo, pero podemos reducir tiempo automatizándolo, para e
 for image in $(echo "IMG_0545.JPG  IMG_0546.JPG  IMG_0547.JPG  IMG_0548.JPG  IMG_0552.JPG  IMG_0553.JPG"); do keepass2john -k $image MyPasswords.kdbx; done
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/35.png){:class="blog-image" onclick="expandImage(this)"} 
+![35](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/35.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Utilizar el comando anterior nos sirve, sin embargo, si lo pensamos un poco, si redirigimos este ouput a un fichero hashes.txt, por ejemplo, al cual luego le aplicaremos `john`, cuando este encuentre la contraseña, nos dirá que la imágen que utilizó fue _MyPasswords_, lo cual no nos es de ayuda, por lo que podemos reemplazar _MyPasswords_, por el nombre de la imagen.
 
 ```bash
 for image in $(echo "IMG_0545.JPG  IMG_0546.JPG  IMG_0547.JPG  IMG_0548.JPG  IMG_0552.JPG  IMG_0553.JPG"); do keepass2john -k $image MyPasswords.kdbx | sed "s/MyPasswords/$image/"; done >> nombreArchivo
 ```
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/36.png){:class="blog-image" onclick="expandImage(this)"} 
+![36](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/36.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Finalmente, para crackear la contraseña, haremos uso de `john` en conjunto del diccionario [rockyou.txt](https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220209%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220209T031834Z&X-Amz-Expires=300&X-Amz-Signature=d8b079596701be0a466831ad31ee5cc654d2cc6b43291d532f275e51b6e480fb&X-Amz-SignedHeaders=host&actor_id=79855501&key_id=0&repo_id=97553311&response-content-disposition=attachment%3B%20filename%3Drockyou.txt&response-content-type=application%2Foctet-stream).
 
@@ -490,14 +490,14 @@ sudo apt install john
 sudo john --wordlist=/ruta/del/diccionario/rockyou.txt nombreArchivo
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/37.png){:class="blog-image" onclick="expandImage(this)"} 
+![37](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/37.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Una vez conseguimos tanto la contraseña como el archivo clave, ya podremos abrir el archivo `MyPasswords.kdbx`.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/38.png){:class="blog-image" onclick="expandImage(this)"} 
+![38](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/38.png){:class="blog-image" onclick="expandImage(this)"} 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/39.png){:class="blog-image" onclick="expandImage(this)"} 
+![39](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/39.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Y ya con la contraseña del usuario root en nuestro poder, podremos listar la última flag.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/40.png){:class="blog-image" onclick="expandImage(this)"} 
+![40](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/40.png){:class="blog-image" onclick="expandImage(this)"}

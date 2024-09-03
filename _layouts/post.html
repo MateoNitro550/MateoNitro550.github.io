@@ -14,35 +14,96 @@ layout: default
   {{ content }}
 </article>
 
+<div id="carousel" class="carousel">
+  <img id="carouselImage" class="carousel-image">
+  <div id="carouselAlt" class="carousel-alt"></div>
+  <button class="carousel-control prev" onclick="prevImage()">&#10094;</button>
+  <button class="carousel-control next" onclick="nextImage()">&#10095;</button>
+</div>
+
 <div class="image-overlay" onclick="closeImage()"></div>
 <img id="expandedImage" class="expanded-image">
 
 <script>
-function expandImage(img) {
-  var expandedImg = document.getElementById("expandedImage");
-  var overlay = document.querySelector(".image-overlay");
+  document.addEventListener('DOMContentLoaded', function() {
+    var tocList = document.getElementById('toc-list');
+    var headers = document.querySelectorAll('article h3');
 
-  expandedImg.src = img.src;
+    headers.forEach(function(header, index) {
+      var id = 'section-' + index;
+      header.id = id;
 
-  overlay.style.display = "block";
-  expandedImg.style.display = "block";
+      var listItem = document.createElement('li');
+      var link = document.createElement('a');
+      link.href = '#' + id;
+      link.textContent = header.textContent;
+      listItem.appendChild(link);
+      tocList.appendChild(listItem);
+    });
+  });
 
-  document.addEventListener("keydown", handleEscKey);
-}
+  var currentImageIndex = 0;
+  var images = [];
+  var altTexts = [];
 
-function closeImage() {
-  var expandedImg = document.getElementById("expandedImage");
-  var overlay = document.querySelector(".image-overlay");
+  document.querySelectorAll('.blog-image').forEach((img, index) => {
+    images.push(img.src);
+    altTexts.push(img.alt || '');
+    img.setAttribute('data-index', index);
+    img.onclick = () => expandImage(img);
+  });
 
-  overlay.style.display = "none";
-  expandedImg.style.display = "none";
+  function expandImage(img) {
+    currentImageIndex = parseInt(img.getAttribute('data-index'));
+    showImage(currentImageIndex);
+    document.getElementById('carousel').style.display = 'block';
+    document.querySelector('.image-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 
-  document.removeEventListener("keydown", handleEscKey);
-}
+    document.addEventListener('keydown', handleKeyPress);
 
-function handleEscKey(event) {
-  if (event.key === "Escape" || event.key === "Esc") {
-    closeImage();
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'block';
+    });
   }
-}
+
+  function showImage(index) {
+    var carouselImg = document.getElementById('carouselImage');
+    carouselImg.src = images[index];
+    
+    var carouselAlt = document.getElementById('carouselAlt');
+    carouselAlt.textContent = altTexts[index];
+  }
+
+  function closeImage() {
+    document.getElementById('carousel').style.display = 'none';
+    document.querySelector('.image-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    document.removeEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'none';
+    });
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Escape') {
+      closeImage();
+    } else if (event.key === 'ArrowLeft') {
+      prevImage();
+    } else if (event.key === 'ArrowRight') {
+      nextImage();
+    }
+  }
 </script>

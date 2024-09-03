@@ -1,6 +1,18 @@
+archive:
+  en: Archive
+  es: Archivo
+
 domain:
   en: en
   es: es
+
+language:
+  en: Español
+  es: English
+
+no_results:
+  en: No results found.
+  es: No se encontraron resultados.
 
 posts:
   en: Posts
@@ -10,14 +22,6 @@ search:
   en: Search
   es: Buscar
 
-archive:
-  en: Archive
-  es: Archivo
-
-language:
-  en: Español
-  es: English
-
-no_results:
-  en: No results found.
-  es: No se encontraron resultados.
+toc:
+  en: Table of Contents
+  es: Tabla de Contenidos

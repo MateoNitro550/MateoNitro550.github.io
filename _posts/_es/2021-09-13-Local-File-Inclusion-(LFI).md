@@ -28,7 +28,7 @@ Script, del que podemos abusar para leer cualquier archivo del sistema, en este 
 localhost/lfi.php?filename=/etc/passwd
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/1.png){:class="blog-image" onclick="expandImage(this)"} 
+![1](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/1.png){:class="blog-image" onclick="expandImage(this)"} 
 
 Es importante aclarar que esta no es solo una vulnerabilidad de _PHP_, también está presente en otros lenguajes como lo es _JSP_ o _ASP_.
 
@@ -49,7 +49,7 @@ Sin embargo, podemos "escaparnos" de la ruta preestablecida si añadimos `../` e
 localhost/lfi.php?filename=../../../etc/passwd
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/2.png){:class="blog-image" onclick="expandImage(this)"} 
+![2](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/2.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Null Byte
 
@@ -70,7 +70,7 @@ Sin embargo, si añadimos el nullbyte `%00` al final de nuestra cadena de ataque
 localhost/lfi.php?filename=/etc/passwd%00
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/3.png){:class="blog-image" onclick="expandImage(this)"} 
+![3](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/3.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)Wrappers
 
@@ -84,7 +84,7 @@ Nos permite una ejecución remota de comandos (RCE); cabe aclarar que este _wrap
 localhost/lfi.php?filename=expect://whoami
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/4.png){:class="blog-image" onclick="expandImage(this)"} 
+![4](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/4.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ### [](#header-3)filter://
 
@@ -92,12 +92,12 @@ Nos permite codificar archivos del sistema a través de diferentes métodos como
 
 Este _wrapper_ resulta bastante útil si necesitamos leer un archivo en _PHP_, ya que recordemos, este es un lenguaje interpretado, por lo que, si intentáramos leer un archivo _PHP_ del servidor vulnerable, lo que veríamos sería simplemente el output del script.
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/5.png){:class="blog-image" onclick="expandImage(this)"} 
+![5](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/5.png){:class="blog-image" onclick="expandImage(this)"} 
 
 ```
 localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=filterWrapper.php
 ```
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/6.png){:class="blog-image" onclick="expandImage(this)"} 
+![6](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/6.png){:class="blog-image" onclick="expandImage(this)"} 
 
-![](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/7.png){:class="blog-image" onclick="expandImage(this)"} 
+![7](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/7.png){:class="blog-image" onclick="expandImage(this)"} 
