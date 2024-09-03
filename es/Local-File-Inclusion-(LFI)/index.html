@@ -100,7 +100,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localhost/lfi.php?filename=/etc/passwd
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/1.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/1.png" alt="1" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Es importante aclarar que esta no es solo una vulnerabilidad de <em>PHP</em>, también está presente en otros lenguajes como lo es <em>JSP</em> o <em>ASP</em>.</p>
 
@@ -119,7 +119,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localhost/lfi.php?filename=../../../etc/passwd
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/2.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="null-byte"><a href="#header-3"></a>Null Byte</h3>
 
@@ -138,7 +138,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localhost/lfi.php?filename=/etc/passwd%00
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/3.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="wrappers"><a href="#header-3"></a>Wrappers</h3>
 
@@ -151,7 +151,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localhost/lfi.php?filename=expect://whoami
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/4.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="filter"><a href="#header-3"></a>filter://</h3>
 
@@ -159,48 +159,109 @@
 
 <p>Este <em>wrapper</em> resulta bastante útil si necesitamos leer un archivo en <em>PHP</em>, ya que recordemos, este es un lenguaje interpretado, por lo que, si intentáramos leer un archivo <em>PHP</em> del servidor vulnerable, lo que veríamos sería simplemente el output del script.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/5.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localhost/lfi.php?filename=php://filter/convert.base64-encode/resource=filterWrapper.php
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/6.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/7.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-09-13-Local-File-Inclusion-(LFI)/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
+
+<div id="carousel" class="carousel">
+  <img id="carouselImage" class="carousel-image">
+  <div id="carouselAlt" class="carousel-alt"></div>
+  <button class="carousel-control prev" onclick="prevImage()">&#10094;</button>
+  <button class="carousel-control next" onclick="nextImage()">&#10095;</button>
+</div>
 
 <div class="image-overlay" onclick="closeImage()"></div>
 <img id="expandedImage" class="expanded-image">
 
 <script>
-function expandImage(img) {
-  var expandedImg = document.getElementById("expandedImage");
-  var overlay = document.querySelector(".image-overlay");
+  document.addEventListener('DOMContentLoaded', function() {
+    var tocList = document.getElementById('toc-list');
+    var headers = document.querySelectorAll('article h3');
 
-  expandedImg.src = img.src;
+    headers.forEach(function(header, index) {
+      var id = 'section-' + index;
+      header.id = id;
 
-  overlay.style.display = "block";
-  expandedImg.style.display = "block";
+      var listItem = document.createElement('li');
+      var link = document.createElement('a');
+      link.href = '#' + id;
+      link.textContent = header.textContent;
+      listItem.appendChild(link);
+      tocList.appendChild(listItem);
+    });
+  });
 
-  document.addEventListener("keydown", handleEscKey);
-}
+  var currentImageIndex = 0;
+  var images = [];
+  var altTexts = [];
 
-function closeImage() {
-  var expandedImg = document.getElementById("expandedImage");
-  var overlay = document.querySelector(".image-overlay");
+  document.querySelectorAll('.blog-image').forEach((img, index) => {
+    images.push(img.src);
+    altTexts.push(img.alt || '');
+    img.setAttribute('data-index', index);
+    img.onclick = () => expandImage(img);
+  });
 
-  overlay.style.display = "none";
-  expandedImg.style.display = "none";
+  function expandImage(img) {
+    currentImageIndex = parseInt(img.getAttribute('data-index'));
+    showImage(currentImageIndex);
+    document.getElementById('carousel').style.display = 'block';
+    document.querySelector('.image-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 
-  document.removeEventListener("keydown", handleEscKey);
-}
+    document.addEventListener('keydown', handleKeyPress);
 
-function handleEscKey(event) {
-  if (event.key === "Escape" || event.key === "Esc") {
-    closeImage();
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'block';
+    });
   }
-}
+
+  function showImage(index) {
+    var carouselImg = document.getElementById('carouselImage');
+    carouselImg.src = images[index];
+    
+    var carouselAlt = document.getElementById('carouselAlt');
+    carouselAlt.textContent = altTexts[index];
+  }
+
+  function closeImage() {
+    document.getElementById('carousel').style.display = 'none';
+    document.querySelector('.image-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    document.removeEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'none';
+    });
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Escape') {
+      closeImage();
+    } else if (event.key === 'ArrowLeft') {
+      prevImage();
+    } else if (event.key === 'ArrowRight') {
+      nextImage();
+    }
+  }
 </script>
 
       </section>

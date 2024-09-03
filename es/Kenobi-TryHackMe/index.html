@@ -79,7 +79,7 @@
   </time>
   <p>Hoy vamos a resolver la máquina <em>Kenobi</em> de <em>TryHackMe</em>. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/1.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
@@ -195,7 +195,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> &lt;dirección IP&gt;
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/2.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Lo primero que podemos darnos cuenta es que existen <code class="language-plaintext highlighter-rouge">3</code> recursos compartidos, de los cuales solo tenemos acceso a uno, <code class="language-plaintext highlighter-rouge">anonymous</code>.</p>
 
@@ -204,7 +204,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> &lt;dirección IP&gt; <span class="nt">-R</span> anonymous
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/3.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Para poder descargar el archivo <code class="language-plaintext highlighter-rouge">log.txt</code>, podremos hacerlo usando tanto su ruta absoluta con el parámetro <code class="language-plaintext highlighter-rouge">--download</code>, o bien creando patrones mediante <em>expresiones regulares</em> con el parámetro <code class="language-plaintext highlighter-rouge">-A</code>.</p>
 
@@ -214,7 +214,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> &lt;dirección IP&gt; <span class="nt">-R</span> anonymous <span class="nt">-A</span> log.txt
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/4.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="smbclient"><a href="#header-3"></a>smbclient</h3>
 
@@ -223,7 +223,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-N</span> <span class="nt">-L</span> &lt;dirección IP&gt;
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/5.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En este caso, no se nos indica los permisos que tenemos sobre los recursos, no obstante, podemos intuir a que recursos tenemos acceso, por ejemplo, el recurso <a href="https://wiki.samba.org/index.php/Setting_up_Automatic_Printer_Driver_Downloads_for_Windows_Clients#Setting_up_the_.5Bprint.24.5D_Share">print$</a> se relaciona con impresoras que se están compartiendo a nivel de red, por otra parte, tenemos el recurso <a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session">IPC$</a> el cual crea el propio <em>Windows</em> para poder hacer uso de los <em>null sessions</em>; de modo que, de los <code class="language-plaintext highlighter-rouge">3</code> recursos compartidos existentes, solo nos queda <code class="language-plaintext highlighter-rouge">anonymous</code>.</p>
 
@@ -233,7 +233,7 @@
 <span class="nb">ls</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/6.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Podemos observar que dentro existe un archivo llamado <code class="language-plaintext highlighter-rouge">log.txt</code>, el cual procederemos a descargar.</p>
 
@@ -241,7 +241,7 @@
 get log.txt
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/7.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Independientemente de como hayamos descargado el archivo <code class="language-plaintext highlighter-rouge">log.txt</code>, al leerlo, lo más importante que encontraremos será la ubicación del par de claves <code class="language-plaintext highlighter-rouge">RSA</code>, ubicadas en <code class="language-plaintext highlighter-rouge">/home/kenobi/.ssh</code>.</p>
 
@@ -254,7 +254,7 @@ get log.txt
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>showmount <span class="nt">-e</span> &lt;dirección IP&gt;
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/8.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>La ruta <code class="language-plaintext highlighter-rouge">/var</code> está siendo compartida a nivel de red, de modo que si lográramos mover algún archivo potencial dentro de esta ruta, y luego la montásemos en nuestro equipo, podríamos visualizar dicho archivo de manera local.</p>
 
@@ -267,15 +267,15 @@ get log.txt
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit ProFTPD 1.3.5
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/9.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>De los <code class="language-plaintext highlighter-rouge">4</code> exploits que encontramos, nos quedaremos con el último</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/10.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Concretamente con las líneas 12, 13 y 14.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/11.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Las cuales nos permiten hacer justamente lo que nos interesa, copiar un archivo de una ruta (<em>CPFR</em>), a otra (<em>CPTO</em>).</p>
 
@@ -288,7 +288,7 @@ get log.txt
 SITE CPTO /var/tmp/id_rsa
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/12.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Ya con todo esto, podemos <em>montar</em> la ruta <code class="language-plaintext highlighter-rouge">/var</code> en nuestro equipo, para ello haremos lo siguiente:</p>
 
@@ -297,7 +297,7 @@ SITE CPTO /var/tmp/id_rsa
 
 <p>En caso de que tengamos un error similar a este:</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/13.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Simplemente tendremos que instalar lo siguiente:</p>
 
@@ -319,7 +319,7 @@ SITE CPTO /var/tmp/id_rsa
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh <span class="nt">-i</span> id_rsa kenobi@&lt;dirección IP&gt;
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/14.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
 
@@ -333,20 +333,20 @@ SITE CPTO /var/tmp/id_rsa
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-uid</span> 0 <span class="nt">-perm</span> <span class="nt">-4000</span> <span class="nt">-type</span> f 2&gt;/dev/null
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/15.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>La forma más sencilla para abusar de algún binario con permisos mal asignados sería recurrir a <a href="https://gtfobins.github.io/">GTFOBins</a>, sin embargo, el binario que llama nuestra atención no es propio del sistema, por lo que <code class="language-plaintext highlighter-rouge">GTFOBins</code>, no nos será de utilidad.</p>
 
 <p>Si comprobamos en nuestra máquina de atacantes, no existe ningún binario <code class="language-plaintext highlighter-rouge">/usr/bin/menu</code>, por lo que este debe haber sido creado, de modo que puede tener alguna falla de seguridad, vamos a revisarlo.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/16.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Vemos que el binario es lo que dice ser, un menú que nos presenta tres únicas posibilidades, vamos a echar un vistazo más a fondo.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>strings /usr/bin/menu
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/17.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Podemos observar los binarios que utiliza este menú dependiendo de la opción que seleccionemos, lo más interesante aquí es que no se está empleando la ruta completa de estos comandos, tan solo se los está mencionando, por lo que, al no hacer esta verificación, podemos suplantarlos.</p>
 
@@ -359,41 +359,102 @@ export </span><span class="nv">PATH</span><span class="o">=</span>/home/kenobi:<
 <span class="nb">chmod</span> +x <span class="nb">uname</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/18.png" alt="" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
+
+<div id="carousel" class="carousel">
+  <img id="carouselImage" class="carousel-image">
+  <div id="carouselAlt" class="carousel-alt"></div>
+  <button class="carousel-control prev" onclick="prevImage()">&#10094;</button>
+  <button class="carousel-control next" onclick="nextImage()">&#10095;</button>
+</div>
 
 <div class="image-overlay" onclick="closeImage()"></div>
 <img id="expandedImage" class="expanded-image">
 
 <script>
-function expandImage(img) {
-  var expandedImg = document.getElementById("expandedImage");
-  var overlay = document.querySelector(".image-overlay");
+  document.addEventListener('DOMContentLoaded', function() {
+    var tocList = document.getElementById('toc-list');
+    var headers = document.querySelectorAll('article h3');
 
-  expandedImg.src = img.src;
+    headers.forEach(function(header, index) {
+      var id = 'section-' + index;
+      header.id = id;
 
-  overlay.style.display = "block";
-  expandedImg.style.display = "block";
+      var listItem = document.createElement('li');
+      var link = document.createElement('a');
+      link.href = '#' + id;
+      link.textContent = header.textContent;
+      listItem.appendChild(link);
+      tocList.appendChild(listItem);
+    });
+  });
 
-  document.addEventListener("keydown", handleEscKey);
-}
+  var currentImageIndex = 0;
+  var images = [];
+  var altTexts = [];
 
-function closeImage() {
-  var expandedImg = document.getElementById("expandedImage");
-  var overlay = document.querySelector(".image-overlay");
+  document.querySelectorAll('.blog-image').forEach((img, index) => {
+    images.push(img.src);
+    altTexts.push(img.alt || '');
+    img.setAttribute('data-index', index);
+    img.onclick = () => expandImage(img);
+  });
 
-  overlay.style.display = "none";
-  expandedImg.style.display = "none";
+  function expandImage(img) {
+    currentImageIndex = parseInt(img.getAttribute('data-index'));
+    showImage(currentImageIndex);
+    document.getElementById('carousel').style.display = 'block';
+    document.querySelector('.image-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 
-  document.removeEventListener("keydown", handleEscKey);
-}
+    document.addEventListener('keydown', handleKeyPress);
 
-function handleEscKey(event) {
-  if (event.key === "Escape" || event.key === "Esc") {
-    closeImage();
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'block';
+    });
   }
-}
+
+  function showImage(index) {
+    var carouselImg = document.getElementById('carouselImage');
+    carouselImg.src = images[index];
+    
+    var carouselAlt = document.getElementById('carouselAlt');
+    carouselAlt.textContent = altTexts[index];
+  }
+
+  function closeImage() {
+    document.getElementById('carousel').style.display = 'none';
+    document.querySelector('.image-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    document.removeEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'none';
+    });
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Escape') {
+      closeImage();
+    } else if (event.key === 'ArrowLeft') {
+      prevImage();
+    } else if (event.key === 'ArrowRight') {
+      nextImage();
+    }
+  }
 </script>
 
       </section>
