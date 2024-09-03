@@ -1,7 +1,7 @@
 ---
 title: Lame - Hack The Box
 categories: []
-published: true
+published: false
 lang: en
 ---
 
