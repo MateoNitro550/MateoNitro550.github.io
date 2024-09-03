@@ -378,17 +378,23 @@ export </span><span class="nv">PATH</span><span class="o">=</span>/home/kenobi:<
     var tocList = document.getElementById('toc-list');
     var headers = document.querySelectorAll('article h3');
 
-    headers.forEach(function(header, index) {
-      var id = 'section-' + index;
-      header.id = id;
+    if (headers.length > 0) {
+      document.querySelector('.toc').style.display = 'block';
 
-      var listItem = document.createElement('li');
-      var link = document.createElement('a');
-      link.href = '#' + id;
-      link.textContent = header.textContent;
-      listItem.appendChild(link);
-      tocList.appendChild(listItem);
-    });
+      headers.forEach(function(header, index) {
+        var id = 'section-' + index;
+        header.id = id;
+
+        var listItem = document.createElement('li');
+        var link = document.createElement('a');
+        link.href = '#' + id;
+        link.textContent = header.textContent;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+      });
+    } else {
+      document.querySelector('.toc').style.display = 'none';
+    }
   });
 
   var currentImageIndex = 0;

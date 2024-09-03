@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
   <meta name="generator" content="Jekyll">
 
-  <title>Migrando de Parrot OS a Kali Linux</title>
+  <title>Lame - Hack The Box</title>
 
   <link rel="shortcut icon" href="/assets/images/favicon.ico">
   <link rel="icon" href="/assets/iamges/favicon.ico" type="image/x-icon">
@@ -15,20 +15,20 @@
   <link rel="stylesheet" href="/assets/css/main.css">
   
   <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Migrando de Parrot OS a Kali Linux | Filthy Hacker</title>
+<title>Lame - Hack The Box | Filthy Hacker</title>
 <meta name="generator" content="Jekyll v4.3.3" />
-<meta property="og:title" content="Migrando de Parrot OS a Kali Linux" />
+<meta property="og:title" content="Lame - Hack The Box" />
 <meta name="author" content="Mateo Andino" />
-<meta property="og:locale" content="es" />
-<meta name="description" content="Últimamente he experimentado cuelgues aleatorios de forma frecuente con Parrot OS 5.3 en mi máquina virtual VMware Workstation Pro." />
-<meta property="og:description" content="Últimamente he experimentado cuelgues aleatorios de forma frecuente con Parrot OS 5.3 en mi máquina virtual VMware Workstation Pro." />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
+<meta property="og:description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
 <meta property="og:site_name" content="Filthy Hacker" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2024-01-01T00:00:00-05:00" />
+<meta property="article:published_time" content="2024-09-09T00:00:00-04:00" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Migrando de Parrot OS a Kali Linux" />
+<meta property="twitter:title" content="Lame - Hack The Box" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2024-01-01T00:00:00-05:00","datePublished":"2024-01-01T00:00:00-05:00","description":"Últimamente he experimentado cuelgues aleatorios de forma frecuente con Parrot OS 5.3 en mi máquina virtual VMware Workstation Pro.","headline":"Migrando de Parrot OS a Kali Linux","mainEntityOfPage":{"@type":"WebPage","@id":"/es/Migrando-de-Parrot-OS-a-Kali-Linux/"},"url":"/es/Migrando-de-Parrot-OS-a-Kali-Linux/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2024-09-09T00:00:00-04:00","datePublished":"2024-09-09T00:00:00-04:00","description":"Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking.","headline":"Lame - Hack The Box","mainEntityOfPage":{"@type":"WebPage","@id":"/en/Lame-Hack-The-Box/"},"url":"/en/Lame-Hack-The-Box/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -59,10 +59,10 @@
     <h1 class="glitch-header">filthyHacker@home:~$</h1>
     </a>
     <div class="header-links">
-      <a href="/es"><h2 class="header-link">Publicaciones</h2></a>
-<a href="/es/search"><h2 class="header-link">Buscar</h2></a>
-<a href="/es/archive"><h2 class="header-link">Archivo</h2></a>
-<a href="/en"><h2 class="header-link">English</h2></a>
+      <a href="/en"><h2 class="header-link">Posts</h2></a>
+<a href="/en/search"><h2 class="header-link">Search</h2></a>
+<a href="/en/archive"><h2 class="header-link">Archive</h2></a>
+<a href="/es"><h2 class="header-link">Español</h2></a>
 
     </div>
   </div>
@@ -71,42 +71,40 @@
     <div class="container">
       <section id="main_content">
         <article>
-  <h2>Migrando de Parrot OS a Kali Linux</h2>
-  <time datetime="2024-01-01T00:00:00-05:00" class="by-line">
+  <h2>Lame - Hack The Box</h2>
+  <time datetime="2024-09-09T00:00:00-04:00" class="by-line">
     
-      01/01/2024
+      09/09/2024
     
   </time>
-  <p>Últimamente he experimentado cuelgues aleatorios de forma frecuente con <strong>Parrot OS 5.3</strong> en mi máquina virtual <strong>VMware Workstation Pro</strong>.</p>
+  <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>En un principio, pensé que estos problemas podrían deberse a la actualización <strong>22H2</strong> de Windows, ya que había leído algunos posts que mencionaban posibles incompatibilidades. Sin embargo, después de explorar esta posibilidad, no noté mejoras.</p>
+<p>Today we will be solving <em>Hack The Box’s</em> <em>Lame</em> machine.</p>
 
-<ul>
-  <li><a href="https://communities.vmware.com/t5/VMware-Workstation-Pro/Vmware-17-Pro-very-slow-on-Windows-11-22H2/td-p/2946164">Vmware 17 Pro very slow on Windows 11 22H2</a></li>
-  <li><a href="https://www.reddit.com/r/vmware/comments/17fc6t9/vm_machines_freezes_randomly_after_a_while_in/">VM machines freezes randomly after a while in VMware Workstation Pro 17.5</a></li>
-</ul>
+<h3 id="reconnaissance-phase"><a href="#header-3"></a>Reconnaissance Phase</h3>
 
-<p>Luego, consideré que la actualización de <strong>VMware</strong> a la versión <strong>17.5</strong> podría ser la causa, ya que los cuelgues se volvieron más frecuentes en mi computadora de escritorio. Curiosamente, en mi laptop, donde no actualicé <strong>VMware</strong> a esta versión, también comencé a experimentar cuelgues, aunque con mucha menos frecuencia.</p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/2.png" alt="2" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/3b.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Incluso llegué a sospechar que el framework con el que estaba trabajando para un proyecto podría ser la fuente de los problemas, ya que los cuelgues parecían estar relacionados con los <em>crashes</em> del mismo.</p>
+<h3 id="exploitation-phase"><a href="#header-3"></a>Exploitation Phase</h3>
 
-<p>Después de meses lidiando con estos problemas y sin encontrar una solución, decidí realizar una actualización completa de <strong>Parrot OS</strong> utilizando el comando <code class="language-plaintext highlighter-rouge">parrot-upgrade</code>. Sin embargo, durante este proceso, surgieron varios mensajes de error y, finalmente, la máquina virtual dejó de arrancar debido a un <strong>kernel panic</strong>. Opté por no intentar solucionar este problema y, en su lugar, realicé un respaldo de mis archivos utilizando un <strong>live USB</strong> con la ISO de Parrot.</p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/4.png" alt="4" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/5.png" alt="5" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/6.png" alt="6" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/7.png" alt="7" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/8.png" alt="8" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/9.png" alt="9" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/10.png" alt="10" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/11.png" alt="11" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/12.png" alt="12" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/13.png" alt="13" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Al observar que varios usuarios enfrentaban dificultades similares con <strong>Parrot OS</strong> y optaban por migrar a <strong>Kali Linux</strong>,  tomé la misma decisión. Descargué la <a href="https://www.kali.org/get-kali/#kali-virtual-machines">imagen preconfigurada</a> de <strong>Kali Linux</strong> para <strong>VMware</strong>, lo que facilitó el proceso al no tener que realizar ninguna instalación adicional.</p>
+<h3 id="privilege-escalation"><a href="#header-3"></a>Privilege Escalation</h3>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png" alt="1" class="blog-image" onclick="expandImage(this)" /></p>
-
-<p>Simplemente abrí el archivo de configuración <code class="language-plaintext highlighter-rouge">.vmx</code> con <strong>VMware</strong>, y la máquina virtual estaba lista para ser ejecutada.</p>
-
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
-
-<p>El cambio a <strong>Kali Linux</strong> fue rápido y la experiencia resultó bastante sencilla.</p>
-
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
-
-<p>Al poco tiempo empecé a configurar el mismo entorno de trabajo que tenía previamente en <strong>Parrot OS</strong>, el cual pueden encontrar en el siguiente enlace a mi <a href="https://github.com/MateoNitro550/ArcticTones">repositorio</a>.</p>
-
-<p>Este cambio ha mejorado significativamente la estabilidad y la experiencia de uso, proporcionándome un entorno más fiable para continuar con mi trabajo y proyectos.</p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/15.png" alt="15" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/16.png" alt="16" class="blog-image" onclick="expandImage(this)" />
+<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
 
