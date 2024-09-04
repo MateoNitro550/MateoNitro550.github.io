@@ -38,3 +38,5 @@ Hoy vamos a estar resolviendo la máquina _Lame_ de _Hack The Box_.
 ![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
 
 ### [](#header-3)Autopwn Script
+
+![18](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/18.png){:class="blog-image" onclick="expandImage(this)"}
