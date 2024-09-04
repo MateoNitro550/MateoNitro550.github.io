@@ -1,7 +1,7 @@
 ---
 title: Lame - Hack The Box
 categories: []
-published: false
+published: true
 lang: es
 ---
 
@@ -14,7 +14,7 @@ Hoy vamos a estar resolviendo la máquina _Lame_ de _Hack The Box_.
 ![2](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/2.png){:class="blog-image" onclick="expandImage(this)"}
 ![3](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/3a.png){:class="blog-image" onclick="expandImage(this)"}
 
-### [](#header-3)Fase De Explotación
+### [](#header-3)Fase De Explotación - Samba
 
 ![4](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/4.png){:class="blog-image" onclick="expandImage(this)"}
 ![5](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/5.png){:class="blog-image" onclick="expandImage(this)"}
@@ -28,8 +28,13 @@ Hoy vamos a estar resolviendo la máquina _Lame_ de _Hack The Box_.
 ![13](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/13.png){:class="blog-image" onclick="expandImage(this)"}
 ![14](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/14.png){:class="blog-image" onclick="expandImage(this)"}
 
-### [](#header-3)Escalada De Privilegios
+### [](#header-3)Fase De Explotación - distcc
 
 ![15](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/15.png){:class="blog-image" onclick="expandImage(this)"}
+
+### [](#header-3)Escalada De Privilegios
+
 ![16](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/16.png){:class="blog-image" onclick="expandImage(this)"}
 ![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
+
+### [](#header-3)Autopwn Script

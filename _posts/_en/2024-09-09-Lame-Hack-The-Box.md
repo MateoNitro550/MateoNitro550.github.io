@@ -33,3 +33,5 @@ Today we will be solving _Hack The Box's_ _Lame_ machine.
 ![15](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/15.png){:class="blog-image" onclick="expandImage(this)"}
 ![16](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/16.png){:class="blog-image" onclick="expandImage(this)"}
 ![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
+
+### [](#header-3)Autopwn Script
