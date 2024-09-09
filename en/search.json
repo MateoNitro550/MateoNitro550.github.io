@@ -12,6 +12,13 @@
       "category" : "Windows Domain Controller DC Active Directory AD LDAP ldapsearch AS-REP Roasting Kerberos GetNPUsers Impacket RPC rpcclient John the Ripper WinRM Windows Remote Management CrackMapExec Evil-WinRM SharpHound BloodHound Account Operators WriteDacl DCSync MS-DRSR PowerView PowerSploit Add-DomainObjectAcl secretsdump Pass the Hash PtH psexec",
       "url"      : "/en/Forest-Hack-The-Box/",
       "date"     : "08/19/2024"
+    } ,
+
+    {
+      "title"    : "Lame - Hack The Box",
+      "category" : "Linux FTP Samba SMB Server Message Block distcc vsftpd vsf_sysutil_extra() SMBMap smbclient username map script Python pysmb SUID Autopwn",
+      "url"      : "https://mateonitro550.github.io/en/Lame-Hack-The-Box/",
+      "date"     : "09/09/2024"
     }
   
 ]
