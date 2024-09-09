@@ -300,7 +300,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Curiosamente, ninguno de los usuarios que hemos obtenido parece ser vulnerable a <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>. Por lo tanto, procederemos a enumerar otro protocolo que hemos identificado durante nuestro escaneo con <em>Nmap</em>, <code class="language-plaintext highlighter-rouge">RPC</code>.</p>
+<p>Curiosamente, ninguno de los usuarios que hemos obtenido parece ser vulnerable a <code class="language-plaintext highlighter-rouge">AS-REP Roasting</code>. Por lo tanto, procederemos a enumerar otro protocolo que hemos identificado durante nuestro escaneo con <em>Nmap</em>: <code class="language-plaintext highlighter-rouge">RPC</code>.</p>
 
 <p>Haremos uso de <code class="language-plaintext highlighter-rouge">rpcclient</code>, nuevamente utilizando un <em>null session</em>, pues no contamos con credenciales. Verificamos que podemos conectarnos exitosamente, por lo que procederemos a enumerar información adicional. Podríamos listar los grupos dentro del dominio mediante <em>enumdomgroup</em> o, alternativamente, volver a listar los usuarios del dominio mediante <em>enumdomusers</em>.</p>
 
