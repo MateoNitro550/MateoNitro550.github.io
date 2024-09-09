@@ -151,7 +151,7 @@ impacket-GetNPUsers htb.local/ -no-pass -userfile userListFile
 
 ![10](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-08-19-Forest-Hack-The-Box/10.png){:class="blog-image" onclick="expandImage(this)"}
 
-Interestingly, none of the users we obtained seem to be vulnerable to `AS-REP Roasting`. Therefore, we will proceed to enumerate another protocol identified during our _Nmap_ scan, `RPC`.
+Interestingly, none of the users we obtained seem to be vulnerable to `AS-REP Roasting`. Therefore, we will proceed to enumerate another protocol identified during our _Nmap_ scan: `RPC`.
 
 We will use `rpcclient`, again using a _null session_, as we don't have credentials. We verify that we can connect successfully, so we will proceed to enumerate additional information. We could list domain groups using _enumdomgroup_ or, alternatively, list domain users again using _enumdomusers_.
 

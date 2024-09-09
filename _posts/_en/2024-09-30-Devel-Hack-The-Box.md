@@ -1,7 +1,7 @@
 ---
 title: Devel - Hack The Box
 categories: []
-published: false
+published: true
 lang: en
 ---
 

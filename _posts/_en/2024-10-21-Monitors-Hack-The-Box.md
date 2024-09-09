@@ -1,11 +1,13 @@
 ---
 title: Monitors - Hack The Box
 categories: 
-published: false
+published: true
 lang: en
 ---
 
 ![Info Card](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"}
+
+Today we will be solving _Hack The Box’s_ _Monitors_ machine.
 
 ### [](#header-3)Reconnaissance Phase
 
