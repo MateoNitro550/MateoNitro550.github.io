@@ -49,7 +49,6 @@ sudo nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.10.161
 
 Below is an explanation of the parameters used in the port scan with _Nmap_:
 
-
 | Parameter | Explanation |
 |:----------|:------------|
 | \-p\- | Scans the entire range of ports (65535 in total) |

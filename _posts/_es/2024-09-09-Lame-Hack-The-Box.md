@@ -1,13 +1,13 @@
 ---
 title: Lame - Hack The Box
-categories: []
+categories: [Linux, FTP, Samba, SMB, Server Message Block, distcc, vsftpd, vsf_sysutil_extra(), SMBMap, smbclient, username map script, Python, pysmb, SUID, Autopwn]
 published: true
 lang: es
 ---
 
 ![Info Card](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"}
 
-Hoy vamos a estar resolviendo la máquina _Lame_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad fácil en la intrusión y fácil en la escalada de privilegios.
+Hoy vamos a estar resolviendo la máquina _Lame_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad fácil tanto en la intrusión como en la escalada de privilegios.
 
 Esta máquina nos permite realizar la intrusión mediante dos vías potenciales, de las cuales una de ellas nos requiere de post-explotación. Pese a su baja dificultad, contamos con varios métodos para realizar la misma explotación; por lo que es genial para aprender diferentes vías para realizar un mismo proceso.
 
@@ -115,7 +115,7 @@ nc 10.10.10.3 6200
 
 Brevemente, nos daremos cuenta de que ninguna conexión se establece por más que intentemos o esperemos, por lo que podemos asumir que la vulnerabilidad en esta máquina fue parcheada. Por lo tanto, pasaremos a enumerar el siguiente protocolo que hemos identificado durante nuestro escaneo con _Nmap_: `SMB`.
 
-Para esto, haremos uso de `SMBMap` o `smbclient` para comprobar si la máquina cuenta con recursos compartidos a nivel de red, nuevamente utilizando un _null session_, ya que no contamos con credenciales:
+Para esto, podemos hacer uso de `SMBMap` o `smbclient` para comprobar si la máquina cuenta con recursos compartidos a nivel de red, nuevamente utilizando un _null session_, ya que no contamos con credenciales:
 
 ```bash
 smbmap -H 10.10.10.3
@@ -141,7 +141,7 @@ Sin embargo, no encontramos nada de interés en este recurso.
 
 ![7](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/7.png){:class="blog-image" onclick="expandImage(this)"}
 
-Nuevamente, podemos regresar a nuestro escaneo con _Nmap_ y observar que el servicio _Samba_ está ejecutando la versión `3.0.20`. Por lo tanto, podemos investigar si esta versión es vulnerable a algún tipo de exploit. Esto podemos hacerlo buscando en línea, por ejemplo, en _Exploit Database_, o directamente desde la consola usando `searchsploit`.
+Nuevamente, podemos regresar a nuestro escaneo con _Nmap_ y observar que el servicio `Samba` está ejecutando la versión `3.0.20`. Por lo tanto, podemos investigar si esta versión es vulnerable a algún tipo de exploit. Esto podemos hacerlo buscando en línea, por ejemplo, en _Exploit Database_, o directamente desde la consola usando `searchsploit`.
 
 ```bash
 searchsploit samba 3.0.20
@@ -219,7 +219,7 @@ El siguiente paso será establecer una reverse shell hacia nuestro equipo de ata
 
 ### [](#header-3)Escalada De Privilegios
 
-Para realizar esta última fase, podemos aprovechar binarios con permisos `SUID` mal asignados, lo que nos permitirá escalar privilegios. Para listar todos los binarios con permisos `SUID` asignados en la máquina, podemos utilizar los siguientes comandos:
+Para realizar esta última fase, podemos aprovecharnos de binarios con permisos `SUID` mal asignados, lo que nos permitirá escalar privilegios. Para listar todos aquellos binarios con permisos `SUID` asignados en la máquina, podemos utilizar los siguientes comandos:
 
 ```bash
 find / -perm -4000 -type f -exec ls -la {} 2>/dev/null \;
@@ -231,14 +231,14 @@ find / -uid 0 -perm -4000 -type f 2>/dev/null
 
 ![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
 
-La mejor forma para abusar de cualquier binario, es recurrir a [GTFOBins](https://gtfobins.github.io/), esta página nos enseña como explotar binarios con _capabilities_ mal asignadas, binarios que se pueden ejecutar como root, y en este caso, binarios con permisos `SUID` mal asignados.
+La mejor forma para abusar de cualquier binario, es recurrir a [GTFOBins](https://gtfobins.github.io/), esta página nos enseña como explotar binarios con _capabilities_ mal asignadas, binarios que se pueden ejecutar como _root_, y en este caso, binarios con permisos `SUID` mal asignados.
 
-El binario más interesante que encontramos es `nmap`, que está ejecutando una versión antigua. Esta versión contaba con un modo interactivo que podemos utilizar para invocar una shell. Dado que nmap tiene permisos `SUID`, la shell se ejecutará como el usuario `root`, permitiéndonos así listar la última flag del sistema.
+El binario más interesante que encontramos es `nmap`, que está ejecutando una versión antigua. Esta versión contaba con un modo interactivo que podemos utilizar para invocar una shell. Dado que `nmap` tiene permisos `SUID`, la shell se ejecutará como el usuario `root`, permitiéndonos así listar la última flag del sistema.
 
 ![18](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/18.png){:class="blog-image" onclick="expandImage(this)"}
 
-### [](#header-3)Autopwn Script
+### [](#header-3)Script Autopwn
 
-Adicionalmente, desarrollé un script autopwn disponible públicamente en mi repositorio de [GitHub](https://github.com/MateoNitro550/HTB-Autopwn-Scripts/blob/main/Lame/autopwn_lame.py). Este script automatiza la explotación y escalada de privilegios en la máquina, cubriendo las técnicas explicadas y sirviendo como guía para entender el proceso de explotación.
+Adicionalmente, desarrollé un script _autopwn_ disponible públicamente en mi [repositorio](https://github.com/MateoNitro550/HTB-Autopwn-Scripts/blob/main/Lame/autopwn_lame.py) de GitHub. Este script automatiza la explotación y escalada de privilegios en la máquina, cubriendo las técnicas explicadas y sirviendo como guía para entender el proceso de explotación.
 
 ![19](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/19.png){:class="blog-image" onclick="expandImage(this)"}
