@@ -82,6 +82,13 @@
       "category" : "Linux FTP Samba SMB Server Message Block distcc vsftpd vsf_sysutil_extra() SMBMap smbclient username map script Python pysmb SUID Autopwn",
       "url"      : "https://mateonitro550.github.io/es/Lame-Hack-The-Box/",
       "date"     : "09/09/2024"
-    }
+    } ,
+  
+    {
+      "title"    : "Devel - Hack The Box",
+      "category" : "Windows",
+      "url"      : "https://mateonitro550.github.io/es/Devel-Hack-The-Box/",
+      "date"     : "21/10/2024"
+    } 
   
 ]

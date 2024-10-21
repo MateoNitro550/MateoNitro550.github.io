@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Devel - Hack The Box</title>
+
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="icon" href="/assets/iamges/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Devel - Hack The Box | Filthy Hacker</title>
+<meta name="generator" content="Jekyll v4.3.3" />
+<meta property="og:title" content="Devel - Hack The Box" />
+<meta name="author" content="Mateo Andino" />
+<meta property="og:locale" content="es" />
+<meta name="description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
+<meta property="og:description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
+<meta property="og:site_name" content="Filthy Hacker" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-10-21T00:00:00-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Devel - Hack The Box" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2024-10-21T00:00:00-04:00","datePublished":"2024-10-21T00:00:00-04:00","description":"Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking.","headline":"Devel - Hack The Box","mainEntityOfPage":{"@type":"WebPage","@id":"/es/Devel-Hack-The-Box/"},"url":"/es/Devel-Hack-The-Box/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PPKV9V8T');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1 class="glitch-header">filthyHacker@home:~$</h1>
+    </a>
+    <div class="header-links">
+      <a href="/es"><h2 class="header-link">Publicaciones</h2></a>
+<a href="/es/search"><h2 class="header-link">Buscar</h2></a>
+<a href="/es/archive"><h2 class="header-link">Archivo</h2></a>
+<a href="/en"><h2 class="header-link">English</h2></a>
+
+    </div>
+  </div>
+</header>
+
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Devel - Hack The Box</h2>
+  <time datetime="2024-10-21T00:00:00-04:00" class="by-line">
+    
+      21/10/2024
+    
+  </time>
+  <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>En esta ocasión vamos a resolver la máquina <em>Devel</em> de <em>Hack The Box</em>. Es una máquina <em>Windows</em> de nivel de dificultad fácil tanto en la intrusión como en la escalada de privilegios.</p>
+
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
+
+<p>Primeramente vamos a lanzar una <em>traza ICMP</em> para saber si la máquina está activa.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.5
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">127</code>, por lo que podemos intuir que estamos ante una máquina <em>Windows</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Sistema Operativo (OS)</th>
+      <th style="text-align: left">TTL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Linux</td>
+      <td style="text-align: left">64</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Windows</td>
+      <td style="text-align: left">128</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Solaris</td>
+      <td style="text-align: left">254</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Si nos damos cuenta, en esta ocasión, el valor del <em>TTL</em> es <code class="language-plaintext highlighter-rouge">127</code> y no <code class="language-plaintext highlighter-rouge">128</code> como indica la tabla anterior, esto se debe a que en el entorno de máquinas de <em>Hack The Box</em>, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el <em>TTL</em> disminuye en una unidad.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.5 -R
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/3a.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-T5</span> <span class="nt">-v</span> <span class="nt">-n</span> 10.10.10.5
+</code></pre></div></div>
+
+<p>En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-sS</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> 10.10.10.5
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de puertos con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-p-</td>
+      <td style="text-align: left">Escanea todo el rango de puertos (65535 en total)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">--open</td>
+      <td style="text-align: left">Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-T5</td>
+      <td style="text-align: left">La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos <code class="language-plaintext highlighter-rouge">White Hat</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-v</td>
+      <td style="text-align: left"><em>Verbose</em>, reporta lo encontrado por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-n</td>
+      <td style="text-align: left">No aplicar <em>resolución DNS</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sS</td>
+      <td style="text-align: left">Escaneo <em>TCP SYN</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-min-rate</td>
+      <td style="text-align: left">Emitir paquetes no más lentos que &lt;valor&gt; por segundo</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-vvv</td>
+      <td style="text-align: left">Triple <em>verbose</em>, para obtener mayor información por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-Pn</td>
+      <td style="text-align: left">No aplicar <em>host discovery</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-sC</span> <span class="nt">-sV</span> <span class="nt">-p</span> 21,80 10.10.10.5
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-sC</td>
+      <td style="text-align: left">Scripts básicos de enumeración</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sV</td>
+      <td style="text-align: left">Versión y servicios que corren bajo los puertos encontrados</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-p</td>
+      <td style="text-align: left">Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Basándonos en la información que nos reporta <em>Nmap</em>, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con <code class="language-plaintext highlighter-rouge">HTTP</code> y <code class="language-plaintext highlighter-rouge">FTP</code> (File Transfer Protocol).</p>
+
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+
+<p>Podemos empezar por enumerar el servicio <code class="language-plaintext highlighter-rouge">HTTP</code>. Para ello, podemos hacer uso de <code class="language-plaintext highlighter-rouge">WhatWeb</code>, una herramienta que se encarga de identificar las tecnologías web que se están utilizando. Esto incluye gestores de contenido (CMS), librerías, plugins, o incluso el sistema operativo en el que se está alojando el servidor web.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>whatweb http://10.10.10.5
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>No hay nada que llame especialmente nuestra atención, salvo que la página está montada con <code class="language-plaintext highlighter-rouge">IIS</code> (Internet Information Services), un servidor web desarrollado por <em>Microsoft</em> para alojar sitios en sistemas <em>Windows</em>, así como que la página parece estar bajo construcción.</p>
+
+<p>Dado que no podemos obtener más información útil desde la terminal, tendremos que visitar la página desde nuestro navegador. Únicamente veremos el logo de <code class="language-plaintext highlighter-rouge">IIS</code> versión 7, por lo que no parece haber mucho que hacer aquí de momento.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Lo siguiente que podemos hacer es enumerar el servicio <code class="language-plaintext highlighter-rouge">FTP</code>. Para esto, utilizaremos un <em>null session</em>, ya que no contamos con credenciales.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ftp anonymous@10.10.10.5
+</code></pre></div></div>
+
+<p>Al conectarnos, podemos observar lo que parece ser la estructura de archivos del sitio web alojado en <code class="language-plaintext highlighter-rouge">IIS</code>. Encontramos un directorio <code class="language-plaintext highlighter-rouge">aspnet_client</code> y archivos como <code class="language-plaintext highlighter-rouge">iisstart.htm</code> y <code class="language-plaintext highlighter-rouge">welcome.png</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Esto lo podemos corroborar descargando alguno de estos archivos y visualizándolos en nuestro equipo. Podemos, por ejemplo, probar con la imagen <code class="language-plaintext highlighter-rouge">welcome.png</code>. Dado que se trata de un archivo que no es de texto, cambiaremos el modo de transferencia a <em>binary</em>, lo que garantiza que el archivo se transfiera sin modificaciones, manteniendo su integridad byte por byte.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>binary
+get welcome.png
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Confirmamos que estamos frente a la misma imagen que habíamos visto desde nuestro navegador,  lo que sugiere una posible vía de subida de archivos al servidor web. A modo de prueba, podemos subir un archivo a través del <code class="language-plaintext highlighter-rouge">FTP</code> y ver si se muestra en el sitio web. En mi caso, probé con una imagen.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>put &lt;nombreArchivo&gt;
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Vemos que la imagen se muestra correctamente en la página web, así que podemos probar subir una <em>reverse shell</em> al servidor. Algo que debemos tener en cuenta es que <code class="language-plaintext highlighter-rouge">IIS</code> utiliza <code class="language-plaintext highlighter-rouge">ASP</code>/<code class="language-plaintext highlighter-rouge">ASP.NET</code> para ejecutar scripts del lado del servidor. <code class="language-plaintext highlighter-rouge">ASP.NET</code> es la versión más moderna del framework <code class="language-plaintext highlighter-rouge">ASP</code> y se basa en el framework <code class="language-plaintext highlighter-rouge">.NET</code>, que es la plataforma de desarrollo de <em>Microsoft</em> para crear aplicaciones. Por lo tanto, <em>la reverse shell</em> que subiremos deberá estar en formato <code class="language-plaintext highlighter-rouge">.aspx</code> para que el servidor la interprete y ejecute correctamente.</p>
+
+<p>Dicho esto, podríamos generar la <em>reverse shell</em> con <code class="language-plaintext highlighter-rouge">MSFvenom</code> o buscar una disponible públicamente en GitHub. En mi caso, utilizaré la <a href="https://github.com/borjmz/aspx-reverse-shell/blob/master/shell.aspx">shell</a> del usuario <code class="language-plaintext highlighter-rouge">borjmz</code>. Solo deberemos cambiar nuestra IP y puerto donde se indica, y luego subir la <em>shell</em>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>put shell.aspx
+</code></pre></div></div>
+
+<p>Podemos dirigirnos a <a href="http://10.10.10.5/shell.aspx">http://10.10.10.5/shell.aspx</a> o, desde la propia consola, ejecutarla con:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://10.10.10.5/shell.aspx
+</code></pre></div></div>
+
+<p>De todos modos, conseguiremos una shell dentro de la máquina víctima como el usuario <code class="language-plaintext highlighter-rouge">IIS APPPOOL\web</code>, por lo que tendremos que escalar privilegios.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
+
+<p>Podemos comenzar enumerando el sistema operativo utilizando <code class="language-plaintext highlighter-rouge">systeminfo</code> para conocer su versión y verificar si tiene parches aplicados.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systeminfo
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Encontramos que la versión del sistema operativo es <code class="language-plaintext highlighter-rouge">6.1.7600 Build 7600</code>, y no tiene ningún parche aplicado. Al buscar más información sobre esta versión, descubrimos que es vulnerable a <code class="language-plaintext highlighter-rouge">MS11-046</code>, una vulnerabilidad causada por el <em>Microsoft Windows Ancillary Function Driver</em> (<em>AFD.sys</em>), que al ejecutarse en modo kernel privilegiado, no valida correctamente el input proporcionado por usuarios de bajos privilegios.</p>
+
+<p>Podemos buscar en línea algún exploit para aprovechar esta vulnerabilidad. Hay una versión ya compilada que es la que <a href="https://www.exploit-db.com/exploits/40564">usaremos</a>. Recordemos que tenemos una vía potencial para subir archivos a través del servicio <code class="language-plaintext highlighter-rouge">FTP</code>, y podemos aprovecharla buscando en qué ruta se encuentran los archivos que vimos anteriormente. Por ejemplo, podemos realizar una búsqueda recursiva en el sistema para verificar dónde está almacenada la imagen <code class="language-plaintext highlighter-rouge">welcome.png</code> que habíamos visualizado previamente.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">dir</span> /s welcome.png
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Sabiendo que los archivos se encuentran en la ruta <code class="language-plaintext highlighter-rouge">C:\inetpub\wwwroot</code>, podemos subir el exploit mediante <code class="language-plaintext highlighter-rouge">FTP</code>, y una vez que el archivo esté dentro de la máquina víctima, podremos ejecutarlo directamente desde ahí.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>binary
+put MS11-046.exe
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al ejecutarlo, obtendremos privilegios elevados, convirtiéndonos en <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>, lo que nos permitirá listar las flags de los dos usuarios en el sistema.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
+
+</article>
+
+<div id="carousel" class="carousel">
+  <img id="carouselImage" class="carousel-image">
+  <div id="carouselAlt" class="carousel-alt"></div>
+  <button class="carousel-control prev" onclick="prevImage()">&#10094;</button>
+  <button class="carousel-control next" onclick="nextImage()">&#10095;</button>
+</div>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var tocList = document.getElementById('toc-list');
+    var headers = document.querySelectorAll('article h3');
+
+    if (headers.length > 0) {
+      document.querySelector('.toc').style.display = 'block';
+
+      headers.forEach(function(header, index) {
+        var id = 'section-' + index;
+        header.id = id;
+
+        var listItem = document.createElement('li');
+        var link = document.createElement('a');
+        link.href = '#' + id;
+        link.textContent = header.textContent;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+      });
+    } else {
+      document.querySelector('.toc').style.display = 'none';
+    }
+  });
+
+  var currentImageIndex = 0;
+  var images = [];
+  var altTexts = [];
+
+  document.querySelectorAll('.blog-image').forEach((img, index) => {
+    images.push(img.src);
+    altTexts.push(img.alt || '');
+    img.setAttribute('data-index', index);
+    img.onclick = () => expandImage(img);
+  });
+
+  function expandImage(img) {
+    currentImageIndex = parseInt(img.getAttribute('data-index'));
+    showImage(currentImageIndex);
+    document.getElementById('carousel').style.display = 'block';
+    document.querySelector('.image-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'block';
+    });
+  }
+
+  function showImage(index) {
+    var carouselImg = document.getElementById('carouselImage');
+    carouselImg.src = images[index];
+    
+    var carouselAlt = document.getElementById('carouselAlt');
+    carouselAlt.textContent = altTexts[index];
+  }
+
+  function closeImage() {
+    document.getElementById('carousel').style.display = 'none';
+    document.querySelector('.image-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    document.removeEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'none';
+    });
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Escape') {
+      closeImage();
+    } else if (event.key === 'ArrowLeft') {
+      prevImage();
+    } else if (event.key === 'ArrowRight') {
+      nextImage();
+    }
+  }
+</script>
+
+      </section>
+    </div>
+  </div>
+
+  
+
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+    <span>
+        <b>MateoNitro550</b>
+    </span>
+    
+    <span>© 2024</span>
+  </a>
+</footer>
+
+
+  
+    <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-524F5BE8G5', 'auto');
+  ga('send', 'pageview');
+</script>
+  
+
+</body>
+</html>

