@@ -7,7 +7,7 @@ lang: en
 
 ![Info Card](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"}
 
-Today we will be solving _Hack The Box's_ _Lame_ machine. It is an easy-level _Linux_ machine in terms of both exploitation and privilege escalation. 
+Today we will be solving _Hack The Box's_ _Lame_ machine. It is an easy-level _Linux_ machine, both in terms of exploitation and privilege escalation.
 
 This machine allows us to exploit it through two potential paths, one of which requires post-exploitation. Despite its low difficulty, there are multiple methods to perform the same exploitation, making it great for learning different approaches to achieve the same process.
 
