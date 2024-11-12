@@ -1,6 +1,6 @@
 ---
 title: Explore - Hack The Box
-categories: [Android, Linux, ES File Explorer, Android Debug Bridge, ADB, Remote Port Forwarding]
+categories: [Android, Linux, ES File Explorer, Android Debug Bridge, ADB, Local Port Forwarding]
 published: true
 lang: es
 ---
@@ -159,7 +159,7 @@ netstat -nlpt
 
 Si nos percatamos, la máquina utiliza el puerto `5555` para realizar varios procesos relacionados con _Android_; esto tiene sentido ya que algunos dispositivos _Android_ tienen este puerto abierto para realizar procesos relacionados con el `Android Debug Bridge` o `ADB` por sus siglas en inglés. 
 
-Por lo que, lo que vamos a realizar es un `remote port forwarding`, para posteriormente, con el servicio `ADB` conseguir una shell de máximos privilegios con la que poder migrar al usuario root y conseguir la última flag. 
+Por lo que, lo que vamos a realizar es un `local port forwarding`, para posteriormente, con el servicio `ADB` conseguir una shell de máximos privilegios con la que poder migrar al usuario root y conseguir la última flag. 
 
 En caso de no contar con el servicio `ADB` instalado, bastará con realizar lo siguiente:
 
