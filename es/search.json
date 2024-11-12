@@ -89,6 +89,13 @@
       "category" : "Windows",
       "url"      : "https://mateonitro550.github.io/es/Devel-Hack-The-Box/",
       "date"     : "21/10/2024"
-    } 
+    } ,
+
+    {
+      "title"    : "Monitors - Hack The Box",
+      "category" : "Linux",
+      "url"      : "https://mateonitro550.github.io/es/Monitors-Hack-The-Box/",
+      "date"     : "11/11/2024"
+    }
   
 ]

