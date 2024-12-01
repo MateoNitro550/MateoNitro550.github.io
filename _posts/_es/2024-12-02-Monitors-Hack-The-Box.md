@@ -1,6 +1,6 @@
 ---
 title: Monitors - Hack The Box
-categories: 
+categories: [Linux, Apache, Virtual Hosting, WordPress, Fuzzing, WP with Spritz, Remote File Inclusion, RFI, Reverse Shell, Local File Inclusion, LFI, Cacti, SQL Injection, Inyección SQL, Docker, Contenedor, Container, Local Port Forwarding, Apache OFBiz, Deserialization, Deserialización, CommonsBeanutils1, Docker Breakout, Capability, CAP_SYS_MODULE, Módulo Kernel, Kernel Module]
 published: true
 lang: es
 ---

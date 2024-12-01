@@ -1,6 +1,6 @@
 ---
 title: Kenobi - TryHackMe
-categories: [FTP, File Transfer Protocol, SMB, Server Message Block, rpcbind, RPC, Remote Procedure Call, Samba, SMBMap, smbclient, Null Session, RSA, SSH, NFS, Network File System, Montura, SUID]
+categories: [FTP, File Transfer Protocol, SMB, Server Message Block, rpcbind, RPC, Remote Procedure Call, Samba, SMBMap, smbclient, RSA, SSH, NFS, Network File System, Montura, SUID]
 published: true
 lang: es
 ---

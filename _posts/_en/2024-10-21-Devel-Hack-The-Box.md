@@ -1,6 +1,6 @@
 ---
 title: Devel - Hack The Box
-categories: []
+categories: [Windows, FTP, File Transfer Protocol, IIS, Internet Information Services, Reverse Shell, ASP.NET, ASPX, Kernel Exploit, MS11-046, Microsoft Windows Ancillary Function Driver, AFD.sys]
 published: true
 lang: en
 ---

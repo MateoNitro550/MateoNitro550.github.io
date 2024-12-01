@@ -1,6 +1,6 @@
 ---
 title: Lame - Hack The Box
-categories: [Linux, FTP, Samba, SMB, Server Message Block, distcc, vsftpd, vsf_sysutil_extra(), SMBMap, smbclient, username map script, Python, pysmb, SUID, Autopwn]
+categories: [Linux, FTP, Samba, SMB, Server Message Block, distcc, vsftpd, vsf_sysutil_extra(), SMBMap, smbclient, username map script, Python, pysmb, Reverse Shell, SUID, Autopwn]
 published: true
 lang: en
 ---
