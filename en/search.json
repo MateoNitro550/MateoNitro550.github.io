@@ -23,16 +23,16 @@
   
     {
       "title"    : "Devel - Hack The Box",
-      "category" : "Windows",
+      "category" : "Windows FTP File Transfer Protocol IIS Internet Information Services Reverse Shell ASP.NET ASPX Kernel Exploit MS11-046 Microsoft Windows Ancillary Function Driver AFD.sys",
       "url"      : "https://mateonitro550.github.io/en/Devel-Hack-The-Box/",
       "date"     : "10/21/2024"
     } ,
 
     {
       "title"    : "Monitors - Hack The Box",
-      "category" : "Linux",
+      "category" : "Linux Apache Virtual Hosting WordPress Fuzzing WP with Spritz Remote File Inclusion RFI Reverse Shell Local File Inclusion LFI Cacti SQL Injection Docker Container Local Port Forwarding Apache OFBiz Deserialization CommonsBeanutils1 Docker Breakout Capability CAP_SYS_MODULE Kernel Module",
       "url"      : "https://mateonitro550.github.io/en/Monitors-Hack-The-Box/",
-      "date"     : "11/11/2024"
+      "date"     : "12/02/2024"
     }
   
 ]
