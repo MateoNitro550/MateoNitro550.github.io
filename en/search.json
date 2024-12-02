@@ -2,37 +2,37 @@
   
     {
       "title"    : "Migrating from Parrot OS to Kali Linux",
-      "category" : "Parrot OS VMware Kali Linux Linux Setup ArcticTones",
-      "url"      : "https://mateonitro550.github.io/en/Migrating-from-Parrot-OS-to-Kali-Linux/",
+      "category" : "Parrot OSVMwareKali LinuxLinux SetupArcticTones",
+      "url"      : "/en/Migrating-from-Parrot-OS-to-Kali-Linux/",
       "date"     : "01/01/2024"
     } ,
-
+  
     {
       "title"    : "Forest - Hack The Box",
-      "category" : "Windows Domain Controller DC Active Directory AD LDAP ldapsearch AS-REP Roasting Kerberos GetNPUsers Impacket RPC rpcclient John the Ripper WinRM Windows Remote Management CrackMapExec Evil-WinRM SharpHound BloodHound Account Operators WriteDacl DCSync MS-DRSR PowerView PowerSploit Add-DomainObjectAcl secretsdump Pass the Hash PtH psexec",
-      "url"      : "https://mateonitro550.github.io/en/Forest-Hack-The-Box/",
+      "category" : "WindowsDomain ControllerDCActive DirectoryADLDAPldapsearchAS-REP RoastingKerberosGetNPUsersImpacketRPCrpcclientJohn the RipperWinRMWindows Remote ManagementCrackMapExecEvil-WinRMSharpHoundBloodHoundAccount OperatorsWriteDaclDCSyncMS-DRSRPowerViewPowerSploitAdd-DomainObjectAclsecretsdumpPass the HashPtHpsexec",
+      "url"      : "/en/Forest-Hack-The-Box/",
       "date"     : "08/19/2024"
     } ,
-
+  
     {
       "title"    : "Lame - Hack The Box",
-      "category" : "Linux FTP Samba SMB Server Message Block distcc vsftpd vsf_sysutil_extra() SMBMap smbclient username map script Python pysmb Reverse Shell SUID Autopwn",
-      "url"      : "https://mateonitro550.github.io/en/Lame-Hack-The-Box/",
+      "category" : "LinuxFTPSambaSMBServer Message Blockdistccvsftpdvsf_sysutil_extra()SMBMapsmbclientusername map scriptPythonpysmbReverse ShellSUIDAutopwn",
+      "url"      : "/en/Lame-Hack-The-Box/",
       "date"     : "09/09/2024"
     } ,
   
     {
       "title"    : "Devel - Hack The Box",
-      "category" : "Windows FTP File Transfer Protocol IIS Internet Information Services Reverse Shell ASP.NET ASPX Kernel Exploit MS11-046 Microsoft Windows Ancillary Function Driver AFD.sys",
-      "url"      : "https://mateonitro550.github.io/en/Devel-Hack-The-Box/",
+      "category" : "WindowsFTPFile Transfer ProtocolIISInternet Information ServicesReverse ShellASP.NETASPXKernel ExploitMS11-046Microsoft Windows Ancillary Function DriverAFD.sys",
+      "url"      : "/en/Devel-Hack-The-Box/",
       "date"     : "10/21/2024"
     } ,
-
+  
     {
       "title"    : "Monitors - Hack The Box",
-      "category" : "Linux Apache Virtual Hosting WordPress Fuzzing WP with Spritz Remote File Inclusion RFI Reverse Shell Local File Inclusion LFI Cacti SQL Injection Docker Container Local Port Forwarding Apache OFBiz Deserialization CommonsBeanutils1 Docker Breakout Capability CAP_SYS_MODULE Kernel Module",
-      "url"      : "https://mateonitro550.github.io/en/Monitors-Hack-The-Box/",
+      "category" : "LinuxApacheVirtual HostingWordPressFuzzingWP with SpritzRemote File InclusionRFIReverse ShellLocal File InclusionLFICactiSQL InjectionDockerContainerLocal Port ForwardingApache OFBizDeserializationCommonsBeanutils1Docker BreakoutCapabilityCAP_SYS_MODULEKernel Module",
+      "url"      : "/en/Monitors-Hack-The-Box/",
       "date"     : "12/02/2024"
-    }
+    } 
   
 ]
