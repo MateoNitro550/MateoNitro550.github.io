@@ -9,7 +9,7 @@
   
     {
       "title"    : "Explore - Hack The Box",
-      "category" : "Android Linux ES File Explorer Android Debug Bridge ADB Remote Port Forwarding",
+      "category" : "Android Linux ES File Explorer Android Debug Bridge ADB Local Port Forwarding",
       "url"      : "https://mateonitro550.github.io/es/Explore-Hack-The-Box/",
       "date"     : "04/10/2021"
     } ,
@@ -51,21 +51,21 @@
   
     {
       "title"    : "Kenobi - TryHackMe",
-      "category" : "FTP File Transfer Protocol SMB Server Message Block rpcbind RPC Remote Procedure Call Samba SMBMap smbclient Null Session RSA SSH NFS Network File System Montura SUID",
+      "category" : "FTP File Transfer Protocol SMB Server Message Block rpcbind RPC Remote Procedure Call Samba SMBMap smbclient RSA SSH NFS Network File System Montura SUID",
       "url"      : "https://mateonitro550.github.io/es/Kenobi-TryHackMe/",
       "date"     : "07/02/2022"
     } ,
   
     {
       "title"    : "SecNotes - Hack The Box",
-      "category" : "Windows Linux WSL Windows Subsystem for Linux SMB Server Message Block IIS Internet Information Services Fuzzing CSRF Cross-Site Request Forgery HTML Injection XSS Cross-Site Scripting Cookie Hijacking Blind XSS Burp Suite CSRF Token SQL Injection SMBMap smbclient Web Shell Netcat Invoke-PowerShellTcp impacket-psexec",
+      "category" : "Windows Linux WSL Windows Subsystem for Linux SMB Server Message Block IIS Internet Information Services Fuzzing CSRF Cross-Site Request Forgery HTML Injection XSS Cross-Site Scripting Cookie Hijacking Blind XSS Burp Suite CSRF Token SQL Injection SMBMap smbclient Web Shell Reverse Shell Netcat Invoke-PowerShellTcp impacket-psexec",
       "url"      : "https://mateonitro550.github.io/es/SecNotes-Hack-The-Box/",
       "date"     : "28/02/2022"
     } ,
   
     {
       "title"    : "Migrando de Parrot OS a Kali Linux",
-      "category" : "Parrot OS VMware Kali Linux Entorno de Trabajo ArcticTones",
+      "category" : "Parrot OS VMware Kali Linux Entorno de Trabajo Linux Setup ArcticTones",
       "url"      : "https://mateonitro550.github.io/es/Migrando-de-Parrot-OS-a-Kali-Linux/",
       "date"     : "01/01/2024"
     } ,
@@ -79,7 +79,7 @@
 
     {
       "title"    : "Lame - Hack The Box",
-      "category" : "Linux FTP Samba SMB Server Message Block distcc vsftpd vsf_sysutil_extra() SMBMap smbclient username map script Python pysmb SUID Autopwn",
+      "category" : "Linux FTP Samba SMB Server Message Block distcc vsftpd vsf_sysutil_extra() SMBMap smbclient username map script Python pysmb Reverse Shell SUID Autopwn",
       "url"      : "https://mateonitro550.github.io/es/Lame-Hack-The-Box/",
       "date"     : "09/09/2024"
     } ,
@@ -93,7 +93,7 @@
 
     {
       "title"    : "Monitors - Hack The Box",
-      "category" : "Linux Apache Virtual Hosting WordPress Fuzzing WP with Spritz Remote File Inclusion RFI Reverse Shell Local File Inclusion LFI Cacti SQL Injection Inyección SQL Docker Contenedor Container Local Port Forwarding Apache OFBiz Deserialization Deserialización CommonsBeanutils1 Docker Breakout Capability CAP_SYS_MODULE Módulo Kernel Kernel Module",
+      "category" : "Linux Apache Virtual Hosting WordPress Fuzzing WP with Spritz Remote File Inclusion RFI Reverse Shell Local File Inclusion LFI Cacti SQL Injection Inyección SQL Docker Container Contenedor Local Port Forwarding Apache OFBiz Deserialization Deserialización CommonsBeanutils1 Docker Breakout Capability CAP_SYS_MODULE Kernel Module Módulo Kernel",
       "url"      : "https://mateonitro550.github.io/es/Monitors-Hack-The-Box/",
       "date"     : "02/12/2024"
     }
