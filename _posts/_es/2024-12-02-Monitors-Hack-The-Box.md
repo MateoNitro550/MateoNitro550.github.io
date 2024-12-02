@@ -199,7 +199,7 @@ Para entender mejor esta jerarquía y adaptarnos a las configuraciones específi
 
 ![24](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/24.png){:class="blog-image" onclick="expandImage(this)"}
 
-Ya sea porque intuimos que puede haber configuraciones adicionales o porque revisamos minuciosamente los archivos de configuración de `Apache`, encontramos pistas sobre la posible existencia de dominios adicionales. Por ejemplo, en el archivo `ports.conf` se menciona que cualquier cambio de puerto o adición de puertos puede requerir ajustes en la declaración _VirtualHost_ de `/etc/apache2/sites-enabled/000-default.conf`. Esto nos recuerda que el servidor está aplicando `virtual hosting` desde el inicio, lo que podría indicar la presencia de dominios que aún desconocemos.
+Ya sea porque intuimos que puede haber configuraciones adicionales o porque revisamos minuciosamente los archivos de configuración de `Apache`, encontramos pistas sobre la posible existencia de dominios adicionales. Por ejemplo, en el archivo `ports.conf` se menciona que cualquier cambio de puerto o adición de puertos puede requerir ajustes en la declaración _VirtualHost_ en `/etc/apache2/sites-enabled/000-default.conf`. Esto nos recuerda que el servidor está aplicando `virtual hosting` desde el inicio, lo que podría indicar la presencia de dominios que aún desconocemos.
 
 ```
 http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/ports.conf
@@ -362,9 +362,7 @@ Podemos dirigirnos a [http://cacti-admin.monitors.htb/cacti/host.php?action=rein
 curl http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
 ```
 
-Al hacerlo, logramos establecer la _reverse shell_, obteniendo acceso directo dentro de la máquina.
-
-Una vez dentro de la máquina, podemos confirmar nuestra presencia en el sistema mediante el comando:
+Al hacerlo, logramos establecer la _reverse shell_, obteniendo acceso directo dentro de la máquina. Una vez dentro de la máquina, podemos confirmar nuestra presencia en el sistema mediante el comando:
 
 ```
 hostname -I
@@ -525,7 +523,7 @@ java -jar ysoserial-all.jar CommonsBeanutils1 "bash /tmp/shell.sh" | base64 | tr
 
 ![59](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/59.png){:class="blog-image" onclick="expandImage(this)"}
 
-Antes de enviar este segundo _payload_, pondremos nuestra máquina en escucha con `Netcat` para recibir la reverse shell:
+Antes de enviar este segundo _payload_, pondremos nuestra máquina en escucha con `Netcat` para recibir la _reverse shell_:
 
 ```
 nc -nlvp 443

