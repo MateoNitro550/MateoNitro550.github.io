@@ -3,7 +3,7 @@ layout: none
 ---
 
 [
-  {% for post in site.es %}
+  {% for post in site.es | sort: 'date' | reverse %}
     {
       "title"    : "{{ post.title | escape }}",
       "category" : "{{ post.categories }}",
