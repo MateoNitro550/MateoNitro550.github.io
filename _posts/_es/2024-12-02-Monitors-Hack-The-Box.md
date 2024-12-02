@@ -75,7 +75,7 @@ A continuación se explican los parámetros utilizados en el escaneo de versione
 | \-sV | Versión y servicios que corren bajo los puertos encontrados |
 | \-p | Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior) |
 
-Basándonos en la información que nos reporta Nmap, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con `SSH` (22) y `HTTP` (80).
+Basándonos en la información que nos reporta _Nmap_, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con `SSH` (22) y `HTTP` (80).
 
 ### [](#header-3)Fase De Explotación
 
@@ -119,10 +119,10 @@ wfuzz -c -L -t 400 --hc 404 --hh 12759 -w /usr/share/wordlists/dirbuster/directo
 
 Entre las rutas halladas, encontramos el panel de administración `wp-admin`; sin embargo, intentar acceder con credenciales conocidas por defecto no será efectivo en este caso.
 
-
 ![11](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/11.png){:class="blog-image" onclick="expandImage(this)"}
 
 También descubrimos que el directorio `wp-content` es accesible, lo cual representa un error de configuración, ya que este directorio contiene recursos del _CMS_ que deberían estar protegidos. Dentro de este directorio, podemos realizar un segundo _fuzzing_ (o, alternativamente, podríamos buscar manualmente rutas específicas), llevándonos al directorio `plugins`.
+
 ```
 wfuzz -c -L -t 400 --hc 404 --hh 0 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://monitors.htb/wp-content/FUZZ
 ```
@@ -251,7 +251,7 @@ searchsploit cacti 1.2.12
 
 ![32](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/32.png){:class="blog-image" onclick="expandImage(this)"}
 
-Esta búsqueda revela una vulnerabilidad de [inyección SQL](https://mateonitro550.github.io/SQL-Injection) en uno de los parámetros de la aplicación. Aunque podríamos ejecutar el exploit tal como está, resulta más valioso entender su funcionamiento para practicar `inyecciones SQL`.
+Esta búsqueda revela una vulnerabilidad de [inyección SQL](https://mateonitro550.github.io/es/SQL-Injection) en uno de los parámetros de la aplicación. Aunque podríamos ejecutar el exploit tal como está, resulta más valioso entender su funcionamiento para practicar `inyecciones SQL`.
 
 ![33](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/33.png){:class="blog-image" onclick="expandImage(this)"}
 
@@ -530,6 +530,7 @@ Antes de enviar este segundo _payload_, pondremos nuestra máquina en escucha co
 ```
 nc -nlvp 443
 ```
+
 Finalmente, enviamos el segundo _payload_ utilizando `curl` de la misma manera que el primero. Al ejecutarse esta solicitud, el servidor ejecutará el archivo `shell.sh` y obtendremos una _reverse shell_ dentro de la máquina víctima.
 
 ```
