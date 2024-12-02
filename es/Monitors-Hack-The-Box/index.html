@@ -327,7 +327,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/24.png" alt="24" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Ya sea porque intuimos que puede haber configuraciones adicionales o porque revisamos minuciosamente los archivos de configuración de <code class="language-plaintext highlighter-rouge">Apache</code>, encontramos pistas sobre la posible existencia de dominios adicionales. Por ejemplo, en el archivo <code class="language-plaintext highlighter-rouge">ports.conf</code> se menciona que cualquier cambio de puerto o adición de puertos puede requerir ajustes en la declaración <em>VirtualHost</em> de <code class="language-plaintext highlighter-rouge">/etc/apache2/sites-enabled/000-default.conf</code>. Esto nos recuerda que el servidor está aplicando <code class="language-plaintext highlighter-rouge">virtual hosting</code> desde el inicio, lo que podría indicar la presencia de dominios que aún desconocemos.</p>
+<p>Ya sea porque intuimos que puede haber configuraciones adicionales o porque revisamos minuciosamente los archivos de configuración de <code class="language-plaintext highlighter-rouge">Apache</code>, encontramos pistas sobre la posible existencia de dominios adicionales. Por ejemplo, en el archivo <code class="language-plaintext highlighter-rouge">ports.conf</code> se menciona que cualquier cambio de puerto o adición de puertos puede requerir ajustes en la declaración <em>VirtualHost</em> en <code class="language-plaintext highlighter-rouge">/etc/apache2/sites-enabled/000-default.conf</code>. Esto nos recuerda que el servidor está aplicando <code class="language-plaintext highlighter-rouge">virtual hosting</code> desde el inicio, lo que podría indicar la presencia de dominios que aún desconocemos.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/ports.conf
 </code></pre></div></div>
@@ -474,9 +474,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
 </code></pre></div></div>
 
-<p>Al hacerlo, logramos establecer la <em>reverse shell</em>, obteniendo acceso directo dentro de la máquina.</p>
-
-<p>Una vez dentro de la máquina, podemos confirmar nuestra presencia en el sistema mediante el comando:</p>
+<p>Al hacerlo, logramos establecer la <em>reverse shell</em>, obteniendo acceso directo dentro de la máquina. Una vez dentro de la máquina, podemos confirmar nuestra presencia en el sistema mediante el comando:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hostname -I
 </code></pre></div></div>
@@ -623,7 +621,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/59.png" alt="59" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Antes de enviar este segundo <em>payload</em>, pondremos nuestra máquina en escucha con <code class="language-plaintext highlighter-rouge">Netcat</code> para recibir la reverse shell:</p>
+<p>Antes de enviar este segundo <em>payload</em>, pondremos nuestra máquina en escucha con <code class="language-plaintext highlighter-rouge">Netcat</code> para recibir la <em>reverse shell</em>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -nlvp 443
 </code></pre></div></div>

