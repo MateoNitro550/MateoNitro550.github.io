@@ -1,5 +1,5 @@
 title: Filthy Hacker
-description: "Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF's y varias temáticas relacionadas al hacking." 
+description: "Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or want to learn? This is the place! Machine walkthroughs, vulnerability explanations, CTFs, and various hacking topics."
 author:
   name: "Mateo Andino"
   url: "https://mateonitro550.github.io"
@@ -48,4 +48,4 @@ plugins:
 google_analytics: G-524F5BE8G5
 
 owner : "MateoNitro550"
-year : "2024"
+year : "2025"
