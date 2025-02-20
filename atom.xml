@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Filthy Hacker</title>
-    <description>Filthy Hacker es un blog dedicado al hacking. ¿Te apasiona la ciberseguridad, o quieres aprender? ¡Este es el lugar! Resolución de máquinas, explicación de vulnerabilidades, CTF&apos;s y varias temáticas relacionadas al hacking.</description>
+    <description>Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or want to learn? This is the place! Machine walkthroughs, vulnerability explanations, CTFs, and various hacking topics.</description>
     <link></link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <author>
