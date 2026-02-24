@@ -568,25 +568,42 @@ a:active, a:focus {
 
 /* Table of Contents */
 
+.post-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  align-items: start;
+  gap: 32px;
+}
+
 .toc {
-  position: fixed;
-  top: 153px;
-  left: 500px;
-  width: auto;
-  background: none;
+  position: sticky;
+  top: 120px;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  background: transparent;
   border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   z-index: 1000;
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
-.toc::before {
-  content: attr(data-toc-text);
-  display: block;
-  font-weight: bold;
+.toc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 10px;
   border-bottom: 1px dashed var(--conifer);
   padding-bottom: 5px;
+}
+
+.toc-title {
+  font-weight: bold;
+}
+
+.toc-toggle,
+.toc-close {
+  display: none;
 }
 
 .toc ul {
@@ -605,4 +622,63 @@ a:active, a:focus {
   font-size: 16px;
   border-bottom: 1px solid #63c0f5;
   padding-bottom: 2px;
+}
+
+.toc ul li.toc-h4 {
+  margin-left: 18px;
+}
+
+.toc ul li.toc-h5 {
+  margin-left: 36px;
+}
+
+@media (max-width: 900px) {
+  .post-layout {
+    display: block;
+  }
+
+  .toc-toggle {
+    display: inline-flex;
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2100;
+    border: 1px solid var(--conifer);
+    background: var(--cod-grey);
+    color: var(--conifer);
+    padding: 8px 12px;
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    cursor: pointer;
+  }
+
+  .toc {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(320px, 85vw);
+    height: 100vh;
+    max-height: 100vh;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    padding: 20px;
+    border-left: 1px dashed var(--conifer);
+    background: var(--cod-grey);
+    z-index: 2200;
+  }
+
+  .toc.is-open {
+    transform: translateX(0);
+  }
+
+  .toc-close {
+    display: block;
+    margin-left: auto;
+    margin-bottom: 16px;
+    border: 1px solid var(--conifer);
+    background: transparent;
+    color: var(--conifer);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px 8px;
+  }
 }
