@@ -5,7 +5,7 @@ published: true
 lang: es
 ---
 
-![Info Card](http://192.168.92.128:80/1.png){:class="blog-image" onclick="expandImage(this)"}
+![Info Card](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/1.png){:class="blog-image" onclick="expandImage(this)"}
 
 Hoy vamos a resolver la máquina _Blue_ del curso [Practical Ethical Hacking](https://academy.tcm-sec.com/p/practical-ethical-hacking-the-complete-course) de TCM Security. Esta máquina forma parte del capstone intermedio del curso, y en este write-up me enfocaré en cubrir varias técnicas de explotación y escalada de privilegios, desde el reconocimiento inicial hasta la obtención de privilegios de administrador.
 
@@ -83,7 +83,7 @@ Una de las herramientas más completas para esta tarea es `NetExec`, ya que nos 
 nxc smb <IP del host>
 ```
 
-![3](http://192.168.92.128:80/3.png){:class="blog-image" onclick="expandImage(this)"}
+![3](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/3.png){:class="blog-image" onclick="expandImage(this)"}
 
 Rápidamente podemos determinar que estamos frente a un _Windows 7 Ultimate 7601 Service Pack 1_ de _64 bits_. Además, podemos observar que el firmado del _SMB_ __no__ es requerido en este host. En un entorno de `Active Directory`, esta configuración podría dar lugar a ataques como `NTLM Relay`; sin embargo, en este escenario particular no representa un vector de ataque relevante.
 
@@ -101,7 +101,7 @@ nmap --script smb-protocols,smb2-security-mode,smb-security-mode,smb-os-discover
 
 Similar a los resultados obtenidos con _NetExec_, este escaneo con `Nmap` nos proporciona información sobre los protocolos soportados, la configuración de seguridad de _SMB_, y la versión del sistema operativo.
 
-![4](http://192.168.92.128:80/4.png){:class="blog-image" onclick="expandImage(this)"}
+![4](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/4.png){:class="blog-image" onclick="expandImage(this)"}
 
 ##### [](#header-5)Metasploit
 
@@ -114,11 +114,11 @@ set RHOST <IP del host>
 run
 ```
 
-![5](http://192.168.92.128:80/5.png){:class="blog-image" onclick="expandImage(this)"}
+![5](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/5.png){:class="blog-image" onclick="expandImage(this)"}
 
 Una vez ejecutado, podemos confirmar nuevamente los dialectos soportados por el servidor, el dialecto preferido, la configuración del firmado _SMB_, y la versión del sistema operativo.
 
-![6](http://192.168.92.128:80/6.png){:class="blog-image" onclick="expandImage(this)"}
+![6](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/6.png){:class="blog-image" onclick="expandImage(this)"}
 
 #### [](#header-4)SMB Shares
 
@@ -128,7 +128,7 @@ Con todo esta información en mente, podemos profundizar aún más en el servici
 smbmap -H <IP del host>
 ```
 
-![7](http://192.168.92.128:80/7.png){:class="blog-image" onclick="expandImage(this)"}
+![7](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/7.png){:class="blog-image" onclick="expandImage(this)"}
 
 En este caso, únicamente podemos listar los recursos existentes, pues no contamos con permisos suficientes para interactuar con ellos, ya que el acceso está restringido.
 
@@ -144,7 +144,7 @@ Podemos continuar utilizando scripts de descubrimiento de `Nmap`, esta vez orien
 nmap --script smb-vuln-ms17-010 -p 445 <IP del host>
 ```
 
-![8](http://192.168.92.128:80/8.png){:class="blog-image" onclick="expandImage(this)"}
+![8](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/8.png){:class="blog-image" onclick="expandImage(this)"}
 
 El resultado del escaneo confirma que el host es vulnerable a `MS17-010`, por lo que podemos explotar esta vulnerabilidad.
 
@@ -168,11 +168,11 @@ set RHOST <IP del host>
 run
 ```
 
-![9](http://192.168.92.128:80/9.png){:class="blog-image" onclick="expandImage(this)"}
+![9](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/9.png){:class="blog-image" onclick="expandImage(this)"}
 
 Al igual que con _Nmap_, confirmamos que el host es vulnerable a `MS17-010`, por lo que a explotación resulta viable.
 
-![10](http://192.168.92.128:80/10.png){:class="blog-image" onclick="expandImage(this)"}
+![10](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/10.png){:class="blog-image" onclick="expandImage(this)"}
 
 ### [](#header-3)Fase De Explotación
 
