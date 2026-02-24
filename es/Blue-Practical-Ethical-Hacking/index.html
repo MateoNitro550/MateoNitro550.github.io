@@ -85,7 +85,7 @@
         20/02/2026
       
     </time>
-    <p><img src="http://192.168.92.128:80/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
+    <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Hoy vamos a resolver la máquina <em>Blue</em> del curso <a href="https://academy.tcm-sec.com/p/practical-ethical-hacking-the-complete-course">Practical Ethical Hacking</a> de TCM Security. Esta máquina forma parte del capstone intermedio del curso, y en este write-up me enfocaré en cubrir varias técnicas de explotación y escalada de privilegios, desde el reconocimiento inicial hasta la obtención de privilegios de administrador.</p>
 
@@ -227,7 +227,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc smb &lt;IP del host&gt;
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Rápidamente podemos determinar que estamos frente a un <em>Windows 7 Ultimate 7601 Service Pack 1</em> de <em>64 bits</em>. Además, podemos observar que el firmado del <em>SMB</em> <strong>no</strong> es requerido en este host. En un entorno de <code class="language-plaintext highlighter-rouge">Active Directory</code>, esta configuración podría dar lugar a ataques como <code class="language-plaintext highlighter-rouge">NTLM Relay</code>; sin embargo, en este escenario particular no representa un vector de ataque relevante.</p>
 
@@ -244,7 +244,7 @@
 
 <p>Similar a los resultados obtenidos con <em>NetExec</em>, este escaneo con <code class="language-plaintext highlighter-rouge">Nmap</code> nos proporciona información sobre los protocolos soportados, la configuración de seguridad de <em>SMB</em>, y la versión del sistema operativo.</p>
 
-<p><img src="http://192.168.92.128:80/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h5 id="metasploit"><a href="#header-5"></a>Metasploit</h5>
 
@@ -256,11 +256,11 @@ set RHOST &lt;IP del host&gt;
 run
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez ejecutado, podemos confirmar nuevamente los dialectos soportados por el servidor, el dialecto preferido, la configuración del firmado <em>SMB</em>, y la versión del sistema operativo.</p>
 
-<p><img src="http://192.168.92.128:80/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h4 id="smb-shares"><a href="#header-4"></a>SMB Shares</h4>
 
@@ -269,7 +269,7 @@ run
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> &lt;IP del host&gt;
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>En este caso, únicamente podemos listar los recursos existentes, pues no contamos con permisos suficientes para interactuar con ellos, ya que el acceso está restringido.</p>
 
@@ -284,7 +284,7 @@ run
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">--script</span> smb-vuln-ms17-010 <span class="nt">-p</span> 445 &lt;IP del host&gt;
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>El resultado del escaneo confirma que el host es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, por lo que podemos explotar esta vulnerabilidad.</p>
 
@@ -306,11 +306,11 @@ set RHOST &lt;IP del host&gt;
 run
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Al igual que con <em>Nmap</em>, confirmamos que el host es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, por lo que a explotación resulta viable.</p>
 
-<p><img src="http://192.168.92.128:80/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
 
