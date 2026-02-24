@@ -9,7 +9,7 @@
   <title>Migrando de Parrot OS a Kali Linux</title>
 
   <link rel="shortcut icon" href="/assets/images/favicon.ico">
-  <link rel="icon" href="/assets/iamges/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
   <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
 
   <meta property="og:site_name" content="Filthy Hacker" />
@@ -23,7 +23,7 @@
   
   <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Migrando de Parrot OS a Kali Linux | Filthy Hacker</title>
-<meta name="generator" content="Jekyll v4.3.4" />
+<meta name="generator" content="Jekyll v4.4.1" />
 <meta property="og:title" content="Migrando de Parrot OS a Kali Linux" />
 <meta name="author" content="Mateo Andino" />
 <meta property="og:locale" content="es" />
@@ -77,14 +77,15 @@
 
     <div class="container">
       <section id="main_content">
-        <article>
-  <h2>Migrando de Parrot OS a Kali Linux</h2>
-  <time datetime="2024-01-01T00:00:00-05:00" class="by-line">
-    
-      01/01/2024
-    
-  </time>
-  <p>Últimamente he experimentado cuelgues aleatorios de forma frecuente con <strong>Parrot OS 5.3</strong> en mi máquina virtual <strong>VMware Workstation Pro</strong>.</p>
+        <div class="post-layout">
+  <article>
+    <h2>Migrando de Parrot OS a Kali Linux</h2>
+    <time datetime="2024-01-01T00:00:00-05:00" class="by-line">
+      
+        01/01/2024
+      
+    </time>
+    <p>Últimamente he experimentado cuelgues aleatorios de forma frecuente con <strong>Parrot OS 5.3</strong> en mi máquina virtual <strong>VMware Workstation Pro</strong>.</p>
 
 <p>En un principio, pensé que estos problemas podrían deberse a la actualización <strong>22H2</strong> de Windows, ya que había leído algunos posts que mencionaban posibles incompatibilidades. Sin embargo, después de explorar esta posibilidad, no noté mejoras.</p>
 
@@ -115,7 +116,17 @@
 
 <p>Este cambio ha mejorado significativamente la estabilidad y la experiencia de uso, proporcionándome un entorno más fiable para continuar con mi trabajo y proyectos.</p>
 
-</article>
+  </article>
+
+  <aside class="toc" id="toc" data-toc-text="Tabla de Contenidos" hidden>
+    <button class="toc-close" id="toc-close" aria-label="Close table of contents">✕</button>
+    <ul id="toc-list"></ul>
+  </aside>
+</div>
+
+<button class="toc-toggle" id="toc-toggle" aria-controls="toc" aria-expanded="false" hidden>
+  ☰ Tabla de Contenidos
+</button>
 
 <div id="carousel" class="carousel">
   <img id="carouselImage" class="carousel-image">
@@ -129,25 +140,88 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    var toc = document.getElementById('toc');
     var tocList = document.getElementById('toc-list');
-    var headers = document.querySelectorAll('article h3');
+    var tocToggle = document.getElementById('toc-toggle');
+    var tocClose = document.getElementById('toc-close');
+    var headers = document.querySelectorAll('article h3, article h4, article h5');
+    var counters = {
+      h3: 0,
+      h4: 0,
+      h5: 0
+    };
 
     if (headers.length > 0) {
-      document.querySelector('.toc').style.display = 'block';
+      toc.hidden = false;
+      tocToggle.hidden = false;
 
-      headers.forEach(function(header, index) {
-        var id = 'section-' + index;
+      headers.forEach(function(header) {
+        var level = header.tagName.toLowerCase();
+
+        if (level === 'h3') {
+          counters.h3 += 1;
+          counters.h4 = 0;
+          counters.h5 = 0;
+        } else if (level === 'h4') {
+          if (counters.h3 === 0) {
+            counters.h3 = 1;
+          }
+          counters.h4 += 1;
+          counters.h5 = 0;
+        } else if (level === 'h5') {
+          if (counters.h3 === 0) {
+            counters.h3 = 1;
+          }
+          if (counters.h4 === 0) {
+            counters.h4 = 1;
+          }
+          counters.h5 += 1;
+        }
+
+        var sectionNumber = counters.h3.toString();
+        if (level === 'h4' || level === 'h5') {
+          sectionNumber += '.' + counters.h4;
+        }
+        if (level === 'h5') {
+          sectionNumber += '.' + counters.h5;
+        }
+
+        var id = 'section-' + sectionNumber.replace(/\./g, '-');
         header.id = id;
+        header.dataset.sectionNumber = sectionNumber;
+
+        if (!header.textContent.trim().startsWith(sectionNumber + '.')) {
+          header.textContent = sectionNumber + '. ' + header.textContent.trim();
+        }
 
         var listItem = document.createElement('li');
+        listItem.className = 'toc-' + level;
         var link = document.createElement('a');
         link.href = '#' + id;
-        link.textContent = header.textContent;
+        link.textContent = sectionNumber + '. ' + header.textContent.replace(/^\d+(?:\.\d+){0,2}\.\s+/, '');
         listItem.appendChild(link);
         tocList.appendChild(listItem);
       });
+
+      tocToggle.addEventListener('click', function() {
+        var isOpen = toc.classList.toggle('is-open');
+        tocToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      tocClose.addEventListener('click', function() {
+        toc.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+      });
+
+      tocList.addEventListener('click', function(event) {
+        if (event.target.tagName.toLowerCase() === 'a' && window.matchMedia('(max-width: 900px)').matches) {
+          toc.classList.remove('is-open');
+          tocToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
     } else {
-      document.querySelector('.toc').style.display = 'none';
+      toc.hidden = true;
+      tocToggle.hidden = true;
     }
   });
 
@@ -229,7 +303,7 @@
         <b>MateoNitro550</b>
     </span>
     
-    <span>© 2025</span>
+    <span>© 2026</span>
   </a>
 </footer>
 

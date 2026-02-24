@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Blue - Practical Ethical Hacking</title>
+
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
+
+  <meta property="og:site_name" content="Filthy Hacker" />
+  <meta property="og:url" content="https://mateonitro550.github.io" />
+  <meta property="og:title" content="Filthy Hacker - Hacking & Cybersecurity Blog" />
+  <meta property="og:description" content="Passionate about cybersecurity or eager to learn? Filthy Hacker is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/images/banner.png" />
+  <meta property="og:type" content="object" />
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Blue - Practical Ethical Hacking | Filthy Hacker</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Blue - Practical Ethical Hacking" />
+<meta name="author" content="Mateo Andino" />
+<meta property="og:locale" content="es" />
+<meta name="description" content="Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or eager to learn? This is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more." />
+<meta property="og:description" content="Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or eager to learn? This is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more." />
+<meta property="og:site_name" content="Filthy Hacker" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-02-20T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Blue - Practical Ethical Hacking" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2026-02-20T00:00:00-05:00","datePublished":"2026-02-20T00:00:00-05:00","description":"Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or eager to learn? This is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more.","headline":"Blue - Practical Ethical Hacking","mainEntityOfPage":{"@type":"WebPage","@id":"/es/Blue-Practical-Ethical-Hacking/"},"url":"/es/Blue-Practical-Ethical-Hacking/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PPKV9V8T');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1 class="glitch-header">filthyHacker@home:~$</h1>
+    </a>
+    <div class="header-links">
+      <a href="/es"><h2 class="header-link">Publicaciones</h2></a>
+<a href="/es/search"><h2 class="header-link">Buscar</h2></a>
+<a href="/es/archive"><h2 class="header-link">Archivo</h2></a>
+<a href="/en"><h2 class="header-link">English</h2></a>
+
+    </div>
+  </div>
+</header>
+
+    <div class="container">
+      <section id="main_content">
+        <div class="post-layout">
+  <article>
+    <h2>Blue - Practical Ethical Hacking</h2>
+    <time datetime="2026-02-20T00:00:00-05:00" class="by-line">
+      
+        20/02/2026
+      
+    </time>
+    <p><img src="http://192.168.92.128:80/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Hoy vamos a resolver la máquina <em>Blue</em> del curso <a href="https://academy.tcm-sec.com/p/practical-ethical-hacking-the-complete-course">Practical Ethical Hacking</a> de TCM Security. Esta máquina forma parte del capstone intermedio del curso, y en este write-up me enfocaré en cubrir varias técnicas de explotación y escalada de privilegios, desde el reconocimiento inicial hasta la obtención de privilegios de administrador.</p>
+
+<p>El objetivo de este artículo es reforzar lo aprendido hasta ahora, pero también ofrecer una guía más completa, explorando distintos enfoques y metodologías que podrían ser útiles para quienes buscan profundizar más en el proceso.</p>
+
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
+
+<p>Primeramente vamos a lanzar una <em>traza ICMP</em> para saber si la máquina está activa.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 &lt;IP del host&gt;
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">128</code>, por lo que podemos intuir que estamos ante una máquina <em>Windows</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Sistema Operativo (OS)</th>
+      <th style="text-align: left">TTL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Linux</td>
+      <td style="text-align: left">64</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Windows</td>
+      <td style="text-align: left">128</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Solaris</td>
+      <td style="text-align: left">254</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Posteriormente, vamos a utilizar la herramienta <em>Nmap</em> para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-T5</span> <span class="nt">-v</span> <span class="nt">-n</span> &lt;IP del host&gt;
+</code></pre></div></div>
+
+<p>En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nmap <span class="nt">-p-</span> <span class="nt">--open</span> <span class="nt">-sS</span> <span class="nt">--min-rate</span> 5000 <span class="nt">-vvv</span> <span class="nt">-n</span> <span class="nt">-Pn</span> &lt;IP del host&gt;
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de puertos con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-p-</td>
+      <td style="text-align: left">Escanea todo el rango de puertos (65535 en total)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">--open</td>
+      <td style="text-align: left">Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-T5</td>
+      <td style="text-align: left">La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos <code class="language-plaintext highlighter-rouge">White Hat</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-v</td>
+      <td style="text-align: left"><em>Verbose</em>, reporta lo encontrado por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-n</td>
+      <td style="text-align: left">No aplicar <em>resolución DNS</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sS</td>
+      <td style="text-align: left">Escaneo <em>TCP SYN</em></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-min-rate</td>
+      <td style="text-align: left">Emitir paquetes no más lentos que &lt;valor&gt; por segundo</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-vvv</td>
+      <td style="text-align: left">Triple <em>verbose</em>, para obtener mayor información por consola</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-Pn</td>
+      <td style="text-align: left">No aplicar <em>host discovery</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-sC</span> <span class="nt">-sV</span> <span class="nt">-p</span> 135,139,445,49152,49153,49154,49155,49157 &lt;IP del host&gt;
+</code></pre></div></div>
+
+<p>A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con <em>Nmap</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Parámetro</th>
+      <th style="text-align: left">Explicación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-sC</td>
+      <td style="text-align: left">Scripts básicos de enumeración</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-sV</td>
+      <td style="text-align: left">Versión y servicios que corren bajo los puertos encontrados</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">-p</td>
+      <td style="text-align: left">Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Basándonos en la información que nos reporta <em>Nmap</em>, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con <code class="language-plaintext highlighter-rouge">RPC</code> (135), <code class="language-plaintext highlighter-rouge">NetBIOS</code> (139) y <code class="language-plaintext highlighter-rouge">SMB</code> (445).</p>
+
+<h4 id="servicio-smb"><a href="#header-4"></a>Servicio SMB</h4>
+
+<p>Tenemos varias opciones para enumerar el servicio <code class="language-plaintext highlighter-rouge">SMB</code>. Lo que nos interesa como atacantes es identificar los dialectos soportados por el servidor, verificar si el firmado del <em>SMB</em> está habilitado o es requerido, determinar el nivel de autenticación permitido y confirmar la versión exacta del sistema operativo. Todos estos elementos nos permitirán evaluar posibles vectores de explotación.</p>
+
+<h5 id="netexec"><a href="#header-5"></a>NetExec</h5>
+
+<p>Una de las herramientas más completas para esta tarea es <code class="language-plaintext highlighter-rouge">NetExec</code>, ya que nos permite obtener la mayoría de esta información mediante un solo comando. Bastará con especificar el protocolo que queremos utilizar y la dirección IP de la máquina víctima:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc smb &lt;IP del host&gt;
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Rápidamente podemos determinar que estamos frente a un <em>Windows 7 Ultimate 7601 Service Pack 1</em> de <em>64 bits</em>. Además, podemos observar que el firmado del <em>SMB</em> <strong>no</strong> es requerido en este host. En un entorno de <code class="language-plaintext highlighter-rouge">Active Directory</code>, esta configuración podría dar lugar a ataques como <code class="language-plaintext highlighter-rouge">NTLM Relay</code>; sin embargo, en este escenario particular no representa un vector de ataque relevante.</p>
+
+<p>En cuanto a los dialectos soportados, podemos ver que <code class="language-plaintext highlighter-rouge">SMBv1</code> se encuentra habilitado, por lo que el host podría ser vulnerable a <code class="language-plaintext highlighter-rouge">EternalBlue</code>, siempre que el sistema no haya sido debidamente parcheado.</p>
+
+<p>Por último, podemos observar que las <em>null sessions</em> están habilitadas. Esto permite establecer una sesión anónima contra el servicio <code class="language-plaintext highlighter-rouge">SMB</code>, lo cual facilita la enumeración de recursos compartidos y, dependiendo de los permisos configurados, podría permitir la interacción con dichos recursos, en caso de que existan privilegios de lectura o escritura.</p>
+
+<h5 id="nmap"><a href="#header-5"></a>Nmap</h5>
+
+<p>Si quisiéramos seguir enumerando con <code class="language-plaintext highlighter-rouge">Nmap</code> podríamos hacerlo, pero esta vez lanzando una serie de scripts de descubrimiento específicos. El parámetro <code class="language-plaintext highlighter-rouge">-sC</code> que utilizamos anteriormente durante nuestro escaneo de versiones y servicios, ejecuta por defecto los scripts <code class="language-plaintext highlighter-rouge">smb2-security-mode</code>, <code class="language-plaintext highlighter-rouge">smb-security-mode</code> y <code class="language-plaintext highlighter-rouge">smb-os-discovery</code>. Si obtenemos una respuesta del script <code class="language-plaintext highlighter-rouge">smb-security-mode</code>, podemos inferir que <code class="language-plaintext highlighter-rouge">SMBv1</code> está habilitado. No obstante, si queremos estar completamente seguros de los dialectos soportados, podemos incluir el script <code class="language-plaintext highlighter-rouge">smb-protocols</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">--script</span> smb-protocols,smb2-security-mode,smb-security-mode,smb-os-discovery <span class="nt">-p</span> 139,445 &lt;IP del host&gt;
+</code></pre></div></div>
+
+<p>Similar a los resultados obtenidos con <em>NetExec</em>, este escaneo con <code class="language-plaintext highlighter-rouge">Nmap</code> nos proporciona información sobre los protocolos soportados, la configuración de seguridad de <em>SMB</em>, y la versión del sistema operativo.</p>
+
+<p><img src="http://192.168.92.128:80/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h5 id="metasploit"><a href="#header-5"></a>Metasploit</h5>
+
+<p>Finalmente, como alternativa, podemos usar <code class="language-plaintext highlighter-rouge">Metasploit</code> para realizar la enumeración del servicio <code class="language-plaintext highlighter-rouge">SMB</code>. El módulo auxiliar <code class="language-plaintext highlighter-rouge">smb_version</code> nos permitirá listar los dialectos soportados y el estado del firmado <em>SMB</em>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfconsole
+use auxiliary/scanner/smb/smb_version
+set RHOST &lt;IP del host&gt;
+run
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez ejecutado, podemos confirmar nuevamente los dialectos soportados por el servidor, el dialecto preferido, la configuración del firmado <em>SMB</em>, y la versión del sistema operativo.</p>
+
+<p><img src="http://192.168.92.128:80/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h4 id="smb-shares"><a href="#header-4"></a>SMB Shares</h4>
+
+<p>Con todo esta información en mente, podemos profundizar aún más en el servicio <code class="language-plaintext highlighter-rouge">SMB</code>. Dado que las <em>null sessions</em> están habilitadas, podemos establecer una sesión anónima contra el servidor e intentar enumerar recursos compartidos a nivel de red; y en caso de que los permisos lo permitan, también podríamos interactuar con dichos recursos. Para esta tarea utilizaremos <code class="language-plaintext highlighter-rouge">SMBMap</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> &lt;IP del host&gt;
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>En este caso, únicamente podemos listar los recursos existentes, pues no contamos con permisos suficientes para interactuar con ellos, ya que el acceso está restringido.</p>
+
+<h4 id="eternalblue"><a href="#header-4"></a>EternalBlue</h4>
+
+<p>Esto nos deja con un último vector potencial a evaluar: determinar si la implementación de <code class="language-plaintext highlighter-rouge">SMBv1</code> presente en el sistema se encuentra sin parchear y, por lo tanto, es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, o <code class="language-plaintext highlighter-rouge">EternalBlue</code>. Para verificar la presencia de esta vulnerabilidad, utilizaremos dos enfoques distintos.</p>
+
+<h5 id="nmap-1"><a href="#header-5"></a>Nmap</h5>
+
+<p>Podemos continuar utilizando scripts de descubrimiento de <code class="language-plaintext highlighter-rouge">Nmap</code>, esta vez orientados a la detección de vulnerabilidades. En este caso, emplearemos el script <code class="language-plaintext highlighter-rouge">smb-vuln-ms17-010</code>, para comprobar si el host es susceptible a esta vulnerabilidad:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">--script</span> smb-vuln-ms17-010 <span class="nt">-p</span> 445 &lt;IP del host&gt;
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>El resultado del escaneo confirma que el host es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, por lo que podemos explotar esta vulnerabilidad.</p>
+
+<h5 id="metasploit-1"><a href="#header-5"></a>Metasploit</h5>
+
+<p>Alternativamente, podemos utilizar <code class="language-plaintext highlighter-rouge">Metasploit</code>. El módulo <code class="language-plaintext highlighter-rouge">ms17_010_eternalblue</code> incluye una función <code class="language-plaintext highlighter-rouge">check</code> que permite validar si el sistema es vulnerable antes de proceder con la explotación:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfconsole
+use exploit/windows/smb/ms17_010_eternalblue
+set RHOST &lt;IP del host&gt;
+check
+</code></pre></div></div>
+
+<p>En su defecto, podemos utilizar directamente el módulo auxiliar subyacente encargado únicamente de la comprobación:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfconsole
+use auxiliary/scanner/smb/smb_ms17_010
+set RHOST &lt;IP del host&gt;
+run
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al igual que con <em>Nmap</em>, confirmamos que el host es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, por lo que a explotación resulta viable.</p>
+
+<p><img src="http://192.168.92.128:80/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+
+<p>Con este mismo módulo, más adelante en caso de que quisiéramos usar herramientas automatizadas, podríamos realizar la explotación. Sin embargo, como siempre, yo discourage usar herramientas automatizadas ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, más adelante cubriré ambas metodologías y me enfocaré mucho más en la vía manual</p>
+
+  </article>
+
+  <aside class="toc" id="toc" data-toc-text="Tabla de Contenidos" hidden>
+    <button class="toc-close" id="toc-close" aria-label="Close table of contents">✕</button>
+    <ul id="toc-list"></ul>
+  </aside>
+</div>
+
+<button class="toc-toggle" id="toc-toggle" aria-controls="toc" aria-expanded="false" hidden>
+  ☰ Tabla de Contenidos
+</button>
+
+<div id="carousel" class="carousel">
+  <img id="carouselImage" class="carousel-image">
+  <div id="carouselAlt" class="carousel-alt"></div>
+  <button class="carousel-control prev" onclick="prevImage()">&#10094;</button>
+  <button class="carousel-control next" onclick="nextImage()">&#10095;</button>
+</div>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var toc = document.getElementById('toc');
+    var tocList = document.getElementById('toc-list');
+    var tocToggle = document.getElementById('toc-toggle');
+    var tocClose = document.getElementById('toc-close');
+    var headers = document.querySelectorAll('article h3, article h4, article h5');
+    var counters = {
+      h3: 0,
+      h4: 0,
+      h5: 0
+    };
+
+    if (headers.length > 0) {
+      toc.hidden = false;
+      tocToggle.hidden = false;
+
+      headers.forEach(function(header) {
+        var level = header.tagName.toLowerCase();
+
+        if (level === 'h3') {
+          counters.h3 += 1;
+          counters.h4 = 0;
+          counters.h5 = 0;
+        } else if (level === 'h4') {
+          if (counters.h3 === 0) {
+            counters.h3 = 1;
+          }
+          counters.h4 += 1;
+          counters.h5 = 0;
+        } else if (level === 'h5') {
+          if (counters.h3 === 0) {
+            counters.h3 = 1;
+          }
+          if (counters.h4 === 0) {
+            counters.h4 = 1;
+          }
+          counters.h5 += 1;
+        }
+
+        var sectionNumber = counters.h3.toString();
+        if (level === 'h4' || level === 'h5') {
+          sectionNumber += '.' + counters.h4;
+        }
+        if (level === 'h5') {
+          sectionNumber += '.' + counters.h5;
+        }
+
+        var id = 'section-' + sectionNumber.replace(/\./g, '-');
+        header.id = id;
+        header.dataset.sectionNumber = sectionNumber;
+
+        if (!header.textContent.trim().startsWith(sectionNumber + '.')) {
+          header.textContent = sectionNumber + '. ' + header.textContent.trim();
+        }
+
+        var listItem = document.createElement('li');
+        listItem.className = 'toc-' + level;
+        var link = document.createElement('a');
+        link.href = '#' + id;
+        link.textContent = sectionNumber + '. ' + header.textContent.replace(/^\d+(?:\.\d+){0,2}\.\s+/, '');
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+      });
+
+      tocToggle.addEventListener('click', function() {
+        var isOpen = toc.classList.toggle('is-open');
+        tocToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      tocClose.addEventListener('click', function() {
+        toc.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+      });
+
+      tocList.addEventListener('click', function(event) {
+        if (event.target.tagName.toLowerCase() === 'a' && window.matchMedia('(max-width: 900px)').matches) {
+          toc.classList.remove('is-open');
+          tocToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    } else {
+      toc.hidden = true;
+      tocToggle.hidden = true;
+    }
+  });
+
+  var currentImageIndex = 0;
+  var images = [];
+  var altTexts = [];
+
+  document.querySelectorAll('.blog-image').forEach((img, index) => {
+    images.push(img.src);
+    altTexts.push(img.alt || '');
+    img.setAttribute('data-index', index);
+    img.onclick = () => expandImage(img);
+  });
+
+  function expandImage(img) {
+    currentImageIndex = parseInt(img.getAttribute('data-index'));
+    showImage(currentImageIndex);
+    document.getElementById('carousel').style.display = 'block';
+    document.querySelector('.image-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'block';
+    });
+  }
+
+  function showImage(index) {
+    var carouselImg = document.getElementById('carouselImage');
+    carouselImg.src = images[index];
+    
+    var carouselAlt = document.getElementById('carouselAlt');
+    carouselAlt.textContent = altTexts[index];
+  }
+
+  function closeImage() {
+    document.getElementById('carousel').style.display = 'none';
+    document.querySelector('.image-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    document.removeEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'none';
+    });
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Escape') {
+      closeImage();
+    } else if (event.key === 'ArrowLeft') {
+      prevImage();
+    } else if (event.key === 'ArrowRight') {
+      nextImage();
+    }
+  }
+</script>
+
+      </section>
+    </div>
+  </div>
+
+  
+
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+    <span>
+        <b>MateoNitro550</b>
+    </span>
+    
+    <span>© 2026</span>
+  </a>
+</footer>
+
+
+  
+    <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-524F5BE8G5', 'auto');
+  ga('send', 'pageview');
+</script>
+  
+
+</body>
+</html>

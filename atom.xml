@@ -16,6 +16,397 @@
     
     
       <item>
+        <title>Blue - Practical Ethical Hacking</title>
+        <description>&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/1.png&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Hoy vamos a resolver la máquina &lt;em&gt;Blue&lt;/em&gt; del curso &lt;a href=&quot;https://academy.tcm-sec.com/p/practical-ethical-hacking-the-complete-course&quot;&gt;Practical Ethical Hacking&lt;/a&gt; de TCM Security. Esta máquina forma parte del capstone intermedio del curso, y en este write-up me enfocaré en cubrir varias técnicas de explotación y escalada de privilegios, desde el reconocimiento inicial hasta la obtención de privilegios de administrador.&lt;/p&gt;
+
+&lt;p&gt;El objetivo de este artículo es reforzar lo aprendido hasta ahora, pero también ofrecer una guía más completa, explorando distintos enfoques y metodologías que podrían ser útiles para quienes buscan profundizar más en el proceso.&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
+
+&lt;p&gt;Primeramente vamos a lanzar una &lt;em&gt;traza ICMP&lt;/em&gt; para saber si la máquina está activa.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 &amp;lt;IP del host&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del &lt;em&gt;TTL&lt;/em&gt;; en este caso el valor del &lt;em&gt;TTL&lt;/em&gt; de la máquina es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt;, por lo que podemos intuir que estamos ante una máquina &lt;em&gt;Windows&lt;/em&gt;. Recordemos que algunos de los valores referenciales son los siguientes:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Sistema Operativo (OS)&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;TTL&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Linux&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;64&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Windows&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;128&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Solaris&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;254&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Posteriormente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &amp;lt;IP del host&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; &amp;lt;IP del host&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de puertos con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p-&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Escanea todo el rango de puertos (65535 en total)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;--open&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-T5&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-v&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-n&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sS&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-min-rate&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Emitir paquetes no más lentos que &amp;lt;valor&amp;gt; por segundo&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-vvv&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Triple &lt;em&gt;verbose&lt;/em&gt;, para obtener mayor información por consola&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-Pn&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;host discovery&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 135,139,445,49152,49153,49154,49155,49157 &amp;lt;IP del host&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sC&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Scripts básicos de enumeración&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sV&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Versión y servicios que corren bajo los puertos encontrados&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Basándonos en la información que nos reporta &lt;em&gt;Nmap&lt;/em&gt;, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RPC&lt;/code&gt; (135), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NetBIOS&lt;/code&gt; (139) y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt; (445).&lt;/p&gt;
+
+&lt;h4 id=&quot;servicio-smb&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Servicio SMB&lt;/h4&gt;
+
+&lt;p&gt;Tenemos varias opciones para enumerar el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt;. Lo que nos interesa como atacantes es identificar los dialectos soportados por el servidor, verificar si el firmado del &lt;em&gt;SMB&lt;/em&gt; está habilitado o es requerido, determinar el nivel de autenticación permitido y confirmar la versión exacta del sistema operativo. Todos estos elementos nos permitirán evaluar posibles vectores de explotación.&lt;/p&gt;
+
+&lt;h5 id=&quot;netexec&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;NetExec&lt;/h5&gt;
+
+&lt;p&gt;Una de las herramientas más completas para esta tarea es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NetExec&lt;/code&gt;, ya que nos permite obtener la mayoría de esta información mediante un solo comando. Bastará con especificar el protocolo que queremos utilizar y la dirección IP de la máquina víctima:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nxc smb &amp;lt;IP del host&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/3.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Rápidamente podemos determinar que estamos frente a un &lt;em&gt;Windows 7 Ultimate 7601 Service Pack 1&lt;/em&gt; de &lt;em&gt;64 bits&lt;/em&gt;. Además, podemos observar que el firmado del &lt;em&gt;SMB&lt;/em&gt; &lt;strong&gt;no&lt;/strong&gt; es requerido en este host. En un entorno de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Active Directory&lt;/code&gt;, esta configuración podría dar lugar a ataques como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NTLM Relay&lt;/code&gt;; sin embargo, en este escenario particular no representa un vector de ataque relevante.&lt;/p&gt;
+
+&lt;p&gt;En cuanto a los dialectos soportados, podemos ver que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBv1&lt;/code&gt; se encuentra habilitado, por lo que el host podría ser vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EternalBlue&lt;/code&gt;, siempre que el sistema no haya sido debidamente parcheado.&lt;/p&gt;
+
+&lt;p&gt;Por último, podemos observar que las &lt;em&gt;null sessions&lt;/em&gt; están habilitadas. Esto permite establecer una sesión anónima contra el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt;, lo cual facilita la enumeración de recursos compartidos y, dependiendo de los permisos configurados, podría permitir la interacción con dichos recursos, en caso de que existan privilegios de lectura o escritura.&lt;/p&gt;
+
+&lt;h5 id=&quot;nmap&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;Nmap&lt;/h5&gt;
+
+&lt;p&gt;Si quisiéramos seguir enumerando con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Nmap&lt;/code&gt; podríamos hacerlo, pero esta vez lanzando una serie de scripts de descubrimiento específicos. El parámetro &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-sC&lt;/code&gt; que utilizamos anteriormente durante nuestro escaneo de versiones y servicios, ejecuta por defecto los scripts &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb2-security-mode&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb-security-mode&lt;/code&gt; y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb-os-discovery&lt;/code&gt;. Si obtenemos una respuesta del script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb-security-mode&lt;/code&gt;, podemos inferir que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBv1&lt;/code&gt; está habilitado. No obstante, si queremos estar completamente seguros de los dialectos soportados, podemos incluir el script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb-protocols&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;--script&lt;/span&gt; smb-protocols,smb2-security-mode,smb-security-mode,smb-os-discovery &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 139,445 &amp;lt;IP del host&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Similar a los resultados obtenidos con &lt;em&gt;NetExec&lt;/em&gt;, este escaneo con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Nmap&lt;/code&gt; nos proporciona información sobre los protocolos soportados, la configuración de seguridad de &lt;em&gt;SMB&lt;/em&gt;, y la versión del sistema operativo.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/4.png&quot; alt=&quot;4&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;metasploit&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;Metasploit&lt;/h5&gt;
+
+&lt;p&gt;Finalmente, como alternativa, podemos usar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Metasploit&lt;/code&gt; para realizar la enumeración del servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt;. El módulo auxiliar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb_version&lt;/code&gt; nos permitirá listar los dialectos soportados y el estado del firmado &lt;em&gt;SMB&lt;/em&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;msfconsole
+use auxiliary/scanner/smb/smb_version
+set RHOST &amp;lt;IP del host&amp;gt;
+run
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/5.png&quot; alt=&quot;5&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez ejecutado, podemos confirmar nuevamente los dialectos soportados por el servidor, el dialecto preferido, la configuración del firmado &lt;em&gt;SMB&lt;/em&gt;, y la versión del sistema operativo.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/6.png&quot; alt=&quot;6&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;smb-shares&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;SMB Shares&lt;/h4&gt;
+
+&lt;p&gt;Con todo esta información en mente, podemos profundizar aún más en el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt;. Dado que las &lt;em&gt;null sessions&lt;/em&gt; están habilitadas, podemos establecer una sesión anónima contra el servidor e intentar enumerar recursos compartidos a nivel de red; y en caso de que los permisos lo permitan, también podríamos interactuar con dichos recursos. Para esta tarea utilizaremos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;IP del host&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/7.png&quot; alt=&quot;7&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;En este caso, únicamente podemos listar los recursos existentes, pues no contamos con permisos suficientes para interactuar con ellos, ya que el acceso está restringido.&lt;/p&gt;
+
+&lt;h4 id=&quot;eternalblue&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;EternalBlue&lt;/h4&gt;
+
+&lt;p&gt;Esto nos deja con un último vector potencial a evaluar: determinar si la implementación de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBv1&lt;/code&gt; presente en el sistema se encuentra sin parchear y, por lo tanto, es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;, o &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EternalBlue&lt;/code&gt;. Para verificar la presencia de esta vulnerabilidad, utilizaremos dos enfoques distintos.&lt;/p&gt;
+
+&lt;h5 id=&quot;nmap-1&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;Nmap&lt;/h5&gt;
+
+&lt;p&gt;Podemos continuar utilizando scripts de descubrimiento de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Nmap&lt;/code&gt;, esta vez orientados a la detección de vulnerabilidades. En este caso, emplearemos el script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb-vuln-ms17-010&lt;/code&gt;, para comprobar si el host es susceptible a esta vulnerabilidad:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;--script&lt;/span&gt; smb-vuln-ms17-010 &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 445 &amp;lt;IP del host&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/8.png&quot; alt=&quot;8&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;El resultado del escaneo confirma que el host es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;, por lo que podemos explotar esta vulnerabilidad.&lt;/p&gt;
+
+&lt;h5 id=&quot;metasploit-1&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;Metasploit&lt;/h5&gt;
+
+&lt;p&gt;Alternativamente, podemos utilizar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Metasploit&lt;/code&gt;. El módulo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ms17_010_eternalblue&lt;/code&gt; incluye una función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;check&lt;/code&gt; que permite validar si el sistema es vulnerable antes de proceder con la explotación:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;msfconsole
+use exploit/windows/smb/ms17_010_eternalblue
+set RHOST &amp;lt;IP del host&amp;gt;
+check
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;En su defecto, podemos utilizar directamente el módulo auxiliar subyacente encargado únicamente de la comprobación:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;msfconsole
+use auxiliary/scanner/smb/smb_ms17_010
+set RHOST &amp;lt;IP del host&amp;gt;
+run
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/9.png&quot; alt=&quot;9&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Al igual que con &lt;em&gt;Nmap&lt;/em&gt;, confirmamos que el host es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;, por lo que a explotación resulta viable.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/10.png&quot; alt=&quot;10&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
+
+&lt;p&gt;Con este mismo módulo, más adelante en caso de que quisiéramos usar herramientas automatizadas, podríamos realizar la explotación. Sin embargo, como siempre, yo discourage usar herramientas automatizadas ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, más adelante cubriré ambas metodologías y me enfocaré mucho más en la vía manual&lt;/p&gt;
+</description>
+        <pubDate>Fri, 20 Feb 2026 00:00:00 -0500</pubDate>
+        <link>/es/Blue-Practical-Ethical-Hacking/</link>
+        <guid isPermaLink="true">/es/Blue-Practical-Ethical-Hacking/</guid>
+      </item>
+    
+      <item>
+        <title>Blue - Practical Ethical Hacking</title>
+        <description>&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/2.webp&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Today we are going to solve TCM Security’s &lt;a href=&quot;https://academy.tcm-sec.com/p/practical-ethical-hacking-the-complete-course&quot;&gt;Practical Ethical Hacking&lt;/a&gt; Course &lt;em&gt;Blue&lt;/em&gt; machine. This machine is part of the intermediate capstone of the course, in this write-up I’ll focus on covering multiple exploitation and privilege escalation techniques, from initial reconnaissance to gaining administrator privileges.&lt;/p&gt;
+
+&lt;p&gt;The goal of this article is to reinforce what I’ve learned so far, but also to provide a more comprehensive guide, exploring different approaches and methodologies that could be helpful for those looking to dive deeper into the process.&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
+
+&lt;p&gt;Primeramente vamos a lanzar una &lt;em&gt;traza ICMP&lt;/em&gt; para saber si la máquina está activa.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del &lt;em&gt;TTL&lt;/em&gt;; en este caso el valor del &lt;em&gt;TTL&lt;/em&gt; de la máquina es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt;, por lo que podemos intuir que estamos ante una máquina &lt;em&gt;Linux&lt;/em&gt;. Recordemos que algunos de los valores referenciales son los siguientes:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Sistema Operativo (OS)&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;TTL&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Linux&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;64&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Windows&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;128&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Solaris&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;254&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Si nos damos cuenta, en esta ocasión, el valor del &lt;em&gt;TTL&lt;/em&gt; es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;63&lt;/code&gt; y no &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64&lt;/code&gt; como indica la tabla anterior, esto se debe a que en el entorno de máquinas de &lt;em&gt;Hack The Box&lt;/em&gt;, no nos comunicamos directamente con la máquina a vulnerar, sino que existe un nodo intermediario, por lo que el &lt;em&gt;TTL&lt;/em&gt; disminuye en una unidad.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 10.10.10.238 -R
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/3a.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Posteriormente, vamos a utilizar la herramienta &lt;em&gt;Nmap&lt;/em&gt; para determinar que puertos están abiertos, así como identificar la versión y servicios que corren en el activo. Para determinar que puertos están abiertos podemos realizar lo siguiente:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-T5&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; 10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;En caso de que el escaneo tarde demasiado en completar, tenemos esta otra alternativa:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;nmap &lt;span class=&quot;nt&quot;&gt;-p-&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--open&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sS&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--min-rate&lt;/span&gt; 5000 &lt;span class=&quot;nt&quot;&gt;-vvv&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Pn&lt;/span&gt; 10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de puertos con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p-&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Escanea todo el rango de puertos (65535 en total)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;--open&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Nos indica todos aquellos puertos que están abiertos (o posiblemente abiertos)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-T5&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;La plantilla de temporizado nos permite agilizar nuestro escaneo, este valor puede ir desde 0 hasta 5, cabe aclarar que a mayor sea el valor de la plantilla, “generaremos más ruido”, pero no pasa nada ¿no? Al fin y al cabo estamos practicando en un entorno controlado y aquí somos todos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;White Hat&lt;/code&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-v&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;em&gt;Verbose&lt;/em&gt;, reporta lo encontrado por consola&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-n&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;resolución DNS&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sS&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Escaneo &lt;em&gt;TCP SYN&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-min-rate&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Emitir paquetes no más lentos que &amp;lt;valor&amp;gt; por segundo&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-vvv&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Triple &lt;em&gt;verbose&lt;/em&gt;, para obtener mayor información por consola&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-Pn&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;No aplicar &lt;em&gt;host discovery&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Una vez hemos detectado los puertos que se encuentran abiertos en el activo, podemos pasar a determinar la versión y servicios que corren bajo estos puertos.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sC&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 22,80 10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A continuación se explican los parámetros utilizados en el escaneo de versiones y servicios con &lt;em&gt;Nmap&lt;/em&gt;:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Parámetro&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Explicación&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sC&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Scripts básicos de enumeración&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-sV&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Versión y servicios que corren bajo los puertos encontrados&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;-p&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Especificamos que puertos queremos analizar (los que encontramos abiertos en el paso anterior)&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Basándonos en la información que nos reporta &lt;em&gt;Nmap&lt;/em&gt;, podemos darnos cuenta que la máquina víctima tiene abiertos puertos relacionados con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH&lt;/code&gt; (22) y &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt; (80).&lt;/p&gt;
+
+&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
+
+&lt;p&gt;Para enumerar el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HTTP&lt;/code&gt;, usaremos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;WhatWeb&lt;/code&gt;, una herramienta que se encarga de identificar las tecnologías web que se están utilizando. Esto incluye gestores de contenido (CMS), librerías, plugins, o incluso el sistema operativo en el que se está alojando el servidor web.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;whatweb http://10.10.10.238
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+</description>
+        <pubDate>Fri, 20 Feb 2026 00:00:00 -0500</pubDate>
+        <link>/en/Blue-Practical-Ethical-Hacking/</link>
+        <guid isPermaLink="true">/en/Blue-Practical-Ethical-Hacking/</guid>
+      </item>
+    
+      <item>
         <title>Monitors - Hack The Box</title>
         <description>&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/1.png&quot; alt=&quot;Info Card&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -3185,82 +3576,6 @@ PASS p@&lt;span class=&quot;nv&quot;&gt;$$&lt;/span&gt;w0rd!
         <pubDate>Mon, 19 Aug 2024 00:00:00 -0400</pubDate>
         <link>/en/Forest-Hack-The-Box/</link>
         <guid isPermaLink="true">/en/Forest-Hack-The-Box/</guid>
-      </item>
-    
-      <item>
-        <title>Migrando de Parrot OS a Kali Linux</title>
-        <description>&lt;p&gt;Últimamente he experimentado cuelgues aleatorios de forma frecuente con &lt;strong&gt;Parrot OS 5.3&lt;/strong&gt; en mi máquina virtual &lt;strong&gt;VMware Workstation Pro&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;En un principio, pensé que estos problemas podrían deberse a la actualización &lt;strong&gt;22H2&lt;/strong&gt; de Windows, ya que había leído algunos posts que mencionaban posibles incompatibilidades. Sin embargo, después de explorar esta posibilidad, no noté mejoras.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://communities.vmware.com/t5/VMware-Workstation-Pro/Vmware-17-Pro-very-slow-on-Windows-11-22H2/td-p/2946164&quot;&gt;Vmware 17 Pro very slow on Windows 11 22H2&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.reddit.com/r/vmware/comments/17fc6t9/vm_machines_freezes_randomly_after_a_while_in/&quot;&gt;VM machines freezes randomly after a while in VMware Workstation Pro 17.5&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Luego, consideré que la actualización de &lt;strong&gt;VMware&lt;/strong&gt; a la versión &lt;strong&gt;17.5&lt;/strong&gt; podría ser la causa, ya que los cuelgues se volvieron más frecuentes en mi computadora de escritorio. Curiosamente, en mi laptop, donde no actualicé &lt;strong&gt;VMware&lt;/strong&gt; a esta versión, también comencé a experimentar cuelgues, aunque con mucha menos frecuencia.&lt;/p&gt;
-
-&lt;p&gt;Incluso llegué a sospechar que el framework con el que estaba trabajando para un proyecto podría ser la fuente de los problemas, ya que los cuelgues parecían estar relacionados con los &lt;em&gt;crashes&lt;/em&gt; del mismo.&lt;/p&gt;
-
-&lt;p&gt;Después de meses lidiando con estos problemas y sin encontrar una solución, decidí realizar una actualización completa de &lt;strong&gt;Parrot OS&lt;/strong&gt; utilizando el comando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parrot-upgrade&lt;/code&gt;. Sin embargo, durante este proceso, surgieron varios mensajes de error y, finalmente, la máquina virtual dejó de arrancar debido a un &lt;strong&gt;kernel panic&lt;/strong&gt;. Opté por no intentar solucionar este problema y, en su lugar, realicé un respaldo de mis archivos utilizando un &lt;strong&gt;live USB&lt;/strong&gt; con la ISO de Parrot.&lt;/p&gt;
-
-&lt;p&gt;Al observar que varios usuarios enfrentaban dificultades similares con &lt;strong&gt;Parrot OS&lt;/strong&gt; y optaban por migrar a &lt;strong&gt;Kali Linux&lt;/strong&gt;,  tomé la misma decisión. Descargué la &lt;a href=&quot;https://www.kali.org/get-kali/#kali-virtual-machines&quot;&gt;imagen preconfigurada&lt;/a&gt; de &lt;strong&gt;Kali Linux&lt;/strong&gt; para &lt;strong&gt;VMware&lt;/strong&gt;, lo que facilitó el proceso al no tener que realizar ninguna instalación adicional.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png&quot; alt=&quot;1&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Simplemente abrí el archivo de configuración &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.vmx&lt;/code&gt; con &lt;strong&gt;VMware&lt;/strong&gt;, y la máquina virtual estaba lista para ser ejecutada.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;El cambio a &lt;strong&gt;Kali Linux&lt;/strong&gt; fue rápido y la experiencia resultó bastante sencilla.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Al poco tiempo empecé a configurar el mismo entorno de trabajo que tenía previamente en &lt;strong&gt;Parrot OS&lt;/strong&gt;, el cual pueden encontrar en el siguiente enlace a mi &lt;a href=&quot;https://github.com/MateoNitro550/ArcticTones&quot;&gt;repositorio&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Este cambio ha mejorado significativamente la estabilidad y la experiencia de uso, proporcionándome un entorno más fiable para continuar con mi trabajo y proyectos.&lt;/p&gt;
-</description>
-        <pubDate>Mon, 01 Jan 2024 00:00:00 -0500</pubDate>
-        <link>/es/Migrando-de-Parrot-OS-a-Kali-Linux/</link>
-        <guid isPermaLink="true">/es/Migrando-de-Parrot-OS-a-Kali-Linux/</guid>
-      </item>
-    
-      <item>
-        <title>Migrating from Parrot OS to Kali Linux</title>
-        <description>&lt;p&gt;Lately, I’ve been experiencing frequent random crashes with &lt;strong&gt;Parrot OS 5.3&lt;/strong&gt; on my &lt;strong&gt;VMware Workstation Pro&lt;/strong&gt; virtual machine.&lt;/p&gt;
-
-&lt;p&gt;Initially, I thought these issues might be due to the &lt;strong&gt;22H2&lt;/strong&gt; update of Windows, as I had read some posts mentioning potential incompatibilities. However, after exploring this possibility, I didn’t notice any improvements.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://communities.vmware.com/t5/VMware-Workstation-Pro/Vmware-17-Pro-very-slow-on-Windows-11-22H2/td-p/2946164&quot;&gt;Vmware 17 Pro very slow on Windows 11 22H2&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.reddit.com/r/vmware/comments/17fc6t9/vm_machines_freezes_randomly_after_a_while_in/&quot;&gt;VM machines freezes randomly after a while in VMware Workstation Pro 17.5&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Later, I considered that the update of &lt;strong&gt;VMware&lt;/strong&gt; to version &lt;strong&gt;17.5&lt;/strong&gt; might be the cause, as the crashes became more frequent on my desktop computer. Interestingly, on my laptop, where I didn’t update &lt;strong&gt;VMware&lt;/strong&gt; to this version, I also started experiencing crashes, although much less frequently.&lt;/p&gt;
-
-&lt;p&gt;I even suspected that the framework I was using for a project might be the source of the problems, as the crashes seemed to be related to its crashes.&lt;/p&gt;
-
-&lt;p&gt;After months of dealing with these issues and finding no solution, I decided to perform a full update of &lt;strong&gt;Parrot OS&lt;/strong&gt; using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parrot-upgrade&lt;/code&gt; command. However, during this process, several error messages appeared, and eventually, the virtual machine failed to boot due to a &lt;strong&gt;kernel panic&lt;/strong&gt;. I chose not to try to solve this problem and instead backed up my files using a &lt;strong&gt;live USB&lt;/strong&gt; with the Parrot ISO.&lt;/p&gt;
-
-&lt;p&gt;Seeing that many users were facing similar difficulties with &lt;strong&gt;Parrot OS&lt;/strong&gt; and opting to migrate to &lt;strong&gt;Kali Linux&lt;/strong&gt;, I made the same decision. I downloaded the &lt;a href=&quot;https://www.kali.org/get-kali/#kali-virtual-machines&quot;&gt;pre-configured image&lt;/a&gt; of &lt;strong&gt;Kali Linux&lt;/strong&gt; for &lt;strong&gt;VMware&lt;/strong&gt;, making the process easier without the need for additional installations.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/1.png&quot; alt=&quot;1&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;I simply opened the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.vmx&lt;/code&gt; configuration file with &lt;strong&gt;VMware&lt;/strong&gt;, and the virtual machine was ready to run.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The transition to &lt;strong&gt;Kali Linux&lt;/strong&gt; was swift, and the experience was quite straightforward.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-01-09-Migrando-de-Parrot-OS-a-Kali-Linux/3.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Soon after, I began configuring the same Linux setup I had in &lt;strong&gt;Parrot OS&lt;/strong&gt;, which you can find in the following link to my &lt;a href=&quot;https://github.com/MateoNitro550/ArcticTones&quot;&gt;repository&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;This change has significantly improved stability and the overall user experience, providing me with a more reliable environment to continue my work and projects.&lt;/p&gt;
-</description>
-        <pubDate>Mon, 01 Jan 2024 00:00:00 -0500</pubDate>
-        <link>/en/Migrating-from-Parrot-OS-to-Kali-Linux/</link>
-        <guid isPermaLink="true">/en/Migrating-from-Parrot-OS-to-Kali-Linux/</guid>
       </item>
     
   </channel>
