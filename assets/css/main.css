@@ -597,13 +597,18 @@ a:active, a:focus {
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
 
-.toc::before {
-  content: attr(data-toc-text);
-  display: block;
-  font-weight: bold;
+.toc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 10px;
   border-bottom: 1px dashed var(--conifer);
   padding-bottom: 5px;
+}
+
+.toc-title {
+  font-weight: bold;
 }
 
 .toc-toggle,
