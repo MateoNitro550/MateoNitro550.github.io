@@ -2,6 +2,8 @@
 layout: default
 ---
 
+{% assign translations = site.data.translations %}
+
 <div class="post-layout">
   <article>
     <h2>{{ page.title }}</h2>
@@ -15,14 +17,17 @@ layout: default
     {{ content }}
   </article>
 
-  <aside class="toc" id="toc" data-toc-text="{{ site.data.translations.toc[page.lang] }}" hidden>
-    <button class="toc-close" id="toc-close" aria-label="Close table of contents">✕</button>
+  <aside class="toc" id="toc" hidden>
+    <div class="toc-header">
+      <span class="toc-title" id="toc-title">{{ translations.toc[page.lang] }}</span>
+      <button class="toc-close" id="toc-close" aria-label="Close table of contents">✕</button>
+    </div>
     <ul id="toc-list"></ul>
   </aside>
 </div>
 
 <button class="toc-toggle" id="toc-toggle" aria-controls="toc" aria-expanded="false" hidden>
-  ☰ {{ site.data.translations.toc[page.lang] }}
+  ☰ {{ translations.toc[page.lang] }}
 </button>
 
 <div id="carousel" class="carousel">

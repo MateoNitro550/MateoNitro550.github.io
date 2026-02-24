@@ -2,7 +2,7 @@
 title: Blue - Practical Ethical Hacking
 categories: [Windows]
 published: true
-lang: es
+lang: en
 ---
 
 ![Info Card](http://192.168.92.128:80/2.webp){:class="blog-image" onclick="expandImage(this)"}
