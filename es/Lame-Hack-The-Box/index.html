@@ -285,7 +285,7 @@ PASS p@<span class="nv">$$</span>w0rd!
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Encontramos una vulnerabilidad que se explota cuando la opción de configuración <code class="language-plaintext highlighter-rouge">username map script</code> está activa (no habilitada por defecto). Al especificar un nombre de usuario que contenga <em>metacaracteres de shell</em>, es posible conseguir ejecución remota de comandos sin necesidad de autenticación previa.</p>
+<p>Encontramos una vulnerabilidad que se explota cuando la opción de configuración <code class="language-plaintext highlighter-rouge">username map script</code> está activa (no habilitada por defecto). Al especificar un nombre de usuario que contenga <em>metacaracteres de shell</em>, es posible conseguir <em>ejecución remota de comandos</em> (RCE) sin necesidad de autenticación previa.</p>
 
 <p>Sin embargo, el exploit que encontramos utiliza <em>Metasploit</em>, lo cual no se alinea con la metodología que seguimos. No obstante, al examinar el script que encontramos con:</p>
 
@@ -335,7 +335,7 @@ PASS p@<span class="nv">$$</span>w0rd!
 
 <p>Aunque existen scripts que hacen uso de <em>Metasploit</em> para explotar esta vulnerabilidad, también encontramos un <a href="https://gist.github.com/DarkCoderSc/4dbf6229a93e75c3bdf6b467e67a9855#file-distccd_rce_cve-2004-2687-py">exploit</a> del usuario <code class="language-plaintext highlighter-rouge">DarkCoderSc</code> en GitHub que realiza la explotación de forma manual.</p>
 
-<p>Este exploit nos proporciona ejecución remota de comandos, y podemos probarlo de la siguiente forma:</p>
+<p>Este exploit nos proporciona <em>ejecución remota de comandos</em> (RCE), y podemos probarlo de la siguiente forma:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 distccd_rce_CVE-2004-2687.py <span class="nt">-t</span> 10.10.10.3 <span class="nt">-p</span> 3632 <span class="nt">-c</span> <span class="s1">'ifconfig; whoami'</span>
 </code></pre></div></div>
@@ -397,12 +397,15 @@ PASS p@<span class="nv">$$</span>w0rd!
 <div class="image-overlay" onclick="closeImage()"></div>
 <img id="expandedImage" class="expanded-image">
 
+<div class="toc-overlay" id="toc-overlay"></div>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var toc = document.getElementById('toc');
     var tocList = document.getElementById('toc-list');
     var tocToggle = document.getElementById('toc-toggle');
     var tocClose = document.getElementById('toc-close');
+    var overlay = document.getElementById('toc-overlay');
     var headers = document.querySelectorAll('article h3, article h4, article h5');
     var counters = {
       h3: 0,
@@ -465,11 +468,17 @@ PASS p@<span class="nv">$$</span>w0rd!
       tocToggle.addEventListener('click', function() {
         var isOpen = toc.classList.toggle('is-open');
         tocToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+        if (window.matchMedia('(max-width: 900px)').matches) {
+          overlay.classList.toggle('is-visible', isOpen);
+        }
       });
 
       tocClose.addEventListener('click', function() {
         toc.classList.remove('is-open');
         tocToggle.setAttribute('aria-expanded', 'false');
+
+        overlay.classList.remove('is-visible');
       });
 
       tocList.addEventListener('click', function(event) {
@@ -477,6 +486,12 @@ PASS p@<span class="nv">$$</span>w0rd!
           toc.classList.remove('is-open');
           tocToggle.setAttribute('aria-expanded', 'false');
         }
+      });
+
+      overlay.addEventListener('click', function() {
+        toc.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+        overlay.classList.remove('is-visible');
       });
     } else {
       toc.hidden = true;

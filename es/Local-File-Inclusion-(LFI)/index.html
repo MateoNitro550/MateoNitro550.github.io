@@ -156,7 +156,7 @@
 
 <h3 id="expect"><a href="#header-3"></a>expect://</h3>
 
-<p>Nos permite una ejecución remota de comandos (RCE); cabe aclarar que este <em>wrapper</em> no está activado por defecto, por lo que no siempre será posible utilizarlo.</p>
+<p>Nos permite una <em>ejecución remota de comandos</em> (RCE); cabe aclarar que este <em>wrapper</em> no está activado por defecto, por lo que no siempre será posible utilizarlo.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localhost/lfi.php?filename=expect://whoami
 </code></pre></div></div>
@@ -203,12 +203,15 @@
 <div class="image-overlay" onclick="closeImage()"></div>
 <img id="expandedImage" class="expanded-image">
 
+<div class="toc-overlay" id="toc-overlay"></div>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var toc = document.getElementById('toc');
     var tocList = document.getElementById('toc-list');
     var tocToggle = document.getElementById('toc-toggle');
     var tocClose = document.getElementById('toc-close');
+    var overlay = document.getElementById('toc-overlay');
     var headers = document.querySelectorAll('article h3, article h4, article h5');
     var counters = {
       h3: 0,
@@ -271,11 +274,17 @@
       tocToggle.addEventListener('click', function() {
         var isOpen = toc.classList.toggle('is-open');
         tocToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+        if (window.matchMedia('(max-width: 900px)').matches) {
+          overlay.classList.toggle('is-visible', isOpen);
+        }
       });
 
       tocClose.addEventListener('click', function() {
         toc.classList.remove('is-open');
         tocToggle.setAttribute('aria-expanded', 'false');
+
+        overlay.classList.remove('is-visible');
       });
 
       tocList.addEventListener('click', function(event) {
@@ -283,6 +292,12 @@
           toc.classList.remove('is-open');
           tocToggle.setAttribute('aria-expanded', 'false');
         }
+      });
+
+      overlay.addEventListener('click', function() {
+        toc.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+        overlay.classList.remove('is-visible');
       });
     } else {
       toc.hidden = true;

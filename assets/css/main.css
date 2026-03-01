@@ -580,7 +580,7 @@ a:active, a:focus {
 
 .post-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-columns: minmax(0, 1fr) 330px;
   align-items: start;
   gap: 32px;
 }
@@ -618,7 +618,7 @@ a:active, a:focus {
 
 .toc ul {
   list-style-type: none;
-  padding-left: 1rem;
+  padding-left: 27.5px;
   margin: 0;
 }
 
@@ -647,20 +647,6 @@ a:active, a:focus {
     display: block;
   }
 
-  .toc-toggle {
-    display: inline-flex;
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 2100;
-    border: 1px solid var(--conifer);
-    background: var(--cod-grey);
-    color: var(--conifer);
-    padding: 8px 12px;
-    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-    cursor: pointer;
-  }
-
   .toc {
     position: fixed;
     top: 0;
@@ -674,6 +660,20 @@ a:active, a:focus {
     border-left: 1px dashed var(--conifer);
     background: var(--cod-grey);
     z-index: 2200;
+  }
+
+  .toc-toggle {
+    display: inline-flex;
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2100;
+    border: 1px solid var(--conifer);
+    background: var(--cod-grey);
+    color: var(--conifer);
+    padding: 8px 12px;
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    cursor: pointer;
   }
 
   .toc.is-open {
@@ -690,5 +690,33 @@ a:active, a:focus {
     cursor: pointer;
     font-size: 16px;
     padding: 4px 8px;
+  }
+
+  .toc-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(1px);
+    z-index: 2100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .toc-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .toc ul {
+    padding-left: 30px;
+  }
+
+  .toc ul li.toc-h4 {
+    margin-left: 9.9px;
+  }
+
+  .toc ul li.toc-h5 {
+    margin-left: 19.8px;
   }
 }

