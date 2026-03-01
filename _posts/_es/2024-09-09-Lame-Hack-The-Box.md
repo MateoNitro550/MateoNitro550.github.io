@@ -149,7 +149,7 @@ searchsploit samba 3.0.20
 
 ![8](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/8.png){:class="blog-image" onclick="expandImage(this)"}
 
-Encontramos una vulnerabilidad que se explota cuando la opción de configuración `username map script` está activa (no habilitada por defecto). Al especificar un nombre de usuario que contenga _metacaracteres de shell_, es posible conseguir ejecución remota de comandos sin necesidad de autenticación previa.
+Encontramos una vulnerabilidad que se explota cuando la opción de configuración `username map script` está activa (no habilitada por defecto). Al especificar un nombre de usuario que contenga _metacaracteres de shell_, es posible conseguir _ejecución remota de comandos_ (RCE) sin necesidad de autenticación previa.
 
 Sin embargo, el exploit que encontramos utiliza _Metasploit_, lo cual no se alinea con la metodología que seguimos. No obstante, al examinar el script que encontramos con:
 
@@ -203,7 +203,7 @@ La siguiente vía de explotación que podemos encontrar es a través del servici
 
 Aunque existen scripts que hacen uso de _Metasploit_ para explotar esta vulnerabilidad, también encontramos un [exploit](https://gist.github.com/DarkCoderSc/4dbf6229a93e75c3bdf6b467e67a9855#file-distccd_rce_cve-2004-2687-py) del usuario `DarkCoderSc` en GitHub que realiza la explotación de forma manual.
 
-Este exploit nos proporciona ejecución remota de comandos, y podemos probarlo de la siguiente forma:
+Este exploit nos proporciona _ejecución remota de comandos_ (RCE), y podemos probarlo de la siguiente forma:
 
 ```bash
 python2 distccd_rce_CVE-2004-2687.py -t 10.10.10.3 -p 3632 -c 'ifconfig; whoami'

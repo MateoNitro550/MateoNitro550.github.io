@@ -78,7 +78,7 @@ _PHP_ cuenta con una serie de _wrappers_, los cuales a menudo pueden ser abusado
 
 ### [](#header-3)expect://
 
-Nos permite una ejecución remota de comandos (RCE); cabe aclarar que este _wrapper_ no está activado por defecto, por lo que no siempre será posible utilizarlo.
+Nos permite una _ejecución remota de comandos_ (RCE); cabe aclarar que este _wrapper_ no está activado por defecto, por lo que no siempre será posible utilizarlo.
 
 ```
 localhost/lfi.php?filename=expect://whoami

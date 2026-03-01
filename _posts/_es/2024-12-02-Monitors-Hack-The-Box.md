@@ -476,7 +476,7 @@ searchsploit ofbiz 17.12.01
 
 ![54](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/54.png){:class="blog-image" onclick="expandImage(this)"}
 
-Entre los resultados, encontramos un exploit que proporciona _ejecución remota de comandos_ (`RCE`) mediante un `ataque de deserialización`. Aunque podríamos ejecutarlo directamente, resulta más valioso entender su funcionamiento para practicar el proceso de _deserialización_ y manipular el exploit manualmente, dándonos así un mayor control y comprensión del ataque.
+Entre los resultados, encontramos un exploit que proporciona _ejecución remota de comandos_ (RCE) mediante un `ataque de deserialización`. Aunque podríamos ejecutarlo directamente, resulta más valioso entender su funcionamiento para practicar el proceso de _deserialización_ y manipular el exploit manualmente, dándonos así un mayor control y comprensión del ataque.
 
 ![55](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/55.png){:class="blog-image" onclick="expandImage(this)"}
 
