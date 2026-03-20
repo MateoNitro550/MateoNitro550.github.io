@@ -320,7 +320,9 @@ run
 
 <p>Antes de continuar, me gustaría comentar brevemente la metodología que seguiremos. Las herramientas automatizadas simplifican considerablemente el proceso de explotación y permiten obtener resultados de forma rápida. Sin embargo, comprender cómo y por qué funciona la vulnerabilidad nos da un mayor control sobre el proceso y nos ayuda a entender qué está ocurriendo en cada etapa.</p>
 
-<p>Por este motivo, abordaremos ambos enfoques: por un lado, la explotación automatizada y, por otro, la explotación manual. No obstante, pondremos especial énfasis en esta última, ya que nos permite profundizar en el funcionamiento interno del fallo y desarrollar una base técnica más sólida. Este enfoque resulta especialmente útil en contextos formativos y certificaciones como la <em>Offensive Security Certified Professional</em>, donde el uso de herramientas automatizadas se encuentra restringido.</p>
+<p>Por este motivo, abordaremos ambos enfoques: por un lado, la explotación automatizada y, por otro, la explotación manual. No obstante, pondremos especial énfasis en esta última, ya que nos permite profundizar en el funcionamiento interno del fallo y desarrollar una base técnica más sólida.</p>
+
+<p>Este enfoque resulta especialmente útil en contextos formativos y certificaciones como la <em>Offensive Security Certified Professional</em>, donde el uso de herramientas automatizadas se encuentra restringido.</p>
 
 <h4 id="explotación-automatizada"><a href="#header-4"></a>Explotación Automatizada</h4>
 
@@ -343,7 +345,7 @@ exploit
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Al verificar el contexto de ejecución, observamos que el proceso se ejecuta como <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>, es decir, con los máximos privilegios del sistema. Por tanto, no es necesario realizar ninguna escalada de privilegios adicional.</p>
+<p>Al verificar el contexto de ejecución, observamos que el proceso se ejecuta como <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>, es decir, con los máximos privilegios del sistema. Por lo tanto, no es necesario realizar ninguna escalada de privilegios adicional.</p>
 
 <p>De esta forma, habremos explotado satisfactoriamente la vulnerabilidad y obtenido control completo sobre la máquina víctima.</p>
 
@@ -367,7 +369,7 @@ exploit
 
 <p>Desde el menú interactivo indicaremos la arquitectura del sistema (en nuestro caso, <code class="language-plaintext highlighter-rouge">64 bits</code>, algo que ya habíamos identificado durante la fase de enumeración), la dirección IP de la máquina víctima, nuestra dirección IP y el puerto en el que nos pondremos en escucha.</p>
 
-<p>El propio script se encarga de generar el <code class="language-plaintext highlighter-rouge">shellcode</code> utilizando <code class="language-plaintext highlighter-rouge">MSFvenom</code>. Antes de lanzar la explotación, pausará la ejecución para que confirmemos que estamos en escucha con <code class="language-plaintext highlighter-rouge">Netcat</code>, proporcionándonos incluso el comando necesario, que ejecutaremos en una nueva terminal:</p>
+<p>El propio script se encarga de generar el <code class="language-plaintext highlighter-rouge">shellcode</code> utilizando <code class="language-plaintext highlighter-rouge">MSFvenom</code>. Antes de lanzar la explotación, pausará la ejecución para que confirmemos que estamos en escucha con <code class="language-plaintext highlighter-rouge">Netcat</code>, proporcionándonos incluso el comando necesario que ejecutaremos en una nueva terminal:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc <span class="nt">-nlvp</span> 443
 </code></pre></div></div>
@@ -423,7 +425,7 @@ exploit
 
 <p>Una vez clonado el proyecto, nos situamos dentro del directorio. En primer lugar, ejecutaremos el script <code class="language-plaintext highlighter-rouge">checker.py</code> para identificar los <code class="language-plaintext highlighter-rouge">named pipes</code> disponibles en la máquina víctima:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 checker.py
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 checker.py &lt;IP del host&gt;
 </code></pre></div></div>
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
@@ -465,7 +467,7 @@ exploit
 
 <p>Con el recurso compartido activo y el listener en ejecución, lanzaremos el exploit indicando uno de los <code class="language-plaintext highlighter-rouge">named pipes</code> identificados anteriormente al ejecutar <code class="language-plaintext highlighter-rouge">checker.py</code>:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 zzz_exploit.py &lt;IP del host&gt; samr
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 zzz_exploit.py &lt;IP del host&gt; &lt;named pipe&gt;
 </code></pre></div></div>
 
 <p>De esta forma, obtendremos una shell interactiva dentro de la máquina víctima con privilegios máximos, ejecutándose como <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code>.</p>
