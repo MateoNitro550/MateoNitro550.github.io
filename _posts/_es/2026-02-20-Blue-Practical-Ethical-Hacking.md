@@ -180,7 +180,9 @@ Una vez confirmamos que el sistema es vulnerable a `MS17-010` (`EternalBlue`), e
 
 Antes de continuar, me gustaría comentar brevemente la metodología que seguiremos. Las herramientas automatizadas simplifican considerablemente el proceso de explotación y permiten obtener resultados de forma rápida. Sin embargo, comprender cómo y por qué funciona la vulnerabilidad nos da un mayor control sobre el proceso y nos ayuda a entender qué está ocurriendo en cada etapa.
 
-Por este motivo, abordaremos ambos enfoques: por un lado, la explotación automatizada y, por otro, la explotación manual. No obstante, pondremos especial énfasis en esta última, ya que nos permite profundizar en el funcionamiento interno del fallo y desarrollar una base técnica más sólida. Este enfoque resulta especialmente útil en contextos formativos y certificaciones como la _Offensive Security Certified Professional_, donde el uso de herramientas automatizadas se encuentra restringido.
+Por este motivo, abordaremos ambos enfoques: por un lado, la explotación automatizada y, por otro, la explotación manual. No obstante, pondremos especial énfasis en esta última, ya que nos permite profundizar en el funcionamiento interno del fallo y desarrollar una base técnica más sólida.
+
+Este enfoque resulta especialmente útil en contextos formativos y certificaciones como la _Offensive Security Certified Professional_, donde el uso de herramientas automatizadas se encuentra restringido.
 
 #### [](#header-4)Explotación Automatizada
 
@@ -205,7 +207,7 @@ shell
 
 ![12](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/12.png){:class="blog-image" onclick="expandImage(this)"}
 
-Al verificar el contexto de ejecución, observamos que el proceso se ejecuta como `NT AUTHORITY\SYSTEM`, es decir, con los máximos privilegios del sistema. Por tanto, no es necesario realizar ninguna escalada de privilegios adicional.
+Al verificar el contexto de ejecución, observamos que el proceso se ejecuta como `NT AUTHORITY\SYSTEM`, es decir, con los máximos privilegios del sistema. Por lo tanto, no es necesario realizar ninguna escalada de privilegios adicional.
 
 De esta forma, habremos explotado satisfactoriamente la vulnerabilidad y obtenido control completo sobre la máquina víctima.
 
@@ -231,7 +233,7 @@ bash Win7Blue
 
 Desde el menú interactivo indicaremos la arquitectura del sistema (en nuestro caso, `64 bits`, algo que ya habíamos identificado durante la fase de enumeración), la dirección IP de la máquina víctima, nuestra dirección IP y el puerto en el que nos pondremos en escucha.
 
-El propio script se encarga de generar el `shellcode` utilizando `MSFvenom`. Antes de lanzar la explotación, pausará la ejecución para que confirmemos que estamos en escucha con `Netcat`, proporcionándonos incluso el comando necesario, que ejecutaremos en una nueva terminal:
+El propio script se encarga de generar el `shellcode` utilizando `MSFvenom`. Antes de lanzar la explotación, pausará la ejecución para que confirmemos que estamos en escucha con `Netcat`, proporcionándonos incluso el comando necesario que ejecutaremos en una nueva terminal:
 
 ```bash
 nc -nlvp 443
@@ -295,7 +297,7 @@ git clone https://github.com/worawit/MS17-010
 Una vez clonado el proyecto, nos situamos dentro del directorio. En primer lugar, ejecutaremos el script `checker.py` para identificar los `named pipes` disponibles en la máquina víctima:
 
 ```bash
-python2 checker.py
+python2 checker.py <IP del host>
 ```
 
 ![16](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/16.png){:class="blog-image" onclick="expandImage(this)"}
@@ -341,7 +343,7 @@ nc -nlvp 443
 Con el recurso compartido activo y el listener en ejecución, lanzaremos el exploit indicando uno de los `named pipes` identificados anteriormente al ejecutar `checker.py`:
 
 ```bash
-python2 zzz_exploit.py <IP del host> samr
+python2 zzz_exploit.py <IP del host> <named pipe>
 ```
 
 De esta forma, obtendremos una shell interactiva dentro de la máquina víctima con privilegios máximos, ejecutándose como `NT AUTHORITY\SYSTEM`.
