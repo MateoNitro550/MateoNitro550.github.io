@@ -1,6 +1,6 @@
 ---
 title: Blue - Practical Ethical Hacking
-categories: [Windows, TCM Security, Practical Ethical Hacking, PEH, SMB, MS17-010, EternalBlue, Metasploit, Win7Blue, AutoBlue, Impacket, Named Pipes, Post-Explotación, LocalAccountTokenFilterPolicy]
+categories: [Windows, TCM Security, Practical Ethical Hacking, PEH, SMB, MS17-010, EternalBlue, Metasploit, Win7Blue, AutoBlue, Impacket, Named Pipes, Post-Exploitation, LocalAccountTokenFilterPolicy]
 published: true
 lang: en
 ---
