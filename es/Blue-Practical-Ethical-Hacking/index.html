@@ -31,11 +31,11 @@
 <meta property="og:description" content="Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or eager to learn? This is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more." />
 <meta property="og:site_name" content="Filthy Hacker" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2026-02-20T00:00:00-05:00" />
+<meta property="article:published_time" content="2026-06-15T00:00:00-04:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Blue - Practical Ethical Hacking" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2026-02-20T00:00:00-05:00","datePublished":"2026-02-20T00:00:00-05:00","description":"Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or eager to learn? This is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more.","headline":"Blue - Practical Ethical Hacking","mainEntityOfPage":{"@type":"WebPage","@id":"/es/Blue-Practical-Ethical-Hacking/"},"url":"/es/Blue-Practical-Ethical-Hacking/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2026-06-15T00:00:00-04:00","datePublished":"2026-06-15T00:00:00-04:00","description":"Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or eager to learn? This is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more.","headline":"Blue - Practical Ethical Hacking","mainEntityOfPage":{"@type":"WebPage","@id":"/es/Blue-Practical-Ethical-Hacking/"},"url":"/es/Blue-Practical-Ethical-Hacking/"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -82,9 +82,9 @@
 <div class="post-layout">
   <article>
     <h2>Blue - Practical Ethical Hacking</h2>
-    <time datetime="2026-02-20T00:00:00-05:00" class="by-line">
+    <time datetime="2026-06-15T00:00:00-04:00" class="by-line">
       
-        20/02/2026
+        15/06/2026
       
     </time>
     <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/1.png" alt="Info Card" class="blog-image" onclick="expandImage(this)" /></p>
@@ -316,7 +316,7 @@ run
 
 <h3 id="fase-de-explotación"><a href="#header-3"></a>Fase de Explotación</h3>
 
-<p>Una vez confirmamos que el sistema es vulnerable a <code class="language-plaintext highlighter-rouge">MS17-010</code> (<code class="language-plaintext highlighter-rouge">EternalBlue</code>), el siguiente paso consiste en intentar su explotación con el objetivo de obtener <em>ejecución remota de código</em> (RCE) en la máquina víctima.</p>
+<p>Una vez confirmamos que el sistema es vulnerable a <code class="language-plaintext highlighter-rouge">EternalBlue</code>, el siguiente paso consiste en intentar su explotación con el objetivo de obtener <em>ejecución remota de código</em> (RCE) en la máquina víctima.</p>
 
 <p>Antes de continuar, me gustaría comentar brevemente la metodología que seguiremos. Las herramientas automatizadas simplifican considerablemente el proceso de explotación y permiten obtener resultados de forma rápida. Sin embargo, comprender cómo y por qué funciona la vulnerabilidad nos da un mayor control sobre el proceso y nos ayuda a entender qué está ocurriendo en cada etapa.</p>
 
@@ -326,9 +326,9 @@ run
 
 <h4 id="explotación-automatizada"><a href="#header-4"></a>Explotación Automatizada</h4>
 
-<p>Para realizar la explotación automatizada utilizaremos <code class="language-plaintext highlighter-rouge">Metasploit</code>. En concreto, emplearemos el mismo módulo que utilizamos previamente para comprobar si el host era susceptible a <code class="language-plaintext highlighter-rouge">MS17‑010</code> (<code class="language-plaintext highlighter-rouge">EternalBlue</code>).</p>
+<p>Para realizar la explotación automatizada utilizaremos <code class="language-plaintext highlighter-rouge">Metasploit</code>. En concreto, emplearemos el mismo módulo que utilizamos previamente para comprobar si el host era susceptible a <code class="language-plaintext highlighter-rouge">EternalBlue</code>.</p>
 
-<p>La diferencia es que, en esta ocasión, en lugar de ejecutar la función <em>check</em>, lanzaremos directamente el exploit con el objetivo de obtener <em>ejecución remota de código</em> (RCE) sobre la máquina víctima.</p>
+<p>La diferencia es que, en esta ocasión, en lugar de ejecutar la función <em>check</em>, lanzaremos directamente el exploit con el objetivo de obtener <em>ejecución remota de código</em> sobre la máquina víctima.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfconsole
 use exploit/windows/smb/ms17_010_eternalblue
@@ -474,6 +474,31 @@ exploit
 
 <p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png" alt="21" class="blog-image" onclick="expandImage(this)" /></p>
 
+<h3 id="post-explotación"><a href="#header-3"></a>Post-Explotación</h3>
+
+<p>Dado que ya contamos con privilegios máximos sobre la máquina, no es necesario realizar ninguna escalada de privilegios adicional. Sin embargo, sí podemos comenzar a realizar distintas tareas de <em>post-explotación</em>, como la creación de mecanismos de persistencia o la extracción de credenciales del sistema.</p>
+
+<p>Un ejemplo sencillo sería crear un nuevo usuario local y añadirlo al grupo de administradores:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">net</span> <span class="n">user</span> <span class="o">&lt;</span><span class="n">usuario</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">contraseña</span><span class="o">&gt;</span> <span class="o">/</span><span class="n">add</span>
+<span class="n">net</span> <span class="n">localgroup</span> <span class="n">administrators</span> <span class="o">&lt;</span><span class="n">usuario</span><span class="o">&gt;</span> <span class="o">/</span><span class="n">add</span>
+</code></pre></div></div>
+
+<p>Sin embargo, si intentamos autenticarnos remotamente utilizando estas credenciales, por ejemplo mediante <code class="language-plaintext highlighter-rouge">NetExec</code>, observaremos que, aunque la autenticación es válida, no obtenemos privilegios administrativos a través de la red. En otras palabras, la herramienta no nos mostrará el característico mensaje <code class="language-plaintext highlighter-rouge">Pwn3d!</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png" alt="22" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Este comportamiento se debe a la característica <code class="language-plaintext highlighter-rouge">LocalAccountTokenFilterPolicy</code>, un mecanismo de seguridad de Windows que filtra los privilegios administrativos de las cuentas locales cuando estas se utilizan para autenticarse remotamente. Es importante destacar que esta restricción afecta únicamente a las cuentas administrativas locales y no a las cuentas pertenecientes a un dominio.</p>
+
+<p>Dado que disponemos de privilegios máximos sobre el sistema, podemos modificar esta configuración mediante el registro:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cmd</span> <span class="o">/</span><span class="n">c</span> <span class="n">reg</span> <span class="n">add</span> <span class="n">HKLM</span>\<span class="n">SOFTWARE</span>\<span class="n">Microsoft</span>\<span class="n">Windows</span>\<span class="n">CurrentVersion</span>\<span class="n">Policies</span>\<span class="n">system</span> <span class="o">/</span><span class="n">v</span> <span class="n">LocalAccountTokenFilterPolicy</span> <span class="o">/</span><span class="n">t</span> <span class="n">REG_DWORD</span> <span class="o">/</span><span class="n">d</span> <span class="mi">1</span> <span class="o">/</span><span class="n">f</span>
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png" alt="23" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Del mismo modo, disponer de una sesión como <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code> nos permite realizar tareas de post-explotación más avanzadas, como la extracción de credenciales locales y de la memoria del sistema, lo que puede ser útil para pivotar dentro del entorno, facilitar el movimiento lateral o incluso mantener el acceso más allá de la sesión inicial. No obstante, profundizaremos en este proceso en otro <a href="https://mateonitro550.github.io/es/Windows-Credential-Dumping">artículo</a>.</p>
+
   </article>
 
   <aside class="toc" id="toc" hidden>
@@ -566,6 +591,55 @@ exploit
         listItem.appendChild(link);
         tocList.appendChild(listItem);
       });
+
+      var tocLinks = tocList.querySelectorAll('a');
+      var sectionById = {};
+
+      headers.forEach(function(header) {
+        sectionById[header.id] = header;
+      });
+
+      function setActiveTocLink(activeId) {
+        tocLinks.forEach(function(link) {
+          var isActive = link.getAttribute('href') === '#' + activeId;
+          link.classList.toggle('is-active', isActive);
+
+          if (link.parentElement) {
+            link.parentElement.classList.toggle('is-active', isActive);
+          }
+        });
+      }
+
+      if ('IntersectionObserver' in window) {
+        var visibleSections = {};
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              visibleSections[entry.target.id] = entry.target;
+            } else {
+              delete visibleSections[entry.target.id];
+            }
+          });
+
+          var activeHeader = Object.keys(visibleSections)
+            .map(function(id) { return sectionById[id]; })
+            .sort(function(a, b) { return a.offsetTop - b.offsetTop; })[0];
+
+          if (activeHeader) {
+            setActiveTocLink(activeHeader.id);
+          }
+        }, {
+          rootMargin: '-120px 0px -55% 0px',
+          threshold: 0
+        });
+
+        headers.forEach(function(header) {
+          observer.observe(header);
+        });
+      } else if (headers[0]) {
+        setActiveTocLink(headers[0].id);
+      }
+
 
       tocToggle.addEventListener('click', function() {
         var isOpen = toc.classList.toggle('is-open');

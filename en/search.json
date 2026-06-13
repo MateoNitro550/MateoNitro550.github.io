@@ -33,6 +33,13 @@
       "category" : "Linux Apache Virtual Hosting WordPress Fuzzing WP with Spritz Remote File Inclusion RFI Reverse Shell Local File Inclusion LFI Cacti SQL Injection Docker Container Local Port Forwarding Apache OFBiz Deserialization CommonsBeanutils1 Docker Breakout Capability CAP_SYS_MODULE Kernel Module",
       "url"      : "https://mateonitro550.github.io/en/Monitors-Hack-The-Box/",
       "date"     : "12/02/2024"
-    }
+    } ,
+
+    {
+      "title"    : "Blue - Practical Ethical Hacking",
+      "category" : "Windows TCM Security Practical Ethical Hacking PEH SMB MS17-010 EternalBlue Metasploit Win7Blue AutoBlue Impacket Named Pipes Post-Exploitation LocalAccountTokenFilterPolicy",
+      "url"      : "https://mateonitro550.github.io/en/Blue-Practical-Ethical-Hacking/",
+      "date"     : "06/15/2026"
+    } 
   
 ]
