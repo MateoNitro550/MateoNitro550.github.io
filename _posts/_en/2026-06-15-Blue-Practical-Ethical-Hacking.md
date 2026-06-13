@@ -1,6 +1,6 @@
 ---
 title: Blue - Practical Ethical Hacking
-categories: [Windows, RPC, NetBIOS, SMB, NetExec, NXC, EternalBlue, MS17-010, Metasploit, Remote Code Execution, RCE, Named Pipes]
+categories: [Windows, TCM Security, Practical Ethical Hacking, PEH, SMB, MS17-010, EternalBlue, Metasploit, Win7Blue, AutoBlue, Impacket, Named Pipes, Post-Explotación, LocalAccountTokenFilterPolicy]
 published: true
 lang: en
 ---
