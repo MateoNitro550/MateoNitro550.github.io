@@ -486,7 +486,7 @@ exploit
 
 <p>Sin embargo, si intentamos autenticarnos remotamente utilizando estas credenciales, por ejemplo mediante <code class="language-plaintext highlighter-rouge">NetExec</code>, observaremos que, aunque la autenticación es válida, no obtenemos privilegios administrativos a través de la red. En otras palabras, la herramienta no nos mostrará el característico mensaje <code class="language-plaintext highlighter-rouge">Pwn3d!</code>.</p>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png" alt="22" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/22.png" alt="22" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Este comportamiento se debe a la característica <code class="language-plaintext highlighter-rouge">LocalAccountTokenFilterPolicy</code>, un mecanismo de seguridad de Windows que filtra los privilegios administrativos de las cuentas locales cuando estas se utilizan para autenticarse remotamente. Es importante destacar que esta restricción afecta únicamente a las cuentas administrativas locales y no a las cuentas pertenecientes a un dominio.</p>
 
@@ -495,7 +495,7 @@ exploit
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cmd</span> <span class="o">/</span><span class="n">c</span> <span class="n">reg</span> <span class="n">add</span> <span class="n">HKLM</span>\<span class="n">SOFTWARE</span>\<span class="n">Microsoft</span>\<span class="n">Windows</span>\<span class="n">CurrentVersion</span>\<span class="n">Policies</span>\<span class="n">system</span> <span class="o">/</span><span class="n">v</span> <span class="n">LocalAccountTokenFilterPolicy</span> <span class="o">/</span><span class="n">t</span> <span class="n">REG_DWORD</span> <span class="o">/</span><span class="n">d</span> <span class="mi">1</span> <span class="o">/</span><span class="n">f</span>
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png" alt="23" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/23.png" alt="23" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Del mismo modo, disponer de una sesión como <code class="language-plaintext highlighter-rouge">NT AUTHORITY\SYSTEM</code> nos permite realizar tareas de post-explotación más avanzadas, como la extracción de credenciales locales y de la memoria del sistema, lo que puede ser útil para pivotar dentro del entorno, facilitar el movimiento lateral o incluso mantener el acceso más allá de la sesión inicial. No obstante, profundizaremos en este proceso en otro <a href="https://mateonitro550.github.io/es/Windows-Credential-Dumping">artículo</a>.</p>
 
