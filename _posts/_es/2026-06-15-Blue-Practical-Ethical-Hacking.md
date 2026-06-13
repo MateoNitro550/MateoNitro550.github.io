@@ -363,7 +363,7 @@ net localgroup administrators <usuario> /add
 
 Sin embargo, si intentamos autenticarnos remotamente utilizando estas credenciales, por ejemplo mediante `NetExec`, observaremos que, aunque la autenticación es válida, no obtenemos privilegios administrativos a través de la red. En otras palabras, la herramienta no nos mostrará el característico mensaje `Pwn3d!`.
 
-![22](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png){:class="blog-image" onclick="expandImage(this)"}
+![22](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/22.png){:class="blog-image" onclick="expandImage(this)"}
 
 Este comportamiento se debe a la característica `LocalAccountTokenFilterPolicy`, un mecanismo de seguridad de Windows que filtra los privilegios administrativos de las cuentas locales cuando estas se utilizan para autenticarse remotamente. Es importante destacar que esta restricción afecta únicamente a las cuentas administrativas locales y no a las cuentas pertenecientes a un dominio.
 
@@ -373,6 +373,6 @@ Dado que disponemos de privilegios máximos sobre el sistema, podemos modificar 
 cmd /c reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\system /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f
 ```
 
-![23](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png){:class="blog-image" onclick="expandImage(this)"}
+![23](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/23.png){:class="blog-image" onclick="expandImage(this)"}
 
 Del mismo modo, disponer de una sesión como `NT AUTHORITY\SYSTEM` nos permite realizar tareas de post-explotación más avanzadas, como la extracción de credenciales locales y de la memoria del sistema, lo que puede ser útil para pivotar dentro del entorno, facilitar el movimiento lateral o incluso mantener el acceso más allá de la sesión inicial. No obstante, profundizaremos en este proceso en otro [artículo](https://mateonitro550.github.io/es/Windows-Credential-Dumping).
