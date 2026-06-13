@@ -1,6 +1,6 @@
 ---
 title: Blue - Practical Ethical Hacking
-categories: [Windows]
+categories: [Windows, SMB, NetBIOS, RPC, EternalBlue, MS17-010, Metasploit, Nmap, Privilege Escalation, Remote Code Execution, RCE]
 published: true
 lang: es
 ---
@@ -176,7 +176,7 @@ Al igual que con _Nmap_, confirmamos que el host es vulnerable a `MS17-010`, lo 
 
 ### [](#header-3)Fase de Explotación
 
-Una vez confirmamos que el sistema es vulnerable a `MS17-010` (`EternalBlue`), el siguiente paso consiste en intentar su explotación con el objetivo de obtener _ejecución remota de código_ (RCE) en la máquina víctima.
+Una vez confirmamos que el sistema es vulnerable a `EternalBlue`, el siguiente paso consiste en intentar su explotación con el objetivo de obtener _ejecución remota de código_ (RCE) en la máquina víctima.
 
 Antes de continuar, me gustaría comentar brevemente la metodología que seguiremos. Las herramientas automatizadas simplifican considerablemente el proceso de explotación y permiten obtener resultados de forma rápida. Sin embargo, comprender cómo y por qué funciona la vulnerabilidad nos da un mayor control sobre el proceso y nos ayuda a entender qué está ocurriendo en cada etapa.
 
@@ -186,9 +186,9 @@ Este enfoque resulta especialmente útil en contextos formativos y certificacion
 
 #### [](#header-4)Explotación Automatizada
 
-Para realizar la explotación automatizada utilizaremos `Metasploit`. En concreto, emplearemos el mismo módulo que utilizamos previamente para comprobar si el host era susceptible a `MS17‑010` (`EternalBlue`).
+Para realizar la explotación automatizada utilizaremos `Metasploit`. En concreto, emplearemos el mismo módulo que utilizamos previamente para comprobar si el host era susceptible a `EternalBlue`.
 
-La diferencia es que, en esta ocasión, en lugar de ejecutar la función _check_, lanzaremos directamente el exploit con el objetivo de obtener _ejecución remota de código_ (RCE) sobre la máquina víctima.
+La diferencia es que, en esta ocasión, en lugar de ejecutar la función _check_, lanzaremos directamente el exploit con el objetivo de obtener _ejecución remota de código_ sobre la máquina víctima.
 
 ```
 msfconsole
@@ -349,3 +349,30 @@ python2 zzz_exploit.py <IP del host> <named pipe>
 De esta forma, obtendremos una shell interactiva dentro de la máquina víctima con privilegios máximos, ejecutándose como `NT AUTHORITY\SYSTEM`.
 
 ![21](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png){:class="blog-image" onclick="expandImage(this)"}
+
+### [](#header-3)Post-Explotación
+
+Dado que ya contamos con privilegios máximos sobre la máquina, no es necesario realizar ninguna escalada de privilegios adicional. Sin embargo, sí podemos comenzar a realizar distintas tareas de _post-explotación_, como la creación de mecanismos de persistencia o la extracción de credenciales del sistema.
+
+Un ejemplo sencillo sería crear un nuevo usuario local y añadirlo al grupo de administradores:
+
+```python
+net user <usuario> <contraseña> /add
+net localgroup administrators <usuario> /add
+```
+
+Sin embargo, si intentamos autenticarnos remotamente utilizando estas credenciales, por ejemplo mediante `NetExec`, observaremos que, aunque la autenticación es válida, no obtenemos privilegios administrativos a través de la red. En otras palabras, la herramienta no nos mostrará el característico mensaje `Pwn3d!`.
+
+![22](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png){:class="blog-image" onclick="expandImage(this)"}
+
+Este comportamiento se debe a la característica `LocalAccountTokenFilterPolicy`, un mecanismo de seguridad de Windows que filtra los privilegios administrativos de las cuentas locales cuando estas se utilizan para autenticarse remotamente. Es importante destacar que esta restricción afecta únicamente a las cuentas administrativas locales y no a las cuentas pertenecientes a un dominio.
+
+Dado que disponemos de privilegios máximos sobre el sistema, podemos modificar esta configuración mediante el registro:
+
+```python
+cmd /c reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\system /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f
+```
+
+![23](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-02-20-Blue-Practical-Ethical-Hacking/21.png){:class="blog-image" onclick="expandImage(this)"}
+
+Del mismo modo, disponer de una sesión como `NT AUTHORITY\SYSTEM` nos permite realizar tareas de post-explotación más avanzadas, como la extracción de credenciales locales y de la memoria del sistema, lo que puede ser útil para pivotar dentro del entorno, facilitar el movimiento lateral o incluso mantener el acceso más allá de la sesión inicial. No obstante, profundizaremos en este proceso en otro [artículo](https://mateonitro550.github.io/es/Windows-Credential-Dumping).
