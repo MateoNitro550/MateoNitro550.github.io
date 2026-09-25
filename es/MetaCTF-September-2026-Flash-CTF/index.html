@@ -90,27 +90,27 @@
     <p>MetaCTF Flash CTF es un <em>capture the flag</em> mensual organizado por <a href="https://skillbit.com/">SkillBit</a>, en el que encontraremos distintos retos divididos en varias categorías. En esta ocasión logré resolver 6 de los 7 retos.</p>
 
 <div style="text-align:center">
-  <img src="http://192.168.92.128/1.png" alt="SkillBit logo" class="blog-image" onclick="expandImage(this)" />
+  <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/1.png" alt="SkillBit logo" class="blog-image" onclick="expandImage(this)" />
 </div>
 
 <h3 id="binary-exploitation"><a href="#header-3"></a>Binary Exploitation</h3>
 
 <h4 id="careless-talk"><a href="#header-4"></a>Careless Talk</h4>
 
-<p><img src="http://192.168.92.128/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Al extraer y ejecutar el binario <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/careless-talk.zip">careless-talk</a>, nos daremos cuenta de que nos pregunta por un <em>watchword</em> que no conocemos. Lo primero que podemos hacer es utilizar <code class="language-plaintext highlighter-rouge">strings</code> para buscar cadenas de texto imprimibles.</p>
+<p>Al extraer y ejecutar el binario <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/careless-talk.zip">careless-talk</a>, nos daremos cuenta de que nos pregunta por un <em>watchword</em> que no conocemos. Lo primero que podemos hacer es utilizar <code class="language-plaintext highlighter-rouge">strings</code> para buscar cadenas de texto imprimibles.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>strings careless-talk
 </code></pre></div></div>
 
 <p>Nos daremos cuenta de que hay dos cadenas que contienen la flag y solo es cuestión de reconstruirla.</p>
 
-<p><img src="http://192.168.92.128/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Como dato curioso, también podemos encontrar la cadena <code class="language-plaintext highlighter-rouge">s1l3nt_s3rv1c3_1942</code> dentro del binario. Si la utilizamos como <em>watchword</em>, el programa también nos devuelve la flag directamente.</p>
 
-<p><img src="http://192.168.92.128/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SkillBit{c4r3l355_t4lk_c05t5_l1v35}
 </code></pre></div></div>
@@ -119,14 +119,14 @@
 
 <h4 id="carry-on"><a href="#header-4"></a>Carry On</h4>
 
-<p><img src="http://192.168.92.128/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Al abrir el <a href="">archivo adjunto</a> no vamos a observar nada relevante, no obstante, la descripción del reto nos da una pista bastante importante con la frase <em>walk out</em>. Podemos hacer uso de <code class="language-plaintext highlighter-rouge">binwalk</code>, una herramienta para analizar archivos binarios e identificar y extraer archivos embebidos.</p>
+<p>Al abrir el <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/carry-on.zip">archivo adjunto</a> no vamos a observar nada relevante, no obstante, la descripción del reto nos da una pista bastante importante con la frase <em>walk out</em>. Podemos hacer uso de <code class="language-plaintext highlighter-rouge">binwalk</code>, una herramienta para analizar archivos binarios e identificar y extraer archivos embebidos.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>binwalk <span class="nt">-e</span> checkpoint-plan.png
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Se nos creará una carpeta dentro de la cual estará todo lo que se encontraba dentro de la imagen. Entre los archivos extraídos encontraremos un <code class="language-plaintext highlighter-rouge">note.txt</code> que contiene la flag en texto claro.</p>
 
@@ -135,9 +135,9 @@
 
 <h4 id="registry101"><a href="#header-4"></a>Registry101</h4>
 
-<p><img src="http://192.168.92.128/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Al extraer <a href="">evidence.zip</a>, encontraremos una copia de los archivos y registros de un sistema Windows.</p>
+<p>Al extraer <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/evidence.zip">evidence.zip</a>, encontraremos una copia de los archivos y registros de un sistema Windows.</p>
 
 <p>El nombre del reto, <code class="language-plaintext highlighter-rouge">Registry101</code>, nos da una primera pista sobre dónde debemos buscar. Además, la descripción menciona que Peter niega haber accedido a unos <em>documentos importantes</em>, así que podemos empezar buscando evidencia de documentos abiertos recientemente.</p>
 
@@ -173,7 +173,7 @@ C/Users/admin/ntuser.dat.LOG2
 
 <p>Entre las entradas encontraremos diferentes tipos de documentos:</p>
 
-<p><img src="http://192.168.92.128/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Sin embargo, no encontramos nada que parezca una flag, así que podemos seguir investigando los archivos relacionados con este hive.</p>
 
@@ -193,9 +193,9 @@ strings <span class="nt">-el</span> C/Users/admin/ntuser.dat.LOG2 <span class="o
 <span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'\.(docx|xlsx|txt|xml)$'</span> log2_strings.txt
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="http://192.168.92.128/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Entre los resultados encontraremos dos nombres que llaman la atención:</p>
 
@@ -217,19 +217,19 @@ Ml9yM2cxc3RyeV80YW5kNn0=.xlsx
 
 <h4 id="git-sleuth"><a href="#header-4"></a>Git Sleuth</h4>
 
-<p><img src="http://192.168.92.128/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p>Antes de conectarnos al reto, podemos revisar los <a href="">archivos proporcionados</a> para entender qué archivos se generan y cómo se preparan.</p>
+<p>Antes de conectarnos al reto, podemos revisar los <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/gitsleuth.zip">archivos proporcionados</a> para entender qué archivos se generan y cómo se preparan.</p>
 
 <p>En <code class="language-plaintext highlighter-rouge">challenge.py</code> podemos ver que los comandos introducidos por el usuario se ejecutan utilizando <code class="language-plaintext highlighter-rouge">subprocess.run()</code>:</p>
 
-<p><img src="http://192.168.92.128/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Esto significa que cada comando que introduzcamos será ejecutado como un comando de Git. Además, existe una lista de caracteres y palabras que no podemos utilizar, por lo que estamos limitados a los comandos de Git que no sean bloqueados.</p>
 
 <p>Por otra parte, en <code class="language-plaintext highlighter-rouge">exec.sh</code> podemos ver que se crean 500 archivos <code class="language-plaintext highlighter-rouge">.txt</code> dentro de <code class="language-plaintext highlighter-rouge">/tmp</code>, todos con el mismo contenido. Después, copia <code class="language-plaintext highlighter-rouge">/flag.txt</code> a otro archivo con un nombre generado aleatoriamente:</p>
 
-<p><img src="http://192.168.92.128/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Esto significa que tendremos 501 archivos <code class="language-plaintext highlighter-rouge">.txt</code> en <code class="language-plaintext highlighter-rouge">/tmp</code>: 500 con la misma flag falsa y uno con la flag real. Como todos tienen nombres aleatorios, no podemos saber directamente cuál contiene la flag que buscamos.</p>
 
@@ -248,21 +248,21 @@ Ml9yM2cxc3RyeV80YW5kNn0=.xlsx
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp status
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Una vez añadidos, podemos obtener los archivos junto con el hash del blob que contiene su contenido:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp ls-files -s
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Como los 500 archivos que contienen la misma flag falsa tienen exactamente el mismo contenido, todos tendrán el mismo hash, por lo que podemos buscar entre los resultados el hash que aparece una sola vez: ese será el hash del blob que contiene la flag real.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">tail</span> <span class="nt">-n</span> +9 output.txt | <span class="nb">awk</span> <span class="s1">'{print $2}'</span> | <span class="nb">uniq</span> <span class="nt">-u</span> | xargs
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Podemos consultar directamente el contenido de este blob:</p>
 
