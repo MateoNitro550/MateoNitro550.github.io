@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>MetaCTF September 2026 Flash CTF</title>
+
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
+
+  <meta property="og:site_name" content="Filthy Hacker" />
+  <meta property="og:url" content="https://mateonitro550.github.io" />
+  <meta property="og:title" content="Filthy Hacker - Hacking & Cybersecurity Blog" />
+  <meta property="og:description" content="Passionate about cybersecurity or eager to learn? Filthy Hacker is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/images/banner.png" />
+  <meta property="og:type" content="object" />
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>MetaCTF September 2026 Flash CTF | Filthy Hacker</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="MetaCTF September 2026 Flash CTF" />
+<meta name="author" content="Mateo Andino" />
+<meta property="og:locale" content="es" />
+<meta name="description" content="MetaCTF Flash CTF es un capture the flag mensual organizado por SkillBit, en el que encontraremos distintos retos divididos en varias categorías. En esta ocasión logré resolver 6 de los 7 retos. Binary Exploitation Careless Talk Al extraer y ejecutar el binario careless-talk, nos daremos cuenta de que nos pregunta por un watchword que no conocemos. Lo primero que podemos hacer es utilizar strings para buscar cadenas de texto imprimibles. strings careless-talk Nos daremos cuenta de que hay dos cadenas que contienen la flag y solo es cuestión de reconstruirla. Como dato curioso, también podemos encontrar la cadena s1l3nt_s3rv1c3_1942 dentro del binario. Si la utilizamos como watchword, el programa también nos devuelve la flag directamente. SkillBit{c4r3l355_t4lk_c05t5_l1v35} Forensics Carry On Al abrir el archivo adjunto no vamos a observar nada relevante, no obstante, la descripción del reto nos da una pista bastante importante con la frase walk out. Podemos hacer uso de binwalk, una herramienta para analizar archivos binarios e identificar y extraer archivos embebidos. binwalk -e checkpoint-plan.png Se nos creará una carpeta dentro de la cual estará todo lo que se encontraba dentro de la imagen. Entre los archivos extraídos encontraremos un note.txt que contiene la flag en texto claro. SkillBit{0n3_f1l3_c4n_c4rry_4n0th3r} Registry101 Al extraer evidence.zip, encontraremos una copia de los archivos y registros de un sistema Windows. El nombre del reto, Registry101, nos da una primera pista sobre dónde debemos buscar. Además, la descripción menciona que Peter niega haber accedido a unos documentos importantes, así que podemos empezar buscando evidencia de documentos abiertos recientemente. Dentro de la evidencia encontramos el hive del usuario admin junto con sus transaction logs: C/Users/admin/NTUSER.DAT C/Users/admin/ntuser.dat.LOG1 C/Users/admin/ntuser.dat.LOG2 Podemos revisar RecentDocs, ya que esta clave contiene información sobre documentos abiertos recientemente. Para ello podemos utilizar python-registry. #!/usr/bin/env python3 from Registry import Registry reg = Registry.Registry(&quot;C/Users/admin/NTUSER.DAT&quot;) path = r&quot;Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs&quot; key = reg.open(path) print(f&quot;[+] {path}&quot;) for value in key.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) for subkey in key.subkeys(): print(f&quot;\n[{subkey.name()}]&quot;) for value in subkey.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) Entre las entradas encontraremos diferentes tipos de documentos: Sin embargo, no encontramos nada que parezca una flag, así que podemos seguir investigando los archivos relacionados con este hive. Como también tenemos los transaction logs asociados al hive, podemos investigar si contienen información adicional. Estos logs pueden contener escrituras del Registry que todavía no están reflejadas en el estado actual del hive que estamos viendo en NTUSER.DAT. Podemos extraer las cadenas en UTF-16LE de ambos logs utilizando strings: strings -el C/Users/admin/ntuser.dat.LOG1 &gt; log1_strings.txt strings -el C/Users/admin/ntuser.dat.LOG2 &gt; log2_strings.txt La opción -el indica a strings que busque cadenas de 16 bits en little-endian, un formato utilizado por muchas cadenas almacenadas en los datos del Registry de Windows. Como acabamos de observar que RecentDocs contiene archivos con extensiones .docx, .xlsx, .txt y .xml, podemos utilizar estas extensiones para filtrar los resultados. grep -Ei &#39;\.(docx|xlsx|txt|xml)$&#39; log1_strings.txt grep -Ei &#39;\.(docx|xlsx|txt|xml)$&#39; log2_strings.txt Entre los resultados encontraremos dos nombres que llaman la atención: IU1ldGFDVEZ7RjFyNXRfc3QzcF8=.docx Ml9yM2cxc3RyeV80YW5kNn0=.xlsx Ambas cadenas tienen el formato de Base64, así que podemos probar a decodificarlas: echo -n &quot;IU1ldGFDVEZ7RjFyNXRfc3QzcF8=Ml9yM2cxc3RyeV80YW5kNn0=&quot; | base64 -d; echo Al decodificar la cadena obtenemos la flag: MetaCTF{F1r5t_st3p_2_r3g1stry_4and6} Other Git Sleuth Antes de conectarnos al reto, podemos revisar los archivos proporcionados para entender qué archivos se generan y cómo se preparan. En challenge.py podemos ver que los comandos introducidos por el usuario se ejecutan utilizando subprocess.run(): Esto significa que cada comando que introduzcamos será ejecutado como un comando de Git. Además, existe una lista de caracteres y palabras que no podemos utilizar, por lo que estamos limitados a los comandos de Git que no sean bloqueados. Por otra parte, en exec.sh podemos ver que se crean 500 archivos .txt dentro de /tmp, todos con el mismo contenido. Después, copia /flag.txt a otro archivo con un nombre generado aleatoriamente: Esto significa que tendremos 501 archivos .txt en /tmp: 500 con la misma flag falsa y uno con la flag real. Como todos tienen nombres aleatorios, no podemos saber directamente cuál contiene la flag que buscamos. Primero, inicializamos un repositorio en /tmp: -C /tmp init Después, añadimos todos los archivos: -C /tmp add . Y comprobamos que los archivos se han añadido correctamente con: -C /tmp status Una vez añadidos, podemos obtener los archivos junto con el hash del blob que contiene su contenido: -C /tmp ls-files -s Como los 500 archivos que contienen la misma flag falsa tienen exactamente el mismo contenido, todos tendrán el mismo hash, por lo que podemos buscar entre los resultados el hash que aparece una sola vez: ese será el hash del blob que contiene la flag real. tail -n +9 output.txt | awk &#39;{print $2}&#39; | uniq -u | xargs Podemos consultar directamente el contenido de este blob: -C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548 Esto nos devolverá la flag: SkillBit{R3m3mb3r_t0_4lw4ys_3sc4p3_G1t_C0mm4nds} Reverse Engineering CoilVM Web Exploitation Track Me" />
+<meta property="og:description" content="MetaCTF Flash CTF es un capture the flag mensual organizado por SkillBit, en el que encontraremos distintos retos divididos en varias categorías. En esta ocasión logré resolver 6 de los 7 retos. Binary Exploitation Careless Talk Al extraer y ejecutar el binario careless-talk, nos daremos cuenta de que nos pregunta por un watchword que no conocemos. Lo primero que podemos hacer es utilizar strings para buscar cadenas de texto imprimibles. strings careless-talk Nos daremos cuenta de que hay dos cadenas que contienen la flag y solo es cuestión de reconstruirla. Como dato curioso, también podemos encontrar la cadena s1l3nt_s3rv1c3_1942 dentro del binario. Si la utilizamos como watchword, el programa también nos devuelve la flag directamente. SkillBit{c4r3l355_t4lk_c05t5_l1v35} Forensics Carry On Al abrir el archivo adjunto no vamos a observar nada relevante, no obstante, la descripción del reto nos da una pista bastante importante con la frase walk out. Podemos hacer uso de binwalk, una herramienta para analizar archivos binarios e identificar y extraer archivos embebidos. binwalk -e checkpoint-plan.png Se nos creará una carpeta dentro de la cual estará todo lo que se encontraba dentro de la imagen. Entre los archivos extraídos encontraremos un note.txt que contiene la flag en texto claro. SkillBit{0n3_f1l3_c4n_c4rry_4n0th3r} Registry101 Al extraer evidence.zip, encontraremos una copia de los archivos y registros de un sistema Windows. El nombre del reto, Registry101, nos da una primera pista sobre dónde debemos buscar. Además, la descripción menciona que Peter niega haber accedido a unos documentos importantes, así que podemos empezar buscando evidencia de documentos abiertos recientemente. Dentro de la evidencia encontramos el hive del usuario admin junto con sus transaction logs: C/Users/admin/NTUSER.DAT C/Users/admin/ntuser.dat.LOG1 C/Users/admin/ntuser.dat.LOG2 Podemos revisar RecentDocs, ya que esta clave contiene información sobre documentos abiertos recientemente. Para ello podemos utilizar python-registry. #!/usr/bin/env python3 from Registry import Registry reg = Registry.Registry(&quot;C/Users/admin/NTUSER.DAT&quot;) path = r&quot;Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs&quot; key = reg.open(path) print(f&quot;[+] {path}&quot;) for value in key.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) for subkey in key.subkeys(): print(f&quot;\n[{subkey.name()}]&quot;) for value in subkey.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) Entre las entradas encontraremos diferentes tipos de documentos: Sin embargo, no encontramos nada que parezca una flag, así que podemos seguir investigando los archivos relacionados con este hive. Como también tenemos los transaction logs asociados al hive, podemos investigar si contienen información adicional. Estos logs pueden contener escrituras del Registry que todavía no están reflejadas en el estado actual del hive que estamos viendo en NTUSER.DAT. Podemos extraer las cadenas en UTF-16LE de ambos logs utilizando strings: strings -el C/Users/admin/ntuser.dat.LOG1 &gt; log1_strings.txt strings -el C/Users/admin/ntuser.dat.LOG2 &gt; log2_strings.txt La opción -el indica a strings que busque cadenas de 16 bits en little-endian, un formato utilizado por muchas cadenas almacenadas en los datos del Registry de Windows. Como acabamos de observar que RecentDocs contiene archivos con extensiones .docx, .xlsx, .txt y .xml, podemos utilizar estas extensiones para filtrar los resultados. grep -Ei &#39;\.(docx|xlsx|txt|xml)$&#39; log1_strings.txt grep -Ei &#39;\.(docx|xlsx|txt|xml)$&#39; log2_strings.txt Entre los resultados encontraremos dos nombres que llaman la atención: IU1ldGFDVEZ7RjFyNXRfc3QzcF8=.docx Ml9yM2cxc3RyeV80YW5kNn0=.xlsx Ambas cadenas tienen el formato de Base64, así que podemos probar a decodificarlas: echo -n &quot;IU1ldGFDVEZ7RjFyNXRfc3QzcF8=Ml9yM2cxc3RyeV80YW5kNn0=&quot; | base64 -d; echo Al decodificar la cadena obtenemos la flag: MetaCTF{F1r5t_st3p_2_r3g1stry_4and6} Other Git Sleuth Antes de conectarnos al reto, podemos revisar los archivos proporcionados para entender qué archivos se generan y cómo se preparan. En challenge.py podemos ver que los comandos introducidos por el usuario se ejecutan utilizando subprocess.run(): Esto significa que cada comando que introduzcamos será ejecutado como un comando de Git. Además, existe una lista de caracteres y palabras que no podemos utilizar, por lo que estamos limitados a los comandos de Git que no sean bloqueados. Por otra parte, en exec.sh podemos ver que se crean 500 archivos .txt dentro de /tmp, todos con el mismo contenido. Después, copia /flag.txt a otro archivo con un nombre generado aleatoriamente: Esto significa que tendremos 501 archivos .txt en /tmp: 500 con la misma flag falsa y uno con la flag real. Como todos tienen nombres aleatorios, no podemos saber directamente cuál contiene la flag que buscamos. Primero, inicializamos un repositorio en /tmp: -C /tmp init Después, añadimos todos los archivos: -C /tmp add . Y comprobamos que los archivos se han añadido correctamente con: -C /tmp status Una vez añadidos, podemos obtener los archivos junto con el hash del blob que contiene su contenido: -C /tmp ls-files -s Como los 500 archivos que contienen la misma flag falsa tienen exactamente el mismo contenido, todos tendrán el mismo hash, por lo que podemos buscar entre los resultados el hash que aparece una sola vez: ese será el hash del blob que contiene la flag real. tail -n +9 output.txt | awk &#39;{print $2}&#39; | uniq -u | xargs Podemos consultar directamente el contenido de este blob: -C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548 Esto nos devolverá la flag: SkillBit{R3m3mb3r_t0_4lw4ys_3sc4p3_G1t_C0mm4nds} Reverse Engineering CoilVM Web Exploitation Track Me" />
+<meta property="og:site_name" content="Filthy Hacker" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-09-24T00:00:00-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="MetaCTF September 2026 Flash CTF" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2026-09-24T00:00:00-04:00","datePublished":"2026-09-24T00:00:00-04:00","description":"MetaCTF Flash CTF es un capture the flag mensual organizado por SkillBit, en el que encontraremos distintos retos divididos en varias categorías. En esta ocasión logré resolver 6 de los 7 retos. Binary Exploitation Careless Talk Al extraer y ejecutar el binario careless-talk, nos daremos cuenta de que nos pregunta por un watchword que no conocemos. Lo primero que podemos hacer es utilizar strings para buscar cadenas de texto imprimibles. strings careless-talk Nos daremos cuenta de que hay dos cadenas que contienen la flag y solo es cuestión de reconstruirla. Como dato curioso, también podemos encontrar la cadena s1l3nt_s3rv1c3_1942 dentro del binario. Si la utilizamos como watchword, el programa también nos devuelve la flag directamente. SkillBit{c4r3l355_t4lk_c05t5_l1v35} Forensics Carry On Al abrir el archivo adjunto no vamos a observar nada relevante, no obstante, la descripción del reto nos da una pista bastante importante con la frase walk out. Podemos hacer uso de binwalk, una herramienta para analizar archivos binarios e identificar y extraer archivos embebidos. binwalk -e checkpoint-plan.png Se nos creará una carpeta dentro de la cual estará todo lo que se encontraba dentro de la imagen. Entre los archivos extraídos encontraremos un note.txt que contiene la flag en texto claro. SkillBit{0n3_f1l3_c4n_c4rry_4n0th3r} Registry101 Al extraer evidence.zip, encontraremos una copia de los archivos y registros de un sistema Windows. El nombre del reto, Registry101, nos da una primera pista sobre dónde debemos buscar. Además, la descripción menciona que Peter niega haber accedido a unos documentos importantes, así que podemos empezar buscando evidencia de documentos abiertos recientemente. Dentro de la evidencia encontramos el hive del usuario admin junto con sus transaction logs: C/Users/admin/NTUSER.DAT C/Users/admin/ntuser.dat.LOG1 C/Users/admin/ntuser.dat.LOG2 Podemos revisar RecentDocs, ya que esta clave contiene información sobre documentos abiertos recientemente. Para ello podemos utilizar python-registry. #!/usr/bin/env python3 from Registry import Registry reg = Registry.Registry(&quot;C/Users/admin/NTUSER.DAT&quot;) path = r&quot;Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs&quot; key = reg.open(path) print(f&quot;[+] {path}&quot;) for value in key.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) for subkey in key.subkeys(): print(f&quot;\\n[{subkey.name()}]&quot;) for value in subkey.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) Entre las entradas encontraremos diferentes tipos de documentos: Sin embargo, no encontramos nada que parezca una flag, así que podemos seguir investigando los archivos relacionados con este hive. Como también tenemos los transaction logs asociados al hive, podemos investigar si contienen información adicional. Estos logs pueden contener escrituras del Registry que todavía no están reflejadas en el estado actual del hive que estamos viendo en NTUSER.DAT. Podemos extraer las cadenas en UTF-16LE de ambos logs utilizando strings: strings -el C/Users/admin/ntuser.dat.LOG1 &gt; log1_strings.txt strings -el C/Users/admin/ntuser.dat.LOG2 &gt; log2_strings.txt La opción -el indica a strings que busque cadenas de 16 bits en little-endian, un formato utilizado por muchas cadenas almacenadas en los datos del Registry de Windows. Como acabamos de observar que RecentDocs contiene archivos con extensiones .docx, .xlsx, .txt y .xml, podemos utilizar estas extensiones para filtrar los resultados. grep -Ei &#39;\\.(docx|xlsx|txt|xml)$&#39; log1_strings.txt grep -Ei &#39;\\.(docx|xlsx|txt|xml)$&#39; log2_strings.txt Entre los resultados encontraremos dos nombres que llaman la atención: IU1ldGFDVEZ7RjFyNXRfc3QzcF8=.docx Ml9yM2cxc3RyeV80YW5kNn0=.xlsx Ambas cadenas tienen el formato de Base64, así que podemos probar a decodificarlas: echo -n &quot;IU1ldGFDVEZ7RjFyNXRfc3QzcF8=Ml9yM2cxc3RyeV80YW5kNn0=&quot; | base64 -d; echo Al decodificar la cadena obtenemos la flag: MetaCTF{F1r5t_st3p_2_r3g1stry_4and6} Other Git Sleuth Antes de conectarnos al reto, podemos revisar los archivos proporcionados para entender qué archivos se generan y cómo se preparan. En challenge.py podemos ver que los comandos introducidos por el usuario se ejecutan utilizando subprocess.run(): Esto significa que cada comando que introduzcamos será ejecutado como un comando de Git. Además, existe una lista de caracteres y palabras que no podemos utilizar, por lo que estamos limitados a los comandos de Git que no sean bloqueados. Por otra parte, en exec.sh podemos ver que se crean 500 archivos .txt dentro de /tmp, todos con el mismo contenido. Después, copia /flag.txt a otro archivo con un nombre generado aleatoriamente: Esto significa que tendremos 501 archivos .txt en /tmp: 500 con la misma flag falsa y uno con la flag real. Como todos tienen nombres aleatorios, no podemos saber directamente cuál contiene la flag que buscamos. Primero, inicializamos un repositorio en /tmp: -C /tmp init Después, añadimos todos los archivos: -C /tmp add . Y comprobamos que los archivos se han añadido correctamente con: -C /tmp status Una vez añadidos, podemos obtener los archivos junto con el hash del blob que contiene su contenido: -C /tmp ls-files -s Como los 500 archivos que contienen la misma flag falsa tienen exactamente el mismo contenido, todos tendrán el mismo hash, por lo que podemos buscar entre los resultados el hash que aparece una sola vez: ese será el hash del blob que contiene la flag real. tail -n +9 output.txt | awk &#39;{print $2}&#39; | uniq -u | xargs Podemos consultar directamente el contenido de este blob: -C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548 Esto nos devolverá la flag: SkillBit{R3m3mb3r_t0_4lw4ys_3sc4p3_G1t_C0mm4nds} Reverse Engineering CoilVM Web Exploitation Track Me","headline":"MetaCTF September 2026 Flash CTF","mainEntityOfPage":{"@type":"WebPage","@id":"/es/MetaCTF-September-2026-Flash-CTF/"},"url":"/es/MetaCTF-September-2026-Flash-CTF/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PPKV9V8T');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1 class="glitch-header">filthyHacker@home:~$</h1>
+    </a>
+    <div class="header-links">
+      <a href="/es"><h2 class="header-link">Publicaciones</h2></a>
+<a href="/es/search"><h2 class="header-link">Buscar</h2></a>
+<a href="/es/archive"><h2 class="header-link">Archivo</h2></a>
+<a href="/en"><h2 class="header-link">English</h2></a>
+
+    </div>
+  </div>
+</header>
+
+    <div class="container">
+      <section id="main_content">
+        
+
+<div class="post-layout">
+  <article>
+    <h2>MetaCTF September 2026 Flash CTF</h2>
+    <time datetime="2026-09-24T00:00:00-04:00" class="by-line">
+      
+        24/09/2026
+      
+    </time>
+    <p>MetaCTF Flash CTF es un <em>capture the flag</em> mensual organizado por <a href="https://skillbit.com/">SkillBit</a>, en el que encontraremos distintos retos divididos en varias categorías. En esta ocasión logré resolver 6 de los 7 retos.</p>
+
+<div style="text-align:center">
+  <img src="http://192.168.92.128/1.png" alt="SkillBit logo" class="blog-image" onclick="expandImage(this)" />
+</div>
+
+<h3 id="binary-exploitation"><a href="#header-3"></a>Binary Exploitation</h3>
+
+<h4 id="careless-talk"><a href="#header-4"></a>Careless Talk</h4>
+
+<p><img src="http://192.168.92.128/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al extraer y ejecutar el binario <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2022-01-17-KnightCTF-2022/careless-talk.zip">careless-talk</a>, nos daremos cuenta de que nos pregunta por un <em>watchword</em> que no conocemos. Lo primero que podemos hacer es utilizar <code class="language-plaintext highlighter-rouge">strings</code> para buscar cadenas de texto imprimibles.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>strings careless-talk
+</code></pre></div></div>
+
+<p>Nos daremos cuenta de que hay dos cadenas que contienen la flag y solo es cuestión de reconstruirla.</p>
+
+<p><img src="http://192.168.92.128/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Como dato curioso, también podemos encontrar la cadena <code class="language-plaintext highlighter-rouge">s1l3nt_s3rv1c3_1942</code> dentro del binario. Si la utilizamos como <em>watchword</em>, el programa también nos devuelve la flag directamente.</p>
+
+<p><img src="http://192.168.92.128/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SkillBit{c4r3l355_t4lk_c05t5_l1v35}
+</code></pre></div></div>
+
+<h3 id="forensics"><a href="#header-3"></a>Forensics</h3>
+
+<h4 id="carry-on"><a href="#header-4"></a>Carry On</h4>
+
+<p><img src="http://192.168.92.128/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al abrir el <a href="">archivo adjunto</a> no vamos a observar nada relevante, no obstante, la descripción del reto nos da una pista bastante importante con la frase <em>walk out</em>. Podemos hacer uso de <code class="language-plaintext highlighter-rouge">binwalk</code>, una herramienta para analizar archivos binarios e identificar y extraer archivos embebidos.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>binwalk <span class="nt">-e</span> checkpoint-plan.png
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Se nos creará una carpeta dentro de la cual estará todo lo que se encontraba dentro de la imagen. Entre los archivos extraídos encontraremos un <code class="language-plaintext highlighter-rouge">note.txt</code> que contiene la flag en texto claro.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SkillBit{0n3_f1l3_c4n_c4rry_4n0th3r}
+</code></pre></div></div>
+
+<h4 id="registry101"><a href="#header-4"></a>Registry101</h4>
+
+<p><img src="http://192.168.92.128/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Al extraer <a href="">evidence.zip</a>, encontraremos una copia de los archivos y registros de un sistema Windows.</p>
+
+<p>El nombre del reto, <code class="language-plaintext highlighter-rouge">Registry101</code>, nos da una primera pista sobre dónde debemos buscar. Además, la descripción menciona que Peter niega haber accedido a unos <em>documentos importantes</em>, así que podemos empezar buscando evidencia de documentos abiertos recientemente.</p>
+
+<p>Dentro de la evidencia encontramos el hive del usuario <code class="language-plaintext highlighter-rouge">admin</code> junto con sus transaction logs:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C/Users/admin/NTUSER.DAT
+C/Users/admin/ntuser.dat.LOG1
+C/Users/admin/ntuser.dat.LOG2
+</code></pre></div></div>
+
+<p>Podemos revisar <code class="language-plaintext highlighter-rouge">RecentDocs</code>, ya que esta clave contiene información sobre documentos abiertos recientemente. Para ello podemos utilizar <code class="language-plaintext highlighter-rouge">python-registry</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+</span>
+<span class="kn">from</span> <span class="n">Registry</span> <span class="kn">import</span> <span class="n">Registry</span>
+
+<span class="n">reg</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">.</span><span class="nc">Registry</span><span class="p">(</span><span class="sh">"</span><span class="s">C/Users/admin/NTUSER.DAT</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="sa">r</span><span class="sh">"</span><span class="s">Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs</span><span class="sh">"</span>
+
+<span class="n">key</span> <span class="o">=</span> <span class="n">reg</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[+] </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">key</span><span class="p">.</span><span class="nf">values</span><span class="p">():</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">value</span><span class="p">.</span><span class="nf">name</span><span class="p">()</span><span class="si">:</span><span class="o">&lt;</span><span class="mi">20</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">value</span><span class="p">.</span><span class="nf">value</span><span class="p">()</span><span class="si">!r}</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">subkey</span> <span class="ow">in</span> <span class="n">key</span><span class="p">.</span><span class="nf">subkeys</span><span class="p">():</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="se">\n</span><span class="s">[</span><span class="si">{</span><span class="n">subkey</span><span class="p">.</span><span class="nf">name</span><span class="p">()</span><span class="si">}</span><span class="s">]</span><span class="sh">"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">subkey</span><span class="p">.</span><span class="nf">values</span><span class="p">():</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">value</span><span class="p">.</span><span class="nf">name</span><span class="p">()</span><span class="si">:</span><span class="o">&lt;</span><span class="mi">20</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">value</span><span class="p">.</span><span class="nf">value</span><span class="p">()</span><span class="si">!r}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Entre las entradas encontraremos diferentes tipos de documentos:</p>
+
+<p><img src="http://192.168.92.128/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Sin embargo, no encontramos nada que parezca una flag, así que podemos seguir investigando los archivos relacionados con este hive.</p>
+
+<p>Como también tenemos los transaction logs asociados al hive, podemos investigar si contienen información adicional. Estos logs pueden contener escrituras del Registry que todavía no están reflejadas en el estado actual del hive que estamos viendo en <code class="language-plaintext highlighter-rouge">NTUSER.DAT</code>.</p>
+
+<p>Podemos extraer las cadenas en UTF-16LE de ambos logs utilizando <code class="language-plaintext highlighter-rouge">strings</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>strings <span class="nt">-el</span> C/Users/admin/ntuser.dat.LOG1 <span class="o">&gt;</span> log1_strings.txt
+strings <span class="nt">-el</span> C/Users/admin/ntuser.dat.LOG2 <span class="o">&gt;</span> log2_strings.txt
+</code></pre></div></div>
+
+<p>La opción <code class="language-plaintext highlighter-rouge">-el</code> indica a <code class="language-plaintext highlighter-rouge">strings</code> que busque cadenas de 16 bits en <em>little-endian</em>, un formato utilizado por muchas cadenas almacenadas en los datos del Registry de Windows.</p>
+
+<p>Como acabamos de observar que <code class="language-plaintext highlighter-rouge">RecentDocs</code> contiene archivos con extensiones <code class="language-plaintext highlighter-rouge">.docx</code>, <code class="language-plaintext highlighter-rouge">.xlsx</code>, <code class="language-plaintext highlighter-rouge">.txt</code> y <code class="language-plaintext highlighter-rouge">.xml</code>, podemos utilizar estas extensiones para filtrar los resultados.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'\.(docx|xlsx|txt|xml)$'</span> log1_strings.txt
+<span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'\.(docx|xlsx|txt|xml)$'</span> log2_strings.txt
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="http://192.168.92.128/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Entre los resultados encontraremos dos nombres que llaman la atención:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IU1ldGFDVEZ7RjFyNXRfc3QzcF8=.docx
+Ml9yM2cxc3RyeV80YW5kNn0=.xlsx
+</code></pre></div></div>
+
+<p>Ambas cadenas tienen el formato de Base64, así que podemos probar a decodificarlas:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"IU1ldGFDVEZ7RjFyNXRfc3QzcF8=Ml9yM2cxc3RyeV80YW5kNn0="</span> | <span class="nb">base64</span> <span class="nt">-d</span><span class="p">;</span> <span class="nb">echo</span>
+</code></pre></div></div>
+
+<p>Al decodificar la cadena obtenemos la flag:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MetaCTF{F1r5t_st3p_2_r3g1stry_4and6}
+</code></pre></div></div>
+
+<h3 id="other"><a href="#header-3"></a>Other</h3>
+
+<h4 id="git-sleuth"><a href="#header-4"></a>Git Sleuth</h4>
+
+<p><img src="http://192.168.92.128/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Antes de conectarnos al reto, podemos revisar los <a href="">archivos proporcionados</a> para entender qué archivos se generan y cómo se preparan.</p>
+
+<p>En <code class="language-plaintext highlighter-rouge">challenge.py</code> podemos ver que los comandos introducidos por el usuario se ejecutan utilizando <code class="language-plaintext highlighter-rouge">subprocess.run()</code>:</p>
+
+<p><img src="http://192.168.92.128/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Esto significa que cada comando que introduzcamos será ejecutado como un comando de Git. Además, existe una lista de caracteres y palabras que no podemos utilizar, por lo que estamos limitados a los comandos de Git que no sean bloqueados.</p>
+
+<p>Por otra parte, en <code class="language-plaintext highlighter-rouge">exec.sh</code> podemos ver que se crean 500 archivos <code class="language-plaintext highlighter-rouge">.txt</code> dentro de <code class="language-plaintext highlighter-rouge">/tmp</code>, todos con el mismo contenido. Después, copia <code class="language-plaintext highlighter-rouge">/flag.txt</code> a otro archivo con un nombre generado aleatoriamente:</p>
+
+<p><img src="http://192.168.92.128/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Esto significa que tendremos 501 archivos <code class="language-plaintext highlighter-rouge">.txt</code> en <code class="language-plaintext highlighter-rouge">/tmp</code>: 500 con la misma flag falsa y uno con la flag real. Como todos tienen nombres aleatorios, no podemos saber directamente cuál contiene la flag que buscamos.</p>
+
+<p>Primero, inicializamos un repositorio en <code class="language-plaintext highlighter-rouge">/tmp</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp init
+</code></pre></div></div>
+
+<p>Después, añadimos todos los archivos:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp add .
+</code></pre></div></div>
+
+<p>Y comprobamos que los archivos se han añadido correctamente con:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp status
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Una vez añadidos, podemos obtener los archivos junto con el hash del blob que contiene su contenido:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp ls-files -s
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Como los 500 archivos que contienen la misma flag falsa tienen exactamente el mismo contenido, todos tendrán el mismo hash, por lo que podemos buscar entre los resultados el hash que aparece una sola vez: ese será el hash del blob que contiene la flag real.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">tail</span> <span class="nt">-n</span> +9 output.txt | <span class="nb">awk</span> <span class="s1">'{print $2}'</span> | <span class="nb">uniq</span> <span class="nt">-u</span> | xargs
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Podemos consultar directamente el contenido de este blob:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548
+</code></pre></div></div>
+
+<p><img src="http://192.168.92.128/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Esto nos devolverá la flag:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SkillBit{R3m3mb3r_t0_4lw4ys_3sc4p3_G1t_C0mm4nds}
+</code></pre></div></div>
+
+<h3 id="reverse-engineering"><a href="#header-3"></a>Reverse Engineering</h3>
+
+<h4 id="coilvm"><a href="#header-4"></a>CoilVM</h4>
+
+<h3 id="web-exploitation"><a href="#header-3"></a>Web Exploitation</h3>
+
+<h4 id="track-me"><a href="#header-4"></a>Track Me</h4>
+
+  </article>
+
+  <aside class="toc" id="toc" hidden>
+    <div class="toc-header">
+      <span class="toc-title" id="toc-title">Tabla de Contenidos</span>
+      <button class="toc-close" id="toc-close" aria-label="Close table of contents">✕</button>
+    </div>
+    <ul id="toc-list"></ul>
+  </aside>
+</div>
+
+<button class="toc-toggle" id="toc-toggle" aria-controls="toc" aria-expanded="false" hidden>
+  ☰ Tabla de Contenidos
+</button>
+
+<div id="carousel" class="carousel">
+  <img id="carouselImage" class="carousel-image">
+  <div id="carouselAlt" class="carousel-alt"></div>
+  <button class="carousel-control prev" onclick="prevImage()">&#10094;</button>
+  <button class="carousel-control next" onclick="nextImage()">&#10095;</button>
+</div>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<div class="toc-overlay" id="toc-overlay"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var toc = document.getElementById('toc');
+    var tocList = document.getElementById('toc-list');
+    var tocToggle = document.getElementById('toc-toggle');
+    var tocClose = document.getElementById('toc-close');
+    var overlay = document.getElementById('toc-overlay');
+    var headers = document.querySelectorAll('article h3, article h4, article h5');
+    var counters = {
+      h3: 0,
+      h4: 0,
+      h5: 0
+    };
+
+    if (headers.length > 0) {
+      toc.hidden = false;
+      tocToggle.hidden = false;
+
+      headers.forEach(function(header) {
+        var level = header.tagName.toLowerCase();
+
+        if (level === 'h3') {
+          counters.h3 += 1;
+          counters.h4 = 0;
+          counters.h5 = 0;
+        } else if (level === 'h4') {
+          if (counters.h3 === 0) {
+            counters.h3 = 1;
+          }
+          counters.h4 += 1;
+          counters.h5 = 0;
+        } else if (level === 'h5') {
+          if (counters.h3 === 0) {
+            counters.h3 = 1;
+          }
+          if (counters.h4 === 0) {
+            counters.h4 = 1;
+          }
+          counters.h5 += 1;
+        }
+
+        var sectionNumber = counters.h3.toString();
+        if (level === 'h4' || level === 'h5') {
+          sectionNumber += '.' + counters.h4;
+        }
+        if (level === 'h5') {
+          sectionNumber += '.' + counters.h5;
+        }
+
+        var id = 'section-' + sectionNumber.replace(/\./g, '-');
+        header.id = id;
+        header.dataset.sectionNumber = sectionNumber;
+
+        if (!header.textContent.trim().startsWith(sectionNumber + '.')) {
+          header.textContent = sectionNumber + '. ' + header.textContent.trim();
+        }
+
+        var listItem = document.createElement('li');
+        listItem.className = 'toc-' + level;
+        var link = document.createElement('a');
+        link.href = '#' + id;
+        link.textContent = sectionNumber + '. ' + header.textContent.replace(/^\d+(?:\.\d+){0,2}\.\s+/, '');
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+      });
+
+      var tocLinks = tocList.querySelectorAll('a');
+      var sectionById = {};
+
+      headers.forEach(function(header) {
+        sectionById[header.id] = header;
+      });
+
+      function setActiveTocLink(activeId) {
+        tocLinks.forEach(function(link) {
+          var isActive = link.getAttribute('href') === '#' + activeId;
+          link.classList.toggle('is-active', isActive);
+
+          if (link.parentElement) {
+            link.parentElement.classList.toggle('is-active', isActive);
+          }
+        });
+      }
+
+      if ('IntersectionObserver' in window) {
+        var visibleSections = {};
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              visibleSections[entry.target.id] = entry.target;
+            } else {
+              delete visibleSections[entry.target.id];
+            }
+          });
+
+          var activeHeader = Object.keys(visibleSections)
+            .map(function(id) { return sectionById[id]; })
+            .sort(function(a, b) { return a.offsetTop - b.offsetTop; })[0];
+
+          if (activeHeader) {
+            setActiveTocLink(activeHeader.id);
+          }
+        }, {
+          rootMargin: '-120px 0px -55% 0px',
+          threshold: 0
+        });
+
+        headers.forEach(function(header) {
+          observer.observe(header);
+        });
+      } else if (headers[0]) {
+        setActiveTocLink(headers[0].id);
+      }
+
+
+      tocToggle.addEventListener('click', function() {
+        var isOpen = toc.classList.toggle('is-open');
+        tocToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+        if (window.matchMedia('(max-width: 900px)').matches) {
+          overlay.classList.toggle('is-visible', isOpen);
+        }
+      });
+
+      tocClose.addEventListener('click', function() {
+        toc.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+
+        overlay.classList.remove('is-visible');
+      });
+
+      tocList.addEventListener('click', function(event) {
+        if (event.target.tagName.toLowerCase() === 'a' && window.matchMedia('(max-width: 900px)').matches) {
+          toc.classList.remove('is-open');
+          tocToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      overlay.addEventListener('click', function() {
+        toc.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+        overlay.classList.remove('is-visible');
+      });
+    } else {
+      toc.hidden = true;
+      tocToggle.hidden = true;
+    }
+  });
+
+  var currentImageIndex = 0;
+  var images = [];
+  var altTexts = [];
+
+  document.querySelectorAll('.blog-image').forEach((img, index) => {
+    images.push(img.src);
+    altTexts.push(img.alt || '');
+    img.setAttribute('data-index', index);
+    img.onclick = () => expandImage(img);
+  });
+
+  function expandImage(img) {
+    currentImageIndex = parseInt(img.getAttribute('data-index'));
+    showImage(currentImageIndex);
+    document.getElementById('carousel').style.display = 'block';
+    document.querySelector('.image-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'block';
+    });
+  }
+
+  function showImage(index) {
+    var carouselImg = document.getElementById('carouselImage');
+    carouselImg.src = images[index];
+    
+    var carouselAlt = document.getElementById('carouselAlt');
+    carouselAlt.textContent = altTexts[index];
+  }
+
+  function closeImage() {
+    document.getElementById('carousel').style.display = 'none';
+    document.querySelector('.image-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    document.removeEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'none';
+    });
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Escape') {
+      closeImage();
+    } else if (event.key === 'ArrowLeft') {
+      prevImage();
+    } else if (event.key === 'ArrowRight') {
+      nextImage();
+    }
+  }
+</script>
+
+      </section>
+    </div>
+  </div>
+
+  
+
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+    <span>
+        <b>MateoNitro550</b>
+    </span>
+    
+    <span>© 2026</span>
+  </a>
+</footer>
+
+
+  
+    <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-524F5BE8G5', 'auto');
+  ga('send', 'pageview');
+</script>
+  
+
+</body>
+</html>
