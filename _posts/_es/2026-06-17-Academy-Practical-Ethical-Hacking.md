@@ -1,7 +1,7 @@
 ---
 title: Academy - Practical Ethical Hacking
 categories: [Linux, FTP, SSH, HTTP, Wfuzz, Hashcat, PHP, Reverse Shell, Cron Jobs, Privilege Escalation]
-published: true
+published: false
 lang: es
 ---
 
