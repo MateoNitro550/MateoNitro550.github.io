@@ -199,7 +199,7 @@ Ml9yM2cxc3RyeV80YW5kNn0=.xlsx
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;-C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/17.png&quot; alt=&quot;17&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Esto nos devolverá la flag:&lt;/p&gt;
 
