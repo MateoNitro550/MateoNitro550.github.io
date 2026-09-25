@@ -204,7 +204,7 @@ Podemos consultar directamente el contenido de este blob:
 -C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548
 ```
 
-![17](http://192.168.92.128/17.png){:class="blog-image" onclick="expandImage(this)"}
+![17](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/17.png){:class="blog-image" onclick="expandImage(this)"}
 
 Esto nos devolverá la flag:
 
