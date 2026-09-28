@@ -537,7 +537,7 @@ ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee
 
 &lt;p&gt;Al visitar la página principal, veremos que nuestra visita queda registrada y que podemos consultar los registros desde &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/logs.php&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/266.png&quot; alt=&quot;26&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/26.png&quot; alt=&quot;26&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/27.png&quot; alt=&quot;27&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
@@ -724,8 +724,7 @@ Ml9yM2cxc3RyeV80YW5kNn0=.xlsx
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;-C /tmp init
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Then, we add all the files:
-:&lt;/p&gt;
+&lt;p&gt;Then, we add all the files:&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;-C /tmp add .
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1090,24 +1089,24 @@ ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee
 
 &lt;h4 id=&quot;track-me&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Track Me&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/50.png&quot; alt=&quot;50&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/25.png&quot; alt=&quot;25&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;When visiting the main page, we will see that our visit is recorded and that we can view the logs through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/logs.php&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/25.png&quot; alt=&quot;25&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
-
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/26.png&quot; alt=&quot;26&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/27.png&quot; alt=&quot;27&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;When reviewing the log, we can see that the application records information about our visit, including the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;User-Agent&lt;/code&gt;:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/27.png&quot; alt=&quot;27&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/28.png&quot; alt=&quot;28&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Since the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;User-Agent&lt;/code&gt; is controlled by us, we can try to inject PHP code into this field and exploit a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log poisoning&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;&amp;lt;?php echo &quot;P0150N3D&quot;; ?&amp;gt;&apos;&lt;/span&gt; &amp;lt;HOST&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/29.png&quot; alt=&quot;28&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/29.png&quot; alt=&quot;29&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This works because &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;logs.php&lt;/code&gt; uses &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;include()&lt;/code&gt; to load &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;access.log&lt;/code&gt;, causing any PHP code contained in the file to be interpreted and executed before its contents are displayed.&lt;/p&gt;
 

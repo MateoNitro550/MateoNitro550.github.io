@@ -103,6 +103,13 @@
       "category" : "Windows TCM Security Practical Ethical Hacking PEH SMB MS17-010 EternalBlue Metasploit Win7Blue AutoBlue Impacket Named Pipes Post-Explotación LocalAccountTokenFilterPolicy",
       "url"      : "https://mateonitro550.github.io/es/Blue-Practical-Ethical-Hacking/",
       "date"     : "15/06/2026"
-    } 
+    },
+
+    {
+      "title"    : "MetaCTF September 2026 Flash CTF",
+      "category" : "CTF Capture the Flag Jeopardy Binary Exploitation Forensics Binwalk Windows Registry python-registry NTUSER.DAT Registry Transaction Logs Git Git Objects Git Blob Reverse Engineering Ghidra FNV-1a Web Exploitation PHP Log Poisoning",
+      "url"      : "https://mateonitro550.github.io/es/MetaCTF-September-2026-Flash-CTF/",
+      "date"     : "24/09/2026"
+    }
   
 ]
