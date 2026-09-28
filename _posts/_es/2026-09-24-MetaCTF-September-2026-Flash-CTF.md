@@ -1,6 +1,6 @@
 ---
 title: MetaCTF September 2026 Flash CTF
-categories: [CTF, Capture the Flag, Jeopardy, Binary Exploitation, Forensics, Binwalk, Windows Registry, python-registry, NTUSER.DAT, Registry, Transaction Logs, Git, Git Objects, Git Blob, Web Exploitation, PHP, Log Poisoning]
+categories: [CTF, Capture the Flag, Jeopardy, Binary Exploitation, Forensics, Binwalk, Windows Registry, python-registry, NTUSER.DAT, Registry, Transaction Logs, Git, Git Objects, Git Blob, Reverse Engineering, Ghidra, FNV-1a, Web Exploitation, PHP, Log Poisoning]
 published: true
 lang: es
 ---
