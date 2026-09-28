@@ -596,24 +596,24 @@ ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee
 
 <h4 id="track-me"><a href="#header-4"></a>Track Me</h4>
 
-<p><img src="http://192.168.92.128/50.png" alt="50" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/50.png" alt="50" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Al visitar la página principal, veremos que nuestra visita queda registrada y que podemos consultar los registros desde <code class="language-plaintext highlighter-rouge">/logs.php</code>.</p>
 
-<p><img src="http://192.168.92.128/51.png" alt="51" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/51.png" alt="51" class="blog-image" onclick="expandImage(this)" /></p>
 
-<p><img src="http://192.168.92.128/52.png" alt="52" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/52.png" alt="52" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Al revisar el registro, podemos ver que la aplicación guarda información de nuestra visita, incluyendo el <code class="language-plaintext highlighter-rouge">User-Agent</code>:</p>
 
-<p><img src="http://192.168.92.128/53.png" alt="53" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/53.png" alt="53" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Como el <code class="language-plaintext highlighter-rouge">User-Agent</code> es controlado por nosotros, podemos intentar introducir código PHP dentro de este campo y explotar un <code class="language-plaintext highlighter-rouge">log poisoning</code>:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-A</span> <span class="s1">'&lt;?php echo "P0150N3D"; ?&gt;'</span> &lt;HOST&gt;
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128/54.png" alt="54" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/54.png" alt="54" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Esto ocurre porque <code class="language-plaintext highlighter-rouge">logs.php</code> utiliza <code class="language-plaintext highlighter-rouge">include()</code> para cargar <code class="language-plaintext highlighter-rouge">access.log</code>, haciendo que cualquier código PHP contenido en el archivo sea interpretado y ejecutado antes de mostrar su contenido.</p>
 
@@ -622,7 +622,7 @@ ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-A</span> <span class="s1">'&lt;?php foreach (glob("/flag-*.txt") as $f) { echo file_get_contents($f); } ?&gt;'</span> &lt;HOST&gt;
 </code></pre></div></div>
 
-<p><img src="http://192.168.92.128/55.png" alt="55" class="blog-image" onclick="expandImage(this)" /></p>
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/55.png" alt="55" class="blog-image" onclick="expandImage(this)" /></p>
 
 <p>Esto nos devolverá la flag:</p>
 
