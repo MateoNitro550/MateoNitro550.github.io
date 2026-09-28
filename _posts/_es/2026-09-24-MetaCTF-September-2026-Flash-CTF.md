@@ -568,17 +568,17 @@ SkillBit{n4nom1tes_eat_y0ur_symb0lic_execut0r}
 
 #### [](#header-4)Track Me
 
-![50](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/50.png){:class="blog-image" onclick="expandImage(this)"}
+![25](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/25.png){:class="blog-image" onclick="expandImage(this)"}
 
 Al visitar la página principal, veremos que nuestra visita queda registrada y que podemos consultar los registros desde `/logs.php`.
 
-![51](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/51.png){:class="blog-image" onclick="expandImage(this)"}
+![26](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/266.png){:class="blog-image" onclick="expandImage(this)"}
 
-![52](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/52.png){:class="blog-image" onclick="expandImage(this)"}
+![27](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/27.png){:class="blog-image" onclick="expandImage(this)"}
 
 Al revisar el registro, podemos ver que la aplicación guarda información de nuestra visita, incluyendo el `User-Agent`:
 
-![53](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/53.png){:class="blog-image" onclick="expandImage(this)"}
+![28](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/28.png){:class="blog-image" onclick="expandImage(this)"}
 
 Como el `User-Agent` es controlado por nosotros, podemos intentar introducir código PHP dentro de este campo y explotar un `log poisoning`:
 
@@ -586,7 +586,7 @@ Como el `User-Agent` es controlado por nosotros, podemos intentar introducir có
 curl -A '<?php echo "P0150N3D"; ?>' <HOST>
 ```
 
-![54](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/54.png){:class="blog-image" onclick="expandImage(this)"}
+![29](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/29.png){:class="blog-image" onclick="expandImage(this)"}
 
 Esto ocurre porque `logs.php` utiliza `include()` para cargar `access.log`, haciendo que cualquier código PHP contenido en el archivo sea interpretado y ejecutado antes de mostrar su contenido.
 
@@ -596,7 +596,7 @@ De esta forma, obtenemos ejecución de código PHP y podemos utilizarla para bus
 curl -A '<?php foreach (glob("/flag-*.txt") as $f) { echo file_get_contents($f); } ?>' <HOST>
 ```
 
-![55](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/55.png){:class="blog-image" onclick="expandImage(this)"}
+![30](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/30.png){:class="blog-image" onclick="expandImage(this)"}
 
 Esto nos devolverá la flag:
 
