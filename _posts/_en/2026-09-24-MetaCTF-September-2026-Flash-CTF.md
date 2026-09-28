@@ -169,7 +169,6 @@ First, we initialize a repository in `/tmp`:
 ```
 
 Then, we add all the files:
-:
 
 ```
 -C /tmp add .
@@ -569,17 +568,17 @@ SkillBit{n4nom1tes_eat_y0ur_symb0lic_execut0r}
 
 #### [](#header-4)Track Me
 
-![50](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/50.png){:class="blog-image" onclick="expandImage(this)"}
+![25](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/25.png){:class="blog-image" onclick="expandImage(this)"}
 
 When visiting the main page, we will see that our visit is recorded and that we can view the logs through `/logs.php`.
 
-![25](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/25.png){:class="blog-image" onclick="expandImage(this)"}
-
 ![26](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/26.png){:class="blog-image" onclick="expandImage(this)"}
+
+![27](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/27.png){:class="blog-image" onclick="expandImage(this)"}
 
 When reviewing the log, we can see that the application records information about our visit, including the `User-Agent`:
 
-![27](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/27.png){:class="blog-image" onclick="expandImage(this)"}
+![28](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/28.png){:class="blog-image" onclick="expandImage(this)"}
 
 Since the `User-Agent` is controlled by us, we can try to inject PHP code into this field and exploit a `log poisoning`:
 
@@ -587,7 +586,7 @@ Since the `User-Agent` is controlled by us, we can try to inject PHP code into t
 curl -A '<?php echo "P0150N3D"; ?>' <HOST>
 ```
 
-![28](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/29.png){:class="blog-image" onclick="expandImage(this)"}
+![29](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/29.png){:class="blog-image" onclick="expandImage(this)"}
 
 This works because `logs.php` uses `include()` to load `access.log`, causing any PHP code contained in the file to be interpreted and executed before its contents are displayed.
 

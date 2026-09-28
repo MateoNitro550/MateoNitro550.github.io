@@ -572,7 +572,7 @@ SkillBit{n4nom1tes_eat_y0ur_symb0lic_execut0r}
 
 Al visitar la página principal, veremos que nuestra visita queda registrada y que podemos consultar los registros desde `/logs.php`.
 
-![26](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/266.png){:class="blog-image" onclick="expandImage(this)"}
+![26](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/26.png){:class="blog-image" onclick="expandImage(this)"}
 
 ![27](https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/27.png){:class="blog-image" onclick="expandImage(this)"}
 
