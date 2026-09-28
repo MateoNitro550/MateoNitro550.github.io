@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>MetaCTF September 2026 Flash CTF</title>
+
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/images/favicon.gif" type="image/gif">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  
+  <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="ATOM Feed" /> <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>MetaCTF September 2026 Flash CTF | Filthy Hacker</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="MetaCTF September 2026 Flash CTF" />
+<meta name="author" content="Mateo Andino" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Flash CTF is a monthly capture the flag organized by SkillBit, featuring different challenges divided into several categories. This time, I solved 6 out of the 7 challenges. Binary Exploitation Careless Talk After extracting and executing the careless-talk binary, we notice that it asks us for a watchword that we don’t know. The first thing we can do is use strings to look for printable strings. strings careless-talk We notice that there are two strings containing the flag, so we just have to reconstruct it. One interesting detail is that we can also find the string s1l3nt_s3rv1c3_1942 inside the binary. If we use it as the watchword, the program also returns the flag directly. SkillBit{c4r3l355_t4lk_c05t5_l1v35} Forensics Carry On When opening the attached file, we won’t notice anything relevant. However, the challenge description gives us an important clue with the phrase walk out. We can use binwalk, a tool for analyzing binary files and identifying and extracting embedded files. binwalk -e checkpoint-plan.png A folder will be created containing everything that was found inside the image. Among the extracted files, we will find a note.txt containing the flag in plain text. SkillBit{0n3_f1l3_c4n_c4rry_4n0th3r} Registry101 After extracting evidence.zip, we will find a copy of the files and registry data from a Windows system. The name of the challenge, Registry101, gives us a first clue about where we should look. Also, the description mentions that Peter denies accessing some important documents, so we can start by looking for evidence of recently opened documents. Inside the evidence, we find the admin user’s hive along with its transaction logs: C/Users/admin/NTUSER.DAT C/Users/admin/ntuser.dat.LOG1 C/Users/admin/ntuser.dat.LOG2 We can check RecentDocs, as this key contains information about recently opened documents. To do this, we can use python-registry. #!/usr/bin/env python3 from Registry import Registry reg = Registry.Registry(&quot;C/Users/admin/NTUSER.DAT&quot;) path = r&quot;Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs&quot; key = reg.open(path) print(f&quot;[+] {path}&quot;) for value in key.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) for subkey in key.subkeys(): print(f&quot;\n[{subkey.name()}]&quot;) for value in subkey.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) Among the entries, we will find different types of documents: However, we don’t find anything that looks like a flag, so we can continue investigating the files related to this hive. Since we also have the transaction logs associated with the hive, we can investigate whether they contain any additional information. These logs can contain Registry writes that are not yet reflected in the current state of the hive we are viewing in NTUSER.DAT. We can extract the UTF-16LE strings from both logs using strings: strings -el C/Users/admin/ntuser.dat.LOG1 &gt; log1_strings.txt strings -el C/Users/admin/ntuser.dat.LOG2 &gt; log2_strings.txt The -el option tells strings to look for 16-bit strings in little-endian, a format used by many strings stored in Windows Registry data. As we just saw that RecentDocs contains files with .docx, .xlsx, .txt, and .xml extensions, we can use these extensions to filter the results. grep -Ei &#39;\.(docx|xlsx|txt|xml)$&#39; log1_strings.txt grep -Ei &#39;\.(docx|xlsx|txt|xml)$&#39; log2_strings.txt Among the results, we will find two names that catch our attention: IU1ldGFDVEZ7RjFyNXRfc3QzcF8=.docx Ml9yM2cxc3RyeV80YW5kNn0=.xlsx Both strings are in Base64 format, so we can try decoding them: echo -n &quot;IU1ldGFDVEZ7RjFyNXRfc3QzcF8=Ml9yM2cxc3RyeV80YW5kNn0=&quot; | base64 -d; echo Decoding the string gives us the flag: MetaCTF{F1r5t_st3p_2_r3g1stry_4and6} Other Git Sleuth Before connecting to the challenge, we can review the provided files to understand which files are generated and how they are prepared. In challenge.py, we can see that the commands entered by the user are executed using subprocess.run(): This means that every command we enter will be executed as a Git command. There is also a list of characters and words that we cannot use, so we are limited to Git commands that are not blocked. On the other hand, in exec.sh, we can see that 500 .txt files are created inside /tmp, all with the same content. Then, /flag.txt is copied to another file with a randomly generated name: This means that there will be 501 .txt files in /tmp: 500 containing the same fake flag and one containing the real flag. Since all of them have randomly generated names, we cannot directly tell which one contains the flag we are looking for. First, we initialize a repository in /tmp: -C /tmp init Then, we add all the files: : -C /tmp add . And check that the files were added correctly with: -C /tmp status Once they are added, we can get the files along with the hash of the blob containing their contents: -C /tmp ls-files -s Since the 500 files containing the same fake flag have exactly the same content, they will all have the same hash. Therefore, we can look through the results for the hash that appears only once. That will be the hash of the blob containing the real flag. tail -n +9 output.txt | awk &#39;{print $2}&#39; | uniq -u | xargs We can directly query the contents of this blob: -C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548 This gives us the flag: SkillBit{R3m3mb3r_t0_4lw4ys_3sc4p3_G1t_C0mm4nds} Reverse Engineering CoilVM After extracting the challenge, we are left with a file named coilvm, but it has no file extension, so we do not even know what type of file it is. We can start by checking it with file: file coilvm This tells us that coilvm is an ELF executable, so we can run it and see what it does. When running the binary, we can provide input, but nothing immediately tells us what the program expects, so we can take a closer look at the executable. We can start by disassembling it: objdump -d -M intel coilvm objdump can disassemble the executable code and show it as assembly instructions. The -M intel option tells it to use Intel syntax, which is easier to read. The output contains the usual executable sections and library functions. We can skip the initialization code and look at the program’s own code in the .text section. While going through the disassembly, we can see a strcmp call. This tells us that the program eventually compares two strings. Since we do not know what string it expects, we need to understand how the program processes our input. 40161f: e8 3c fa ff ff call 401060 &lt;strcmp@plt&gt; 401624: 85 c0 test eax,eax 401626: 0f 94 c0 sete al We also find an unusual block of instructions starting at 0x4012d7: 4012d7: cc int3 4012d8: 0f b6 15 71 2d 00 00 movzx edx,BYTE PTR [rip+0x2d71] 4012df: 0f b6 05 ba 2d 00 00 movzx eax,BYTE PTR [rip+0x2dba] 4012e6: 31 d0 xor eax,edx 4012e8: 88 05 b2 2d 00 00 mov BYTE PTR [rip+0x2db2],al 4012ee: cc int3 4012ef: 0f b6 15 5a 2d 00 00 movzx edx,BYTE PTR [rip+0x2d5a] 4012f6: 0f b6 05 a3 2d 00 00 movzx eax,BYTE PTR [rip+0x2da3] 4012fd: 31 d0 xor eax,edx 4012ff: 88 05 9b 2d 00 00 mov BYTE PTR [rip+0x2d9b],al 401305: cc int3 401306: 0f b6 15 43 2d 00 00 movzx edx,BYTE PTR [rip+0x2d43] 40130d: 0f b6 05 8c 2d 00 00 movzx eax,BYTE PTR [rip+0x2d8c] 401314: 31 d0 xor eax,edx 401316: 88 05 84 2d 00 00 mov BYTE PTR [rip+0x2d84],al ... We can see that int3 appears repeatedly between small sections of code. We can investigate this behavior further with Ghidra. Looking at the functions in the Symbol Tree, we can examine how the program is structured and follow the code from one function to another. In FUN_00401631, the Decompiler shows that the program registers FUN_00401196 as a signal handler: local_b8.__sigaction_handler.sa_handler = FUN_00401196; local_b8.sa_flags = 4; sigemptyset(&amp;local_b8.sa_mask); sigaction(5,&amp;local_b8,(sigaction *)0x0); The function then initializes DAT_004040a4 to 0, sets DAT_004041e0 to 1, and then calls FUN_004012d7: DAT_004040a4 = 0; DAT_004041e0 = 1; FUN_004012d7(); DAT_004041e0 = 0; If we look at FUN_004012d7 in the Listing view, we can see that it is located at 0x4012d7, where we find the int3 instructions we saw earlier. Calling FUN_004012d7 therefore triggers an int3, which activates the SIGTRAP handler we identified above. We can now follow that handler in FUN_00401196. Its first branch checks the value of DAT_004041e0: if (DAT_004041e0 != 0) { if (0x23 &lt; DAT_004040a4) { return; } lVar2 = (long)DAT_004040a4; DAT_004040a4 = DAT_004040a4 + 1; *(long *)(&amp;DAT_004040c0 + lVar2 * 8) = *(long *)(param_3 + 0xa8); return; } At this point DAT_004041e0 is 1, so the handler enters this branch. DAT_004040a4 starts at 0 and is incremented every time the handler is invoked. The value obtained from param_3 + 0xa8 is then stored in the array beginning at DAT_004040c0. The condition 0x23 &lt; DAT_004040a4 also tells us that the handler can record at most 0x24 entries, which is 36 in decimal. This matches the 36 positions that the program later expects to process. After FUN_004012d7 returns, FUN_00401631 sets DAT_004041e0 back to 0: DAT_004041e0 = 0; It then checks whether DAT_004040a4 reached 0x24: if (DAT_004040a4 == 0x24) { So the first call to FUN_004012d7 is being used to collect 36 values in DAT_004040c0. The program then moves on to the next stage, where it reads our input. The input is read with the following loop: iVar1 = 0; if (DAT_004040a4 == 0x24) { do { sVar3 = read(0,&amp;DAT_00404200 + iVar1,(long)(0x24 - iVar1)); if (sVar3 &lt; 1) break; iVar1 = (int)sVar3 + iVar1; } while (iVar1 &lt; 0x24); The value 0x24 is 36 in decimal, so the program expects exactly 36 bytes of input. The loop also accounts for the possibility that read() does not return all 36 bytes at once, keeping track of how many bytes have already been received in iVar1. The input is stored starting at DAT_00404200. Once all 36 bytes have been read, the program initializes the state used during validation: DAT_004041f8 = 0x811c9dc5; DAT_004041f4 = 0; DAT_004041f0 = 0; DAT_004041e8 = 0; These variables are important because FUN_00401196 uses them when processing each byte. DAT_004041f8 is initialized with 0x811c9dc5, DAT_004041f4 keeps track of the validation progress, DAT_004041f0 is used as a failure flag, and DAT_004041e8 stores a timestamp used by the handler. The program then calls FUN_004012d7 again: FUN_004012d7(); This time, however, DAT_004041e0 has already been set back to 0. That changes which branch of FUN_00401196 is executed. Instead of recording values like it did during the first call, the handler now uses the values previously stored in DAT_004040c0 to determine which input byte is currently being processed. lVar2 = rdtsc(); if (0 &lt; DAT_004040a4) { iVar4 = 0; do { if (*(long *)(param_3 + 0xa8) == *(long *)(&amp;DAT_004040c0 + (long)iVar4 * 8)) { if (iVar4 &lt; 0) { DAT_004041f0 = 1; return; } if ((0x4000000 &lt; (ulong)(lVar2 - DAT_004041e8)) &amp;&amp; (DAT_004041e8 != 0)) { DAT_004041f8 = DAT_004041f8 ^ 0xa5a5a5a5; } bVar3 = (byte)DAT_004041f8 ^ (&amp;DAT_00404200)[iVar4]; bVar1 = (byte)(DAT_004041f8 &gt;&gt; 5) &amp; 7; if ((byte)(bVar3 &lt;&lt; bVar1 | bVar3 &gt;&gt; 8 - bVar1) != (byte)((byte)DAT_004041f8 ^ (&amp;DAT_004020a0)[iVar4])) { DAT_004041f0 = 1; } DAT_004041f8 = ((byte)(&amp;DAT_00404200)[iVar4] ^ DAT_004041f8) * 0x1000193; DAT_004041e8 = rdtsc(); DAT_00404050 = (byte)DAT_004041f8 &amp; 0x7f ^ 0x90; DAT_004041f4 = iVar4 + 1; return; } iVar4 = iVar4 + 1; } while (iVar4 &lt; DAT_004040a4); } The handler starts by obtaining the processor timestamp with rdtsc(). It then searches through the 36 values stored in DAT_004040c0. The value from param_3 + 0xa8 is compared against each stored value, and when a match is found, its index is placed in iVar4. That index is significant because it is then used to access the input at DAT_00404200[iVar4]. In other words, the handler is not simply processing the input from byte 0 through byte 35. The previously recorded values determine which input position is checked at each SIGTRAP. Once the corresponding index is found, the handler performs the actual byte validation. It first combines the current state with the input byte: bVar3 = (byte)DAT_004041f8 ^ (&amp;DAT_00404200)[iVar4]; It then derives a rotation amount from the current state: bVar1 = (byte)(DAT_004041f8 &gt;&gt; 5) &amp; 7; And rotates bVar3 before comparing the result against another value derived from DAT_004020a0: if ((byte)(bVar3 &lt;&lt; bVar1 | bVar3 &gt;&gt; 8 - bVar1) != (byte)((byte)DAT_004041f8 ^ (&amp;DAT_004020a0)[iVar4])) { DAT_004041f0 = 1; } If the comparison fails, DAT_004041f0 is set to 1. If it succeeds, the handler continues by updating DAT_004041f8 using the current input byte and the constant 0x1000193, then records another timestamp and advances DAT_004041f4 to iVar4 + 1. The handler then updates DAT_004041f8 using the current input byte and the constant 0x1000193: DAT_004041f8 = ((byte)(&amp;DAT_00404200)[iVar4] ^ DAT_004041f8) * 0x1000193; The constants used here match the 32-bit FNV-1a algorithm. 0x811c9dc5, which was used to initialize DAT_004041f8, is the FNV offset basis, while 0x1000193 is the FNV prime. The operation follows the same XOR-then-multiply pattern used by FNV-1a. This means DAT_004041f8 acts as a rolling state, with each processed input byte changing the value used for the next validation step. The handler also updates DAT_004041f4 with the index of the byte that was just processed: DAT_004041f4 = iVar4 + 1; After FUN_00401196 returns, the program checks whether all 36 input bytes were processed and no validation failure was detected: if ((DAT_004041f0 == 0) &amp;&amp; (DAT_004041f4 == 0x24)) { If either condition is not satisfied, the program prints: puts(&quot;nope&quot;); When both conditions are satisfied, the program continues by generating the final output from the validated input. This is the last stage of the program, but we do not need to reproduce this transformation ourselves because the binary performs it once we provide the correct input. iVar1 = 1; lVar2 = 0; uVar5 = DAT_004041f8; do { uVar5 = ((byte)(&amp;DAT_00404200)[(int)lVar2 % 0x24] ^ uVar5) * 0x1000193; bVar7 = (byte)(uVar5 &gt;&gt; 7) &amp; 7; local_e8[lVar2] = (byte)(uVar5 &gt;&gt; 0xb) ^ (&amp;DAT_00402060)[lVar2] ^ (byte)lVar2 ^ ((&amp;DAT_00404200)[iVar1 % 0x24] &lt;&lt; bVar7 | (byte)(&amp;DAT_00404200)[iVar1 % 0x24] &gt;&gt; 8 - bVar7); lVar2 = lVar2 + 1; iVar1 = iVar1 + 5; } while (lVar2 != 0x2f); The loop runs until lVar2 reaches 0x2f, which is 47 in decimal, so it generates 47 bytes. The resulting bytes are stored in local_e8. Finally, those 47 bytes are written to standard output: local_b9 = 0; fwrite(local_e8,1,0x2f,stdout); At this point, we know how the program validates the input, but we still do not know what the 36 bytes should be. Rather than trying to guess them, we can reverse the validation operation. The values stored at 0x4020a0 are used by the handler during the validation process. We can extract the relevant bytes from the .rodata section: objdump -s -j .rodata coilvm The 36 bytes used by the validator are: 2f 3b b3 3a b6 86 9a d7 bf a0 74 61 1b 0f a2 06 ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee 9e 74 0c 35 For each index iVar4, the program takes the current state, XORs it with the corresponding input byte, rotates the result left by a variable amount, and compares the result against the current byte in DAT_004020a0 XORed with the same state. Since the state changes after every byte, the checks have to be solved in the same order in which the handler processes the input. The order itself comes from the values recorded during the first execution of FUN_004012d7. The operations used here are reversible. Since the rotation can be undone with a right rotation, we can reverse the validation process and calculate the input byte that would produce the expected result. For each position, we can therefore recover the input byte with: input = (state &amp; 0xff) XOR ROR8((state &amp; 0xff) XOR table[i], (state &gt;&gt; 5) &amp; 7) After recovering a byte, we update the state exactly as the program does: state = ((state XOR input) * 0x1000193) &amp; 0xffffffff We can automate this process with a small Python script: #!/usr/bin/python3 table = bytes.fromhex( &quot;2f 3b b3 3a b6 86 9a d7 bf a0 74 61 1b 0f a2 06 &quot; &quot;ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee &quot; &quot;9e 74 0c 35&quot; ) state = 0x811c9dc5 result = [] def ror8(value, amount): amount &amp;= 7 if amount == 0: return value &amp; 0xff return ((value &gt;&gt; amount) | (value &lt;&lt; (8 - amount))) &amp; 0xff for target in table: amount = (state &gt;&gt; 5) &amp; 7 input_byte = ( (state &amp; 0xff) ^ ror8((state &amp; 0xff) ^ target, amount) ) result.append(input_byte) state = ((input_byte ^ state) * 0x1000193) &amp; 0xffffffff print(bytes(result).decode()) Running the script gives us: n4nom1tes_eat_y0ur_symb0lic_execut0r This is the 36-byte input required by the validation stage. If we provide it to the binary, it accepts the input and performs the remaining processing itself, returning the flag. SkillBit{n4nom1tes_eat_y0ur_symb0lic_execut0r} Web Exploitation Track Me When visiting the main page, we will see that our visit is recorded and that we can view the logs through /logs.php. When reviewing the log, we can see that the application records information about our visit, including the User-Agent: Since the User-Agent is controlled by us, we can try to inject PHP code into this field and exploit a log poisoning: curl -A &#39;&lt;?php echo &quot;P0150N3D&quot;; ?&gt;&#39; &lt;HOST&gt; This works because logs.php uses include() to load access.log, causing any PHP code contained in the file to be interpreted and executed before its contents are displayed. This gives us PHP code execution, which we can use to locate the file containing the flag: curl -A &#39;&lt;?php foreach (glob(&quot;/flag-*.txt&quot;) as $f) { echo file_get_contents($f); } ?&gt;&#39; &lt;HOST&gt; This gives us the flag: SkillBit{7r4ck1n9_u53r5_c4n_7r4ck_y0u_t00}" />
+<meta property="og:description" content="Flash CTF is a monthly capture the flag organized by SkillBit, featuring different challenges divided into several categories. This time, I solved 6 out of the 7 challenges. Binary Exploitation Careless Talk After extracting and executing the careless-talk binary, we notice that it asks us for a watchword that we don’t know. The first thing we can do is use strings to look for printable strings. strings careless-talk We notice that there are two strings containing the flag, so we just have to reconstruct it. One interesting detail is that we can also find the string s1l3nt_s3rv1c3_1942 inside the binary. If we use it as the watchword, the program also returns the flag directly. SkillBit{c4r3l355_t4lk_c05t5_l1v35} Forensics Carry On When opening the attached file, we won’t notice anything relevant. However, the challenge description gives us an important clue with the phrase walk out. We can use binwalk, a tool for analyzing binary files and identifying and extracting embedded files. binwalk -e checkpoint-plan.png A folder will be created containing everything that was found inside the image. Among the extracted files, we will find a note.txt containing the flag in plain text. SkillBit{0n3_f1l3_c4n_c4rry_4n0th3r} Registry101 After extracting evidence.zip, we will find a copy of the files and registry data from a Windows system. The name of the challenge, Registry101, gives us a first clue about where we should look. Also, the description mentions that Peter denies accessing some important documents, so we can start by looking for evidence of recently opened documents. Inside the evidence, we find the admin user’s hive along with its transaction logs: C/Users/admin/NTUSER.DAT C/Users/admin/ntuser.dat.LOG1 C/Users/admin/ntuser.dat.LOG2 We can check RecentDocs, as this key contains information about recently opened documents. To do this, we can use python-registry. #!/usr/bin/env python3 from Registry import Registry reg = Registry.Registry(&quot;C/Users/admin/NTUSER.DAT&quot;) path = r&quot;Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs&quot; key = reg.open(path) print(f&quot;[+] {path}&quot;) for value in key.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) for subkey in key.subkeys(): print(f&quot;\n[{subkey.name()}]&quot;) for value in subkey.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) Among the entries, we will find different types of documents: However, we don’t find anything that looks like a flag, so we can continue investigating the files related to this hive. Since we also have the transaction logs associated with the hive, we can investigate whether they contain any additional information. These logs can contain Registry writes that are not yet reflected in the current state of the hive we are viewing in NTUSER.DAT. We can extract the UTF-16LE strings from both logs using strings: strings -el C/Users/admin/ntuser.dat.LOG1 &gt; log1_strings.txt strings -el C/Users/admin/ntuser.dat.LOG2 &gt; log2_strings.txt The -el option tells strings to look for 16-bit strings in little-endian, a format used by many strings stored in Windows Registry data. As we just saw that RecentDocs contains files with .docx, .xlsx, .txt, and .xml extensions, we can use these extensions to filter the results. grep -Ei &#39;\.(docx|xlsx|txt|xml)$&#39; log1_strings.txt grep -Ei &#39;\.(docx|xlsx|txt|xml)$&#39; log2_strings.txt Among the results, we will find two names that catch our attention: IU1ldGFDVEZ7RjFyNXRfc3QzcF8=.docx Ml9yM2cxc3RyeV80YW5kNn0=.xlsx Both strings are in Base64 format, so we can try decoding them: echo -n &quot;IU1ldGFDVEZ7RjFyNXRfc3QzcF8=Ml9yM2cxc3RyeV80YW5kNn0=&quot; | base64 -d; echo Decoding the string gives us the flag: MetaCTF{F1r5t_st3p_2_r3g1stry_4and6} Other Git Sleuth Before connecting to the challenge, we can review the provided files to understand which files are generated and how they are prepared. In challenge.py, we can see that the commands entered by the user are executed using subprocess.run(): This means that every command we enter will be executed as a Git command. There is also a list of characters and words that we cannot use, so we are limited to Git commands that are not blocked. On the other hand, in exec.sh, we can see that 500 .txt files are created inside /tmp, all with the same content. Then, /flag.txt is copied to another file with a randomly generated name: This means that there will be 501 .txt files in /tmp: 500 containing the same fake flag and one containing the real flag. Since all of them have randomly generated names, we cannot directly tell which one contains the flag we are looking for. First, we initialize a repository in /tmp: -C /tmp init Then, we add all the files: : -C /tmp add . And check that the files were added correctly with: -C /tmp status Once they are added, we can get the files along with the hash of the blob containing their contents: -C /tmp ls-files -s Since the 500 files containing the same fake flag have exactly the same content, they will all have the same hash. Therefore, we can look through the results for the hash that appears only once. That will be the hash of the blob containing the real flag. tail -n +9 output.txt | awk &#39;{print $2}&#39; | uniq -u | xargs We can directly query the contents of this blob: -C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548 This gives us the flag: SkillBit{R3m3mb3r_t0_4lw4ys_3sc4p3_G1t_C0mm4nds} Reverse Engineering CoilVM After extracting the challenge, we are left with a file named coilvm, but it has no file extension, so we do not even know what type of file it is. We can start by checking it with file: file coilvm This tells us that coilvm is an ELF executable, so we can run it and see what it does. When running the binary, we can provide input, but nothing immediately tells us what the program expects, so we can take a closer look at the executable. We can start by disassembling it: objdump -d -M intel coilvm objdump can disassemble the executable code and show it as assembly instructions. The -M intel option tells it to use Intel syntax, which is easier to read. The output contains the usual executable sections and library functions. We can skip the initialization code and look at the program’s own code in the .text section. While going through the disassembly, we can see a strcmp call. This tells us that the program eventually compares two strings. Since we do not know what string it expects, we need to understand how the program processes our input. 40161f: e8 3c fa ff ff call 401060 &lt;strcmp@plt&gt; 401624: 85 c0 test eax,eax 401626: 0f 94 c0 sete al We also find an unusual block of instructions starting at 0x4012d7: 4012d7: cc int3 4012d8: 0f b6 15 71 2d 00 00 movzx edx,BYTE PTR [rip+0x2d71] 4012df: 0f b6 05 ba 2d 00 00 movzx eax,BYTE PTR [rip+0x2dba] 4012e6: 31 d0 xor eax,edx 4012e8: 88 05 b2 2d 00 00 mov BYTE PTR [rip+0x2db2],al 4012ee: cc int3 4012ef: 0f b6 15 5a 2d 00 00 movzx edx,BYTE PTR [rip+0x2d5a] 4012f6: 0f b6 05 a3 2d 00 00 movzx eax,BYTE PTR [rip+0x2da3] 4012fd: 31 d0 xor eax,edx 4012ff: 88 05 9b 2d 00 00 mov BYTE PTR [rip+0x2d9b],al 401305: cc int3 401306: 0f b6 15 43 2d 00 00 movzx edx,BYTE PTR [rip+0x2d43] 40130d: 0f b6 05 8c 2d 00 00 movzx eax,BYTE PTR [rip+0x2d8c] 401314: 31 d0 xor eax,edx 401316: 88 05 84 2d 00 00 mov BYTE PTR [rip+0x2d84],al ... We can see that int3 appears repeatedly between small sections of code. We can investigate this behavior further with Ghidra. Looking at the functions in the Symbol Tree, we can examine how the program is structured and follow the code from one function to another. In FUN_00401631, the Decompiler shows that the program registers FUN_00401196 as a signal handler: local_b8.__sigaction_handler.sa_handler = FUN_00401196; local_b8.sa_flags = 4; sigemptyset(&amp;local_b8.sa_mask); sigaction(5,&amp;local_b8,(sigaction *)0x0); The function then initializes DAT_004040a4 to 0, sets DAT_004041e0 to 1, and then calls FUN_004012d7: DAT_004040a4 = 0; DAT_004041e0 = 1; FUN_004012d7(); DAT_004041e0 = 0; If we look at FUN_004012d7 in the Listing view, we can see that it is located at 0x4012d7, where we find the int3 instructions we saw earlier. Calling FUN_004012d7 therefore triggers an int3, which activates the SIGTRAP handler we identified above. We can now follow that handler in FUN_00401196. Its first branch checks the value of DAT_004041e0: if (DAT_004041e0 != 0) { if (0x23 &lt; DAT_004040a4) { return; } lVar2 = (long)DAT_004040a4; DAT_004040a4 = DAT_004040a4 + 1; *(long *)(&amp;DAT_004040c0 + lVar2 * 8) = *(long *)(param_3 + 0xa8); return; } At this point DAT_004041e0 is 1, so the handler enters this branch. DAT_004040a4 starts at 0 and is incremented every time the handler is invoked. The value obtained from param_3 + 0xa8 is then stored in the array beginning at DAT_004040c0. The condition 0x23 &lt; DAT_004040a4 also tells us that the handler can record at most 0x24 entries, which is 36 in decimal. This matches the 36 positions that the program later expects to process. After FUN_004012d7 returns, FUN_00401631 sets DAT_004041e0 back to 0: DAT_004041e0 = 0; It then checks whether DAT_004040a4 reached 0x24: if (DAT_004040a4 == 0x24) { So the first call to FUN_004012d7 is being used to collect 36 values in DAT_004040c0. The program then moves on to the next stage, where it reads our input. The input is read with the following loop: iVar1 = 0; if (DAT_004040a4 == 0x24) { do { sVar3 = read(0,&amp;DAT_00404200 + iVar1,(long)(0x24 - iVar1)); if (sVar3 &lt; 1) break; iVar1 = (int)sVar3 + iVar1; } while (iVar1 &lt; 0x24); The value 0x24 is 36 in decimal, so the program expects exactly 36 bytes of input. The loop also accounts for the possibility that read() does not return all 36 bytes at once, keeping track of how many bytes have already been received in iVar1. The input is stored starting at DAT_00404200. Once all 36 bytes have been read, the program initializes the state used during validation: DAT_004041f8 = 0x811c9dc5; DAT_004041f4 = 0; DAT_004041f0 = 0; DAT_004041e8 = 0; These variables are important because FUN_00401196 uses them when processing each byte. DAT_004041f8 is initialized with 0x811c9dc5, DAT_004041f4 keeps track of the validation progress, DAT_004041f0 is used as a failure flag, and DAT_004041e8 stores a timestamp used by the handler. The program then calls FUN_004012d7 again: FUN_004012d7(); This time, however, DAT_004041e0 has already been set back to 0. That changes which branch of FUN_00401196 is executed. Instead of recording values like it did during the first call, the handler now uses the values previously stored in DAT_004040c0 to determine which input byte is currently being processed. lVar2 = rdtsc(); if (0 &lt; DAT_004040a4) { iVar4 = 0; do { if (*(long *)(param_3 + 0xa8) == *(long *)(&amp;DAT_004040c0 + (long)iVar4 * 8)) { if (iVar4 &lt; 0) { DAT_004041f0 = 1; return; } if ((0x4000000 &lt; (ulong)(lVar2 - DAT_004041e8)) &amp;&amp; (DAT_004041e8 != 0)) { DAT_004041f8 = DAT_004041f8 ^ 0xa5a5a5a5; } bVar3 = (byte)DAT_004041f8 ^ (&amp;DAT_00404200)[iVar4]; bVar1 = (byte)(DAT_004041f8 &gt;&gt; 5) &amp; 7; if ((byte)(bVar3 &lt;&lt; bVar1 | bVar3 &gt;&gt; 8 - bVar1) != (byte)((byte)DAT_004041f8 ^ (&amp;DAT_004020a0)[iVar4])) { DAT_004041f0 = 1; } DAT_004041f8 = ((byte)(&amp;DAT_00404200)[iVar4] ^ DAT_004041f8) * 0x1000193; DAT_004041e8 = rdtsc(); DAT_00404050 = (byte)DAT_004041f8 &amp; 0x7f ^ 0x90; DAT_004041f4 = iVar4 + 1; return; } iVar4 = iVar4 + 1; } while (iVar4 &lt; DAT_004040a4); } The handler starts by obtaining the processor timestamp with rdtsc(). It then searches through the 36 values stored in DAT_004040c0. The value from param_3 + 0xa8 is compared against each stored value, and when a match is found, its index is placed in iVar4. That index is significant because it is then used to access the input at DAT_00404200[iVar4]. In other words, the handler is not simply processing the input from byte 0 through byte 35. The previously recorded values determine which input position is checked at each SIGTRAP. Once the corresponding index is found, the handler performs the actual byte validation. It first combines the current state with the input byte: bVar3 = (byte)DAT_004041f8 ^ (&amp;DAT_00404200)[iVar4]; It then derives a rotation amount from the current state: bVar1 = (byte)(DAT_004041f8 &gt;&gt; 5) &amp; 7; And rotates bVar3 before comparing the result against another value derived from DAT_004020a0: if ((byte)(bVar3 &lt;&lt; bVar1 | bVar3 &gt;&gt; 8 - bVar1) != (byte)((byte)DAT_004041f8 ^ (&amp;DAT_004020a0)[iVar4])) { DAT_004041f0 = 1; } If the comparison fails, DAT_004041f0 is set to 1. If it succeeds, the handler continues by updating DAT_004041f8 using the current input byte and the constant 0x1000193, then records another timestamp and advances DAT_004041f4 to iVar4 + 1. The handler then updates DAT_004041f8 using the current input byte and the constant 0x1000193: DAT_004041f8 = ((byte)(&amp;DAT_00404200)[iVar4] ^ DAT_004041f8) * 0x1000193; The constants used here match the 32-bit FNV-1a algorithm. 0x811c9dc5, which was used to initialize DAT_004041f8, is the FNV offset basis, while 0x1000193 is the FNV prime. The operation follows the same XOR-then-multiply pattern used by FNV-1a. This means DAT_004041f8 acts as a rolling state, with each processed input byte changing the value used for the next validation step. The handler also updates DAT_004041f4 with the index of the byte that was just processed: DAT_004041f4 = iVar4 + 1; After FUN_00401196 returns, the program checks whether all 36 input bytes were processed and no validation failure was detected: if ((DAT_004041f0 == 0) &amp;&amp; (DAT_004041f4 == 0x24)) { If either condition is not satisfied, the program prints: puts(&quot;nope&quot;); When both conditions are satisfied, the program continues by generating the final output from the validated input. This is the last stage of the program, but we do not need to reproduce this transformation ourselves because the binary performs it once we provide the correct input. iVar1 = 1; lVar2 = 0; uVar5 = DAT_004041f8; do { uVar5 = ((byte)(&amp;DAT_00404200)[(int)lVar2 % 0x24] ^ uVar5) * 0x1000193; bVar7 = (byte)(uVar5 &gt;&gt; 7) &amp; 7; local_e8[lVar2] = (byte)(uVar5 &gt;&gt; 0xb) ^ (&amp;DAT_00402060)[lVar2] ^ (byte)lVar2 ^ ((&amp;DAT_00404200)[iVar1 % 0x24] &lt;&lt; bVar7 | (byte)(&amp;DAT_00404200)[iVar1 % 0x24] &gt;&gt; 8 - bVar7); lVar2 = lVar2 + 1; iVar1 = iVar1 + 5; } while (lVar2 != 0x2f); The loop runs until lVar2 reaches 0x2f, which is 47 in decimal, so it generates 47 bytes. The resulting bytes are stored in local_e8. Finally, those 47 bytes are written to standard output: local_b9 = 0; fwrite(local_e8,1,0x2f,stdout); At this point, we know how the program validates the input, but we still do not know what the 36 bytes should be. Rather than trying to guess them, we can reverse the validation operation. The values stored at 0x4020a0 are used by the handler during the validation process. We can extract the relevant bytes from the .rodata section: objdump -s -j .rodata coilvm The 36 bytes used by the validator are: 2f 3b b3 3a b6 86 9a d7 bf a0 74 61 1b 0f a2 06 ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee 9e 74 0c 35 For each index iVar4, the program takes the current state, XORs it with the corresponding input byte, rotates the result left by a variable amount, and compares the result against the current byte in DAT_004020a0 XORed with the same state. Since the state changes after every byte, the checks have to be solved in the same order in which the handler processes the input. The order itself comes from the values recorded during the first execution of FUN_004012d7. The operations used here are reversible. Since the rotation can be undone with a right rotation, we can reverse the validation process and calculate the input byte that would produce the expected result. For each position, we can therefore recover the input byte with: input = (state &amp; 0xff) XOR ROR8((state &amp; 0xff) XOR table[i], (state &gt;&gt; 5) &amp; 7) After recovering a byte, we update the state exactly as the program does: state = ((state XOR input) * 0x1000193) &amp; 0xffffffff We can automate this process with a small Python script: #!/usr/bin/python3 table = bytes.fromhex( &quot;2f 3b b3 3a b6 86 9a d7 bf a0 74 61 1b 0f a2 06 &quot; &quot;ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee &quot; &quot;9e 74 0c 35&quot; ) state = 0x811c9dc5 result = [] def ror8(value, amount): amount &amp;= 7 if amount == 0: return value &amp; 0xff return ((value &gt;&gt; amount) | (value &lt;&lt; (8 - amount))) &amp; 0xff for target in table: amount = (state &gt;&gt; 5) &amp; 7 input_byte = ( (state &amp; 0xff) ^ ror8((state &amp; 0xff) ^ target, amount) ) result.append(input_byte) state = ((input_byte ^ state) * 0x1000193) &amp; 0xffffffff print(bytes(result).decode()) Running the script gives us: n4nom1tes_eat_y0ur_symb0lic_execut0r This is the 36-byte input required by the validation stage. If we provide it to the binary, it accepts the input and performs the remaining processing itself, returning the flag. SkillBit{n4nom1tes_eat_y0ur_symb0lic_execut0r} Web Exploitation Track Me When visiting the main page, we will see that our visit is recorded and that we can view the logs through /logs.php. When reviewing the log, we can see that the application records information about our visit, including the User-Agent: Since the User-Agent is controlled by us, we can try to inject PHP code into this field and exploit a log poisoning: curl -A &#39;&lt;?php echo &quot;P0150N3D&quot;; ?&gt;&#39; &lt;HOST&gt; This works because logs.php uses include() to load access.log, causing any PHP code contained in the file to be interpreted and executed before its contents are displayed. This gives us PHP code execution, which we can use to locate the file containing the flag: curl -A &#39;&lt;?php foreach (glob(&quot;/flag-*.txt&quot;) as $f) { echo file_get_contents($f); } ?&gt;&#39; &lt;HOST&gt; This gives us the flag: SkillBit{7r4ck1n9_u53r5_c4n_7r4ck_y0u_t00}" />
+<meta property="og:site_name" content="Filthy Hacker" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-09-24T00:00:00-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="MetaCTF September 2026 Flash CTF" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Mateo Andino","url":"https://mateonitro550.github.io"},"dateModified":"2026-09-24T00:00:00-04:00","datePublished":"2026-09-24T00:00:00-04:00","description":"Flash CTF is a monthly capture the flag organized by SkillBit, featuring different challenges divided into several categories. This time, I solved 6 out of the 7 challenges. Binary Exploitation Careless Talk After extracting and executing the careless-talk binary, we notice that it asks us for a watchword that we don’t know. The first thing we can do is use strings to look for printable strings. strings careless-talk We notice that there are two strings containing the flag, so we just have to reconstruct it. One interesting detail is that we can also find the string s1l3nt_s3rv1c3_1942 inside the binary. If we use it as the watchword, the program also returns the flag directly. SkillBit{c4r3l355_t4lk_c05t5_l1v35} Forensics Carry On When opening the attached file, we won’t notice anything relevant. However, the challenge description gives us an important clue with the phrase walk out. We can use binwalk, a tool for analyzing binary files and identifying and extracting embedded files. binwalk -e checkpoint-plan.png A folder will be created containing everything that was found inside the image. Among the extracted files, we will find a note.txt containing the flag in plain text. SkillBit{0n3_f1l3_c4n_c4rry_4n0th3r} Registry101 After extracting evidence.zip, we will find a copy of the files and registry data from a Windows system. The name of the challenge, Registry101, gives us a first clue about where we should look. Also, the description mentions that Peter denies accessing some important documents, so we can start by looking for evidence of recently opened documents. Inside the evidence, we find the admin user’s hive along with its transaction logs: C/Users/admin/NTUSER.DAT C/Users/admin/ntuser.dat.LOG1 C/Users/admin/ntuser.dat.LOG2 We can check RecentDocs, as this key contains information about recently opened documents. To do this, we can use python-registry. #!/usr/bin/env python3 from Registry import Registry reg = Registry.Registry(&quot;C/Users/admin/NTUSER.DAT&quot;) path = r&quot;Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs&quot; key = reg.open(path) print(f&quot;[+] {path}&quot;) for value in key.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) for subkey in key.subkeys(): print(f&quot;\\n[{subkey.name()}]&quot;) for value in subkey.values(): print(f&quot;{value.name():&lt;20} {value.value()!r}&quot;) Among the entries, we will find different types of documents: However, we don’t find anything that looks like a flag, so we can continue investigating the files related to this hive. Since we also have the transaction logs associated with the hive, we can investigate whether they contain any additional information. These logs can contain Registry writes that are not yet reflected in the current state of the hive we are viewing in NTUSER.DAT. We can extract the UTF-16LE strings from both logs using strings: strings -el C/Users/admin/ntuser.dat.LOG1 &gt; log1_strings.txt strings -el C/Users/admin/ntuser.dat.LOG2 &gt; log2_strings.txt The -el option tells strings to look for 16-bit strings in little-endian, a format used by many strings stored in Windows Registry data. As we just saw that RecentDocs contains files with .docx, .xlsx, .txt, and .xml extensions, we can use these extensions to filter the results. grep -Ei &#39;\\.(docx|xlsx|txt|xml)$&#39; log1_strings.txt grep -Ei &#39;\\.(docx|xlsx|txt|xml)$&#39; log2_strings.txt Among the results, we will find two names that catch our attention: IU1ldGFDVEZ7RjFyNXRfc3QzcF8=.docx Ml9yM2cxc3RyeV80YW5kNn0=.xlsx Both strings are in Base64 format, so we can try decoding them: echo -n &quot;IU1ldGFDVEZ7RjFyNXRfc3QzcF8=Ml9yM2cxc3RyeV80YW5kNn0=&quot; | base64 -d; echo Decoding the string gives us the flag: MetaCTF{F1r5t_st3p_2_r3g1stry_4and6} Other Git Sleuth Before connecting to the challenge, we can review the provided files to understand which files are generated and how they are prepared. In challenge.py, we can see that the commands entered by the user are executed using subprocess.run(): This means that every command we enter will be executed as a Git command. There is also a list of characters and words that we cannot use, so we are limited to Git commands that are not blocked. On the other hand, in exec.sh, we can see that 500 .txt files are created inside /tmp, all with the same content. Then, /flag.txt is copied to another file with a randomly generated name: This means that there will be 501 .txt files in /tmp: 500 containing the same fake flag and one containing the real flag. Since all of them have randomly generated names, we cannot directly tell which one contains the flag we are looking for. First, we initialize a repository in /tmp: -C /tmp init Then, we add all the files: : -C /tmp add . And check that the files were added correctly with: -C /tmp status Once they are added, we can get the files along with the hash of the blob containing their contents: -C /tmp ls-files -s Since the 500 files containing the same fake flag have exactly the same content, they will all have the same hash. Therefore, we can look through the results for the hash that appears only once. That will be the hash of the blob containing the real flag. tail -n +9 output.txt | awk &#39;{print $2}&#39; | uniq -u | xargs We can directly query the contents of this blob: -C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548 This gives us the flag: SkillBit{R3m3mb3r_t0_4lw4ys_3sc4p3_G1t_C0mm4nds} Reverse Engineering CoilVM After extracting the challenge, we are left with a file named coilvm, but it has no file extension, so we do not even know what type of file it is. We can start by checking it with file: file coilvm This tells us that coilvm is an ELF executable, so we can run it and see what it does. When running the binary, we can provide input, but nothing immediately tells us what the program expects, so we can take a closer look at the executable. We can start by disassembling it: objdump -d -M intel coilvm objdump can disassemble the executable code and show it as assembly instructions. The -M intel option tells it to use Intel syntax, which is easier to read. The output contains the usual executable sections and library functions. We can skip the initialization code and look at the program’s own code in the .text section. While going through the disassembly, we can see a strcmp call. This tells us that the program eventually compares two strings. Since we do not know what string it expects, we need to understand how the program processes our input. 40161f: e8 3c fa ff ff call 401060 &lt;strcmp@plt&gt; 401624: 85 c0 test eax,eax 401626: 0f 94 c0 sete al We also find an unusual block of instructions starting at 0x4012d7: 4012d7: cc int3 4012d8: 0f b6 15 71 2d 00 00 movzx edx,BYTE PTR [rip+0x2d71] 4012df: 0f b6 05 ba 2d 00 00 movzx eax,BYTE PTR [rip+0x2dba] 4012e6: 31 d0 xor eax,edx 4012e8: 88 05 b2 2d 00 00 mov BYTE PTR [rip+0x2db2],al 4012ee: cc int3 4012ef: 0f b6 15 5a 2d 00 00 movzx edx,BYTE PTR [rip+0x2d5a] 4012f6: 0f b6 05 a3 2d 00 00 movzx eax,BYTE PTR [rip+0x2da3] 4012fd: 31 d0 xor eax,edx 4012ff: 88 05 9b 2d 00 00 mov BYTE PTR [rip+0x2d9b],al 401305: cc int3 401306: 0f b6 15 43 2d 00 00 movzx edx,BYTE PTR [rip+0x2d43] 40130d: 0f b6 05 8c 2d 00 00 movzx eax,BYTE PTR [rip+0x2d8c] 401314: 31 d0 xor eax,edx 401316: 88 05 84 2d 00 00 mov BYTE PTR [rip+0x2d84],al ... We can see that int3 appears repeatedly between small sections of code. We can investigate this behavior further with Ghidra. Looking at the functions in the Symbol Tree, we can examine how the program is structured and follow the code from one function to another. In FUN_00401631, the Decompiler shows that the program registers FUN_00401196 as a signal handler: local_b8.__sigaction_handler.sa_handler = FUN_00401196; local_b8.sa_flags = 4; sigemptyset(&amp;local_b8.sa_mask); sigaction(5,&amp;local_b8,(sigaction *)0x0); The function then initializes DAT_004040a4 to 0, sets DAT_004041e0 to 1, and then calls FUN_004012d7: DAT_004040a4 = 0; DAT_004041e0 = 1; FUN_004012d7(); DAT_004041e0 = 0; If we look at FUN_004012d7 in the Listing view, we can see that it is located at 0x4012d7, where we find the int3 instructions we saw earlier. Calling FUN_004012d7 therefore triggers an int3, which activates the SIGTRAP handler we identified above. We can now follow that handler in FUN_00401196. Its first branch checks the value of DAT_004041e0: if (DAT_004041e0 != 0) { if (0x23 &lt; DAT_004040a4) { return; } lVar2 = (long)DAT_004040a4; DAT_004040a4 = DAT_004040a4 + 1; *(long *)(&amp;DAT_004040c0 + lVar2 * 8) = *(long *)(param_3 + 0xa8); return; } At this point DAT_004041e0 is 1, so the handler enters this branch. DAT_004040a4 starts at 0 and is incremented every time the handler is invoked. The value obtained from param_3 + 0xa8 is then stored in the array beginning at DAT_004040c0. The condition 0x23 &lt; DAT_004040a4 also tells us that the handler can record at most 0x24 entries, which is 36 in decimal. This matches the 36 positions that the program later expects to process. After FUN_004012d7 returns, FUN_00401631 sets DAT_004041e0 back to 0: DAT_004041e0 = 0; It then checks whether DAT_004040a4 reached 0x24: if (DAT_004040a4 == 0x24) { So the first call to FUN_004012d7 is being used to collect 36 values in DAT_004040c0. The program then moves on to the next stage, where it reads our input. The input is read with the following loop: iVar1 = 0; if (DAT_004040a4 == 0x24) { do { sVar3 = read(0,&amp;DAT_00404200 + iVar1,(long)(0x24 - iVar1)); if (sVar3 &lt; 1) break; iVar1 = (int)sVar3 + iVar1; } while (iVar1 &lt; 0x24); The value 0x24 is 36 in decimal, so the program expects exactly 36 bytes of input. The loop also accounts for the possibility that read() does not return all 36 bytes at once, keeping track of how many bytes have already been received in iVar1. The input is stored starting at DAT_00404200. Once all 36 bytes have been read, the program initializes the state used during validation: DAT_004041f8 = 0x811c9dc5; DAT_004041f4 = 0; DAT_004041f0 = 0; DAT_004041e8 = 0; These variables are important because FUN_00401196 uses them when processing each byte. DAT_004041f8 is initialized with 0x811c9dc5, DAT_004041f4 keeps track of the validation progress, DAT_004041f0 is used as a failure flag, and DAT_004041e8 stores a timestamp used by the handler. The program then calls FUN_004012d7 again: FUN_004012d7(); This time, however, DAT_004041e0 has already been set back to 0. That changes which branch of FUN_00401196 is executed. Instead of recording values like it did during the first call, the handler now uses the values previously stored in DAT_004040c0 to determine which input byte is currently being processed. lVar2 = rdtsc(); if (0 &lt; DAT_004040a4) { iVar4 = 0; do { if (*(long *)(param_3 + 0xa8) == *(long *)(&amp;DAT_004040c0 + (long)iVar4 * 8)) { if (iVar4 &lt; 0) { DAT_004041f0 = 1; return; } if ((0x4000000 &lt; (ulong)(lVar2 - DAT_004041e8)) &amp;&amp; (DAT_004041e8 != 0)) { DAT_004041f8 = DAT_004041f8 ^ 0xa5a5a5a5; } bVar3 = (byte)DAT_004041f8 ^ (&amp;DAT_00404200)[iVar4]; bVar1 = (byte)(DAT_004041f8 &gt;&gt; 5) &amp; 7; if ((byte)(bVar3 &lt;&lt; bVar1 | bVar3 &gt;&gt; 8 - bVar1) != (byte)((byte)DAT_004041f8 ^ (&amp;DAT_004020a0)[iVar4])) { DAT_004041f0 = 1; } DAT_004041f8 = ((byte)(&amp;DAT_00404200)[iVar4] ^ DAT_004041f8) * 0x1000193; DAT_004041e8 = rdtsc(); DAT_00404050 = (byte)DAT_004041f8 &amp; 0x7f ^ 0x90; DAT_004041f4 = iVar4 + 1; return; } iVar4 = iVar4 + 1; } while (iVar4 &lt; DAT_004040a4); } The handler starts by obtaining the processor timestamp with rdtsc(). It then searches through the 36 values stored in DAT_004040c0. The value from param_3 + 0xa8 is compared against each stored value, and when a match is found, its index is placed in iVar4. That index is significant because it is then used to access the input at DAT_00404200[iVar4]. In other words, the handler is not simply processing the input from byte 0 through byte 35. The previously recorded values determine which input position is checked at each SIGTRAP. Once the corresponding index is found, the handler performs the actual byte validation. It first combines the current state with the input byte: bVar3 = (byte)DAT_004041f8 ^ (&amp;DAT_00404200)[iVar4]; It then derives a rotation amount from the current state: bVar1 = (byte)(DAT_004041f8 &gt;&gt; 5) &amp; 7; And rotates bVar3 before comparing the result against another value derived from DAT_004020a0: if ((byte)(bVar3 &lt;&lt; bVar1 | bVar3 &gt;&gt; 8 - bVar1) != (byte)((byte)DAT_004041f8 ^ (&amp;DAT_004020a0)[iVar4])) { DAT_004041f0 = 1; } If the comparison fails, DAT_004041f0 is set to 1. If it succeeds, the handler continues by updating DAT_004041f8 using the current input byte and the constant 0x1000193, then records another timestamp and advances DAT_004041f4 to iVar4 + 1. The handler then updates DAT_004041f8 using the current input byte and the constant 0x1000193: DAT_004041f8 = ((byte)(&amp;DAT_00404200)[iVar4] ^ DAT_004041f8) * 0x1000193; The constants used here match the 32-bit FNV-1a algorithm. 0x811c9dc5, which was used to initialize DAT_004041f8, is the FNV offset basis, while 0x1000193 is the FNV prime. The operation follows the same XOR-then-multiply pattern used by FNV-1a. This means DAT_004041f8 acts as a rolling state, with each processed input byte changing the value used for the next validation step. The handler also updates DAT_004041f4 with the index of the byte that was just processed: DAT_004041f4 = iVar4 + 1; After FUN_00401196 returns, the program checks whether all 36 input bytes were processed and no validation failure was detected: if ((DAT_004041f0 == 0) &amp;&amp; (DAT_004041f4 == 0x24)) { If either condition is not satisfied, the program prints: puts(&quot;nope&quot;); When both conditions are satisfied, the program continues by generating the final output from the validated input. This is the last stage of the program, but we do not need to reproduce this transformation ourselves because the binary performs it once we provide the correct input. iVar1 = 1; lVar2 = 0; uVar5 = DAT_004041f8; do { uVar5 = ((byte)(&amp;DAT_00404200)[(int)lVar2 % 0x24] ^ uVar5) * 0x1000193; bVar7 = (byte)(uVar5 &gt;&gt; 7) &amp; 7; local_e8[lVar2] = (byte)(uVar5 &gt;&gt; 0xb) ^ (&amp;DAT_00402060)[lVar2] ^ (byte)lVar2 ^ ((&amp;DAT_00404200)[iVar1 % 0x24] &lt;&lt; bVar7 | (byte)(&amp;DAT_00404200)[iVar1 % 0x24] &gt;&gt; 8 - bVar7); lVar2 = lVar2 + 1; iVar1 = iVar1 + 5; } while (lVar2 != 0x2f); The loop runs until lVar2 reaches 0x2f, which is 47 in decimal, so it generates 47 bytes. The resulting bytes are stored in local_e8. Finally, those 47 bytes are written to standard output: local_b9 = 0; fwrite(local_e8,1,0x2f,stdout); At this point, we know how the program validates the input, but we still do not know what the 36 bytes should be. Rather than trying to guess them, we can reverse the validation operation. The values stored at 0x4020a0 are used by the handler during the validation process. We can extract the relevant bytes from the .rodata section: objdump -s -j .rodata coilvm The 36 bytes used by the validator are: 2f 3b b3 3a b6 86 9a d7 bf a0 74 61 1b 0f a2 06 ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee 9e 74 0c 35 For each index iVar4, the program takes the current state, XORs it with the corresponding input byte, rotates the result left by a variable amount, and compares the result against the current byte in DAT_004020a0 XORed with the same state. Since the state changes after every byte, the checks have to be solved in the same order in which the handler processes the input. The order itself comes from the values recorded during the first execution of FUN_004012d7. The operations used here are reversible. Since the rotation can be undone with a right rotation, we can reverse the validation process and calculate the input byte that would produce the expected result. For each position, we can therefore recover the input byte with: input = (state &amp; 0xff) XOR ROR8((state &amp; 0xff) XOR table[i], (state &gt;&gt; 5) &amp; 7) After recovering a byte, we update the state exactly as the program does: state = ((state XOR input) * 0x1000193) &amp; 0xffffffff We can automate this process with a small Python script: #!/usr/bin/python3 table = bytes.fromhex( &quot;2f 3b b3 3a b6 86 9a d7 bf a0 74 61 1b 0f a2 06 &quot; &quot;ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee &quot; &quot;9e 74 0c 35&quot; ) state = 0x811c9dc5 result = [] def ror8(value, amount): amount &amp;= 7 if amount == 0: return value &amp; 0xff return ((value &gt;&gt; amount) | (value &lt;&lt; (8 - amount))) &amp; 0xff for target in table: amount = (state &gt;&gt; 5) &amp; 7 input_byte = ( (state &amp; 0xff) ^ ror8((state &amp; 0xff) ^ target, amount) ) result.append(input_byte) state = ((input_byte ^ state) * 0x1000193) &amp; 0xffffffff print(bytes(result).decode()) Running the script gives us: n4nom1tes_eat_y0ur_symb0lic_execut0r This is the 36-byte input required by the validation stage. If we provide it to the binary, it accepts the input and performs the remaining processing itself, returning the flag. SkillBit{n4nom1tes_eat_y0ur_symb0lic_execut0r} Web Exploitation Track Me When visiting the main page, we will see that our visit is recorded and that we can view the logs through /logs.php. When reviewing the log, we can see that the application records information about our visit, including the User-Agent: Since the User-Agent is controlled by us, we can try to inject PHP code into this field and exploit a log poisoning: curl -A &#39;&lt;?php echo &quot;P0150N3D&quot;; ?&gt;&#39; &lt;HOST&gt; This works because logs.php uses include() to load access.log, causing any PHP code contained in the file to be interpreted and executed before its contents are displayed. This gives us PHP code execution, which we can use to locate the file containing the flag: curl -A &#39;&lt;?php foreach (glob(&quot;/flag-*.txt&quot;) as $f) { echo file_get_contents($f); } ?&gt;&#39; &lt;HOST&gt; This gives us the flag: SkillBit{7r4ck1n9_u53r5_c4n_7r4ck_y0u_t00}","headline":"MetaCTF September 2026 Flash CTF","mainEntityOfPage":{"@type":"WebPage","@id":"/en/MetaCTF-September-2026-Flash-CTF/"},"url":"/en/MetaCTF-September-2026-Flash-CTF/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PPKV9V8T');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PPKV9V8T"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1 class="glitch-header">filthyHacker@home:~$</h1>
+    </a>
+    <div class="header-links">
+      <a href="/en"><h2 class="header-link">Posts</h2></a>
+<a href="/en/search"><h2 class="header-link">Search</h2></a>
+<a href="/en/archive"><h2 class="header-link">Archive</h2></a>
+<a href="/es"><h2 class="header-link">Español</h2></a>
+
+    </div>
+  </div>
+</header>
+
+    <div class="container">
+      <section id="main_content">
+        
+
+<div class="post-layout">
+  <article>
+    <h2>MetaCTF September 2026 Flash CTF</h2>
+    <time datetime="2026-09-24T00:00:00-04:00" class="by-line">
+      
+        09/24/2026
+      
+    </time>
+    <p>Flash CTF is a monthly <em>capture the flag</em> organized by <a href="https://skillbit.com/">SkillBit</a>, featuring different challenges divided into several categories. This time, I solved 6 out of the 7 challenges.</p>
+
+<div style="text-align:center">
+  <img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/1.jpg" alt="SkillBit logo" class="blog-image" onclick="expandImage(this)" />
+</div>
+
+<h3 id="binary-exploitation"><a href="#header-3"></a>Binary Exploitation</h3>
+
+<h4 id="careless-talk"><a href="#header-4"></a>Careless Talk</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/2.png" alt="2" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>After extracting and executing the <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/careless-talk.zip">careless-talk</a> binary, we notice that it asks us for a <em>watchword</em> that we don’t know. The first thing we can do is use <code class="language-plaintext highlighter-rouge">strings</code> to look for printable strings.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>strings careless-talk
+</code></pre></div></div>
+
+<p>We notice that there are two strings containing the flag, so we just have to reconstruct it.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/3.png" alt="3" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>One interesting detail is that we can also find the string <code class="language-plaintext highlighter-rouge">s1l3nt_s3rv1c3_1942</code> inside the binary. If we use it as the <em>watchword</em>, the program also returns the flag directly.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/4.png" alt="4" class="blog-image" onclick="expandImage(this)" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SkillBit{c4r3l355_t4lk_c05t5_l1v35}
+</code></pre></div></div>
+
+<h3 id="forensics"><a href="#header-3"></a>Forensics</h3>
+
+<h4 id="carry-on"><a href="#header-4"></a>Carry On</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/5.png" alt="5" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>When opening the <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/carry-on.zip">attached file</a>, we won’t notice anything relevant. However, the challenge description gives us an important clue with the phrase <em>walk out</em>. We can use <code class="language-plaintext highlighter-rouge">binwalk</code>, a tool for analyzing binary files and identifying and extracting embedded files.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>binwalk <span class="nt">-e</span> checkpoint-plan.png
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/6.png" alt="6" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>A folder will be created containing everything that was found inside the image. Among the extracted files, we will find a <code class="language-plaintext highlighter-rouge">note.txt</code> containing the flag in plain text.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SkillBit{0n3_f1l3_c4n_c4rry_4n0th3r}
+</code></pre></div></div>
+
+<h4 id="registry101"><a href="#header-4"></a>Registry101</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/7.png" alt="7" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>After extracting <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/evidence.zip">evidence.zip</a>, we will find a copy of the files and registry data from a Windows system.</p>
+
+<p>The name of the challenge, <code class="language-plaintext highlighter-rouge">Registry101</code>, gives us a first clue about where we should look. Also, the description mentions that Peter denies accessing some <em>important documents</em>, so we can start by looking for evidence of recently opened documents.</p>
+
+<p>Inside the evidence, we find the <code class="language-plaintext highlighter-rouge">admin</code> user’s hive along with its transaction logs:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C/Users/admin/NTUSER.DAT
+C/Users/admin/ntuser.dat.LOG1
+C/Users/admin/ntuser.dat.LOG2
+</code></pre></div></div>
+
+<p>We can check <code class="language-plaintext highlighter-rouge">RecentDocs</code>, as this key contains information about recently opened documents. To do this, we can use <code class="language-plaintext highlighter-rouge">python-registry</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+</span>
+<span class="kn">from</span> <span class="n">Registry</span> <span class="kn">import</span> <span class="n">Registry</span>
+
+<span class="n">reg</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">.</span><span class="nc">Registry</span><span class="p">(</span><span class="sh">"</span><span class="s">C/Users/admin/NTUSER.DAT</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="sa">r</span><span class="sh">"</span><span class="s">Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs</span><span class="sh">"</span>
+
+<span class="n">key</span> <span class="o">=</span> <span class="n">reg</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[+] </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">key</span><span class="p">.</span><span class="nf">values</span><span class="p">():</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">value</span><span class="p">.</span><span class="nf">name</span><span class="p">()</span><span class="si">:</span><span class="o">&lt;</span><span class="mi">20</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">value</span><span class="p">.</span><span class="nf">value</span><span class="p">()</span><span class="si">!r}</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">subkey</span> <span class="ow">in</span> <span class="n">key</span><span class="p">.</span><span class="nf">subkeys</span><span class="p">():</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="se">\n</span><span class="s">[</span><span class="si">{</span><span class="n">subkey</span><span class="p">.</span><span class="nf">name</span><span class="p">()</span><span class="si">}</span><span class="s">]</span><span class="sh">"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">subkey</span><span class="p">.</span><span class="nf">values</span><span class="p">():</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">value</span><span class="p">.</span><span class="nf">name</span><span class="p">()</span><span class="si">:</span><span class="o">&lt;</span><span class="mi">20</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">value</span><span class="p">.</span><span class="nf">value</span><span class="p">()</span><span class="si">!r}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Among the entries, we will find different types of documents:</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/8.png" alt="8" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>However, we don’t find anything that looks like a flag, so we can continue investigating the files related to this hive.</p>
+
+<p>Since we also have the transaction logs associated with the hive, we can investigate whether they contain any additional information. These logs can contain Registry writes that are not yet reflected in the current state of the hive we are viewing in <code class="language-plaintext highlighter-rouge">NTUSER.DAT</code>.</p>
+
+<p>We can extract the UTF-16LE strings from both logs using <code class="language-plaintext highlighter-rouge">strings</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>strings <span class="nt">-el</span> C/Users/admin/ntuser.dat.LOG1 <span class="o">&gt;</span> log1_strings.txt
+strings <span class="nt">-el</span> C/Users/admin/ntuser.dat.LOG2 <span class="o">&gt;</span> log2_strings.txt
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">-el</code> option tells <code class="language-plaintext highlighter-rouge">strings</code> to look for 16-bit strings in <em>little-endian</em>, a format used by many strings stored in Windows Registry data.</p>
+
+<p>As we just saw that <code class="language-plaintext highlighter-rouge">RecentDocs</code> contains files with <code class="language-plaintext highlighter-rouge">.docx</code>, <code class="language-plaintext highlighter-rouge">.xlsx</code>, <code class="language-plaintext highlighter-rouge">.txt</code>, and <code class="language-plaintext highlighter-rouge">.xml</code> extensions, we can use these extensions to filter the results.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'\.(docx|xlsx|txt|xml)$'</span> log1_strings.txt
+<span class="nb">grep</span> <span class="nt">-Ei</span> <span class="s1">'\.(docx|xlsx|txt|xml)$'</span> log2_strings.txt
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/9.png" alt="9" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/10.png" alt="10" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Among the results, we will find two names that catch our attention:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IU1ldGFDVEZ7RjFyNXRfc3QzcF8=.docx
+Ml9yM2cxc3RyeV80YW5kNn0=.xlsx
+</code></pre></div></div>
+
+<p>Both strings are in Base64 format, so we can try decoding them:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"IU1ldGFDVEZ7RjFyNXRfc3QzcF8=Ml9yM2cxc3RyeV80YW5kNn0="</span> | <span class="nb">base64</span> <span class="nt">-d</span><span class="p">;</span> <span class="nb">echo</span>
+</code></pre></div></div>
+
+<p>Decoding the string gives us the flag:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MetaCTF{F1r5t_st3p_2_r3g1stry_4and6}
+</code></pre></div></div>
+
+<h3 id="other"><a href="#header-3"></a>Other</h3>
+
+<h4 id="git-sleuth"><a href="#header-4"></a>Git Sleuth</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/11.png" alt="11" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Before connecting to the challenge, we can review the <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/gitsleuth.zip">provided files</a> to understand which files are generated and how they are prepared.</p>
+
+<p>In <code class="language-plaintext highlighter-rouge">challenge.py</code>, we can see that the commands entered by the user are executed using <code class="language-plaintext highlighter-rouge">subprocess.run()</code>:</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/12.png" alt="12" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>This means that every command we enter will be executed as a Git command. There is also a list of characters and words that we cannot use, so we are limited to Git commands that are not blocked.</p>
+
+<p>On the other hand, in <code class="language-plaintext highlighter-rouge">exec.sh</code>, we can see that 500 <code class="language-plaintext highlighter-rouge">.txt</code> files are created inside <code class="language-plaintext highlighter-rouge">/tmp</code>, all with the same content. Then, <code class="language-plaintext highlighter-rouge">/flag.txt</code> is copied to another file with a randomly generated name:</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/13.png" alt="13" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>This means that there will be 501 <code class="language-plaintext highlighter-rouge">.txt</code> files in <code class="language-plaintext highlighter-rouge">/tmp</code>: 500 containing the same fake flag and one containing the real flag. Since all of them have randomly generated names, we cannot directly tell which one contains the flag we are looking for.</p>
+
+<p>First, we initialize a repository in <code class="language-plaintext highlighter-rouge">/tmp</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp init
+</code></pre></div></div>
+
+<p>Then, we add all the files:
+:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp add .
+</code></pre></div></div>
+
+<p>And check that the files were added correctly with:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp status
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/14.png" alt="14" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Once they are added, we can get the files along with the hash of the blob containing their contents:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp ls-files -s
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/15.png" alt="15" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Since the 500 files containing the same fake flag have exactly the same content, they will all have the same hash. Therefore, we can look through the results for the hash that appears only once. That will be the hash of the blob containing the real flag.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">tail</span> <span class="nt">-n</span> +9 output.txt | <span class="nb">awk</span> <span class="s1">'{print $2}'</span> | <span class="nb">uniq</span> <span class="nt">-u</span> | xargs
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/16.png" alt="16" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We can directly query the contents of this blob:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-C /tmp cat-file -p 35ab8c9e8787383f759aae2db4ee654c73080548
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/17.png" alt="17" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>This gives us the flag:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SkillBit{R3m3mb3r_t0_4lw4ys_3sc4p3_G1t_C0mm4nds}
+</code></pre></div></div>
+
+<h3 id="reverse-engineering"><a href="#header-3"></a>Reverse Engineering</h3>
+
+<h4 id="coilvm"><a href="#header-4"></a>CoilVM</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/18.png" alt="18" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>After extracting the <a href="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/coilvm.zip">challenge</a>, we are left with a file named <code class="language-plaintext highlighter-rouge">coilvm</code>, but it has no file extension, so we do not even know what type of file it is. We can start by checking it with <code class="language-plaintext highlighter-rouge">file</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>file coilvm
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/19.png" alt="19" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>This tells us that <code class="language-plaintext highlighter-rouge">coilvm</code> is an ELF executable, so we can run it and see what it does.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/20.png" alt="20" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>When running the binary, we can provide input, but nothing immediately tells us what the program expects, so we can take a closer look at the executable.</p>
+
+<p>We can start by disassembling it:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>objdump <span class="nt">-d</span> <span class="nt">-M</span> intel coilvm
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">objdump</code> can disassemble the executable code and show it as assembly instructions. The <code class="language-plaintext highlighter-rouge">-M intel</code> option tells it to use Intel syntax, which is easier to read.</p>
+
+<p>The output contains the usual executable sections and library functions. We can skip the initialization code and look at the program’s own code in the <code class="language-plaintext highlighter-rouge">.text</code> section.</p>
+
+<p>While going through the disassembly, we can see a <code class="language-plaintext highlighter-rouge">strcmp</code> call. This tells us that the program eventually compares two strings. Since we do not know what string it expects, we need to understand how the program processes our input.</p>
+
+<pre><code class="language-asm">40161f:       e8 3c fa ff ff          call   401060 &lt;strcmp@plt&gt;
+401624:       85 c0                   test   eax,eax
+401626:       0f 94 c0                sete   al
+</code></pre>
+
+<p>We also find an unusual block of instructions starting at <code class="language-plaintext highlighter-rouge">0x4012d7</code>:</p>
+
+<pre><code class="language-asm">4012d7:       cc                      int3
+4012d8:       0f b6 15 71 2d 00 00    movzx  edx,BYTE PTR [rip+0x2d71]
+4012df:       0f b6 05 ba 2d 00 00    movzx  eax,BYTE PTR [rip+0x2dba]
+4012e6:       31 d0                   xor    eax,edx
+4012e8:       88 05 b2 2d 00 00       mov    BYTE PTR [rip+0x2db2],al
+
+4012ee:       cc                      int3
+4012ef:       0f b6 15 5a 2d 00 00    movzx  edx,BYTE PTR [rip+0x2d5a]
+4012f6:       0f b6 05 a3 2d 00 00    movzx  eax,BYTE PTR [rip+0x2da3]
+4012fd:       31 d0                   xor    eax,edx
+4012ff:       88 05 9b 2d 00 00       mov    BYTE PTR [rip+0x2d9b],al
+
+401305:       cc                      int3
+401306:       0f b6 15 43 2d 00 00    movzx  edx,BYTE PTR [rip+0x2d43]
+40130d:       0f b6 05 8c 2d 00 00    movzx  eax,BYTE PTR [rip+0x2d8c]
+401314:       31 d0                   xor    eax,edx
+401316:       88 05 84 2d 00 00       mov    BYTE PTR [rip+0x2d84],al
+
+...
+</code></pre>
+
+<p>We can see that <code class="language-plaintext highlighter-rouge">int3</code> appears repeatedly between small sections of code. We can investigate this behavior further with Ghidra.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/21.png" alt="21" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Looking at the functions in the Symbol Tree, we can examine how the program is structured and follow the code from one function to another.</p>
+
+<p>In <code class="language-plaintext highlighter-rouge">FUN_00401631</code>, the Decompiler shows that the program registers <code class="language-plaintext highlighter-rouge">FUN_00401196</code> as a signal handler:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">local_b8</span><span class="p">.</span><span class="n">__sigaction_handler</span><span class="p">.</span><span class="n">sa_handler</span> <span class="o">=</span> <span class="n">FUN_00401196</span><span class="p">;</span>
+<span class="n">local_b8</span><span class="p">.</span><span class="n">sa_flags</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+<span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">local_b8</span><span class="p">.</span><span class="n">sa_mask</span><span class="p">);</span>
+<span class="n">sigaction</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="o">&amp;</span><span class="n">local_b8</span><span class="p">,(</span><span class="n">sigaction</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x0</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The function then initializes <code class="language-plaintext highlighter-rouge">DAT_004040a4</code> to <code class="language-plaintext highlighter-rouge">0</code>, sets <code class="language-plaintext highlighter-rouge">DAT_004041e0</code> to <code class="language-plaintext highlighter-rouge">1</code>, and then calls <code class="language-plaintext highlighter-rouge">FUN_004012d7</code>:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">DAT_004040a4</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">DAT_004041e0</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">FUN_004012d7</span><span class="p">();</span>
+<span class="n">DAT_004041e0</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>If we look at <code class="language-plaintext highlighter-rouge">FUN_004012d7</code> in the Listing view, we can see that it is located at <code class="language-plaintext highlighter-rouge">0x4012d7</code>, where we find the <code class="language-plaintext highlighter-rouge">int3</code> instructions we saw earlier. Calling <code class="language-plaintext highlighter-rouge">FUN_004012d7</code> therefore triggers an <code class="language-plaintext highlighter-rouge">int3</code>, which activates the <code class="language-plaintext highlighter-rouge">SIGTRAP</code> handler we identified above.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/22.png" alt="22" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>We can now follow that handler in <code class="language-plaintext highlighter-rouge">FUN_00401196</code>. Its first branch checks the value of <code class="language-plaintext highlighter-rouge">DAT_004041e0</code>:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">DAT_004041e0</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="mh">0x23</span> <span class="o">&lt;</span> <span class="n">DAT_004040a4</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">lVar2</span> <span class="o">=</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span><span class="n">DAT_004040a4</span><span class="p">;</span>
+  <span class="n">DAT_004040a4</span> <span class="o">=</span> <span class="n">DAT_004040a4</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="o">*</span><span class="p">(</span><span class="kt">long</span> <span class="o">*</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">DAT_004040c0</span> <span class="o">+</span> <span class="n">lVar2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">long</span> <span class="o">*</span><span class="p">)(</span><span class="n">param_3</span> <span class="o">+</span> <span class="mh">0xa8</span><span class="p">);</span>
+  <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>At this point <code class="language-plaintext highlighter-rouge">DAT_004041e0</code> is <code class="language-plaintext highlighter-rouge">1</code>, so the handler enters this branch. <code class="language-plaintext highlighter-rouge">DAT_004040a4</code> starts at <code class="language-plaintext highlighter-rouge">0</code> and is incremented every time the handler is invoked. The value obtained from <code class="language-plaintext highlighter-rouge">param_3 + 0xa8</code> is then stored in the array beginning at <code class="language-plaintext highlighter-rouge">DAT_004040c0</code>.</p>
+
+<p>The condition <code class="language-plaintext highlighter-rouge">0x23 &lt; DAT_004040a4</code> also tells us that the handler can record at most <code class="language-plaintext highlighter-rouge">0x24</code> entries, which is 36 in decimal. This matches the 36 positions that the program later expects to process.</p>
+
+<p>After <code class="language-plaintext highlighter-rouge">FUN_004012d7</code> returns, <code class="language-plaintext highlighter-rouge">FUN_00401631</code> sets <code class="language-plaintext highlighter-rouge">DAT_004041e0</code> back to <code class="language-plaintext highlighter-rouge">0</code>:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">DAT_004041e0</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>It then checks whether <code class="language-plaintext highlighter-rouge">DAT_004040a4</code> reached <code class="language-plaintext highlighter-rouge">0x24</code>:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">DAT_004040a4</span> <span class="o">==</span> <span class="mh">0x24</span><span class="p">)</span> <span class="p">{</span>
+</code></pre></div></div>
+
+<p>So the first call to <code class="language-plaintext highlighter-rouge">FUN_004012d7</code> is being used to collect 36 values in <code class="language-plaintext highlighter-rouge">DAT_004040c0</code>. The program then moves on to the next stage, where it reads our input.</p>
+
+<p>The input is read with the following loop:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iVar1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">DAT_004040a4</span> <span class="o">==</span> <span class="mh">0x24</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">do</span> <span class="p">{</span>
+    <span class="n">sVar3</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">&amp;</span><span class="n">DAT_00404200</span> <span class="o">+</span> <span class="n">iVar1</span><span class="p">,(</span><span class="kt">long</span><span class="p">)(</span><span class="mh">0x24</span> <span class="o">-</span> <span class="n">iVar1</span><span class="p">));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sVar3</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+    <span class="n">iVar1</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">sVar3</span> <span class="o">+</span> <span class="n">iVar1</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">iVar1</span> <span class="o">&lt;</span> <span class="mh">0x24</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The value <code class="language-plaintext highlighter-rouge">0x24</code> is 36 in decimal, so the program expects exactly 36 bytes of input. The loop also accounts for the possibility that <code class="language-plaintext highlighter-rouge">read()</code> does not return all 36 bytes at once, keeping track of how many bytes have already been received in <code class="language-plaintext highlighter-rouge">iVar1</code>.</p>
+
+<p>The input is stored starting at <code class="language-plaintext highlighter-rouge">DAT_00404200</code>. Once all 36 bytes have been read, the program initializes the state used during validation:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">DAT_004041f8</span> <span class="o">=</span> <span class="mh">0x811c9dc5</span><span class="p">;</span>
+<span class="n">DAT_004041f4</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">DAT_004041f0</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">DAT_004041e8</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>These variables are important because <code class="language-plaintext highlighter-rouge">FUN_00401196</code> uses them when processing each byte. <code class="language-plaintext highlighter-rouge">DAT_004041f8</code> is initialized with <code class="language-plaintext highlighter-rouge">0x811c9dc5</code>, <code class="language-plaintext highlighter-rouge">DAT_004041f4</code> keeps track of the validation progress, <code class="language-plaintext highlighter-rouge">DAT_004041f0</code> is used as a failure flag, and <code class="language-plaintext highlighter-rouge">DAT_004041e8</code> stores a timestamp used by the handler.</p>
+
+<p>The program then calls <code class="language-plaintext highlighter-rouge">FUN_004012d7</code> again:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">FUN_004012d7</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>This time, however, <code class="language-plaintext highlighter-rouge">DAT_004041e0</code> has already been set back to <code class="language-plaintext highlighter-rouge">0</code>.</p>
+
+<p>That changes which branch of <code class="language-plaintext highlighter-rouge">FUN_00401196</code> is executed. Instead of recording values like it did during the first call, the handler now uses the values previously stored in <code class="language-plaintext highlighter-rouge">DAT_004040c0</code> to determine which input byte is currently being processed.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">lVar2</span> <span class="o">=</span> <span class="n">rdtsc</span><span class="p">();</span>
+<span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">DAT_004040a4</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">iVar4</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">do</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="kt">long</span> <span class="o">*</span><span class="p">)(</span><span class="n">param_3</span> <span class="o">+</span> <span class="mh">0xa8</span><span class="p">)</span> <span class="o">==</span> <span class="o">*</span><span class="p">(</span><span class="kt">long</span> <span class="o">*</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">DAT_004040c0</span> <span class="o">+</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span><span class="n">iVar4</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">iVar4</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">DAT_004041f0</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">((</span><span class="mh">0x4000000</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">ulong</span><span class="p">)(</span><span class="n">lVar2</span> <span class="o">-</span> <span class="n">DAT_004041e8</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">DAT_004041e8</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">DAT_004041f8</span> <span class="o">=</span> <span class="n">DAT_004041f8</span> <span class="o">^</span> <span class="mh">0xa5a5a5a5</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="n">bVar3</span> <span class="o">=</span> <span class="p">(</span><span class="n">byte</span><span class="p">)</span><span class="n">DAT_004041f8</span> <span class="o">^</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">DAT_00404200</span><span class="p">)[</span><span class="n">iVar4</span><span class="p">];</span>
+      <span class="n">bVar1</span> <span class="o">=</span> <span class="p">(</span><span class="n">byte</span><span class="p">)(</span><span class="n">DAT_004041f8</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">7</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">((</span><span class="n">byte</span><span class="p">)(</span><span class="n">bVar3</span> <span class="o">&lt;&lt;</span> <span class="n">bVar1</span> <span class="o">|</span> <span class="n">bVar3</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">bVar1</span><span class="p">)</span> <span class="o">!=</span>
+          <span class="p">(</span><span class="n">byte</span><span class="p">)((</span><span class="n">byte</span><span class="p">)</span><span class="n">DAT_004041f8</span> <span class="o">^</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">DAT_004020a0</span><span class="p">)[</span><span class="n">iVar4</span><span class="p">]))</span> <span class="p">{</span>
+        <span class="n">DAT_004041f0</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="n">DAT_004041f8</span> <span class="o">=</span> <span class="p">((</span><span class="n">byte</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">DAT_00404200</span><span class="p">)[</span><span class="n">iVar4</span><span class="p">]</span> <span class="o">^</span> <span class="n">DAT_004041f8</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0x1000193</span><span class="p">;</span>
+      <span class="n">DAT_004041e8</span> <span class="o">=</span> <span class="n">rdtsc</span><span class="p">();</span>
+      <span class="n">DAT_00404050</span> <span class="o">=</span> <span class="p">(</span><span class="n">byte</span><span class="p">)</span><span class="n">DAT_004041f8</span> <span class="o">&amp;</span> <span class="mh">0x7f</span> <span class="o">^</span> <span class="mh">0x90</span><span class="p">;</span>
+      <span class="n">DAT_004041f4</span> <span class="o">=</span> <span class="n">iVar4</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">iVar4</span> <span class="o">=</span> <span class="n">iVar4</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">iVar4</span> <span class="o">&lt;</span> <span class="n">DAT_004040a4</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The handler starts by obtaining the processor timestamp with <code class="language-plaintext highlighter-rouge">rdtsc()</code>. It then searches through the 36 values stored in <code class="language-plaintext highlighter-rouge">DAT_004040c0</code>. The value from <code class="language-plaintext highlighter-rouge">param_3 + 0xa8</code> is compared against each stored value, and when a match is found, its index is placed in <code class="language-plaintext highlighter-rouge">iVar4</code>.</p>
+
+<p>That index is significant because it is then used to access the input at <code class="language-plaintext highlighter-rouge">DAT_00404200[iVar4]</code>. In other words, the handler is not simply processing the input from byte 0 through byte 35. The previously recorded values determine which input position is checked at each <code class="language-plaintext highlighter-rouge">SIGTRAP</code>.</p>
+
+<p>Once the corresponding index is found, the handler performs the actual byte validation. It first combines the current state with the input byte:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bVar3</span> <span class="o">=</span> <span class="p">(</span><span class="n">byte</span><span class="p">)</span><span class="n">DAT_004041f8</span> <span class="o">^</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">DAT_00404200</span><span class="p">)[</span><span class="n">iVar4</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>It then derives a rotation amount from the current state:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bVar1</span> <span class="o">=</span> <span class="p">(</span><span class="n">byte</span><span class="p">)(</span><span class="n">DAT_004041f8</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">7</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>And rotates <code class="language-plaintext highlighter-rouge">bVar3</code> before comparing the result against another value derived from <code class="language-plaintext highlighter-rouge">DAT_004020a0</code>:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">((</span><span class="n">byte</span><span class="p">)(</span><span class="n">bVar3</span> <span class="o">&lt;&lt;</span> <span class="n">bVar1</span> <span class="o">|</span> <span class="n">bVar3</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">bVar1</span><span class="p">)</span> <span class="o">!=</span>
+    <span class="p">(</span><span class="n">byte</span><span class="p">)((</span><span class="n">byte</span><span class="p">)</span><span class="n">DAT_004041f8</span> <span class="o">^</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">DAT_004020a0</span><span class="p">)[</span><span class="n">iVar4</span><span class="p">]))</span> <span class="p">{</span>
+  <span class="n">DAT_004041f0</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If the comparison fails, <code class="language-plaintext highlighter-rouge">DAT_004041f0</code> is set to <code class="language-plaintext highlighter-rouge">1</code>. If it succeeds, the handler continues by updating <code class="language-plaintext highlighter-rouge">DAT_004041f8</code> using the current input byte and the constant <code class="language-plaintext highlighter-rouge">0x1000193</code>, then records another timestamp and advances <code class="language-plaintext highlighter-rouge">DAT_004041f4</code> to <code class="language-plaintext highlighter-rouge">iVar4 + 1</code>.</p>
+
+<p>The handler then updates <code class="language-plaintext highlighter-rouge">DAT_004041f8</code> using the current input byte and the constant <code class="language-plaintext highlighter-rouge">0x1000193</code>:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">DAT_004041f8</span> <span class="o">=</span> <span class="p">((</span><span class="n">byte</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">DAT_00404200</span><span class="p">)[</span><span class="n">iVar4</span><span class="p">]</span> <span class="o">^</span> <span class="n">DAT_004041f8</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0x1000193</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The constants used here match the 32-bit <a href="https://www.ietf.org/archive/id/draft-eastlake-fnv-25.html">FNV-1a algorithm</a>. <code class="language-plaintext highlighter-rouge">0x811c9dc5</code>, which was used to initialize <code class="language-plaintext highlighter-rouge">DAT_004041f8</code>, is the FNV offset basis, while <code class="language-plaintext highlighter-rouge">0x1000193</code> is the FNV prime. The operation follows the same XOR-then-multiply pattern used by FNV-1a.</p>
+
+<p>This means <code class="language-plaintext highlighter-rouge">DAT_004041f8</code> acts as a rolling state, with each processed input byte changing the value used for the next validation step.</p>
+
+<p>The handler also updates <code class="language-plaintext highlighter-rouge">DAT_004041f4</code> with the index of the byte that was just processed:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">DAT_004041f4</span> <span class="o">=</span> <span class="n">iVar4</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>After <code class="language-plaintext highlighter-rouge">FUN_00401196</code> returns, the program checks whether all 36 input bytes were processed and no validation failure was detected:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">((</span><span class="n">DAT_004041f0</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">DAT_004041f4</span> <span class="o">==</span> <span class="mh">0x24</span><span class="p">))</span> <span class="p">{</span>
+</code></pre></div></div>
+
+<p>If either condition is not satisfied, the program prints:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">puts</span><span class="p">(</span><span class="s">"nope"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>When both conditions are satisfied, the program continues by generating the final output from the validated input. This is the last stage of the program, but we do not need to reproduce this transformation ourselves because the binary performs it once we provide the correct input.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iVar1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">lVar2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">uVar5</span> <span class="o">=</span> <span class="n">DAT_004041f8</span><span class="p">;</span>
+<span class="k">do</span> <span class="p">{</span>
+  <span class="n">uVar5</span> <span class="o">=</span> <span class="p">((</span><span class="n">byte</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">DAT_00404200</span><span class="p">)[(</span><span class="kt">int</span><span class="p">)</span><span class="n">lVar2</span> <span class="o">%</span> <span class="mh">0x24</span><span class="p">]</span> <span class="o">^</span> <span class="n">uVar5</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0x1000193</span><span class="p">;</span>
+  <span class="n">bVar7</span> <span class="o">=</span> <span class="p">(</span><span class="n">byte</span><span class="p">)(</span><span class="n">uVar5</span> <span class="o">&gt;&gt;</span> <span class="mi">7</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">7</span><span class="p">;</span>
+  <span class="n">local_e8</span><span class="p">[</span><span class="n">lVar2</span><span class="p">]</span> <span class="o">=</span>
+       <span class="p">(</span><span class="n">byte</span><span class="p">)(</span><span class="n">uVar5</span> <span class="o">&gt;&gt;</span> <span class="mh">0xb</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">DAT_00402060</span><span class="p">)[</span><span class="n">lVar2</span><span class="p">]</span> <span class="o">^</span> <span class="p">(</span><span class="n">byte</span><span class="p">)</span><span class="n">lVar2</span> <span class="o">^</span>
+       <span class="p">((</span><span class="o">&amp;</span><span class="n">DAT_00404200</span><span class="p">)[</span><span class="n">iVar1</span> <span class="o">%</span> <span class="mh">0x24</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">bVar7</span> <span class="o">|</span>
+       <span class="p">(</span><span class="n">byte</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">DAT_00404200</span><span class="p">)[</span><span class="n">iVar1</span> <span class="o">%</span> <span class="mh">0x24</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">bVar7</span><span class="p">);</span>
+  <span class="n">lVar2</span> <span class="o">=</span> <span class="n">lVar2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="n">iVar1</span> <span class="o">=</span> <span class="n">iVar1</span> <span class="o">+</span> <span class="mi">5</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">lVar2</span> <span class="o">!=</span> <span class="mh">0x2f</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The loop runs until <code class="language-plaintext highlighter-rouge">lVar2</code> reaches <code class="language-plaintext highlighter-rouge">0x2f</code>, which is 47 in decimal, so it generates 47 bytes. The resulting bytes are stored in <code class="language-plaintext highlighter-rouge">local_e8</code>.</p>
+
+<p>Finally, those 47 bytes are written to standard output:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">local_b9</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">fwrite</span><span class="p">(</span><span class="n">local_e8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x2f</span><span class="p">,</span><span class="n">stdout</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>At this point, we know how the program validates the input, but we still do not know what the 36 bytes should be. Rather than trying to guess them, we can reverse the validation operation.</p>
+
+<p>The values stored at <code class="language-plaintext highlighter-rouge">0x4020a0</code> are used by the handler during the validation process. We can extract the relevant bytes from the <code class="language-plaintext highlighter-rouge">.rodata</code> section:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>objdump <span class="nt">-s</span> <span class="nt">-j</span> .rodata coilvm
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/23.png" alt="23" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>The 36 bytes used by the validator are:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2f 3b b3 3a b6 86 9a d7 bf a0 74 61 1b 0f a2 06
+ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee
+9e 74 0c 35
+</code></pre></div></div>
+
+<p>For each index <code class="language-plaintext highlighter-rouge">iVar4</code>, the program takes the current state, XORs it with the corresponding input byte, rotates the result left by a variable amount, and compares the result against the current byte in <code class="language-plaintext highlighter-rouge">DAT_004020a0</code> XORed with the same state.</p>
+
+<p>Since the state changes after every byte, the checks have to be solved in the same order in which the handler processes the input. The order itself comes from the values recorded during the first execution of <code class="language-plaintext highlighter-rouge">FUN_004012d7</code>.</p>
+
+<p>The operations used here are reversible. Since the rotation can be undone with a right rotation, we can reverse the validation process and calculate the input byte that would produce the expected result.</p>
+
+<p>For each position, we can therefore recover the input byte with:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>input = (state &amp; 0xff) XOR ROR8((state &amp; 0xff) XOR table[i], (state &gt;&gt; 5) &amp; 7)
+</code></pre></div></div>
+
+<p>After recovering a byte, we update the state exactly as the program does:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>state = ((state XOR input) * 0x1000193) &amp; 0xffffffff
+</code></pre></div></div>
+
+<p>We can automate this process with a small Python script:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/python3
+</span>
+<span class="n">table</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span>
+    <span class="sh">"</span><span class="s">2f 3b b3 3a b6 86 9a d7 bf a0 74 61 1b 0f a2 06 </span><span class="sh">"</span>
+    <span class="sh">"</span><span class="s">ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee </span><span class="sh">"</span>
+    <span class="sh">"</span><span class="s">9e 74 0c 35</span><span class="sh">"</span>
+<span class="p">)</span>
+
+<span class="n">state</span> <span class="o">=</span> <span class="mh">0x811c9dc5</span>
+<span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">def</span> <span class="nf">ror8</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+    <span class="n">amount</span> <span class="o">&amp;=</span> <span class="mi">7</span>
+    <span class="k">if</span> <span class="n">amount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+    <span class="nf">return </span><span class="p">((</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="n">amount</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">8</span> <span class="o">-</span> <span class="n">amount</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+
+<span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
+    <span class="n">amount</span> <span class="o">=</span> <span class="p">(</span><span class="n">state</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">7</span>
+    <span class="n">input_byte</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">state</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">)</span>
+        <span class="o">^</span> <span class="nf">ror8</span><span class="p">((</span><span class="n">state</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">)</span> <span class="o">^</span> <span class="n">target</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">input_byte</span><span class="p">)</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="p">((</span><span class="n">input_byte</span> <span class="o">^</span> <span class="n">state</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0x1000193</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="nf">bytes</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="nf">decode</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p>Running the script gives us:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>n4nom1tes_eat_y0ur_symb0lic_execut0r
+</code></pre></div></div>
+
+<p>This is the 36-byte input required by the validation stage. If we provide it to the binary, it accepts the input and performs the remaining processing itself, returning the flag.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/24.png" alt="24" class="blog-image" onclick="expandImage(this)" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SkillBit{n4nom1tes_eat_y0ur_symb0lic_execut0r}
+</code></pre></div></div>
+
+<h3 id="web-exploitation"><a href="#header-3"></a>Web Exploitation</h3>
+
+<h4 id="track-me"><a href="#header-4"></a>Track Me</h4>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/50.png" alt="50" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>When visiting the main page, we will see that our visit is recorded and that we can view the logs through <code class="language-plaintext highlighter-rouge">/logs.php</code>.</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/25.png" alt="25" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/26.png" alt="26" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>When reviewing the log, we can see that the application records information about our visit, including the <code class="language-plaintext highlighter-rouge">User-Agent</code>:</p>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/27.png" alt="27" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>Since the <code class="language-plaintext highlighter-rouge">User-Agent</code> is controlled by us, we can try to inject PHP code into this field and exploit a <code class="language-plaintext highlighter-rouge">log poisoning</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-A</span> <span class="s1">'&lt;?php echo "P0150N3D"; ?&gt;'</span> &lt;HOST&gt;
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/29.png" alt="28" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>This works because <code class="language-plaintext highlighter-rouge">logs.php</code> uses <code class="language-plaintext highlighter-rouge">include()</code> to load <code class="language-plaintext highlighter-rouge">access.log</code>, causing any PHP code contained in the file to be interpreted and executed before its contents are displayed.</p>
+
+<p>This gives us PHP code execution, which we can use to locate the file containing the flag:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-A</span> <span class="s1">'&lt;?php foreach (glob("/flag-*.txt") as $f) { echo file_get_contents($f); } ?&gt;'</span> &lt;HOST&gt;
+</code></pre></div></div>
+
+<p><img src="https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2026-09-24-MetaCTF-September-2026-Flash-CTF/30.png" alt="30" class="blog-image" onclick="expandImage(this)" /></p>
+
+<p>This gives us the flag:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SkillBit{7r4ck1n9_u53r5_c4n_7r4ck_y0u_t00}
+</code></pre></div></div>
+
+  </article>
+
+  <aside class="toc" id="toc" hidden>
+    <div class="toc-header">
+      <span class="toc-title" id="toc-title">Table of Contents</span>
+      <button class="toc-close" id="toc-close" aria-label="Close table of contents">✕</button>
+    </div>
+    <ul id="toc-list"></ul>
+  </aside>
+</div>
+
+<button class="toc-toggle" id="toc-toggle" aria-controls="toc" aria-expanded="false" hidden>
+  ☰ Table of Contents
+</button>
+
+<div id="carousel" class="carousel">
+  <img id="carouselImage" class="carousel-image">
+  <div id="carouselAlt" class="carousel-alt"></div>
+  <button class="carousel-control prev" onclick="prevImage()">&#10094;</button>
+  <button class="carousel-control next" onclick="nextImage()">&#10095;</button>
+</div>
+
+<div class="image-overlay" onclick="closeImage()"></div>
+<img id="expandedImage" class="expanded-image">
+
+<div class="toc-overlay" id="toc-overlay"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var toc = document.getElementById('toc');
+    var tocList = document.getElementById('toc-list');
+    var tocToggle = document.getElementById('toc-toggle');
+    var tocClose = document.getElementById('toc-close');
+    var overlay = document.getElementById('toc-overlay');
+    var headers = document.querySelectorAll('article h3, article h4, article h5');
+    var counters = {
+      h3: 0,
+      h4: 0,
+      h5: 0
+    };
+
+    if (headers.length > 0) {
+      toc.hidden = false;
+      tocToggle.hidden = false;
+
+      headers.forEach(function(header) {
+        var level = header.tagName.toLowerCase();
+
+        if (level === 'h3') {
+          counters.h3 += 1;
+          counters.h4 = 0;
+          counters.h5 = 0;
+        } else if (level === 'h4') {
+          if (counters.h3 === 0) {
+            counters.h3 = 1;
+          }
+          counters.h4 += 1;
+          counters.h5 = 0;
+        } else if (level === 'h5') {
+          if (counters.h3 === 0) {
+            counters.h3 = 1;
+          }
+          if (counters.h4 === 0) {
+            counters.h4 = 1;
+          }
+          counters.h5 += 1;
+        }
+
+        var sectionNumber = counters.h3.toString();
+        if (level === 'h4' || level === 'h5') {
+          sectionNumber += '.' + counters.h4;
+        }
+        if (level === 'h5') {
+          sectionNumber += '.' + counters.h5;
+        }
+
+        var id = 'section-' + sectionNumber.replace(/\./g, '-');
+        header.id = id;
+        header.dataset.sectionNumber = sectionNumber;
+
+        if (!header.textContent.trim().startsWith(sectionNumber + '.')) {
+          header.textContent = sectionNumber + '. ' + header.textContent.trim();
+        }
+
+        var listItem = document.createElement('li');
+        listItem.className = 'toc-' + level;
+        var link = document.createElement('a');
+        link.href = '#' + id;
+        link.textContent = sectionNumber + '. ' + header.textContent.replace(/^\d+(?:\.\d+){0,2}\.\s+/, '');
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+      });
+
+      var tocLinks = tocList.querySelectorAll('a');
+      var sectionById = {};
+
+      headers.forEach(function(header) {
+        sectionById[header.id] = header;
+      });
+
+      function setActiveTocLink(activeId) {
+        tocLinks.forEach(function(link) {
+          var isActive = link.getAttribute('href') === '#' + activeId;
+          link.classList.toggle('is-active', isActive);
+
+          if (link.parentElement) {
+            link.parentElement.classList.toggle('is-active', isActive);
+          }
+        });
+      }
+
+      if ('IntersectionObserver' in window) {
+        var visibleSections = {};
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              visibleSections[entry.target.id] = entry.target;
+            } else {
+              delete visibleSections[entry.target.id];
+            }
+          });
+
+          var activeHeader = Object.keys(visibleSections)
+            .map(function(id) { return sectionById[id]; })
+            .sort(function(a, b) { return a.offsetTop - b.offsetTop; })[0];
+
+          if (activeHeader) {
+            setActiveTocLink(activeHeader.id);
+          }
+        }, {
+          rootMargin: '-120px 0px -55% 0px',
+          threshold: 0
+        });
+
+        headers.forEach(function(header) {
+          observer.observe(header);
+        });
+      } else if (headers[0]) {
+        setActiveTocLink(headers[0].id);
+      }
+
+
+      tocToggle.addEventListener('click', function() {
+        var isOpen = toc.classList.toggle('is-open');
+        tocToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+        if (window.matchMedia('(max-width: 900px)').matches) {
+          overlay.classList.toggle('is-visible', isOpen);
+        }
+      });
+
+      tocClose.addEventListener('click', function() {
+        toc.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+
+        overlay.classList.remove('is-visible');
+      });
+
+      tocList.addEventListener('click', function(event) {
+        if (event.target.tagName.toLowerCase() === 'a' && window.matchMedia('(max-width: 900px)').matches) {
+          toc.classList.remove('is-open');
+          tocToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      overlay.addEventListener('click', function() {
+        toc.classList.remove('is-open');
+        tocToggle.setAttribute('aria-expanded', 'false');
+        overlay.classList.remove('is-visible');
+      });
+    } else {
+      toc.hidden = true;
+      tocToggle.hidden = true;
+    }
+  });
+
+  var currentImageIndex = 0;
+  var images = [];
+  var altTexts = [];
+
+  document.querySelectorAll('.blog-image').forEach((img, index) => {
+    images.push(img.src);
+    altTexts.push(img.alt || '');
+    img.setAttribute('data-index', index);
+    img.onclick = () => expandImage(img);
+  });
+
+  function expandImage(img) {
+    currentImageIndex = parseInt(img.getAttribute('data-index'));
+    showImage(currentImageIndex);
+    document.getElementById('carousel').style.display = 'block';
+    document.querySelector('.image-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'block';
+    });
+  }
+
+  function showImage(index) {
+    var carouselImg = document.getElementById('carouselImage');
+    carouselImg.src = images[index];
+    
+    var carouselAlt = document.getElementById('carouselAlt');
+    carouselAlt.textContent = altTexts[index];
+  }
+
+  function closeImage() {
+    document.getElementById('carousel').style.display = 'none';
+    document.querySelector('.image-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+
+    document.removeEventListener('keydown', handleKeyPress);
+
+    document.querySelectorAll('.carousel-control').forEach(control => {
+      control.style.display = 'none';
+    });
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    showImage(currentImageIndex);
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === 'Escape') {
+      closeImage();
+    } else if (event.key === 'ArrowLeft') {
+      prevImage();
+    } else if (event.key === 'ArrowRight') {
+      nextImage();
+    }
+  }
+</script>
+
+      </section>
+    </div>
+  </div>
+
+  
+
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+    <span>
+        <b>MateoNitro550</b>
+    </span>
+    
+    <span>© 2026</span>
+  </a>
+</footer>
+
+
+  
+    <script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'G-524F5BE8G5', 'auto');
+  ga('send', 'pageview');
+</script>
+  
+
+</body>
+</html>
