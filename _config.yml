@@ -51,6 +51,4 @@ plugins:
   - jekyll-paginate-v2
   - jekyll-sitemap
 
-google_analytics: G-524F5BE8G5
-
 owner : "MateoNitro550"
