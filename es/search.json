@@ -2,11 +2,12 @@
 layout: none
 ---
 
+{% assign posts = site.es | sort: 'date' | reverse %}
 [
-  {% for post in site.es %}
+  {% for post in posts %}
     {
       "title"    : "{{ post.title | escape }}",
-      "category" : "{{ post.categories }}",
+      "category" : "{{ post.categories | join: ' ' }}",
       "url"      : "{{ post.url }}",
       "date"     : "{{ post.date | date: "%d/%m/%Y" }}"
     } {% unless forloop.last %},{% endunless %}
