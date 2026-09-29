@@ -2,10 +2,11 @@ title: Filthy Hacker
 description: "Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or eager to learn? This is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more."
 
 author:
-  name: "Mateo Andino"
+  name: "Mateo Paredes"
   url: "https://mateonitro550.github.io"
 
-baseurl: "/"
+url: "https://mateonitro550.github.io"
+baseurl: ""
 source: .
 destination: ./_site
 permalink: /:title/
@@ -31,6 +32,10 @@ defaults:
       type: "es"
     values:
       layout: "post"
+  - scope:
+      path: "assets/2022-01-17-KnightCTF-2022/Follow.pdf"
+    values:
+      sitemap: false
 
 pagination:
   enabled: true
@@ -39,7 +44,7 @@ pagination:
   sort_field: "date"
   sort_reverse: true
 
-future: true
+future: false
 
 plugins:
   - jekyll-seo-tag
@@ -49,4 +54,3 @@ plugins:
 google_analytics: G-524F5BE8G5
 
 owner : "MateoNitro550"
-year : "2025"

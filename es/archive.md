@@ -2,6 +2,7 @@
 layout: page
 title: Archivo
 lang: es
+sitemap: false
 ---
 
 <section>

@@ -2,6 +2,7 @@
 layout: page
 title: Search
 lang: en
+sitemap: false
 ---
 
 <div id="search-container">

@@ -2,6 +2,7 @@
 layout: page
 title: Archive
 lang: en
+sitemap: false
 ---
 
 <section>
