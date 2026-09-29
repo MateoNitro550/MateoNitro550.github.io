@@ -3,8 +3,8 @@
   <channel>
     <title>Filthy Hacker</title>
     <description>Filthy Hacker is a blog dedicated to hacking. Passionate about cybersecurity or eager to learn? This is the place! Machine walkthroughs, vulnerability breakdowns, CTF challenges, and more.</description>
-    <link></link>
-    <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
+    <link>https://mateonitro550.github.io</link>
+    <atom:link href="https://mateonitro550.github.io/feed.xml" rel="self" type="application/rss+xml" />
     <author>
       <name>MateoNitro550</name>
       <email></email>
@@ -567,8 +567,8 @@ ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Thu, 24 Sep 2026 00:00:00 -0400</pubDate>
-        <link>/es/MetaCTF-September-2026-Flash-CTF/</link>
-        <guid isPermaLink="true">/es/MetaCTF-September-2026-Flash-CTF/</guid>
+        <link>https://mateonitro550.github.io/es/MetaCTF-September-2026-Flash-CTF/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/es/MetaCTF-September-2026-Flash-CTF/</guid>
       </item>
     
       <item>
@@ -1123,8 +1123,8 @@ ec e4 c3 8f 79 38 40 cf 9c 0f b7 14 95 b4 65 ee
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Thu, 24 Sep 2026 00:00:00 -0400</pubDate>
-        <link>/en/MetaCTF-September-2026-Flash-CTF/</link>
-        <guid isPermaLink="true">/en/MetaCTF-September-2026-Flash-CTF/</guid>
+        <link>https://mateonitro550.github.io/en/MetaCTF-September-2026-Flash-CTF/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/en/MetaCTF-September-2026-Flash-CTF/</guid>
       </item>
     
       <item>
@@ -1542,8 +1542,8 @@ exploit
 &lt;p&gt;Del mismo modo, disponer de una sesión como &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NT AUTHORITY\SYSTEM&lt;/code&gt; nos permite realizar tareas de post-explotación más avanzadas, como la extracción de credenciales locales y de la memoria del sistema, lo que puede ser útil para pivotar dentro del entorno, facilitar el movimiento lateral o incluso mantener el acceso más allá de la sesión inicial. No obstante, profundizaremos en este proceso en otro &lt;a href=&quot;https://mateonitro550.github.io/es/Windows-Credential-Dumping&quot;&gt;artículo&lt;/a&gt;.&lt;/p&gt;
 </description>
         <pubDate>Mon, 15 Jun 2026 00:00:00 -0400</pubDate>
-        <link>/es/Blue-Practical-Ethical-Hacking/</link>
-        <guid isPermaLink="true">/es/Blue-Practical-Ethical-Hacking/</guid>
+        <link>https://mateonitro550.github.io/es/Blue-Practical-Ethical-Hacking/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/es/Blue-Practical-Ethical-Hacking/</guid>
       </item>
     
       <item>
@@ -1959,8 +1959,8 @@ exploit
 &lt;p&gt;Likewise, having a session running as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NT AUTHORITY\SYSTEM&lt;/code&gt; allows us to perform more advanced &lt;em&gt;post-exploitation&lt;/em&gt; tasks, such as extracting local credentials and credentials stored in system memory. This information can be extremely useful for pivoting within the environment, facilitating lateral movement, or even maintaining access beyond the initial session. However, we will explore these techniques in greater detail in a separate &lt;a href=&quot;https://mateonitro550.github.io/en/Windows-Credential-Dumping&quot;&gt;article&lt;/a&gt;.&lt;/p&gt;
 </description>
         <pubDate>Mon, 15 Jun 2026 00:00:00 -0400</pubDate>
-        <link>/en/Blue-Practical-Ethical-Hacking/</link>
-        <guid isPermaLink="true">/en/Blue-Practical-Ethical-Hacking/</guid>
+        <link>https://mateonitro550.github.io/en/Blue-Practical-Ethical-Hacking/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/en/Blue-Practical-Ethical-Hacking/</guid>
       </item>
     
       <item>
@@ -2619,8 +2619,8 @@ exploit
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/66.png&quot; alt=&quot;66&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 02 Dec 2024 00:00:00 -0500</pubDate>
-        <link>/es/Monitors-Hack-The-Box/</link>
-        <guid isPermaLink="true">/es/Monitors-Hack-The-Box/</guid>
+        <link>https://mateonitro550.github.io/es/Monitors-Hack-The-Box/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/es/Monitors-Hack-The-Box/</guid>
       </item>
     
       <item>
@@ -3279,8 +3279,8 @@ exploit
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-10-21-Monitors-Hack-The-Box/66.png&quot; alt=&quot;66&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 02 Dec 2024 00:00:00 -0500</pubDate>
-        <link>/en/Monitors-Hack-The-Box/</link>
-        <guid isPermaLink="true">/en/Monitors-Hack-The-Box/</guid>
+        <link>https://mateonitro550.github.io/en/Monitors-Hack-The-Box/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/en/Monitors-Hack-The-Box/</guid>
       </item>
     
       <item>
@@ -3511,8 +3511,8 @@ put MS11-046.exe
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 21 Oct 2024 00:00:00 -0400</pubDate>
-        <link>/es/Devel-Hack-The-Box/</link>
-        <guid isPermaLink="true">/es/Devel-Hack-The-Box/</guid>
+        <link>https://mateonitro550.github.io/es/Devel-Hack-The-Box/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/es/Devel-Hack-The-Box/</guid>
       </item>
     
       <item>
@@ -3743,8 +3743,8 @@ put MS11-046.exe
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-30-Devel-Hack-The-Box/15.png&quot; alt=&quot;15&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 21 Oct 2024 00:00:00 -0400</pubDate>
-        <link>/en/Devel-Hack-The-Box/</link>
-        <guid isPermaLink="true">/en/Devel-Hack-The-Box/</guid>
+        <link>https://mateonitro550.github.io/en/Devel-Hack-The-Box/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/en/Devel-Hack-The-Box/</guid>
       </item>
     
       <item>
@@ -4035,8 +4035,8 @@ PASS p@&lt;span class=&quot;nv&quot;&gt;$$&lt;/span&gt;w0rd!
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/19.png&quot; alt=&quot;19&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 09 Sep 2024 00:00:00 -0400</pubDate>
-        <link>/es/Lame-Hack-The-Box/</link>
-        <guid isPermaLink="true">/es/Lame-Hack-The-Box/</guid>
+        <link>https://mateonitro550.github.io/es/Lame-Hack-The-Box/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/es/Lame-Hack-The-Box/</guid>
       </item>
     
       <item>
@@ -4327,8 +4327,8 @@ PASS p@&lt;span class=&quot;nv&quot;&gt;$$&lt;/span&gt;w0rd!
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/MateoNitro550/MateoNitro550.github.io/main/assets/2024-09-09-Lame-Hack-The-Box/19.png&quot; alt=&quot;19&quot; class=&quot;blog-image&quot; onclick=&quot;expandImage(this)&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 09 Sep 2024 00:00:00 -0400</pubDate>
-        <link>/en/Lame-Hack-The-Box/</link>
-        <guid isPermaLink="true">/en/Lame-Hack-The-Box/</guid>
+        <link>https://mateonitro550.github.io/en/Lame-Hack-The-Box/</link>
+        <guid isPermaLink="true">https://mateonitro550.github.io/en/Lame-Hack-The-Box/</guid>
       </item>
     
   </channel>
